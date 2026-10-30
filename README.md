@@ -62,6 +62,7 @@ kdx init my_service --path ../my_service   # seed a whole new project from the c
 kdx wizard                       # interactive numbered-menu wizard (TTY only)
 kdx ui                           # browser console: status, every module command, logs, config
 kdx tls init && kdx run --tls    # https control plane (self-signed, via openssl)
+kdx users add jana --role operator   # a personal token with a role; kdx audit shows who did what
 ```
 
 Pin the chassis the way a consumer project does, entirely with uv:

@@ -163,6 +163,15 @@ cannot order.
   inherited ACL entries are removed and the current account alone gets access (`icacls`).
 - **Command permissions** - `CliCommand.remote=False` keeps a command off the control plane
   (`403`); `danger=True` makes a GUI confirm first. A group's flag covers its children.
+- **Users and roles** - each request is identified once (`IpcServer.identify`): the shared
+  token is the admin `owner`, a personal token from `data/users.json` (SHA-256 hashes,
+  compared in constant time, re-read when the file changes) is that user's role. The caller
+  travels in a context variable (`acting_as` / `current_caller`), so `Chassis.prepare_rpc`
+  checks a command's role (`role`, or admin for `danger`, else operator) without any
+  signature changing. `IpcServer.required_role(route)` is the single policy table.
+- **Audit** - `AuditLog` appends one JSON line per action or refusal on the acting routes
+  (`rpc`, `reload`, `shutdown`) and per job ending, to `data/audit.jsonl`, rotating at
+  5 MiB. A disk error is counted, never raised into the request.
 - **Background jobs** - `"background": true` on an RPC starts the command on its own thread
   and returns a job id; `GET /api/v1/jobs?id=` reads the output while it grows. Refusals
   (unknown command, `remote=False`, bad arguments) are raised before the thread starts.

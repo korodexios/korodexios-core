@@ -573,6 +573,15 @@ dependency order -> lifecycle loop -> `stop()` in reverse -> close logging.
 | `/api/v1/reload` | POST | always (`core.ipc.auth: false` opens reads, never actions) |
 | `/api/v1/rpc` | POST | always (`core.ipc.auth: false` opens reads, never actions) |
 | `/api/v1/jobs` | GET | always |
+| `/api/v1/whoami` | GET | never (answers `anonymous` without a token) |
+
+- Tokens: the shared `core.ipc.token` is the admin `owner`; `kdx users add NAME --role R`
+  issues personal tokens. Roles `viewer` < `operator` < `admin`: reads need viewer, `rpc` and
+  jobs need operator, reload and shutdown need admin. A command needs operator, admin when
+  `danger=True`, or what `CliCommand(role=...)` names; a group's role covers its children.
+  A weak role gets `403`, a missing or wrong token `401`. Every action and refusal is
+  audited in `data/audit.jsonl` (`kdx audit`). In a handler, `current_caller()` from
+  `korodexios_core.kernel.users` says who asked (None in-process).
 
 - `POST /api/v1/rpc` with `"background": true` answers `202` with a job (`job-N`) at once;
   `GET /api/v1/jobs?id=job-N` returns its state and the output written so far, and

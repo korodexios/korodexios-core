@@ -30,6 +30,7 @@ from ...config.layered import is_secret_key, redact_value
 from ...config.schema import ConfigField, ConfigKind, ConfigSchema
 from ...constants import TAG_ERROR, TAG_NOTE, TAG_OK
 from ...events.bus import Event
+from ...kernel.audit import read_audit
 from ...kernel.cli_contract import CliArgument, CliCommand, CliRequest, CliSurface
 from ...kernel.contract import Module
 from ...kernel.ipc import (
@@ -40,6 +41,7 @@ from ...kernel.ipc import (
     IpcStaticMount,
     IpcStream,
 )
+from ...kernel.users import current_caller, role_rank
 from ...logging.engine import tail_lines
 
 UI_PREFIX = "/ui"
@@ -47,6 +49,7 @@ CATALOG_PATH = "/api/v1/ui/catalog"
 LOGS_PATH = "/api/v1/ui/logs"
 CONFIG_PATH = "/api/v1/ui/config"
 EVENTS_PATH = "/api/v1/ui/events"
+AUDIT_PATH = "/api/v1/ui/audit"
 EVENT_QUEUE_SIZE = 500
 KEEPALIVE_SECONDS = 15.0
 STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -127,6 +130,12 @@ class WebConsoleModule(Module):
                 summary="resolved configuration with provenance, secrets masked",
             ),
             IpcRoute(
+                path=AUDIT_PATH,
+                handler=self._audit_route,
+                module=self.name,
+                summary="the newest audit records; admin only",
+            ),
+            IpcRoute(
                 path=EVENTS_PATH,
                 handler=self._events_route,
                 module=self.name,
@@ -160,11 +169,15 @@ class WebConsoleModule(Module):
         registry = self.context.registry if self.context is not None else None
         commands: list[dict[str, Any]] = []
 
-        def visit(command: CliCommand, path: str, remote: bool, danger: bool, top: str) -> None:
+        def visit(
+            command: CliCommand, path: str, remote: bool, danger: bool, role: str, top: str
+        ) -> None:
             if not command.show_in_wizard:
                 return
             remote = remote and command.remote
             danger = danger or command.danger
+            own = command.role or ("admin" if command.danger else "operator")
+            role = max(role, own, key=role_rank)
             if command.handler is not None:
                 commands.append(
                     {
@@ -173,14 +186,15 @@ class WebConsoleModule(Module):
                         "module": command.module_name or top,
                         "remote": remote,
                         "danger": danger,
+                        "role": role,
                         "args": [describe_argument(argument) for argument in command.args],
                     }
                 )
             for child in command.subcommands:
-                visit(child, f"{path} {child.name}", remote, danger, top)
+                visit(child, f"{path} {child.name}", remote, danger, role, top)
 
         for top in registry.commands() if registry is not None else []:
-            visit(top, top.name, True, False, top.module_name or top.name)
+            visit(top, top.name, True, False, "operator", top.module_name or top.name)
         return {"commands": commands}
 
     def _catalog_route(self, request: IpcRequest) -> dict[str, Any]:
@@ -213,6 +227,22 @@ class WebConsoleModule(Module):
                 for entry in entries
             ]
         }
+
+    def _audit_route(self, request: IpcRequest) -> Any:
+        """Return the newest audit records to an admin; who did what is not for everyone."""
+        caller = current_caller()
+        if caller is not None and not caller.allows("admin"):
+            return 403, {"error": f"the audit log needs the admin role; {caller.name} is "
+                         f"{caller.role}"}
+        try:
+            limit = int(request.query.get("lines", [DEFAULT_LOG_LINES])[0])
+        except (TypeError, ValueError):
+            limit = DEFAULT_LOG_LINES
+        chassis = self.context.chassis if self.context is not None else None
+        audit = getattr(chassis, "audit", None)
+        if audit is None:
+            return {"entries": []}
+        return {"entries": read_audit(audit.path, limit=max(1, min(MAX_LOG_LINES, limit)))}
 
     def _events_route(self, request: IpcRequest) -> IpcStream:
         """Stream every bus event to one browser until it leaves or the chassis stops."""

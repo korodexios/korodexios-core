@@ -7,6 +7,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
+from .users import ROLES
+
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from .context import CoreContext
 
@@ -131,10 +133,18 @@ class CliCommand:
     show_in_wizard: bool = True
     remote: bool = True
     danger: bool = False
+    role: str = ""
+    """The least role a control-plane caller needs: '' means operator, or admin when
+    'danger' is set. A group's role covers its children; the strongest one wins."""
 
     def __post_init__(self) -> None:
         if not self.name.strip():
             raise ValueError("a CLI command needs a name")
+        if self.role and self.role not in ROLES:
+            raise ValueError(
+                f"command {self.name!r} asks for role {self.role!r}; use one of "
+                f"{', '.join(ROLES)}"
+            )
         if self.handler is None and not self.subcommands:
             raise ValueError(
                 f"command {self.name!r} needs either a handler or subcommands to be useful"

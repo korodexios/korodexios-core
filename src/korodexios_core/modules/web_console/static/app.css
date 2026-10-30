@@ -163,3 +163,6 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 button[data-armed="1"] { background: var(--bad); border-color: var(--bad); color: #fff; }
 .run.running { border-color: var(--accent); }
 #events-table td:last-child { max-width: 600px; }
+
+tr.denied td { color: var(--bad); }
+#whoami:empty { display: none; }

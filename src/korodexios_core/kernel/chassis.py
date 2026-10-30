@@ -35,6 +35,7 @@ from ..logging.engine import (
 from ..paths import AppPaths
 from ..version import CORE_API_VERSION, __version__, format_version
 from .async_runtime import AsyncRuntime
+from .audit import AUDIT_FILE_NAME, AuditLog
 from .cli_contract import CliCommand, CliRequest, CliSurface, add_command_arguments
 from .context import CoreContext
 from .contracts import (
@@ -71,6 +72,7 @@ from .rpc_output import capture_output, captured_text
 from .scheduler import TaskScheduler
 from .signals import SignalCoordinator, signal_name
 from .supervision import WorkerRecord, WorkerSupervisor
+from .users import USERS_FILE_NAME, UserStore, current_caller, role_rank
 
 TLS_DIR_NAME = "tls"
 TLS_CERT_NAME = "cert.pem"
@@ -85,6 +87,13 @@ STATIC_DIR_PREFIXES = ("static", "ui", "assets")
 
 _UNSET: Any = object()
 """Sentinel distinguishing 'key absent' from 'key set to None' in a reload diff."""
+
+
+def _required_role(command: CliCommand) -> str:
+    """Return the least role a remote caller needs for *command* on its own."""
+    if command.role:
+        return command.role
+    return "admin" if command.danger else "operator"
 
 
 class _RpcArgumentError(Exception):
@@ -178,6 +187,10 @@ class Chassis:
     """Rows the embedding project declared, beside its modules' own."""
     jobs: JobRegistry = field(default_factory=JobRegistry)
     """Delegated commands running in the background ('background': true over RPC)."""
+    users: UserStore | None = None
+    """Named users and roles, '<durable_dir>/users.json'; managed with 'kdx users'."""
+    audit: AuditLog | None = None
+    """Who acted over the control plane, '<durable_dir>/audit.jsonl'."""
 
     @classmethod
     def create(cls, options: ChassisOptions | None = None) -> Chassis:
@@ -323,6 +336,8 @@ class Chassis:
             instance_lock_enabled=options.instance_lock,
             project=identity,
             project_contracts=project_rows,
+            users=UserStore(Path(paths.durable_dir) / USERS_FILE_NAME),
+            audit=AuditLog(Path(paths.durable_dir) / AUDIT_FILE_NAME),
         )
         context.chassis = chassis
         return chassis
@@ -447,6 +462,8 @@ class Chassis:
             reload_fn=self.reload_config,
             submit_fn=self.submit_job if rpc_enabled else None,
             jobs_fn=self.job_report if rpc_enabled else None,
+            users=self.users,
+            audit=self.audit,
         )
         try:
             server.start()
@@ -862,6 +879,11 @@ class Chassis:
         module can follow jobs without polling the control plane.
         """
         label = str(command).strip()
+        caller = current_caller()
+
+        def finished(outcome: str) -> None:
+            if self.audit is not None:
+                self.audit.record("job", caller=caller, outcome=outcome, command=label)
 
         def prepare(buffer: io.StringIO) -> Callable[[], dict[str, Any]]:
             call = self.prepare_rpc(command, args, buffer=buffer)
@@ -870,12 +892,14 @@ class Chassis:
                 try:
                     result = call()
                 except Exception as exc:
+                    finished(f"failed: {type(exc).__name__}: {exc}")
                     self.bus.publish(
                         JOB_FINISHED_EVENT,
                         {"command": label, "ok": False, "error": f"{type(exc).__name__}: {exc}"},
                         source="chassis",
                     )
                     raise
+                finished(f"finished exit {result.get('exit_code')}")
                 self.bus.publish(
                     JOB_FINISHED_EVENT,
                     {
@@ -892,6 +916,7 @@ class Chassis:
         job = self.jobs.submit(
             command,
             prepare,
+            user=caller.name if caller is not None else "",
             on_start=lambda started: self.bus.publish(
                 JOB_STARTED_EVENT, {"id": started.id, "command": label}, source="chassis"
             ),
@@ -940,6 +965,7 @@ class Chassis:
         consumed = 1
         walked = [name]
         local_only = not top.remote
+        required = _required_role(top)
         while target.subcommands and consumed < len(parts):
             child = target.find(parts[consumed])
             if child is None:
@@ -950,6 +976,7 @@ class Chassis:
             target = child
             walked.append(child.name)
             local_only = local_only or not child.remote
+            required = max(required, _required_role(child), key=role_rank)
             consumed += 1
         trailing = parts[consumed:]
         handler = target.handler
@@ -959,6 +986,12 @@ class Chassis:
             raise PermissionError(
                 f"'kdx {' '.join(walked)}' runs only on the daemon's own terminal "
                 "(the module declared it remote=False)"
+            )
+        caller = current_caller()
+        if caller is not None and not caller.allows(required):
+            raise PermissionError(
+                f"'kdx {' '.join(walked)}' needs the {required} role; "
+                f"{caller.name} is {caller.role}"
             )
         namespace = self._rpc_namespace(target, args, trailing)
         request = CliRequest(

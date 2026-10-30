@@ -19,6 +19,7 @@
     <div class="status">
       <span id="state-pill" class="pill">offline</span>
       <span id="uptime" class="muted"></span>
+      <span id="whoami" class="pill" title="who this token belongs to"></span>
     </div>
     <div class="actions">
       <button id="btn-refresh" type="button" title="Refresh everything">Refresh</button>
@@ -34,13 +35,15 @@
     <button type="button" role="tab" data-tab="config">Config</button>
     <button type="button" role="tab" data-tab="events">Events</button>
     <button type="button" role="tab" data-tab="diagnostics">Diagnostics</button>
+    <button type="button" role="tab" data-tab="audit" id="tab-button-audit" hidden>Audit</button>
   </nav>
 
   <main>
     <section id="token-gate" class="card gate" hidden>
       <h2>Session token needed</h2>
       <p>Open the console with <code>kdx ui</code>, or paste the <code>token</code> value
-        from <code>var/chassis.ipc</code> (or your <code>core.ipc.token</code>).</p>
+        from <code>var/chassis.ipc</code> (or your <code>core.ipc.token</code>), or the personal
+        token an admin created for you with <code>kdx users add</code>.</p>
       <form id="token-form" class="row">
         <input id="token-input" type="password" autocomplete="off" placeholder="token" aria-label="token">
         <button type="submit">Connect</button>
@@ -128,6 +131,17 @@
     <section id="tab-diagnostics" class="tab">
       <div id="diag-summary" class="tiles"></div>
       <ul id="diagnostics" class="checks"></ul>
+    </section>
+    <section id="tab-audit" class="tab">
+      <div class="row toolbar">
+        <input id="audit-filter" type="search" placeholder="filter by user, action, command" aria-label="filter audit">
+        <button id="btn-audit" type="button">Refresh</button>
+        <span class="muted">same records as <code>kdx audit</code></span>
+      </div>
+      <div class="table-wrap"><table id="audit-table">
+        <thead><tr><th>time</th><th>user</th><th>action</th><th>command</th><th>outcome</th><th>from</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
     </section>
   </main>
 

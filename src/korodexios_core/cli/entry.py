@@ -23,6 +23,7 @@ from .commands import core_commands, render_rpc_reply, wizard_command
 from .render import write_line
 from .surface import HANDLER_ATTR, ArgparseSurface
 from .tls import tls_command
+from .users import audit_command, users_command
 
 LOG_LEVEL_CHOICES = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 PROG_ALIASES = ("kdx", "korodexios", "korodexios-core")
@@ -605,6 +606,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             surface.add_command(command)
         surface.add_command(wizard_command())
         surface.add_command(tls_command())
+        surface.add_command(users_command())
+        surface.add_command(audit_command())
         chassis.collect_cli(surface)
 
         try:

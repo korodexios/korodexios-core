@@ -41,6 +41,8 @@ class Job:
 
     id: str
     command: str
+    user: str = ""
+    """Who started the job over the control plane; empty when started in-process."""
     buffer: io.StringIO = field(default_factory=io.StringIO)
     state: str = "running"
     started_at: float = field(default_factory=time.time)
@@ -53,6 +55,7 @@ class Job:
         payload: dict[str, Any] = {
             "id": self.id,
             "command": self.command,
+            "user": self.user or None,
             "state": self.state,
             "started_at": round(self.started_at, 3),
             "finished_at": round(self.finished_at, 3) if self.finished_at else None,
@@ -80,13 +83,15 @@ class JobRegistry:
         command: str,
         prepare: Preparer,
         on_start: Callable[[Job], object] | None = None,
+        *,
+        user: str = "",
     ) -> Job:
         """Prepare the call now (refusals raise here), then run it on a new thread.
 
         *on_start* sees the job with its id before the thread starts, so a 'started'
         notice can never arrive after the job's own 'finished' one.
         """
-        job = Job(id="", command=str(command).strip())
+        job = Job(id="", command=str(command).strip(), user=str(user))
         call = prepare(job.buffer)
         with self._lock:
             running = sum(1 for item in self._jobs.values() if item.state == "running")

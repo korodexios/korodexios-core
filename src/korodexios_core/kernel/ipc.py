@@ -35,8 +35,10 @@ from ..constants import IPC_SCHEMA_VERSION
 from ..paths import restrict_to_owner
 from ..units import page_size
 from ..version import CORE_API_VERSION
+from .audit import AuditLog
 from .instance_lock import pid_alive
 from .jobs import JobLimitError
+from .users import OWNER_NAME, Caller, UserStore, acting_as
 
 DISCOVERY_NAME = "chassis.ipc"
 TOKEN_HEADER = "X-Kdx-Token"
@@ -88,6 +90,7 @@ SCHEMA_PATH = "/api/v1/schema"
 RPC_PATH = "/api/v1/rpc"
 RELOAD_PATH = "/api/v1/reload"
 JOBS_PATH = "/api/v1/jobs"
+WHOAMI_PATH = "/api/v1/whoami"
 ROUTES = (
     HEALTH_PATH,
     STATUS_PATH,
@@ -96,7 +99,12 @@ ROUTES = (
     RPC_PATH,
     RELOAD_PATH,
     JOBS_PATH,
+    WHOAMI_PATH,
 )
+ACTING_ROUTES: Final[frozenset[str]] = frozenset(
+    {"/api/v1/rpc", "/api/v1/reload", "/api/v1/shutdown"}
+)
+"""Routes that change something; every attempt on them is audited, refused or not."""
 RPC_METHODS = ("POST",)
 RELOAD_METHODS = ("POST",)
 
@@ -912,27 +920,68 @@ class _ControlHandler(BaseHTTPRequestHandler):
                 },
             )
             return
+        caller = ipc.identify(self.headers.get(TOKEN_HEADER))
+        with acting_as(caller):
+            self._route_as(ipc, method, caller)
+
+    def _refuse(
+        self, ipc: IpcServer, path: str, caller: Caller | None, required: str
+    ) -> None:
+        """Answer 401 (who are you?) or 403 (not allowed), and audit an attempt to act."""
+        acting = path in ACTING_ROUTES
+        if caller is None:
+            if acting:
+                ipc.audit_event(path, None, "unauthenticated", address=self._address())
+            self._reply(
+                401,
+                {
+                    "error": f"{TOKEN_HEADER} header missing or invalid for {path}",
+                    "hint": "present core.ipc.token or a user token from 'kdx users add'; "
+                    "core.ipc.auth: false opens status reads only",
+                },
+            )
+            return
+        if acting:
+            # A known caller may say what they tried to run; an unknown one is not read.
+            command = ""
+            if path == RPC_PATH:
+                payload = self._read_payload()
+                if isinstance(payload, Mapping):
+                    command = str(payload.get("command") or "")
+            ipc.audit_event(
+                path, caller, f"denied: needs {required}", command=command,
+                address=self._address(),
+            )
+        self._reply(
+            403,
+            {
+                "error": f"{path} needs the {required} role; {caller.name} is {caller.role}",
+                "hint": "an admin can change it with 'kdx users role NAME ROLE'",
+            },
+        )
+
+    def _address(self) -> str:
+        return str(self.client_address[0]) if self.client_address else ""
+
+    def _route_as(self, ipc: IpcServer, method: str, caller: Caller | None) -> None:
         path = normalize_route_path(self.path)
         module_route = ipc.lookup_route(path)
         if path not in ROUTES and module_route is None:
             mounted = ipc.lookup_static(path)
             if mounted is not None:
-                self._serve_static(ipc, mounted[0], mounted[1], method)
+                self._serve_static(ipc, mounted[0], mounted[1], method, caller)
                 return
             self._reply(404, {"error": f"no such endpoint: {path}"})
             return
         if module_route is not None:
-            self._serve_module_route(ipc, module_route, method)
+            self._serve_module_route(ipc, module_route, method, caller)
             return
-        if ipc.requires_token(path) and not ipc.token_matches(self.headers.get(TOKEN_HEADER)):
-            self._reply(
-                401,
-                {
-                    "error": f"{TOKEN_HEADER} header missing or invalid for {path}",
-                    "hint": "set core.ipc.auth to false for anonymous reads, or "
-                    "core.ipc.allow_anonymous_shutdown to true for anonymous shutdown",
-                },
-            )
+        required = ipc.required_role(path)
+        if required is not None and (caller is None or not caller.allows(required)):
+            self._refuse(ipc, path, caller, required)
+            return
+        if path == WHOAMI_PATH:
+            self._reply(200, ipc.whoami(caller))
             return
         if path == HEALTH_PATH:
             self._reply(200, ipc.health())
@@ -953,7 +1002,10 @@ class _ControlHandler(BaseHTTPRequestHandler):
             if method != "POST":
                 self._reply(405, {"error": "reload expects POST"})
                 return
-            self._reply(200, ipc.request_reload())
+            answer = ipc.request_reload()
+            ipc.audit_event(RELOAD_PATH, caller, "ok", detail=answer.get("changed"),
+                            address=self._address())
+            self._reply(200, answer)
             return
         if path == RPC_PATH:
             if method != "POST":
@@ -963,7 +1015,19 @@ class _ControlHandler(BaseHTTPRequestHandler):
             if payload is PAYLOAD_TOO_LARGE:
                 self._reply(PAYLOAD_TOO_LARGE, {"error": "request body too large"})
                 return
-            self._reply(*ipc.handle_rpc(payload))
+            status, answer = ipc.handle_rpc(payload)
+            command = str(payload.get("command") or "") if isinstance(payload, Mapping) else ""
+            if status == 202:
+                outcome = f"started {answer['job']['id']}"
+            elif status == 200:
+                outcome = f"exit {answer['result'].get('exit_code')}"
+            else:
+                outcome = f"refused {status}: {answer.get('error', '')}"
+            action = "job" if isinstance(payload, Mapping) and payload.get("background") else "rpc"
+            args = payload.get("args") if isinstance(payload, Mapping) else None
+            ipc.audit_event(action, caller, outcome, command=command, detail=args,
+                            address=self._address())
+            self._reply(status, answer)
             return
         if path == JOBS_PATH:
             if method != "GET":
@@ -979,10 +1043,13 @@ class _ControlHandler(BaseHTTPRequestHandler):
         # is the contract that the shutdown was requested, so a client that sees it
         # must be able to rely on it having happened. Replying first raced the call
         # on slow runners, where the response landed before the counter moved.
+        ipc.audit_event(SHUTDOWN_PATH, caller, "ok", address=self._address())
         ipc.request_shutdown()
         self._reply(200, {"accepted": True, "state": ipc.health()["state"]})
 
-    def _serve_module_route(self, ipc: IpcServer, route: IpcRoute, method: str) -> None:
+    def _serve_module_route(
+        self, ipc: IpcServer, route: IpcRoute, method: str, caller: Caller | None = None
+    ) -> None:
         """Answer one module-declared route, mapping the handler result to HTTP."""
         if not route.allows(method):
             self._reply(
@@ -990,15 +1057,12 @@ class _ControlHandler(BaseHTTPRequestHandler):
                 {"error": f"{route.path} accepts {', '.join(route.methods)}", "method": method},
             )
             return
-        if route.auth and not ipc.token_matches(self.headers.get(TOKEN_HEADER)):
-            self._reply(
-                401,
-                {
-                    "error": f"{TOKEN_HEADER} header missing or invalid for {route.path}",
-                    "hint": "this module route requires the shared control-plane token",
-                },
-            )
-            return
+        if route.auth:
+            # A read needs a viewer; a module route that accepts a write needs an operator.
+            required = "viewer" if method in ("GET", "HEAD") else "operator"
+            if caller is None or not caller.allows(required):
+                self._refuse(ipc, route.path, caller, required)
+                return
         request = IpcRequest(
             method=method,
             path=route.path,
@@ -1049,7 +1113,12 @@ class _ControlHandler(BaseHTTPRequestHandler):
         self._reply(status, payload)
 
     def _serve_static(
-        self, ipc: IpcServer, mount: IpcStaticMount, subpath: str, method: str
+        self,
+        ipc: IpcServer,
+        mount: IpcStaticMount,
+        subpath: str,
+        method: str,
+        caller: Caller | None = None,
     ) -> None:
         """Serve one file from a mounted static directory, with its own media type."""
         if not mount.allows(method):
@@ -1061,14 +1130,8 @@ class _ControlHandler(BaseHTTPRequestHandler):
                 },
             )
             return
-        if mount.auth and not ipc.token_matches(self.headers.get(TOKEN_HEADER)):
-            self._reply(
-                401,
-                {
-                    "error": f"{TOKEN_HEADER} header missing or invalid for {mount.prefix}",
-                    "hint": "this static mount requires the shared control-plane token",
-                },
-            )
+        if mount.auth and (caller is None or not caller.allows("viewer")):
+            self._refuse(ipc, mount.prefix, caller, "viewer")
             return
         target = mount.resolve(subpath)
         if target is None:
@@ -1232,6 +1295,8 @@ class IpcServer:
         reload_fn: Callable[[], Mapping[str, Any]] | None = None,
         submit_fn: Callable[[str, Mapping[str, Any]], Mapping[str, Any]] | None = None,
         jobs_fn: Callable[[str], Any] | None = None,
+        users: UserStore | None = None,
+        audit: AuditLog | None = None,
     ) -> None:
         self._status_fn = status_fn
         self._shutdown_fn = shutdown_fn
@@ -1256,6 +1321,8 @@ class IpcServer:
         self._reload_fn = reload_fn
         self._submit_fn = submit_fn
         self._jobs_fn = jobs_fn
+        self.users = users
+        self.audit = audit
 
     def add_route(self, route: IpcRoute) -> IpcServer:
         """Publish *route* on the control plane; a re-registration replaces it."""
@@ -1347,6 +1414,68 @@ class IpcServer:
         if not expected:
             return False
         return hmac.compare_digest(str(presented or ""), expected)
+
+    def identify(self, presented: str | None) -> Caller | None:
+        """Return who *presented* is: the shared token's owner, a named user, or None."""
+        if self.token_matches(presented):
+            return Caller(OWNER_NAME, "admin", "shared")
+        if self.users is not None:
+            try:
+                user = self.users.authenticate(presented)
+            except ValueError:
+                user = None
+            if user is not None:
+                return Caller(user.name, user.role, "user")
+        return None
+
+    def required_role(self, route: str) -> str | None:
+        """Return the role *route* needs, or None when anyone may call it.
+
+        Reads need a viewer, running a command needs an operator, and reload and
+        shutdown need an admin. 'core.ipc.auth: false' opens the status read only;
+        'allow_anonymous_shutdown' (with auth off) opens shutdown.
+        """
+        if route in (HEALTH_PATH, SCHEMA_PATH, WHOAMI_PATH):
+            return None
+        if route == STATUS_PATH:
+            return "viewer" if self._options.auth else None
+        if route == JOBS_PATH:
+            return "viewer"
+        if route == RPC_PATH:
+            return "operator"
+        if route == RELOAD_PATH:
+            return "admin"
+        if route == SHUTDOWN_PATH:
+            anonymous = not self._options.auth and self._options.allow_anonymous_shutdown
+            return None if anonymous else "admin"
+        return "viewer"
+
+    def whoami(self, caller: Caller | None) -> dict[str, Any]:
+        """Return who the request was made as, and which routes that opens."""
+        if caller is None:
+            return {"name": None, "role": None, "source": "anonymous", "can": []}
+        can = [route for route in ROUTES if self.required_role(route) is None
+               or caller.allows(str(self.required_role(route)))]
+        return {**caller.as_dict(), "can": can}
+
+    def audit_event(
+        self,
+        action: str,
+        caller: Caller | None,
+        outcome: str,
+        *,
+        command: str = "",
+        detail: Any = None,
+        address: str = "",
+    ) -> None:
+        """Record one control-plane action when an audit log is attached."""
+        if self.audit is not None:
+            # A route path names the action by its last segment: '/api/v1/rpc' is 'rpc'.
+            name = action.rsplit("/", 1)[-1] if action.startswith("/") else action
+            self.audit.record(
+                name, caller=caller, outcome=outcome, command=command,
+                detail=detail, address=address,
+            )
 
     def cross_origin_refusal(self, host: str | None, origin: str | None) -> str | None:
         """Return why a browser-borne request must be refused, or None to serve it.
@@ -1554,23 +1683,15 @@ class IpcServer:
         return self._discovery.token if self._discovery is not None else self._options.token
 
     def requires_token(self, route: str) -> bool:
-        """Return True when *route* must present the shared token.
+        """Return True when *route* must present a token (see required_role).
 
-        Policy: /health and /api/v1/schema are always open (liveness and static
-        metadata carry no state). Status reads follow core.ipc.auth. RPC and reload
-        always need the token: they act, they do not read, and 'auth: false' promises
-        anonymous reads only - an RPC runs module commands with caller-chosen arguments
-        (a backup of any path, for one). Shutdown stays authenticated unless the
-        operator explicitly allows anonymous shutdown - a LAN-visible port must not be
-        a stop button.
+        Policy: /health, /api/v1/schema, and /api/v1/whoami are always open. Status
+        reads follow core.ipc.auth. RPC, reload, and jobs always need a token: they act
+        or reveal command output, and 'auth: false' promises anonymous status reads
+        only. Shutdown stays authenticated unless the operator explicitly allows
+        anonymous shutdown - a LAN-visible port must not be a stop button.
         """
-        if route in (HEALTH_PATH, SCHEMA_PATH):
-            return False
-        if route == STATUS_PATH:
-            return bool(self._options.auth)
-        if route in (RPC_PATH, RELOAD_PATH, JOBS_PATH):
-            return True
-        return bool(self._options.auth) or not bool(self._options.allow_anonymous_shutdown)
+        return self.required_role(route) is not None
 
     @property
     def bound_host(self) -> str:
@@ -1688,6 +1809,14 @@ class IpcServer:
                     "content_type": CONTENT_JSON,
                     "summary": "background jobs; '?id=job-N' adds that job's output so far",
                     "fields": ["command", "exit_code", "id", "output", "state"],
+                },
+                {
+                    "method": "GET",
+                    "path": WHOAMI_PATH,
+                    "auth": self.requires_token(WHOAMI_PATH),
+                    "content_type": CONTENT_JSON,
+                    "summary": "who the presented token belongs to, and which routes it opens",
+                    "fields": ["can", "name", "role", "source"],
                 },
             ],
             "module_routes": [route.as_dict() for route in self.module_routes()],

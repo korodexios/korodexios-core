@@ -161,6 +161,9 @@ directory ignores dot files, swap files, and names `lock_name()` refuses | **del
   background jobs (`"background": true`, `GET /api/v1/jobs`, `core.job.*` events), streamed
   responses (`IpcStream`) and a live event feed in the console, an https control plane
   (`core.ipc.tls`, `kdx tls init`, `--tls-ca`), and owner-only secrets on Windows | **delivered** |
+| 33 | a team on one chassis: personal tokens with roles (`kdx users add/list/role/rotate/remove`,
+  `viewer` < `operator` < `admin`, `CliCommand.role`), `GET /api/v1/whoami`, and an audit log
+  of every action and refusal (`data/audit.jsonl`, `kdx audit`, an admin-only GUI tab) | **delivered** |
 
 ## Next
 

@@ -25,6 +25,14 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ### Added
 
+- **Users and roles**: `kdx users add NAME --role viewer|operator|admin` issues a personal
+  token (stored only as a SHA-256 hash in `data/users.json`, owner-only); `list`, `role`,
+  `rotate`, `remove` manage it, and a running daemon sees changes on the next request. Reads
+  need viewer, commands operator, `danger` commands / reload / stop admin;
+  `CliCommand(role=...)` can ask for more. The shared token remains the admin `owner`.
+- **Audit log**: every command, job, reload, stop, and refused attempt over the control
+  plane is recorded in `data/audit.jsonl`; `kdx audit [--user] [--action] [--json]` reads
+  it, and admins see it in the web console. `GET /api/v1/whoami` names the caller.
 - **Command permissions**: `CliCommand(remote=False)` keeps a command on the daemon's own
   terminal (RPC answers `403`); `CliCommand(danger=True)` makes the web console ask twice.
   `backup configure` (an interactive wizard) is terminal-only, `backup run` is marked danger.

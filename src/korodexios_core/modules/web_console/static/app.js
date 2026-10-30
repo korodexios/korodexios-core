@@ -12,7 +12,14 @@
   const MAX_EVENTS = 300;
   const ROUTINE_EVENTS = /^(core\.tick|core\.heartbeat|core\.task\.)/;
 
-  const state = { token: "", status: null, catalog: [], config: [], selected: null, events: [], streaming: false, jobsLoaded: false };
+  const state = { token: "", status: null, catalog: [], config: [], selected: null, events: [], streaming: false, jobsLoaded: false, me: null, audit: [] };
+  const ROLE_RANK = { viewer: 0, operator: 1, admin: 2 };
+
+  function can(role) {
+    const mine = state.me && state.me.role;
+    if (!mine) return true; // anonymous reads with auth off; the daemon still decides
+    return (ROLE_RANK[mine] ?? -1) >= (ROLE_RANK[role] ?? 99);
+  }
 
   // ---- small helpers -------------------------------------------------------
 
@@ -151,6 +158,7 @@
       document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab.id === `tab-${button.dataset.tab}`));
       if (button.dataset.tab === "logs") guarded(loadLogs);
       if (button.dataset.tab === "config") guarded(loadConfig);
+      if (button.dataset.tab === "audit") guarded(loadAudit);
     });
   });
 
@@ -161,6 +169,20 @@
       el("div", { class: "tile-value", text: value }),
       el("div", { class: "tile-label", text: label }),
     ]);
+  }
+
+  async function loadMe() {
+    const { payload } = await api("/api/v1/whoami");
+    state.me = payload.name ? payload : null;
+    const badge = $("whoami");
+    badge.textContent = state.me ? `${state.me.name} · ${state.me.role}` : "anonymous";
+    badge.className = `pill ${state.me && state.me.role === "admin" ? "ok" : ""}`;
+    const admin = can("admin");
+    $("btn-reload").disabled = !admin;
+    $("btn-stop").disabled = !admin;
+    $("btn-reload").title = admin ? "Re-read configuration (kdx reload)" : "needs the admin role";
+    $("btn-stop").title = admin ? "Stop the daemon (exit 0)" : "needs the admin role";
+    $("tab-button-audit").hidden = !admin;
   }
 
   async function loadStatus() {
@@ -249,6 +271,7 @@
           el("span", { text: command.path }),
           !command.remote ? el("span", { class: "badge", text: "terminal" }) : "",
           command.danger ? el("span", { class: "badge warn", text: "changes" }) : "",
+          command.remote && !can(command.role) ? el("span", { class: "badge", text: `needs ${command.role}` }) : "",
         ]),
       ])));
     });
@@ -295,12 +318,15 @@
     $("command-title").textContent = `kdx ${command.path}`;
     $("command-help").textContent = command.help || "";
     const notice = $("command-notice");
-    notice.hidden = command.remote && !command.danger;
-    notice.className = command.remote ? "notice warn" : "notice";
+    const allowed = can(command.role);
+    notice.hidden = command.remote && !command.danger && allowed;
+    notice.className = command.remote && allowed ? "notice warn" : "notice";
     notice.textContent = !command.remote
       ? "This command runs only in a terminal on the daemon's machine (an interactive wizard or a local-only action). Copy the line below into a terminal there."
-      : "This command changes files or state. Run asks for a second click to confirm.";
-    $("command-run").disabled = !command.remote;
+      : !allowed
+        ? `This command needs the ${command.role} role; you are ${state.me.role}. Ask an admin: kdx users role ${state.me.name} ${command.role}`
+        : "This command changes files or state. Run asks for a second click to confirm.";
+    $("command-run").disabled = !command.remote || !allowed;
     $("command-run").dataset.armed = "";
     $("command-run").textContent = "Run";
     $("command-run").dataset.label = "Run";
@@ -350,7 +376,7 @@
   $("command-form").addEventListener("submit", (event) => {
     event.preventDefault();
     const command = state.selected;
-    if (!command || !command.remote) return;
+    if (!command || !command.remote || !can(command.role)) return;
     if (command.danger && !armed($("command-run"), "Click again to run")) return;
     guarded(runSelected);
   });
@@ -538,6 +564,35 @@
 
   ["events-routine", "events-filter", "events-pause"].forEach((id) => $(id).addEventListener("input", renderEvents));
 
+  // ---- audit -----------------------------------------------------------------
+
+  async function loadAudit() {
+    const { payload } = await api("/api/v1/ui/audit?lines=500");
+    state.audit = payload.entries || [];
+    renderAudit();
+  }
+
+  function renderAudit() {
+    const needle = $("audit-filter").value.trim().toLowerCase();
+    const rows = state.audit
+      .filter((e) => !needle || JSON.stringify(e).toLowerCase().includes(needle))
+      .slice()
+      .reverse()
+      .map((e) => el("tr", { class: String(e.outcome || "").startsWith("denied") || String(e.outcome || "").startsWith("unauth") ? "denied" : "" }, [
+        el("td", { class: "mono", text: new Date((e.at || 0) * 1000).toLocaleString() }),
+        el("td", { text: e.user || "-" }),
+        el("td", { text: e.action || "-" }),
+        el("td", { class: "mono", text: e.command || "-" }),
+        el("td", { text: e.outcome || "-" }),
+        el("td", { class: "mono", text: e.address || "-" }),
+      ]));
+    if (!rows.length) rows.push(el("tr", {}, [el("td", { colspan: "6", class: "muted", text: "No records yet." })]));
+    fill($("audit-table").tBodies[0], rows);
+  }
+
+  $("audit-filter").addEventListener("input", renderAudit);
+  $("btn-audit").addEventListener("click", () => guarded(loadAudit));
+
   // ---- top-bar actions -----------------------------------------------------
 
   $("btn-refresh").addEventListener("click", refreshAll);
@@ -561,6 +616,7 @@
 
   function refreshAll() {
     guarded(async () => {
+      await loadMe();
       await loadStatus();
       await loadCatalog();
       await loadJobs();

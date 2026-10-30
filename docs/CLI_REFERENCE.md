@@ -419,6 +419,38 @@ control plane speaks plain HTTP: on a LAN the token travels in clear, so reach a
 daemon over a VPN (WireGuard, Tailscale), an SSH tunnel
 (`ssh -L 8123:127.0.0.1:8123 host`), or a TLS reverse proxy rather than an open network.
 
+## Users, roles, and the audit log
+
+One shared token is one operator. For a team, give each person a token of their own:
+
+```bash
+kdx users add jana --role operator     # prints Jana's token once
+kdx users list                         # who has access, with which role
+kdx users role jana viewer             # change a role
+kdx users rotate jana                  # new token; the old one stops working
+kdx users remove jana                  # access ends at once
+kdx audit -n 20                        # who did what over the control plane
+kdx audit --user jana --action rpc --json
+```
+
+| Role | May |
+| --- | --- |
+| `viewer` | status, logs, configuration, events, jobs - read only |
+| `operator` | also run module commands, in the foreground or as jobs |
+| `admin` | also commands marked `danger`, reload, stop, the audit log in the GUI |
+
+Users live in `data/users.json` (only SHA-256 hashes of tokens, owner-only file), and a
+running daemon sees a change on its next request. The shared `core.ipc.token` keeps working
+as the built-in admin `owner`, so a one-person setup needs nothing new. A teammate uses
+their token exactly like the shared one: `kdx status --target http://HOST:8123 --token T`,
+`kdx --remote ...`, or the web console's token field. `GET /api/v1/whoami` answers who a
+token belongs to.
+
+Every action over the control plane - commands, jobs, reloads, stops, and every refused
+attempt (wrong token, role too weak) - is one line in `data/audit.jsonl` (rotates at 5 MiB,
+one generation kept). Reads are not recorded. Roles limit what the control plane lets a
+caller ask for; every command still runs under the daemon's operating-system account.
+
 ## Web console (`kdx ui`)
 
 ```bash
