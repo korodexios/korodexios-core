@@ -167,6 +167,9 @@ directory ignores dot files, swap files, and names `lock_name()` refuses | **del
 | 34 | terminal first, completed: `kdx rpc --background|--follow`, `kdx jobs list|show|cancel`,
   `kdx events`, `kdx stop`; cooperative cancel (`request.cancelled()`, `backup run` stops
   between files and reports progress), and RPC arguments that reach the handler verbatim | **delivered** |
+| 35 | the daemon starts itself: `kdx service install|status|uninstall` through each host's own
+  manager (Task Scheduler XML via pythonw, systemd user unit, launchd agent), `--print` to
+  preview, `python -m korodexios_core`, and console-less processes kept alive | **delivered** |
 
 ## Next
 

@@ -22,6 +22,7 @@ from ..version import format_version
 from .commands import core_commands, render_rpc_reply, wizard_command
 from .jobs import events_command, jobs_command, stop_command
 from .render import write_line
+from .service import service_command
 from .surface import HANDLER_ATTR, ArgparseSurface
 from .tls import tls_command
 from .users import audit_command, users_command
@@ -568,6 +569,19 @@ def _delegate_remote(pre_args: argparse.Namespace, tokens: Sequence[str]) -> int
     return int(ExitCode.SUCCESS) if code < 400 else int(ExitCode.ERROR)
 
 
+def _ensure_streams() -> None:
+    """Give a console-less process somewhere to write.
+
+    Started by Task Scheduler through pythonw.exe (what 'kdx service install' does on
+    Windows), a process has no console: sys.stdout and sys.stderr are None, and the first
+    log line would crash the daemon. They are pointed at the null device instead; the
+    rotating log file still records everything.
+    """
+    for name in ("stdout", "stderr"):
+        if getattr(sys, name) is None:
+            setattr(sys, name, open(os.devnull, "w", encoding="utf-8"))  # noqa: SIM115
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     """Run the console client and return the process exit code.
 
@@ -577,6 +591,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     2, a configuration error 3, SIGINT 130, and SIGTERM 143. Nothing between the handler and
     the process clamps the number, so `kdx` works as a gate in a deployment script.
     """
+    _ensure_streams()
     argv = list(sys.argv[1:] if argv is None else argv)
 
     bootstrap = build_bootstrap_parser()
@@ -612,6 +627,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         surface.add_command(jobs_command())
         surface.add_command(events_command())
         surface.add_command(stop_command())
+        surface.add_command(service_command())
         chassis.collect_cli(surface)
 
         try:

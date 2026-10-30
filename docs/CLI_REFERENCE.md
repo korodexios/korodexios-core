@@ -419,6 +419,28 @@ control plane speaks plain HTTP: on a LAN the token travels in clear, so reach a
 daemon over a VPN (WireGuard, Tailscale), an SSH tunnel
 (`ssh -L 8123:127.0.0.1:8123 host`), or a TLS reverse proxy rather than an open network.
 
+## Start at logon (`kdx service`)
+
+```bash
+kdx service install --print     # show exactly what would be registered; change nothing
+kdx service install             # start the daemon at every logon, and start it now
+kdx service status              # registered? does the daemon answer?
+kdx service uninstall           # stop it cleanly, then remove the registration
+```
+
+Each host's own service manager does the work, as the current user and without
+administrator rights:
+
+| Host | Registration | Restart on failure |
+| --- | --- | --- |
+| Windows | Task Scheduler task `\Korodexios\<name>` at logon, defined by XML in `var/service/`, run through `pythonw.exe` (no console window) | 3 times, a minute apart |
+| Linux | systemd user unit `~/.config/systemd/user/<name>.service` (`loginctl enable-linger USER` to start at boot without logging in) | `Restart=on-failure` |
+| macOS | LaunchAgent `~/Library/LaunchAgents/dev.korodexios.<name>.plist` | `KeepAlive` on failure |
+
+The daemon runs as `<python> -m korodexios_core --home <root> run`, so it keeps working when
+the `kdx` shim is not on `PATH`; its output goes to the rotating log (`kdx logs`).
+`--service NAME` picks another name, for several projects on one machine.
+
 ## Jobs, live events, and stop (`kdx jobs`, `kdx events`, `kdx stop`)
 
 Everything the web console does against a daemon works in the terminal too.

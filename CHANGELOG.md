@@ -25,6 +25,12 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ### Added
 
+- **`kdx service install|status|uninstall`**: the daemon starts at logon through the host's
+  own service manager, as the current user, no administrator rights - a Task Scheduler task
+  defined by XML and run through `pythonw.exe` on Windows, a systemd user unit on Linux, a
+  LaunchAgent on macOS, each restarting the daemon if it fails. `--print` shows the
+  definition and commands without changing anything; `uninstall` stops the daemon cleanly
+  first. `python -m korodexios_core` runs the console client.
 - **Terminal parity for daemon work**: `kdx rpc --background` / `--follow` (live output, no
   timeout), `kdx jobs list|show [--follow]|cancel`, `kdx events [PATTERN] [--all] [-n N]
   [--json]`, and `kdx stop`; all take `--target` / `--token`.
@@ -78,6 +84,9 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
   non-interactive under RPC and takes the defaults.
 - **`kdx modules list` says `discovered`** instead of the registry's `new` for modules the
   one-shot command never started, and points at `kdx status` / `kdx ui` for live state.
+- **A console-less daemon no longer dies on its first log line**: started through
+  `pythonw.exe` (Task Scheduler), `sys.stdout` and `sys.stderr` are `None`; they now point at
+  the null device and the log file keeps the record.
 - **RPC arguments arrive whole**: `kdx rpc backup run -- --source C:/data/v1.2` used to send
   the arguments inside the command string, where the daemon split them on `/` and `.`; any
   path broke. The command path and its arguments now travel separately, and only real
