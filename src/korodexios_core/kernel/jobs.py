@@ -7,9 +7,12 @@ thread of its own; the caller gets an id at once and reads the output as it grow
 
 Jobs are bounded on both ends: at most ``max_running`` run at once (a further submit is
 refused, not queued, so a busy daemon says so), and only the newest ``keep`` finished
-jobs are remembered. A running job cannot be cancelled - Python cannot stop a thread
-from outside - which is why a command that must be interruptible belongs on the
-chassis scheduler, not behind RPC.
+jobs are remembered.
+
+Cancelling is cooperative. Python cannot stop a thread from outside, so 'cancel' sets the
+job's event and the command decides when to look at it ('request.cancelled()' in a
+handler) - between two files of a backup, say. A command that never looks runs to its
+end; the job then reports that the cancel came too late.
 """
 
 from __future__ import annotations
@@ -26,9 +29,10 @@ from .rpc_output import captured_text
 
 DEFAULT_MAX_RUNNING: Final[int] = 4
 DEFAULT_KEEP: Final[int] = 50
+ACTIVE_STATES: Final[frozenset[str]] = frozenset({"running", "cancelling"})
 
 PreparedCall = Callable[[], dict[str, Any]]
-Preparer = Callable[[io.StringIO], PreparedCall]
+Preparer = Callable[["Job"], PreparedCall]
 
 
 class JobLimitError(RuntimeError):
@@ -49,6 +53,8 @@ class Job:
     finished_at: float | None = None
     result: dict[str, Any] | None = None
     error: str | None = None
+    cancel: threading.Event = field(default_factory=threading.Event)
+    """Set by JobRegistry.cancel; the running command reads it to stop early."""
 
     def as_dict(self, *, output: bool = True) -> dict[str, Any]:
         """Return the job as JSON; *output* includes everything written so far."""
@@ -62,6 +68,7 @@ class Job:
             "seconds": round((self.finished_at or time.time()) - self.started_at, 3),
             "exit_code": None if self.result is None else self.result.get("exit_code"),
             "error": self.error,
+            "cancel_requested": self.cancel.is_set(),
         }
         if output:
             payload["output"] = captured_text(self.buffer)
@@ -92,9 +99,9 @@ class JobRegistry:
         notice can never arrive after the job's own 'finished' one.
         """
         job = Job(id="", command=str(command).strip(), user=str(user))
-        call = prepare(job.buffer)
+        call = prepare(job)
         with self._lock:
-            running = sum(1 for item in self._jobs.values() if item.state == "running")
+            running = sum(1 for item in self._jobs.values() if item.state in ACTIVE_STATES)
             if running >= self._max_running:
                 raise JobLimitError(
                     f"{running} jobs are already running (limit {self._max_running}); "
@@ -121,10 +128,22 @@ class JobRegistry:
         with self._lock:
             return sorted(self._jobs.values(), key=lambda job: job.started_at, reverse=True)
 
+    def cancel(self, job_id: str) -> Job | None:
+        """Ask the job to stop; return it, or None when it is unknown.
+
+        A finished job is returned unchanged - there is nothing left to stop.
+        """
+        with self._lock:
+            job = self._jobs.get(str(job_id))
+            if job is not None and job.state == "running":
+                job.cancel.set()
+                job.state = "cancelling"
+            return job
+
     def running(self) -> int:
         """Return how many jobs are running now."""
         with self._lock:
-            return sum(1 for job in self._jobs.values() if job.state == "running")
+            return sum(1 for job in self._jobs.values() if job.state in ACTIVE_STATES)
 
     def _run(self, job: Job, call: PreparedCall) -> None:
         # The state flips last, so a reader that sees 'done' also sees the finish time.
@@ -133,14 +152,17 @@ class JobRegistry:
         except Exception as exc:
             job.error = f"{type(exc).__name__}: {exc}"
             job.finished_at = time.time()
-            job.state = "failed"
+            job.state = "cancelled" if job.cancel.is_set() else "failed"
             return
         job.result = result
         job.finished_at = time.time()
-        job.state = "done" if int(result.get("exit_code", 0) or 0) == 0 else "failed"
+        if job.cancel.is_set():
+            job.state = "cancelled"
+        else:
+            job.state = "done" if int(result.get("exit_code", 0) or 0) == 0 else "failed"
 
     def _forget_old(self) -> None:
-        finished = [job for job in self._jobs.values() if job.state != "running"]
+        finished = [job for job in self._jobs.values() if job.state not in ACTIVE_STATES]
         finished.sort(key=lambda job: job.started_at)
         for job in finished[: max(0, len(finished) - self._keep)]:
             self._jobs.pop(job.id, None)

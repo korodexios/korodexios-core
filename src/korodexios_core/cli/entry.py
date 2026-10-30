@@ -20,6 +20,7 @@ from ..kernel.ipc import DISCOVERY_NAME, IpcDiscovery
 from ..paths import AppPaths
 from ..version import format_version
 from .commands import core_commands, render_rpc_reply, wizard_command
+from .jobs import events_command, jobs_command, stop_command
 from .render import write_line
 from .surface import HANDLER_ATTR, ArgparseSurface
 from .tls import tls_command
@@ -608,6 +609,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         surface.add_command(tls_command())
         surface.add_command(users_command())
         surface.add_command(audit_command())
+        surface.add_command(jobs_command())
+        surface.add_command(events_command())
+        surface.add_command(stop_command())
         chassis.collect_cli(surface)
 
         try:

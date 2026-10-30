@@ -269,6 +269,18 @@ def core_commands(chassis: Chassis) -> list[CliCommand]:
                     help="Emit the daemon's reply as JSON.",
                 ),
                 CliArgument(
+                    ("--background",),
+                    dest="background",
+                    action="store_true",
+                    help="Start it as a job and return its id at once (see 'kdx jobs').",
+                ),
+                CliArgument(
+                    ("-f", "--follow"),
+                    dest="follow",
+                    action="store_true",
+                    help="Run it as a job and print its output live; no timeout.",
+                ),
+                CliArgument(
                     ("--target",),
                     dest="target",
                     metavar="URL",
@@ -1396,7 +1408,14 @@ def _rpc_command(request: CliRequest) -> int:
         write_line(f"{TAG_NOTE} no chassis daemon answering; run 'kdx run' first")
         write_line(f"{TAG_NOTE} looked for {discovery_path}")
         return int(ExitCode.ERROR)
-    command = " ".join(tokens)
+    # The first token names the command; the rest travel as argv, untouched, so the
+    # daemon walks subcommands from them and hands every other token to the handler as
+    # typed - a path with dots, slashes, or spaces arrives whole.
+    command = tokens[0]
+    passed = args.get("argv")
+    args["argv"] = [*tokens[1:], *(passed if isinstance(passed, list) else [])]
+    if request.flag("background") or request.flag("follow"):
+        return _rpc_as_job(request, discovery, command, args)
     try:
         code, payload = discovery.call(command, args, timeout=timeout)
     except OSError as exc:
@@ -1407,6 +1426,32 @@ def _rpc_command(request: CliRequest) -> int:
     if code in (401, 403):
         return int(ExitCode.ERROR)
     return int(ExitCode.SUCCESS) if code < 400 else int(ExitCode.ERROR)
+def _rpc_as_job(
+    request: CliRequest, discovery: IpcDiscovery, command: str, args: Mapping[str, Any]
+) -> int:
+    """Start the command as a background job; detach, or follow its output to the end."""
+    from .jobs import follow_job, submit_background
+
+    reply = submit_background(discovery, command, args)
+    if reply is None:
+        return int(ExitCode.ERROR)
+    code, payload = reply
+    if code != 202:
+        render_rpc_reply(payload, command, as_json=bool(request.flag("as_json")))
+        return int(ExitCode.ERROR)
+    job_id = str(payload["job"]["id"])
+    if request.flag("as_json") or not request.flag("follow"):
+        if request.flag("as_json"):
+            dump_json(payload)
+        else:
+            write_line(f"{TAG_OK} started {job_id}: {command}")
+            write_line(f"{TAG_NOTE} follow it: kdx jobs show {job_id} --follow")
+            write_line(f"{TAG_NOTE} stop it:   kdx jobs cancel {job_id}")
+        return int(ExitCode.SUCCESS)
+    write_line(f"{TAG_NOTE} {job_id} started; Ctrl+C stops watching, not the job")
+    return follow_job(discovery, job_id)
+
+
 def render_rpc_reply(payload: Mapping[str, Any], command: str, *, as_json: bool) -> None:
     """Print a daemon RPC reply the same way whether 'kdx rpc' or '--remote' sent it."""
     if as_json:

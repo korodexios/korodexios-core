@@ -403,15 +403,19 @@
   function runCard(line) {
     const output = el("pre", { class: "terminal", text: "starting…" });
     const meta = el("div", { class: "run-meta muted", text: "running" });
-    const card = el("div", { class: "run card running" }, [el("div", { class: "run-line", text: line.startsWith("kdx") ? `$ ${line}` : line }), output, meta]);
+    const cancel = el("button", { type: "button", class: "run-cancel", hidden: true, text: "Cancel" });
+    const head = el("div", { class: "run-head" }, [el("div", { class: "run-line", text: line.startsWith("kdx") ? `$ ${line}` : line }), cancel]);
+    const card = el("div", { class: "run card running" }, [head, output, meta]);
     card.output = output;
     card.meta = meta;
+    card.cancel = cancel;
     $("runs").prepend(card);
     while ($("runs").children.length > 20) $("runs").lastChild.remove();
     return card;
   }
 
   function finishCard(card, text, meta, failed) {
+    if (card.cancel) card.cancel.hidden = true;
     card.output.textContent = text;
     card.meta.textContent = meta;
     card.classList.remove("running");
@@ -429,9 +433,21 @@
       }
       const box = card.output;
       const atBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 8;
-      if (job.state === "running") {
+      if (job.state === "running" || job.state === "cancelling") {
         box.textContent = job.output || "running…";
-        card.meta.textContent = `${id} · running ${job.seconds}s`;
+        card.meta.textContent = `${id} · ${job.state} ${job.seconds}s${job.user ? ` · by ${job.user}` : ""}`;
+        const mine = !state.me || state.me.role === "admin" || state.me.name === job.user;
+        card.cancel.hidden = !mine || job.state === "cancelling";
+        if (!card.cancel.onclick) {
+          card.cancel.onclick = () => {
+            if (!armed(card.cancel, "Click again to cancel")) return;
+            guarded(async () => {
+              await api("/api/v1/jobs", { method: "POST", body: { cancel: id } });
+              card.cancel.hidden = true;
+              toast(`asked ${id} to stop`);
+            });
+          };
+        }
         if (atBottom) box.scrollTop = box.scrollHeight;
         await new Promise((resolve) => setTimeout(resolve, JOB_POLL_MS));
         continue;

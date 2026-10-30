@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import io
 import threading
 import time
 from pathlib import Path
@@ -32,11 +31,11 @@ def test_a_job_runs_in_the_background_and_reports_its_output() -> None:
     registry = JobRegistry()
     gate = threading.Event()
 
-    def prepare(buffer: io.StringIO) -> Any:
+    def prepare(job: Job) -> Any:
         def run() -> dict[str, Any]:
-            buffer.write("first line\n")
+            job.buffer.write("first line\n")
             gate.wait(timeout=5)
-            buffer.write("second line\n")
+            job.buffer.write("second line\n")
             return {"exit_code": 0}
 
         return run
@@ -60,13 +59,13 @@ def test_a_job_runs_in_the_background_and_reports_its_output() -> None:
 def test_failures_and_exit_codes_are_recorded() -> None:
     registry = JobRegistry()
 
-    def raises(buffer: io.StringIO) -> Any:
+    def raises(job: Job) -> Any:
         def run() -> dict[str, Any]:
             raise ValueError("boom")
 
         return run
 
-    def exits(buffer: io.StringIO) -> Any:
+    def exits(job: Job) -> Any:
         return lambda: {"exit_code": 3}
 
     crashed = registry.submit("crash", raises)
@@ -81,7 +80,7 @@ def test_failures_and_exit_codes_are_recorded() -> None:
 def test_a_refusal_raises_before_any_job_exists() -> None:
     registry = JobRegistry()
 
-    def refuse(buffer: io.StringIO) -> Any:
+    def refuse(job: Job) -> Any:
         raise LookupError("no such command")
 
     with pytest.raises(LookupError):
@@ -92,13 +91,13 @@ def test_a_refusal_raises_before_any_job_exists() -> None:
 def test_the_running_limit_and_the_memory_bound() -> None:
     registry = JobRegistry(max_running=1, keep=2)
     gate = threading.Event()
-    blocked = registry.submit("slow", lambda buffer: lambda: gate.wait(5) and {"exit_code": 0})
+    blocked = registry.submit("slow", lambda job: lambda: gate.wait(5) and {"exit_code": 0})
     with pytest.raises(JobLimitError, match="limit 1"):
-        registry.submit("second", lambda buffer: lambda: {"exit_code": 0})
+        registry.submit("second", lambda job: lambda: {"exit_code": 0})
     gate.set()
     wait_for(lambda: blocked.state == "done")
     for index in range(4):
-        job = registry.submit(f"quick {index}", lambda buffer: lambda: {"exit_code": 0})
+        job = registry.submit(f"quick {index}", lambda job: lambda: {"exit_code": 0})
         wait_for(lambda job=job: job.state == "done")  # type: ignore[misc]
     remembered = [job.command for job in registry.list()]
     assert len(remembered) <= 3
@@ -163,7 +162,8 @@ def test_jobs_over_the_control_plane(project_root) -> None:
         assert "output" not in listing["jobs"][0]  # type: ignore[index]
         assert http_call(base, f"{JOBS_PATH}?id=job-999", token=token)[0] == 404
         assert http_call(base, JOBS_PATH)[0] == 401
-        assert http_call(base, JOBS_PATH, method="POST", token=token, payload={})[0] == 405
+        assert http_call(base, JOBS_PATH, method="POST", token=token, payload={})[0] == 400
+        assert http_call(base, JOBS_PATH, method="DELETE", token=token)[0] == 405
         code, refused = http_call(
             base, RPC_PATH, method="POST", token=token,
             payload={"command": "backup configure", "background": True},

@@ -25,7 +25,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from collections.abc import Callable, Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path, PurePosixPath
@@ -745,6 +745,33 @@ class IpcDiscovery:
         except urllib.error.HTTPError as exc:
             return int(exc.code), _decode(exc.read())
 
+    def events(self, route: str, *, timeout: float = 60.0) -> Iterator[dict[str, Any]]:
+        """Yield each server-sent event of *route* as a decoded JSON object, until it ends.
+
+        The server sends a keepalive comment every 15 s, so *timeout* only fires when the
+        daemon is gone. A frame that is not JSON is skipped.
+        """
+        headers = {"Accept": "text/event-stream"}
+        if self.token:
+            headers[TOKEN_HEADER] = self.token
+        request = urllib.request.Request(self.base_url() + route, headers=headers)
+        with urllib.request.urlopen(request, timeout=timeout, context=self.ssl_context()) as feed:
+            data: list[str] = []
+            for raw in feed:
+                line = raw.decode("utf-8", "replace").rstrip("\r\n")
+                if line.startswith("data: "):
+                    data.append(line[6:])
+                    continue
+                if line or not data:
+                    continue
+                try:
+                    decoded = json.loads("\n".join(data))
+                except ValueError:
+                    decoded = None
+                data = []
+                if isinstance(decoded, dict):
+                    yield decoded
+
     def call(
         self,
         command: str,
@@ -1019,7 +1046,9 @@ class _ControlHandler(BaseHTTPRequestHandler):
             command = str(payload.get("command") or "") if isinstance(payload, Mapping) else ""
             if status == 202:
                 outcome = f"started {answer['job']['id']}"
+                command = str(answer["job"].get("command") or command)
             elif status == 200:
+                command = str(answer["result"].get("path") or command)
                 outcome = f"exit {answer['result'].get('exit_code')}"
             else:
                 outcome = f"refused {status}: {answer.get('error', '')}"
@@ -1030,8 +1059,19 @@ class _ControlHandler(BaseHTTPRequestHandler):
             self._reply(status, answer)
             return
         if path == JOBS_PATH:
+            if method == "POST":
+                if caller is not None and not caller.allows("operator"):
+                    self._refuse(ipc, path, caller, "operator")
+                    return
+                payload = self._read_payload()
+                job_id = payload.get("cancel") if isinstance(payload, Mapping) else None
+                if not job_id:
+                    self._reply(400, {"error": "POST /api/v1/jobs expects {\"cancel\": \"job-N\"}"})
+                    return
+                self._reply(*ipc.handle_cancel(str(job_id)))
+                return
             if method != "GET":
-                self._reply(405, {"error": "jobs expects GET; start one with POST /api/v1/rpc"})
+                self._reply(405, {"error": "jobs expects GET, or POST {\"cancel\": id}"})
                 return
             query = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
             self._reply(*ipc.handle_jobs(str(query.get("id", [""])[0])))
@@ -1295,6 +1335,7 @@ class IpcServer:
         reload_fn: Callable[[], Mapping[str, Any]] | None = None,
         submit_fn: Callable[[str, Mapping[str, Any]], Mapping[str, Any]] | None = None,
         jobs_fn: Callable[[str], Any] | None = None,
+        cancel_fn: Callable[[str], Any] | None = None,
         users: UserStore | None = None,
         audit: AuditLog | None = None,
     ) -> None:
@@ -1321,6 +1362,7 @@ class IpcServer:
         self._reload_fn = reload_fn
         self._submit_fn = submit_fn
         self._jobs_fn = jobs_fn
+        self._cancel_fn = cancel_fn
         self.users = users
         self.audit = audit
 
@@ -1549,6 +1591,19 @@ class IpcServer:
                 "error": f"{type(exc).__name__}: {exc}",
             }
         return 200, {"ok": True, "command": command, "result": result}
+
+    def handle_cancel(self, job_id: str) -> tuple[int, Any]:
+        """Ask one job to stop; 404 when unknown, 403 when it is someone else's."""
+        self._requests += 1
+        if self._cancel_fn is None:
+            return 501, {"error": "this control plane runs no background jobs"}
+        try:
+            found = self._cancel_fn(job_id)
+        except PermissionError as exc:
+            return 403, {"error": str(exc)}
+        if found is None:
+            return 404, {"error": f"no job {job_id!r}"}
+        return 200, found
 
     def handle_jobs(self, job_id: str) -> tuple[int, Any]:
         """Answer one job (with its output so far) or the list of jobs (without)."""
@@ -1807,7 +1862,8 @@ class IpcServer:
                     "path": JOBS_PATH,
                     "auth": self.requires_token(JOBS_PATH),
                     "content_type": CONTENT_JSON,
-                    "summary": "background jobs; '?id=job-N' adds that job's output so far",
+                    "summary": "background jobs; '?id=job-N' adds that job's output so far; "
+                    "POST {\"cancel\": id} asks one to stop",
                     "fields": ["command", "exit_code", "id", "output", "state"],
                 },
                 {

@@ -174,7 +174,13 @@ cannot order.
   5 MiB. A disk error is counted, never raised into the request.
 - **Background jobs** - `"background": true` on an RPC starts the command on its own thread
   and returns a job id; `GET /api/v1/jobs?id=` reads the output while it grows. Refusals
-  (unknown command, `remote=False`, bad arguments) are raised before the thread starts.
+  (unknown command, `remote=False`, a weak role, bad arguments) are raised before the
+  thread starts. `POST /api/v1/jobs {"cancel": id}` sets the job's event; the handler sees
+  it as `request.cancelled()`. The terminal drives all of it: `kdx rpc --follow`,
+  `kdx jobs list|show|cancel`, `kdx events` (the same SSE feed the GUI reads), `kdx stop`.
+- **Command paths over RPC** - only the first word of `command` may use the dotted or
+  slashed form; later words and `args.argv` are walked as subcommands while they match,
+  and everything after is passed to the handler verbatim.
   `core.ipc.allow_anonymous_shutdown` (default `false`) decides whether an
   unauthenticated client may stop the daemon.
 - **Token** - `core.ipc.token` is the shared secret. Empty means the chassis mints an

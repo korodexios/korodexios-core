@@ -28,3 +28,9 @@ var/
 .env.local
 kdx.local.*
 korodexios.local.*
+
+# Control-plane users and the audit log: per-host security state, never committed
+data/users.json
+data/users.json.tmp.*
+data/audit.jsonl
+data/audit.jsonl.1

@@ -407,8 +407,10 @@ self.bus.unsubscribe(sub)
 `action` (`store_true`, `append`), `choices`, `default`, `required`, `help`.
 
 `CliRequest` gives handlers `context` (the `CoreContext`), `command`, `namespace`,
-`options`, plus `option(name, default=None)` and `flag(name)` readers. A handler
-returns a process exit code; `0` means success.
+`options`, plus `option(name, default=None)` and `flag(name)` readers, and `cancelled()`,
+which turns True once a background job was asked to stop - check it between units of work
+and return early (exit `130` is the convention). A handler returns a process exit code;
+`0` means success.
 
 - Modules call `surface.add_command(...)` once per command; the chassis builds
   argparse and the wizard from the same tree, so a module command is automatically

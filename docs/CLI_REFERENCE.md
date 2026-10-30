@@ -419,6 +419,32 @@ control plane speaks plain HTTP: on a LAN the token travels in clear, so reach a
 daemon over a VPN (WireGuard, Tailscale), an SSH tunnel
 (`ssh -L 8123:127.0.0.1:8123 host`), or a TLS reverse proxy rather than an open network.
 
+## Jobs, live events, and stop (`kdx jobs`, `kdx events`, `kdx stop`)
+
+Everything the web console does against a daemon works in the terminal too.
+
+```bash
+kdx rpc --follow backup run -- --source D:/photos    # run in the daemon, print output live
+kdx rpc --background backup run                      # start it, return the job id at once
+kdx jobs list                                        # id, state, user, command, exit, time
+kdx jobs show job-3 --follow                         # attach to a running job
+kdx jobs cancel job-3                                # ask it to stop at its next safe point
+kdx events                                           # live bus events (routine ticks hidden)
+kdx events 'core.job.**' --json -n 10                # filtered, machine-readable, bounded
+kdx stop                                             # stop the daemon cleanly (admin)
+```
+
+Every command takes `--target URL --token T` for another machine. `kdx rpc --follow` has no
+timeout: it starts a job and polls it, so a long backup is fine; Ctrl+C stops watching, not
+the job. A job's exit code becomes the command's exit code; a cancelled job exits `130`.
+
+Cancelling is cooperative: the job's command checks `request.cancelled()` between units of
+work. `backup run` checks before every file, keeps what it already copied, and says so. A
+command that never checks runs to its end. Only the job's owner or an admin may cancel it.
+
+Arguments after `--` reach the command exactly as typed - a path with dots, slashes, or
+spaces arrives whole.
+
 ## Users, roles, and the audit log
 
 One shared token is one operator. For a team, give each person a token of their own:

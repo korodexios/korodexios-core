@@ -8,6 +8,7 @@ import os
 import platform
 import re
 import sys
+import threading
 import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
@@ -64,7 +65,7 @@ from .ipc import (
     new_token,
     process_memory,
 )
-from .jobs import JobRegistry
+from .jobs import Job, JobRegistry
 from .locks import NamedLock, NamedLockRegistry
 from .project import ProjectIdentity, project_identity
 from .registry import ModuleRegistry
@@ -462,6 +463,7 @@ class Chassis:
             reload_fn=self.reload_config,
             submit_fn=self.submit_job if rpc_enabled else None,
             jobs_fn=self.job_report if rpc_enabled else None,
+            cancel_fn=self.cancel_job if rpc_enabled else None,
             users=self.users,
             audit=self.audit,
         )
@@ -876,38 +878,37 @@ class Chassis:
         """Start one delegated command in the background; return the job without output.
 
         The bus hears 'core.job.started' and 'core.job.finished', so a dashboard or a
-        module can follow jobs without polling the control plane.
+        module can follow jobs without polling the control plane. A job is named by the
+        command path it resolved to ('backup run'), not by the words it was sent as.
         """
-        label = str(command).strip()
         caller = current_caller()
 
-        def finished(outcome: str) -> None:
-            if self.audit is not None:
-                self.audit.record("job", caller=caller, outcome=outcome, command=label)
+        def prepare(job: Job) -> Callable[[], dict[str, Any]]:
+            call = self.prepare_rpc(
+                command, args, buffer=job.buffer, cancel=job.cancel, job=job
+            )
 
-        def prepare(buffer: io.StringIO) -> Callable[[], dict[str, Any]]:
-            call = self.prepare_rpc(command, args, buffer=buffer)
+            def finished(outcome: str, payload: dict[str, Any]) -> None:
+                if self.audit is not None:
+                    self.audit.record("job", caller=caller, outcome=outcome, command=job.command)
+                self.bus.publish(
+                    JOB_FINISHED_EVENT,
+                    {"id": job.id, "command": job.command, "cancelled": job.cancel.is_set(),
+                     **payload},
+                    source="chassis",
+                )
 
             def run() -> dict[str, Any]:
                 try:
                     result = call()
                 except Exception as exc:
-                    finished(f"failed: {type(exc).__name__}: {exc}")
-                    self.bus.publish(
-                        JOB_FINISHED_EVENT,
-                        {"command": label, "ok": False, "error": f"{type(exc).__name__}: {exc}"},
-                        source="chassis",
-                    )
+                    error = f"{type(exc).__name__}: {exc}"
+                    finished(f"failed: {error}", {"ok": False, "error": error})
                     raise
-                finished(f"finished exit {result.get('exit_code')}")
-                self.bus.publish(
-                    JOB_FINISHED_EVENT,
-                    {
-                        "command": label,
-                        "ok": int(result.get("exit_code", 0) or 0) == 0,
-                        "exit_code": result.get("exit_code"),
-                    },
-                    source="chassis",
+                exit_code = result.get("exit_code")
+                finished(
+                    f"{'cancelled' if job.cancel.is_set() else 'finished'} exit {exit_code}",
+                    {"ok": int(exit_code or 0) == 0, "exit_code": exit_code},
                 )
                 return result
 
@@ -918,10 +919,28 @@ class Chassis:
             prepare,
             user=caller.name if caller is not None else "",
             on_start=lambda started: self.bus.publish(
-                JOB_STARTED_EVENT, {"id": started.id, "command": label}, source="chassis"
+                JOB_STARTED_EVENT,
+                {"id": started.id, "command": started.command},
+                source="chassis",
             ),
         )
         return job.as_dict(output=False)
+
+    def cancel_job(self, job_id: str) -> dict[str, Any] | None:
+        """Ask a job to stop; None when unknown. Only its owner or an admin may ask."""
+        job = self.jobs.get(job_id)
+        if job is None:
+            return None
+        caller = current_caller()
+        if caller is not None and not caller.allows("admin") and caller.name != job.user:
+            raise PermissionError(
+                f"{job_id} was started by {job.user or 'the daemon'}; only they or an "
+                "admin may cancel it"
+            )
+        cancelled = self.jobs.cancel(job_id)
+        if self.audit is not None:
+            self.audit.record("cancel", caller=caller, outcome=job.state, command=job.command)
+        return None if cancelled is None else cancelled.as_dict(output=False)
 
     def job_report(self, job_id: str = "") -> Any:
         """Return one job with its output so far, every job without it, or None."""
@@ -939,6 +958,8 @@ class Chassis:
         args: Mapping[str, Any] | None = None,
         *,
         buffer: io.StringIO | None = None,
+        cancel: threading.Event | None = None,
+        job: Job | None = None,
     ) -> Callable[[], dict[str, Any]]:
         """Resolve and parse one delegated command now; return the call that runs it.
 
@@ -949,9 +970,19 @@ class Chassis:
         is written, which is how a job shows progress while it runs.
         """
         cleaned = str(command).strip()
-        parts = [part for part in re.split(r"[. /]+", cleaned) if part]
+        words = cleaned.split()
+        if not words:
+            raise LookupError("rpc needs a command name")
+        # The first word may spell the path with dots or slashes ('heartbeat.status');
+        # every later word, and the tokens in args['argv'], are taken verbatim, so a
+        # value such as 'C:/backups/v1.2' or a name with a space reaches the handler whole.
+        parts = [part for part in re.split(r"[./]+", words[0]) if part]
         if not parts:
             raise LookupError("rpc needs a command name")
+        payload = dict(args or {})
+        raw_argv = payload.get("argv")
+        pending = [*parts[1:], *words[1:]]
+        pending_argv = [str(item) for item in raw_argv] if isinstance(raw_argv, list) else []
         name = parts[0]
         candidates = [
             candidate for candidate in self.registry.commands() if candidate.name == name
@@ -962,23 +993,31 @@ class Chassis:
             )
         top = candidates[0]
         target = top
-        consumed = 1
         walked = [name]
         local_only = not top.remote
         required = _required_role(top)
-        while target.subcommands and consumed < len(parts):
-            child = target.find(parts[consumed])
+        while target.subcommands:
+            source = pending if pending else pending_argv
+            if not source:
+                break
+            child = target.find(source[0])
             if child is None:
+                if target.handler is not None:
+                    break
                 trail = " ".join(walked)
                 raise LookupError(
-                    f"{trail} has no subcommand {parts[consumed]!r}; try 'kdx {trail} --help'"
+                    f"{trail} has no subcommand {source[0]!r}; try 'kdx {trail} --help'"
                 )
+            source.pop(0)
             target = child
             walked.append(child.name)
             local_only = local_only or not child.remote
             required = max(required, _required_role(child), key=role_rank)
-            consumed += 1
-        trailing = parts[consumed:]
+        trailing = pending
+        payload["argv"] = pending_argv
+        args = payload
+        if job is not None:
+            job.command = " ".join(walked)
         handler = target.handler
         if handler is None:
             raise LookupError(f"{name} is a command group; name one of its subcommands")
@@ -998,7 +1037,7 @@ class Chassis:
             context=self.context,
             command=cleaned,
             namespace=namespace,
-            options={"chassis": self, "rpc": True},
+            options={"chassis": self, "rpc": True, "cancel": cancel},
         )
 
         def run() -> dict[str, Any]:

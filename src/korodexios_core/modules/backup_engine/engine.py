@@ -6,7 +6,7 @@ import fnmatch
 import os
 import shutil
 import time
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -27,6 +27,8 @@ __all__ = [
 ]
 
 STAMP_FORMAT = "%Y-%m-%dT%H-%M-%S"
+PROGRESS_SECONDS = 2.0
+"""How often a long copy reports progress; a short one stays silent."""
 
 
 class BackupError(ValueError):
@@ -106,12 +108,14 @@ class BackupResult:
     elapsed: float = 0.0
     dry_run: bool = False
     errors: list[str] = field(default_factory=list)
+    cancelled: bool = False
 
     def as_dict(self) -> dict[str, Any]:
         """Return a JSON-friendly summary of the run."""
         return {
             "target": str(self.plan.target),
             "dry_run": self.dry_run,
+            "cancelled": self.cancelled,
             "copied": self.copied,
             "bytes_copied": self.bytes_copied,
             "elapsed_seconds": round(self.elapsed, 3),
@@ -209,15 +213,34 @@ def build_plan(settings: BackupSettings, *, stamp: str | None = None) -> BackupP
     return plan
 
 
-def execute_plan(plan: BackupPlan, *, dry_run: bool | None = None) -> BackupResult:
-    """Copy planned files into the target folder (or simulate when dry_run)."""
+def execute_plan(
+    plan: BackupPlan,
+    *,
+    dry_run: bool | None = None,
+    should_stop: Callable[[], bool] | None = None,
+    progress: Callable[[BackupResult, int], object] | None = None,
+) -> BackupResult:
+    """Copy planned files into the target folder (or simulate when dry_run).
+
+    *should_stop* is asked before every file; once it answers True the copy ends there
+    and the result says so ('cancelled'), leaving the files already copied in place.
+    *progress* hears the running result at most every PROGRESS_SECONDS.
+    """
     simulate = plan.settings.dry_run if dry_run is None else bool(dry_run)
     result = BackupResult(plan=plan, dry_run=simulate)
     started = time.perf_counter()
+    reported = started
+    total = len(plan.files)
     source = Path(plan.settings.source)
     if not simulate:
         plan.target.mkdir(parents=True, exist_ok=True)
     for candidate in plan.files:
+        if should_stop is not None and should_stop():
+            result.cancelled = True
+            break
+        if progress is not None and time.perf_counter() - reported >= PROGRESS_SECONDS:
+            reported = time.perf_counter()
+            progress(result, total)
         relative = candidate.relative_to(source)
         destination = plan.target / relative
         if simulate:
@@ -255,7 +278,8 @@ def describe_result(result: BackupResult) -> list[tuple[str, Any]]:
     return [
         ("target", str(result.plan.target)),
         ("mode", "dry run" if result.dry_run else "copy"),
-        ("files copied", result.copied),
+        ("files copied", f"{result.copied} (cancelled; the rest was not copied)"
+         if result.cancelled else result.copied),
         ("bytes copied", _human(result.bytes_copied)),
         ("elapsed", f"{result.elapsed:.3f} s"),
         ("errors", ", ".join(result.errors) if result.errors else "none"),

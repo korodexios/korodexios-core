@@ -212,6 +212,16 @@ class CliRequest:
             value = self.options.get(name, default)
         return default if value is None else value
 
+    def cancelled(self) -> bool:
+        """Return True once the caller asked this command to stop early.
+
+        Only a background job can be cancelled ('kdx jobs cancel', the GUI); everywhere
+        else this stays False. A long-running handler checks it between units of work
+        and returns as soon as it is safe, saying what was left undone.
+        """
+        event = self.options.get("cancel") if self.options else None
+        return bool(event is not None and event.is_set())
+
     def flag(self, name: str) -> bool:
         """Return True when a boolean flag was supplied."""
         value = self.option(name, False)

@@ -166,3 +166,6 @@ button[data-armed="1"] { background: var(--bad); border-color: var(--bad); color
 
 tr.denied td { color: var(--bad); }
 #whoami:empty { display: none; }
+
+.run-head { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+.run-cancel { color: var(--bad); padding: 2px 10px; }

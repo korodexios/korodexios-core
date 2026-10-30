@@ -25,6 +25,13 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ### Added
 
+- **Terminal parity for daemon work**: `kdx rpc --background` / `--follow` (live output, no
+  timeout), `kdx jobs list|show [--follow]|cancel`, `kdx events [PATTERN] [--all] [-n N]
+  [--json]`, and `kdx stop`; all take `--target` / `--token`.
+- **Cooperative cancel**: `POST /api/v1/jobs {"cancel": id}` (owner or admin),
+  `CliRequest.cancelled()` for handlers; `backup run` stops between files, keeps the partial
+  copy, reports progress every 2 s on long runs, and exits `130`. The web console has a
+  Cancel button on running jobs.
 - **Users and roles**: `kdx users add NAME --role viewer|operator|admin` issues a personal
   token (stored only as a SHA-256 hash in `data/users.json`, owner-only); `list`, `role`,
   `rotate`, `remove` manage it, and a running daemon sees changes on the next request. Reads
@@ -71,6 +78,10 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
   non-interactive under RPC and takes the defaults.
 - **`kdx modules list` says `discovered`** instead of the registry's `new` for modules the
   one-shot command never started, and points at `kdx status` / `kdx ui` for live state.
+- **RPC arguments arrive whole**: `kdx rpc backup run -- --source C:/data/v1.2` used to send
+  the arguments inside the command string, where the daemon split them on `/` and `.`; any
+  path broke. The command path and its arguments now travel separately, and only real
+  subcommand names are walked.
 - **RPC argument errors say what was wrong** (`invalid choice: 'x'`) instead of
   `did not parse (exit 2)`, and argparse no longer writes usage to the daemon's stderr.
 

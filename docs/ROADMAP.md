@@ -164,6 +164,9 @@ directory ignores dot files, swap files, and names `lock_name()` refuses | **del
 | 33 | a team on one chassis: personal tokens with roles (`kdx users add/list/role/rotate/remove`,
   `viewer` < `operator` < `admin`, `CliCommand.role`), `GET /api/v1/whoami`, and an audit log
   of every action and refusal (`data/audit.jsonl`, `kdx audit`, an admin-only GUI tab) | **delivered** |
+| 34 | terminal first, completed: `kdx rpc --background|--follow`, `kdx jobs list|show|cancel`,
+  `kdx events`, `kdx stop`; cooperative cancel (`request.cancelled()`, `backup run` stops
+  between files and reports progress), and RPC arguments that reach the handler verbatim | **delivered** |
 
 ## Next
 
