@@ -5,7 +5,46 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Security
+
+- **Owner-only secrets on Windows**: the discovery file (it holds the token) and the TLS key
+  are restricted to the current account with `icacls` before they reach their final path;
+  POSIX keeps mode `0600`. Previously Windows ignored the mode and the file inherited the
+  folder's ACL.
+- **`core.ipc.auth: false` no longer opens `POST /api/v1/rpc` and `POST /api/v1/reload`.**
+  The setting was documented as "anonymous reads", but it also let any client run module
+  commands with caller-chosen arguments - `backup run` with any `source` and `dest`, for one -
+  and, because the body was decoded whatever its `Content-Type`, a foreign web page could do
+  the same with a CORS "simple" POST. Both routes now always require the token.
+- **Browser guard**: a request whose `Origin` is not the daemon's own is refused with `403`,
+  and on a loopback bind so is a `Host` that is not a loopback name (DNS rebinding).
+- **An empty token matches nothing**: a control plane holding an empty secret no longer lets
+  a request that sends none through a guarded route.
+- **Slow clients time out**: each connection's socket reads and writes are bounded at 30 s,
+  so a client that never finishes its request no longer pins a server thread.
+
 ### Added
+
+- **Command permissions**: `CliCommand(remote=False)` keeps a command on the daemon's own
+  terminal (RPC answers `403`); `CliCommand(danger=True)` makes the web console ask twice.
+  `backup configure` (an interactive wizard) is terminal-only, `backup run` is marked danger.
+- **Background jobs**: `POST /api/v1/rpc` with `"background": true` answers `202` with a job
+  id; `GET /api/v1/jobs[?id=]` reports state and live output; `core.job.started` /
+  `core.job.finished` on the bus. The web console runs every command this way.
+- **Streamed responses** (`IpcStream`) and a live **Events** tab in the web console
+  (`GET /api/v1/ui/events`, server-sent events read with `fetch` so the token never sits in
+  a URL).
+- **https control plane**: `kdx tls init` (self-signed P-256 certificate via openssl),
+  `kdx run --tls` / `core.ipc.tls`, `core.ipc.tls_cert` / `tls_key`, and `--tls-ca` /
+  `core.ipc.tls_ca` for remote clients. Local clients verify through the discovery file.
+- **Web console (`kdx ui`)**: the new built-in `web_console` module serves a browser GUI from
+  the daemon at `/ui/` - overview, every module command as a form generated from its
+  declared arguments, log tail with follow, configuration with provenance (secrets masked),
+  diagnostics, reload and stop. `kdx ui` opens it with the token in the URL fragment, and
+  boots the daemon first when none is running. Pure stdlib plus static files: no new
+  dependency, no CDN, a strict Content-Security-Policy.
+- **RPC replies carry the command's output** (`result.output`), so `kdx --remote` and
+  `kdx rpc` print what the command printed instead of only its exit code.
 
 - **`kdx backup retention`**: an operator can now ask what the retention policy has done
   without reading JSON by hand. The report answers from three honest sources: the window
@@ -16,6 +55,16 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
   process; a running daemon's own record answers through `kdx status`, `kdx doctor`,
   `kdx --remote backup retention`, or the new read-only control-plane route
   `GET /api/v1/backup/retention`.
+
+### Fixed
+
+- **A delegated command never prompts**: a command run over RPC inside a daemon that was
+  started from a terminal could block on the daemon's keyboard; its `UserExperience` is now
+  non-interactive under RPC and takes the defaults.
+- **`kdx modules list` says `discovered`** instead of the registry's `new` for modules the
+  one-shot command never started, and points at `kdx status` / `kdx ui` for live state.
+- **RPC argument errors say what was wrong** (`invalid choice: 'x'`) instead of
+  `did not parse (exit 2)`, and argparse no longer writes usage to the daemon's stderr.
 
 ## [0.3.2] - 2026-10-27
 

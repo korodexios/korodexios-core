@@ -24,6 +24,7 @@ clients that talk to the same core and never reimplement it.
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | humans, engineers | microkernel design, config flow, event bus, IPC, signals, API freeze |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | everyone | the phase history and what ships next |
 | [CHANGELOG.md](CHANGELOG.md) | humans, operators | notable changes per release, newest first |
+| [docs/REVIEW-2026-10.sk.md](docs/REVIEW-2026-10.sk.md) | owner (Slovak) | the October 2026 security and architecture review: findings, fixes, next steps |
 | [docs/AGENTS_GUIDE.md](docs/AGENTS_GUIDE.md) | AI agents, LLMs | contract-first reference: golden rules, module blueprint, manifest spec, verification loop |
 | [llms.txt](llms.txt) | AI agents, LLMs | byte-identical mirror of the agent guide, sized for a context window |
 | [AGENTS.md](AGENTS.md) | both | the working agreement: commands, layout, rules, the verification bar |
@@ -59,6 +60,8 @@ kdx backup run --dry-run         # simulate; --exclude patterns are honoured
 kdx modules create my_plugin --path ./my_plugins
 kdx init my_service --path ../my_service   # seed a whole new project from the chassis
 kdx wizard                       # interactive numbered-menu wizard (TTY only)
+kdx ui                           # browser console: status, every module command, logs, config
+kdx tls init && kdx run --tls    # https control plane (self-signed, via openssl)
 ```
 
 Pin the chassis the way a consumer project does, entirely with uv:
@@ -122,7 +125,7 @@ src/korodexios_core/
              # chassis, signals, ipc
   cli/       # thin clients: argparse surface, rich wizard, core commands,
              # project templating (init_project.py), scaffolding (scaffold.py)
-  modules/   # built-in proof modules: heartbeat, system_info, backup_engine - a pure
+  modules/   # built-in modules: heartbeat, system_info, backup_engine, web_console - a pure
              # discovery root: adding code here is the intended extension point
 docs/        # the documentation suite, including the roadmap
 .agents/skills/  # canonical playbooks, seeded into every project
@@ -135,7 +138,9 @@ tests/       # pytest; no network, no sleeps longer than one lifecycle tick
 with `pid`, `port`, `host`, and `token`. Six endpoints answer: `GET /health`,
 `GET /api/v1/schema` (the machine-readable contract), `GET /api/v1/status`,
 `POST /api/v1/shutdown`, `POST /api/v1/reload`, and `POST /api/v1/rpc`; authenticated reads
-require the token (`X-Kdx-Token`, compared in constant time) unless `core.ipc.auth: false`.
+require the token (`X-Kdx-Token`, compared in constant time) unless `core.ipc.auth: false`,
+which opens reads only - reload and RPC always need the token. A request from a foreign
+web origin (or a DNS-rebinding `Host`) is refused, so a browser tab cannot drive the daemon.
 Modules add their own paths declaratively with `ipc_routes()`, and the contract endpoint
 lists them. Set `core.ipc.host: 0.0.0.0` to serve
 the LAN, and `kdx status --target host:port` to query a remote chassis.

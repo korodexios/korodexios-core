@@ -149,7 +149,7 @@ def test_config_check_validates_the_builtin_schemas(tmp_path: Path, capsys: Any)
     capsys.readouterr()  # the human report ran; the next run answers with JSON
     assert main([*base_args(tmp_path), "config", "check", "--json"]) == int(ExitCode.SUCCESS)
     payload = json.loads(capsys.readouterr().out)
-    assert payload["schemas"] == {"modules": 3, "issues": []}
+    assert payload["schemas"] == {"modules": 4, "issues": []}
     assert payload["unknown"] == [], payload["unknown"]
 
 

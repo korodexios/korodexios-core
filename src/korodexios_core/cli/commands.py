@@ -711,7 +711,9 @@ def _modules_list_command(request: CliRequest) -> int:
             [
                 item["name"],
                 item["version"],
-                item["state"],
+                # 'new' is the registry's word for a module this one-shot command never
+                # started; the operator reads it as 'found, not running here'.
+                "discovered" if item["state"] == "new" else item["state"],
                 item["origin"],
                 ", ".join(item.get("depends_on", [])) or "-",
                 item["description"],
@@ -722,6 +724,8 @@ def _modules_list_command(request: CliRequest) -> int:
     )
     write_line()
     write_line(f"{TAG_OK} {chassis.discovery.summary()}")
+    if any(item["state"] == "new" for item in health["modules"]):
+        write_line(f"{TAG_NOTE} the live state of a running daemon: 'kdx status' or 'kdx ui'")
     for failure in chassis.discovery.failures:
         write_line(f"  {TAG_ERROR} {failure.describe()}")
     for item in skipped:
@@ -907,12 +911,16 @@ def _status_command(request: CliRequest) -> int:
     try:
         discovery: IpcDiscovery | None
         if target:
-            discovery = IpcDiscovery.remote(target, default_port=default_port, token=token)
+            discovery = IpcDiscovery.remote(
+                target, default_port=default_port, token=token, cafile=_tls_ca(chassis)
+            )
         elif target_host:
             address = target_host
             if target_port is not None:
                 address = f"{target_host}:{int(target_port)}"
-            discovery = IpcDiscovery.remote(address, default_port=default_port, token=token)
+            discovery = IpcDiscovery.remote(
+                address, default_port=default_port, token=token, cafile=_tls_ca(chassis)
+            )
         else:
             discovery = IpcDiscovery.load(discovery_path)
     except IpcError as exc:
@@ -1313,7 +1321,7 @@ def _client_discovery(request: CliRequest, chassis: Chassis) -> tuple[IpcDiscove
     try:
         if target:
             remote_client = IpcDiscovery.remote(
-                target, default_port=default_port, token=token
+                target, default_port=default_port, token=token, cafile=_tls_ca(chassis)
             )
             return remote_client, discovery_path
         return IpcDiscovery.load(discovery_path), discovery_path
@@ -1407,6 +1415,9 @@ def render_rpc_reply(payload: Mapping[str, Any], command: str, *, as_json: bool)
     ok = bool(payload.get("ok"))
     result = payload.get("result")
     if ok and isinstance(result, dict):
+        output = str(result.get("output") or "")
+        if output:
+            write_line(output.rstrip("\n"))
         print_key_values(
             [
                 ("command", str(result.get("path") or command)),
@@ -1463,6 +1474,11 @@ def _run_command(request: CliRequest) -> int:
     except KeyboardInterrupt:  # pragma: no cover - handled by the signal path
         chassis.signals.request_shutdown()
     return int(chassis.shutdown())
+
+
+def _tls_ca(chassis: Chassis) -> str:
+    """Return the certificate a remote https call should trust (core.ipc.tls_ca)."""
+    return str(chassis.config.get("core.ipc.tls_ca", "") or "").strip()
 
 
 def _chassis(request: CliRequest) -> Chassis:

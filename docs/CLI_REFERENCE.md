@@ -50,6 +50,8 @@ manifests it needs. The sdist carries `docs/`, `README.md`, `AGENTS.md`, `llms.t
 | `--auth` / `--no-auth` | require or allow anonymous control-plane reads | auth on |
 | `--ipc-token TOKEN` | static shared secret for the control plane | empty (ephemeral) |
 | `--ipc-timeout SECONDS` | client timeout for control-plane reads | `2.0` |
+| `--tls` | serve the control plane over https (`core.ipc.tls`) | off |
+| `--tls-ca FILE` | certificate to trust when calling a remote https daemon | system store |
 | `--no-ipc` | do not open the control plane in `kdx run` | ipc enabled |
 | `--instance-lock` / `--no-instance-lock` | claim or skip `var/chassis.lock` for this run | lock claimed |
 | `--asyncio` / `--no-asyncio` | start or skip the chassis-managed asyncio loop | loop off |
@@ -397,6 +399,49 @@ kdx status --target http://HOST:8123 --token my-static-lan-key
 
 A wildcard bind (`0.0.0.0`, `::`) is announced as `127.0.0.1` in `var/chassis.ipc`, so
 local clients need no change; remote clients pass `--target`.
+
+### https in three commands
+
+```bash
+kdx tls init --host nas.lan          # self-signed cert in var/tls/ (needs openssl)
+kdx run --tls --host 0.0.0.0         # serve https on the LAN
+kdx --tls-ca cert.pem status --target https://nas.lan:8123 --token SECRET   # from elsewhere
+```
+
+Local clients (`kdx status`, `kdx --remote`, `kdx ui`) need nothing extra: the discovery
+file names the certificate. A browser shows a warning for a self-signed certificate once;
+on the daemon's own machine plain http on `127.0.0.1` is already private, so TLS matters
+for LAN access.
+
+`--no-auth` opens **reads** only. `POST /api/v1/rpc` and `POST /api/v1/reload` always need
+the token, and shutdown needs it unless `core.ipc.allow_anonymous_shutdown` is set. The
+control plane speaks plain HTTP: on a LAN the token travels in clear, so reach a remote
+daemon over a VPN (WireGuard, Tailscale), an SSH tunnel
+(`ssh -L 8123:127.0.0.1:8123 host`), or a TLS reverse proxy rather than an open network.
+
+## Web console (`kdx ui`)
+
+```bash
+kdx ui                 # open the browser console of the running daemon
+kdx ui --no-browser    # print the URL instead (headless host, SSH session)
+```
+
+The built-in `web_console` module serves a browser GUI from the daemon itself at
+`http://127.0.0.1:8123/ui/`: an overview (modules, scheduler, memory, control plane), every
+module command as a form generated from its declared `CliArgument`s, the log tail with
+follow mode, the resolved configuration with provenance (secrets masked), diagnostics, and
+**Reload config** / **Stop daemon** buttons. When no daemon is running, `kdx ui` boots one
+in the foreground (as `kdx run` would) and opens the console once the control plane is up.
+
+The page is a thin client: every command runs as a background job through
+`POST /api/v1/rpc`, so the GUI shows the output while it grows, and the same output and
+exit code the terminal would. A command a module marked `danger=True` (such as
+`backup run`) needs a second click; one marked `remote=False` (such as the interactive
+`backup configure`) is shown as "terminal" with the line to run there. The **Events** tab
+streams bus events live (routine ticks hidden by default). `kdx ui` passes the token in the URL fragment
+(`/ui/#token=...`), which never reaches a server or a log; the page keeps it in
+`sessionStorage` only. Disable the console with `--disable-module web_console`, or keep it
+from opening a browser with `modules.web_console.open_browser: false`.
 
 ## Exit codes
 

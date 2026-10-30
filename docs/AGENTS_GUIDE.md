@@ -392,7 +392,15 @@ self.bus.unsubscribe(sub)
 ## 7. Declarative CLI
 
 `CliCommand` fields: `name`, `help`, `args` (tuple of `CliArgument`), `handler`
-(`CliRequest -> int`), `subcommands` (tuple), `module_name`, `group`, `hidden`.
+(`CliRequest -> int`), `subcommands` (tuple), `module_name`, `group`, `show_in_wizard`,
+`remote`, `danger`.
+
+- `remote=False` keeps a command on the daemon's own terminal: `POST /api/v1/rpc` answers
+  `403` and the web console shows it as "terminal" only. Use it for interactive wizards and
+  anything that must not be triggered from another machine.
+- `danger=True` marks a command that changes files or state. It still runs remotely, but the
+  web console asks for a second click first. Both flags set on a group cover every command
+  below it.
 
 `CliArgument` fields: positional `flags` tuple (e.g. `("--json",)` or
 `("-n", "--lines")`), `dest`, `metavar`, `type` (`str|int|float|path|flag`),
@@ -562,8 +570,21 @@ dependency order -> lifecycle loop -> `stop()` in reverse -> close logging.
 | `/api/v1/schema` | GET | never |
 | `/api/v1/status` | GET | when `core.ipc.auth` is on |
 | `/api/v1/shutdown` | POST | when auth is on, or when anonymous shutdown is disallowed |
-| `/api/v1/reload` | POST | when `core.ipc.auth` is on |
-| `/api/v1/rpc` | POST | when `core.ipc.auth` is on |
+| `/api/v1/reload` | POST | always (`core.ipc.auth: false` opens reads, never actions) |
+| `/api/v1/rpc` | POST | always (`core.ipc.auth: false` opens reads, never actions) |
+| `/api/v1/jobs` | GET | always |
+
+- `POST /api/v1/rpc` with `"background": true` answers `202` with a job (`job-N`) at once;
+  `GET /api/v1/jobs?id=job-N` returns its state and the output written so far, and
+  `GET /api/v1/jobs` lists jobs without output. At most 4 run at once (`429` beyond that);
+  the newest 50 finished jobs are remembered. The bus hears `core.job.started` and
+  `core.job.finished`. A running job cannot be cancelled.
+- Modules can stream: a route handler returns `IpcStream(chunks)` (an iterator of bytes,
+  `text/event-stream` by default) and the chassis writes each chunk as it is yielded.
+- `core.ipc.tls: true` (`kdx run --tls`) serves https with the pair `kdx tls init` writes
+  to `var/tls/`, or with `core.ipc.tls_cert` / `core.ipc.tls_key`. The discovery file then
+  records `scheme: https` and `cafile`, so local clients verify the self-signed certificate
+  on their own; remote clients trust it with `core.ipc.tls_ca` (`--tls-ca FILE`).
 
 - Bind address and port come from `core.ipc.host` / `core.ipc.port` (CLI
   `--ipc-host` / `--ipc-port`, or `kdx run --host/--port`). `0.0.0.0` means LAN
@@ -578,6 +599,13 @@ dependency order -> lifecycle loop -> `stop()` in reverse -> close logging.
   the secret stable across restarts (`token_source: static`).
 - `core.ipc.allow_anonymous_shutdown` (default `false`) is the only way to let an
   unauthenticated client stop the daemon.
+- Browsers cannot drive the daemon: a request whose `Origin` is not the daemon's own, or
+  (on a loopback bind) whose `Host` is not a loopback name, is refused with `403`. This
+  stops cross-site POSTs and DNS rebinding; the CLI, curl, and a page the daemon serves
+  itself are unaffected. An empty token matches nothing.
+- `POST /api/v1/rpc` returns what the command wrote to stdout as `result.output`, and a
+  delegated command never prompts (its `UserExperience` is non-interactive), so
+  `kdx --remote` prints the real answer and never hangs on the daemon's keyboard.
 - `kdx status --target http://host:port [--token SECRET]` queries any reachable
   daemon; `--json` is the machine contract.
 - Every answer ends the connection: the handler sends `Connection: close` and sets its own

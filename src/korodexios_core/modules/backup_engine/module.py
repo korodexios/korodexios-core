@@ -411,6 +411,7 @@ class BackupEngineModule(Module):
                         help="Run the backup (copies files unless --dry-run).",
                         module_name=self.name,
                         handler=_run_command,
+                        danger=True,
                         args=(
                             *_plan_arguments(),
                             CliArgument(
@@ -440,6 +441,7 @@ class BackupEngineModule(Module):
                         help="Interactive setup: source, destination, filters, then run.",
                         module_name=self.name,
                         handler=_configure_command,
+                        remote=False,
                     ),
                 ),
             )

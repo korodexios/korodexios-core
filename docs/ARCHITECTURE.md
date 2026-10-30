@@ -140,9 +140,32 @@ cannot order.
 - **Discovery** - `var/chassis.ipc` (mode `0600`) records `pid`, `host`, `port`,
   `token`, `started_at`. Clients read it, then talk HTTP.
 - **Auth** - `core.ipc.auth` (default `true`) requires the shared token on
-  `/api/v1/status`, `/api/v1/reload`, and `/api/v1/rpc`; `/health` and `/api/v1/schema`
-  stay open (liveness and static metadata). The compare is `hmac.compare_digest`, so a
-  timing side channel is not part of the contract.
+  `/api/v1/status`; `/api/v1/reload` and `/api/v1/rpc` need it always, because they act
+  rather than read (an RPC runs module commands with caller-chosen arguments). `/health`
+  and `/api/v1/schema` stay open (liveness and static metadata). The compare is
+  `hmac.compare_digest`, so a timing side channel is not part of the contract, and an
+  empty token matches nothing.
+- **Browser guard** - a request whose `Origin` header is not the daemon's own origin is
+  refused with `403`, and on a loopback bind so is a `Host` that is not a loopback name.
+  The first stops a foreign web page POSTing a CORS "simple" request at `127.0.0.1`; the
+  second stops DNS rebinding. Command-line clients send neither header.
+- **Slow clients** - every connection's socket reads and writes time out after
+  `REQUEST_TIMEOUT_SECONDS` (30 s), so a client that never finishes its request cannot pin
+  a server thread.
+- **TLS** - `core.ipc.tls: true` wraps the listening socket with a TLS 1.2+ server context.
+  The handshake runs on the connection's own handler thread (on its first read), so a slow
+  or plain-http client never blocks the accept loop and a failed handshake is a debug line,
+  not a traceback. The stdlib cannot mint certificates, so `kdx tls init` drives the
+  `openssl` binary (Git for Windows ships one) to write a P-256 self-signed pair covering
+  `localhost`, `127.0.0.1`, `::1`, the host name, and any `--host`.
+- **Owner-only secrets** - the discovery file (it holds the token) and the TLS key are
+  restricted before they reach their final path: mode `0600` on POSIX, and on Windows the
+  inherited ACL entries are removed and the current account alone gets access (`icacls`).
+- **Command permissions** - `CliCommand.remote=False` keeps a command off the control plane
+  (`403`); `danger=True` makes a GUI confirm first. A group's flag covers its children.
+- **Background jobs** - `"background": true` on an RPC starts the command on its own thread
+  and returns a job id; `GET /api/v1/jobs?id=` reads the output while it grows. Refusals
+  (unknown command, `remote=False`, bad arguments) are raised before the thread starts.
   `core.ipc.allow_anonymous_shutdown` (default `false`) decides whether an
   unauthenticated client may stop the daemon.
 - **Token** - `core.ipc.token` is the shared secret. Empty means the chassis mints an

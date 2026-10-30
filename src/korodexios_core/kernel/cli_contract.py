@@ -112,7 +112,14 @@ class CliArgument:
 
 @dataclass(frozen=True, slots=True)
 class CliCommand:
-    """A command (or command group) contributed to the root CLI surface."""
+    """A command (or command group) contributed to the root CLI surface.
+
+    Two flags say how far a command may travel, and a group's flag covers every
+    command below it. 'remote=False' keeps a command on the operator's own terminal:
+    the control plane refuses to run it over RPC (an interactive wizard, or anything
+    that must not be triggered from another machine). 'danger=True' marks a command
+    that changes things - it still runs remotely, but a GUI asks before it does.
+    """
 
     name: str
     help: str = ""
@@ -122,6 +129,8 @@ class CliCommand:
     module_name: str | None = None
     group: str = "module"
     show_in_wizard: bool = True
+    remote: bool = True
+    danger: bool = False
 
     def __post_init__(self) -> None:
         if not self.name.strip():

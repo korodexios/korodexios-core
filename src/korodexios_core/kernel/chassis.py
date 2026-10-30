@@ -3,16 +3,17 @@
 from __future__ import annotations
 
 import argparse
+import io
 import os
 import platform
 import re
 import sys
 import time
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, NoReturn
 
 from ..config.layered import LayeredConfig
 from ..constants import (
@@ -62,14 +63,21 @@ from .ipc import (
     new_token,
     process_memory,
 )
+from .jobs import JobRegistry
 from .locks import NamedLock, NamedLockRegistry
 from .project import ProjectIdentity, project_identity
 from .registry import ModuleRegistry
+from .rpc_output import capture_output, captured_text
 from .scheduler import TaskScheduler
 from .signals import SignalCoordinator, signal_name
 from .supervision import WorkerRecord, WorkerSupervisor
 
+TLS_DIR_NAME = "tls"
+TLS_CERT_NAME = "cert.pem"
+TLS_KEY_NAME = "key.pem"
 TICK_EVENT = "core.tick"
+JOB_STARTED_EVENT = "core.job.started"
+JOB_FINISHED_EVENT = "core.job.finished"
 RELOAD_EVENT = "core.config.reloaded"
 WORKER_LOST_EVENT = "core.worker.lost"
 STATIC_DIR_PREFIXES = ("static", "ui", "assets")
@@ -77,6 +85,21 @@ STATIC_DIR_PREFIXES = ("static", "ui", "assets")
 
 _UNSET: Any = object()
 """Sentinel distinguishing 'key absent' from 'key set to None' in a reload diff."""
+
+
+class _RpcArgumentError(Exception):
+    """argparse's complaint about delegated tokens, raised instead of exiting."""
+
+
+class _RpcArgumentParser(argparse.ArgumentParser):
+    """Parses delegated tokens without writing usage to the daemon's stderr or exiting.
+
+    A caller over RPC is not at the daemon's console, so the reason a token did not
+    parse ("argument --section: invalid choice: 'x'") belongs in the reply.
+    """
+
+    def error(self, message: str) -> NoReturn:
+        raise _RpcArgumentError(message)
 
 
 class ChassisState(Enum):
@@ -153,6 +176,8 @@ class Chassis:
     """The one triple the chassis reports for the project it hosts."""
     project_contracts: tuple[ContractRow, ...] = ()
     """Rows the embedding project declared, beside its modules' own."""
+    jobs: JobRegistry = field(default_factory=JobRegistry)
+    """Delegated commands running in the background ('background': true over RPC)."""
 
     @classmethod
     def create(cls, options: ChassisOptions | None = None) -> Chassis:
@@ -402,11 +427,14 @@ class Chassis:
             allow_anonymous_shutdown=self.config.get_bool(
                 "core.ipc.allow_anonymous_shutdown", False
             ),
+            tls_cert=self.tls_files()[0],
+            tls_key=self.tls_files()[1],
         )
         routes = list(self.ipc_routes) if self.config.get_bool("core.ipc.routes", True) else []
         statics = (
             list(self.ipc_static) if self.config.get_bool("core.ipc.static", True) else []
         )
+        rpc_enabled = self.config.get_bool("core.ipc.rpc", True)
         server = IpcServer(
             status_fn=self.health_report,
             shutdown_fn=self.signals.request_clean_stop,
@@ -415,10 +443,10 @@ class Chassis:
             logger=self.logger.child("ipc"),
             routes=routes,
             static_dirs=statics,
-            rpc_fn=self.dispatch_rpc
-            if self.config.get_bool("core.ipc.rpc", True)
-            else None,
+            rpc_fn=self.dispatch_rpc if rpc_enabled else None,
             reload_fn=self.reload_config,
+            submit_fn=self.submit_job if rpc_enabled else None,
+            jobs_fn=self.job_report if rpc_enabled else None,
         )
         try:
             server.start()
@@ -801,7 +829,99 @@ class Chassis:
 
         A module CLI command that finds a live daemon can forward its execution
         instead of booting a chassis of its own. The daemon runs the real handler,
-        so the client gets the same exit code plus the module's health snapshot.
+        so the client gets the same exit code, what the command wrote to stdout, and
+        the module's health snapshot. A delegated command never prompts: the daemon's
+        keyboard is not the caller's.
+        """
+        return self.prepare_rpc(command, args)()
+
+    def tls_files(self) -> tuple[Path | None, Path | None]:
+        """Return the (certificate, key) the control plane serves, or (None, None).
+
+        'core.ipc.tls: true' alone is enough: the pair 'kdx tls init' writes under
+        '<state_dir>/tls/' is used unless core.ipc.tls_cert / tls_key name other files.
+        A relative path is read against the project root.
+        """
+        if not self.config.get_bool("core.ipc.tls", False):
+            return None, None
+        tls_dir = self.paths.state_dir / TLS_DIR_NAME
+        cert_text = str(self.config.get("core.ipc.tls_cert", "") or "").strip()
+        key_text = str(self.config.get("core.ipc.tls_key", "") or "").strip()
+        cert = Path(cert_text) if cert_text else tls_dir / TLS_CERT_NAME
+        key = Path(key_text) if key_text else tls_dir / TLS_KEY_NAME
+        root = self.paths.root
+        return (
+            cert if cert.is_absolute() else root / cert,
+            key if key.is_absolute() else root / key,
+        )
+
+    def submit_job(self, command: str, args: Mapping[str, Any] | None = None) -> dict[str, Any]:
+        """Start one delegated command in the background; return the job without output.
+
+        The bus hears 'core.job.started' and 'core.job.finished', so a dashboard or a
+        module can follow jobs without polling the control plane.
+        """
+        label = str(command).strip()
+
+        def prepare(buffer: io.StringIO) -> Callable[[], dict[str, Any]]:
+            call = self.prepare_rpc(command, args, buffer=buffer)
+
+            def run() -> dict[str, Any]:
+                try:
+                    result = call()
+                except Exception as exc:
+                    self.bus.publish(
+                        JOB_FINISHED_EVENT,
+                        {"command": label, "ok": False, "error": f"{type(exc).__name__}: {exc}"},
+                        source="chassis",
+                    )
+                    raise
+                self.bus.publish(
+                    JOB_FINISHED_EVENT,
+                    {
+                        "command": label,
+                        "ok": int(result.get("exit_code", 0) or 0) == 0,
+                        "exit_code": result.get("exit_code"),
+                    },
+                    source="chassis",
+                )
+                return result
+
+            return run
+
+        job = self.jobs.submit(
+            command,
+            prepare,
+            on_start=lambda started: self.bus.publish(
+                JOB_STARTED_EVENT, {"id": started.id, "command": label}, source="chassis"
+            ),
+        )
+        return job.as_dict(output=False)
+
+    def job_report(self, job_id: str = "") -> Any:
+        """Return one job with its output so far, every job without it, or None."""
+        if job_id:
+            job = self.jobs.get(job_id)
+            return None if job is None else job.as_dict()
+        return {
+            "running": self.jobs.running(),
+            "jobs": [job.as_dict(output=False) for job in self.jobs.list()],
+        }
+
+    def prepare_rpc(
+        self,
+        command: str,
+        args: Mapping[str, Any] | None = None,
+        *,
+        buffer: io.StringIO | None = None,
+    ) -> Callable[[], dict[str, Any]]:
+        """Resolve and parse one delegated command now; return the call that runs it.
+
+        Every refusal - an unknown path (LookupError), a command kept off the control
+        plane with 'remote=False' (PermissionError), arguments that do not parse - is
+        raised here, before anything runs, so a background job is only ever started
+        for a command that will actually execute. *buffer* receives the output as it
+        is written, which is how a job shows progress while it runs.
         """
         cleaned = str(command).strip()
         parts = [part for part in re.split(r"[. /]+", cleaned) if part]
@@ -819,6 +939,7 @@ class Chassis:
         target = top
         consumed = 1
         walked = [name]
+        local_only = not top.remote
         while target.subcommands and consumed < len(parts):
             child = target.find(parts[consumed])
             if child is None:
@@ -828,11 +949,17 @@ class Chassis:
                 )
             target = child
             walked.append(child.name)
+            local_only = local_only or not child.remote
             consumed += 1
         trailing = parts[consumed:]
         handler = target.handler
         if handler is None:
             raise LookupError(f"{name} is a command group; name one of its subcommands")
+        if local_only:
+            raise PermissionError(
+                f"'kdx {' '.join(walked)}' runs only on the daemon's own terminal "
+                "(the module declared it remote=False)"
+            )
         namespace = self._rpc_namespace(target, args, trailing)
         request = CliRequest(
             context=self.context,
@@ -840,15 +967,22 @@ class Chassis:
             namespace=namespace,
             options={"chassis": self, "rpc": True},
         )
-        exit_code = int(handler(request))
-        return {
-            "command": cleaned,
-            "exit_code": exit_code,
-            "module": target.module_name or top.module_name or name,
-            "health": self.registry.health_for(name),
-            "path": " ".join(walked),
-            "depth": len(walked),
-        }
+
+        def run() -> dict[str, Any]:
+            with capture_output(buffer) as captured:
+                exit_code = int(handler(request))
+            return {
+                "command": cleaned,
+                "exit_code": exit_code,
+                "output": captured_text(captured),
+                "module": target.module_name or top.module_name or name,
+                "health": self.registry.health_for(name),
+                "path": " ".join(walked),
+                "depth": len(walked),
+            }
+
+        return run
+
     def _rpc_namespace(
         self,
         target: CliCommand,
@@ -867,14 +1001,13 @@ class Chassis:
         argv = payload.pop("argv", None)
         tokens = [str(item) for item in argv] if isinstance(argv, list) else []
         tokens.extend(str(item) for item in trailing)
-        parser = argparse.ArgumentParser(prog=target.name, allow_abbrev=False)
+        parser = _RpcArgumentParser(prog=target.name, allow_abbrev=False, add_help=False)
         add_command_arguments(parser, target.args)
         try:
             namespace = parser.parse_args(tokens)
-        except SystemExit as exc:
+        except _RpcArgumentError as exc:
             raise LookupError(
-                f"the delegated arguments for {target.name!r} did not parse "
-                f"(exit {exc.code})"
+                f"the delegated arguments for {target.name!r} did not parse: {exc}"
             ) from exc
         for key, value in payload.items():
             setattr(namespace, str(key), value)

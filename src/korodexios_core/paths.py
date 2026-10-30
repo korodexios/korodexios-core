@@ -450,3 +450,38 @@ def paths_from_mapping(data: Mapping[str, Any]) -> AppPaths:
         builtin_modules_dir=to_path("builtin_modules_dir"),
         extra_module_dirs=tuple(Path(str(item)) for item in extra),
     )
+
+
+def restrict_to_owner(path: str | os.PathLike[str]) -> bool:
+    """Make *path* readable by its owner only; return whether that is now true.
+
+    POSIX gets mode 0600. Windows ignores the mode bits, so a secret written there
+    inherits whatever the folder grants - often every local user on a shared machine.
+    There the inherited entries are cut and the current account alone gets full control,
+    with the stock 'icacls' tool. Best effort: a refusal leaves the file as it was and
+    reports False, because a missing ACL tool must not stop a daemon from starting.
+    """
+    target = Path(path)
+    if os.name != "nt":
+        try:
+            os.chmod(target, 0o600)
+        except OSError:
+            return False
+        return True
+    import getpass
+    import subprocess
+
+    try:
+        user = getpass.getuser()
+    except (OSError, KeyError):
+        return False
+    try:
+        completed = subprocess.run(
+            ["icacls", str(target), "/inheritance:r", "/grant:r", f"{user}:F"],
+            capture_output=True,
+            timeout=10,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return completed.returncode == 0

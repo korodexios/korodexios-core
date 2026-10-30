@@ -22,6 +22,7 @@ from ..version import format_version
 from .commands import core_commands, render_rpc_reply, wizard_command
 from .render import write_line
 from .surface import HANDLER_ATTR, ArgparseSurface
+from .tls import tls_command
 
 LOG_LEVEL_CHOICES = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 PROG_ALIASES = ("kdx", "korodexios", "korodexios-core")
@@ -155,6 +156,18 @@ def _add_global_flags(parser: argparse.ArgumentParser) -> None:
         metavar="TOKEN",
         default=argparse.SUPPRESS,
         help="Static shared secret for the control plane.",
+    )
+    group.add_argument(
+        "--tls",
+        action="store_true",
+        default=argparse.SUPPRESS,
+        help="Serve the control plane over https (certificate from 'kdx tls init').",
+    )
+    group.add_argument(
+        "--tls-ca",
+        metavar="FILE",
+        default=argparse.SUPPRESS,
+        help="Certificate to trust when calling a remote https control plane.",
     )
     group.add_argument(
         "--ipc-timeout",
@@ -351,6 +364,11 @@ def _cli_overrides(namespace: argparse.Namespace) -> dict[str, Any]:
     ipc_token = getattr(namespace, "ipc_token", None)
     if ipc_token:
         overrides["core.ipc.token"] = str(ipc_token)
+    if getattr(namespace, "tls", False):
+        overrides["core.ipc.tls"] = True
+    tls_ca = getattr(namespace, "tls_ca", None)
+    if tls_ca:
+        overrides["core.ipc.tls_ca"] = str(tls_ca)
     ipc_timeout = getattr(namespace, "ipc_timeout", None)
     if ipc_timeout is not None:
         overrides["core.ipc.timeout"] = float(ipc_timeout)
@@ -586,6 +604,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         for command in core_commands(chassis):
             surface.add_command(command)
         surface.add_command(wizard_command())
+        surface.add_command(tls_command())
         chassis.collect_cli(surface)
 
         try:

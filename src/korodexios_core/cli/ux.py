@@ -20,6 +20,7 @@ from rich.table import Table
 from rich.text import Text
 
 from ..constants import TAG_ASK, TAG_ERROR, TAG_NOTE, TAG_OK, tags_for
+from ..kernel.rpc_output import capture_active
 from ..validate import ValidationResult, Validator
 from ..validate import require_float as _require_float
 from ..validate import require_int as _require_int
@@ -63,7 +64,11 @@ class UserExperience:
         stdout: Any = None,
     ) -> None:
         self._config = config
-        self._interactive = bool(config.get_bool("core.cli.interactive", True))
+        # A command delegated over RPC answers a caller who is not at this keyboard,
+        # so its prompts take their defaults instead of blocking the daemon.
+        self._interactive = bool(config.get_bool("core.cli.interactive", True)) and (
+            not capture_active()
+        )
         self._color = bool(config.get_bool("core.cli.color", True))
         self._width = max(40, int(config.get_int("core.cli.width", 100)))
         stream = sys.stdout if stdout is None else stdout

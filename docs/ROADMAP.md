@@ -152,11 +152,20 @@ directory ignores dot files, swap files, and names `lock_name()` refuses | **del
   last sweep, removed, reclaimed); the counters name the answering process, and a running
   daemon's live record answers through `kdx --remote backup retention` or the new read-only
   `GET /api/v1/backup/retention` | **delivered** |
+| 31 | review and the browser console: `core.ipc.auth: false` opens reads only (RPC and reload
+  keep their token), an empty token matches nothing, a foreign `Origin` or a DNS-rebinding
+  `Host` is refused, stalled sockets time out; RPC replies carry the command's stdout and a
+  delegated command never prompts; and the built-in `web_console` module with `kdx ui` - a
+  browser GUI generated from the declarative CLI contract | **delivered** |
+| 32 | security with less friction: command permissions (`CliCommand.remote`, `danger`),
+  background jobs (`"background": true`, `GET /api/v1/jobs`, `core.job.*` events), streamed
+  responses (`IpcStream`) and a live event feed in the console, an https control plane
+  (`core.ipc.tls`, `kdx tls init`, `--tls-ca`), and owner-only secrets on Windows | **delivered** |
 
 ## Next
 
 1. **A Textual/TUI front end** over the same declarative `CliCommand` tree the wizard
-   already reads - no module knows a second surface exists.
+   and the web console already read - no module knows a second surface exists.
 2. **Publish to an index (parked, owner's choice).** PyPI through trusted publishing is a
    ~30-minute setup whenever the owner wants it; the name `korodexios-core` was unclaimed
    on PyPI as of 2026-10-27. The git bootstrap is already live in the seed: `kdx init`

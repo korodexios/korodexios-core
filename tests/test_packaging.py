@@ -30,6 +30,10 @@ REQUIRED_WHEEL_ENTRIES = (
     "korodexios_core/modules/heartbeat/kdx_module.toml",
     "korodexios_core/modules/system_info/kdx_module.toml",
     "korodexios_core/modules/backup_engine/kdx_module.toml",
+    "korodexios_core/modules/web_console/kdx_module.toml",
+    "korodexios_core/modules/web_console/static/index.html",
+    "korodexios_core/modules/web_console/static/app.js",
+    "korodexios_core/modules/web_console/static/app.css",
 )
 REQUIRED_SDIST_ENTRIES = (
     "AGENTS.md",

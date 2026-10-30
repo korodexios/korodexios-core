@@ -321,7 +321,10 @@ def test_token_compare_is_constant_time_and_optional(tmp_path: Path) -> None:
 
     open_server = make_server(tmp_path, auth=False)
     try:
-        assert open_server.requires_token(RPC_PATH) is False
+        # 'auth: false' opens reads; the routes that act keep their token.
+        assert open_server.requires_token(STATUS_PATH) is False
+        assert open_server.requires_token(RPC_PATH) is True
+        assert open_server.requires_token(RELOAD_PATH) is True
         assert open_server.token_matches(None) is False  # the gate, not the compare
     finally:
         open_server.stop()
