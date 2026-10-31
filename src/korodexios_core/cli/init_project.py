@@ -33,7 +33,7 @@ RESERVED_NAMES = frozenset(
 )
 DEFAULT_AUTHOR = "Korodexios"
 EXAMPLE_MODULES = ("heartbeat", "backup_engine")
-CHASSIS_REPOSITORY: str = "https://github.com/korodexios/kdx-core"
+CHASSIS_REPOSITORY: str = "https://github.com/korodexios/korodexios-core"
 """A git+https reference installs the chassis before any index publish."""
 
 CHASSIS_SOURCES: dict[str, str] = {

@@ -304,7 +304,7 @@ def test_bootstrap_leads_with_uv_and_the_new_keys_are_documented() -> None:
         "uv run kdx",
         "uv tool install korodexios-core",
         "uv pip install",
-        "kdx-core.git@v",
+        "korodexios-core.git@v",
         "uv lock",
         "python3 -m venv",
     ):

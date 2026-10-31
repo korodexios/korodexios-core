@@ -6,7 +6,8 @@ module discovery, and signal-safe shutdown. User interfaces (CLI, TUI, REST) are
 clients that talk to the same core and never reimplement it.
 
 - **Package:** `korodexios-core` (import name `korodexios_core`)
-- **Console scripts:** `kdx` (primary short alias), `korodexios` (canonical)
+- **Names:** the project, package, and repository are all `korodexios-core`; `kdx` is only the
+  short command - everything you type starts with `kdx` (`korodexios` works the same)
 - **Python:** 3.11+ (developed on 3.13), `uv`-first, `venv` + `pip` compatible
 - **Bootstrap:** uv (Astral) owns the environment - `uv venv`, `uv sync --extra dev`,
   `uv run kdx ...`, `uv tool install korodexios-core`, `uv lock` for a consumer's own pins
@@ -75,7 +76,7 @@ Pin the chassis the way a consumer project does, entirely with uv:
 
 ```bash
 uv tool install korodexios-core   # a global kdx on PATH, no project involved
-uv pip install "korodexios-core @ git+https://github.com/korodexios/kdx-core.git@v0.4.0"
+uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.4.0"
 uv lock                          # and 'uv add' for this project's own pinned dependencies
 ```
 

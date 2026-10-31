@@ -5,6 +5,11 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Changed
+
+- **One name**: every link, install line, and seeded dependency now points at the repository
+  `korodexios/korodexios-core` (it was `kdx-core`); `kdx` stays the short command everywhere.
+
 ### Added
 
 - **Language service (phase 36)**: `kdx locale show|list|set|check|extract|add|todo|apply`,

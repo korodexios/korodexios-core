@@ -14,7 +14,7 @@
 
 set -eu
 
-RELEASE_SOURCE="korodexios-core @ git+https://github.com/korodexios/kdx-core.git@v0.4.0"
+RELEASE_SOURCE="korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.4.0"
 SOURCE=""
 LANGUAGE=""
 YES=0
