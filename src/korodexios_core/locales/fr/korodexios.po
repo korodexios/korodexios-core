@@ -423,6 +423,10 @@ msgid "Print the discovered config and env file paths."
 msgstr "Affiche les chemins des fichiers de configuration et env découverts."
 
 #: cli/conventions.py
+msgid "Print the playbook written for AI agents instead (English)."
+msgstr "Affiche à la place le guide écrit pour les agents IA (en anglais)."
+
+#: cli/conventions.py
 msgid "Print the project rules and conventions (how to build and work on a project)."
 msgstr "Affiche les règles et conventions du projet (comment construire un projet et y travailler)."
 

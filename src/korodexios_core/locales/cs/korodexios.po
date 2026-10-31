@@ -423,6 +423,10 @@ msgid "Print the discovered config and env file paths."
 msgstr "Vypíše cesty nalezených konfiguračních souborů a souboru env."
 
 #: cli/conventions.py
+msgid "Print the playbook written for AI agents instead (English)."
+msgstr "Místo toho vypiš příručku napsanou pro AI agenty (anglicky)."
+
+#: cli/conventions.py
 msgid "Print the project rules and conventions (how to build and work on a project)."
 msgstr "Vypiš pravidla a konvence projektu (jak projekt stavět a jak na něm pracovat)."
 

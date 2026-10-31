@@ -18,8 +18,12 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - **`kdx conventions`** prints the project rules (modules, spec/test first, security, CI/CD,
   working with AI agents) in English or Slovak; `kdx init` now also seeds them as
   `docs/CONVENTIONS*.md` together with a CI workflow.
+- **`AGENT_PLAYBOOK.md`** (also `kdx conventions --agent`): how an AI agent proceeds in any
+  project built on the core - architecture limits, the spec/test/gate loop, security, what to
+  ask first, how to report. `kdx init` seeds it and points `AGENTS.md` at it.
 - **Guided installers** `install.sh` / `install.ps1`: coloured, four separated steps, English or
-  Slovak, ask before installing anything, `--dry-run` to preview.
+  Slovak; they check Python, git and an existing `kdx`, reuse what is present, ask before
+  installing anything, and `--dry-run` previews the steps.
 
 ## [0.4.0] - 2026-10-31
 

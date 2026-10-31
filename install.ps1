@@ -51,6 +51,13 @@ $Text = @{
         s3      = "Step 3 of 4 - verify"
         s4      = "Step 4 of 4 - your first project"
         uvok    = "uv found: {0}"
+        pyok    = "Python {0} found - will be used ({1})"
+        pyno    = "No Python 3.11+ on this computer - uv will fetch one for the tool (nothing system-wide changes)."
+        gitok   = "git found: {0}"
+        gitno   = "git not found - needed only to install from the git tag. Install it from https://git-scm.com/ or install from a local folder."
+        gitnot  = "git: not needed for a local install"
+        kdxok   = "kdx is already installed ({0}) - this run will update it"
+        kdxno   = "kdx is not installed yet - it will be installed"
         uvno    = "uv (the Python tool installer) was not found."
         uvask   = "Install uv now from astral.sh (current user only, no admin needed)?"
         uvskip  = "Without uv this installer cannot continue. Install it from https://docs.astral.sh/uv/ and run this again."
@@ -79,6 +86,13 @@ $Text = @{
         s3      = "Krok 3 zo 4 - overenie"
         s4      = "Krok 4 zo 4 - tvoj prvý projekt"
         uvok    = "uv nájdený: {0}"
+        pyok    = "Python {0} nájdený - použije sa ({1})"
+        pyno    = "Python 3.11+ v počítači nie je - uv ho pre nástroj stiahne (nič sa nemení v celom systéme)."
+        gitok   = "git nájdený: {0}"
+        gitno   = "git sa nenašiel - treba ho len na inštaláciu z git tagu. Nainštaluj ho z https://git-scm.com/ alebo inštaluj z lokálneho priečinka."
+        gitnot  = "git: pri lokálnej inštalácii netreba"
+        kdxok   = "kdx je už nainštalovaný ({0}) - tento beh ho aktualizuje"
+        kdxno   = "kdx ešte nie je nainštalovaný - nainštaluje sa"
         uvno    = "uv (inštalátor nástrojov pre Python) sa nenašiel."
         uvask   = "Nainštalovať uv teraz z astral.sh (len pre tohto používateľa, bez admina)?"
         uvskip  = "Bez uv inštalátor nemôže pokračovať. Nainštaluj ho z https://docs.astral.sh/uv/ a spusti ma znova."
@@ -131,6 +145,26 @@ try {
 
     # --- 1. check -----------------------------------------------------------
     Write-Step $T.s1
+    # What is already here is reused; only what is missing is installed.
+    $found = $null
+    foreach ($candidate in @("python", "python3", "py")) {
+        $cmd = Get-Command $candidate -ErrorAction SilentlyContinue
+        if (-not $cmd) { continue }
+        $out = (& $cmd.Source --version 2>&1 | Out-String).Trim()
+        if ($out -match "Python (\d+)\.(\d+)\.(\d+)" -and ([int]$Matches[1] -gt 3 -or ([int]$Matches[1] -eq 3 -and [int]$Matches[2] -ge 11))) {
+            $found = @("$($Matches[1]).$($Matches[2]).$($Matches[3])", $cmd.Source); break
+        }
+    }
+    if ($found) { Write-Ok ($T.pyok -f $found[0], $found[1]) } else { Write-Info $T.pyno }
+    if (-not $Source -and -not (Test-Path (Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) "pyproject.toml"))) {
+        $git = Get-Command git -ErrorAction SilentlyContinue
+        if ($git) { Write-Ok ($T.gitok -f $git.Source) } else { Write-Warn $T.gitno }
+    } elseif ($Source -match "^(git\+|.*@ git)") {
+        $git = Get-Command git -ErrorAction SilentlyContinue
+        if ($git) { Write-Ok ($T.gitok -f $git.Source) } else { Write-Warn $T.gitno }
+    } else { Write-Info $T.gitnot }
+    $kdx = Get-Command kdx -ErrorAction SilentlyContinue
+    if ($kdx) { Write-Ok ($T.kdxok -f $kdx.Source) } else { Write-Info $T.kdxno }
     $uv = Get-Command uv -ErrorAction SilentlyContinue
     if ($uv) {
         Write-Ok ($T.uvok -f $uv.Source)

@@ -52,6 +52,13 @@ msg() {
     sk:s3) echo "Krok 3 zo 4 - overenie" ;;
     sk:s4) echo "Krok 4 zo 4 - tvoj prvý projekt" ;;
     sk:uvok) echo "uv nájdený:" ;;
+    sk:pyok) echo "Python nájdený - použije sa:" ;;
+    sk:pyno) echo "Python 3.11+ v počítači nie je - uv ho pre nástroj stiahne (nič sa nemení v celom systéme)." ;;
+    sk:gitok) echo "git nájdený:" ;;
+    sk:gitno) echo "git sa nenašiel - treba ho len na inštaláciu z git tagu. Nainštaluj ho alebo inštaluj z lokálneho priečinka." ;;
+    sk:gitnot) echo "git: pri lokálnej inštalácii netreba" ;;
+    sk:kdxok) echo "kdx je už nainštalovaný - tento beh ho aktualizuje:" ;;
+    sk:kdxno) echo "kdx ešte nie je nainštalovaný - nainštaluje sa" ;;
     sk:uvno) echo "uv (inštalátor nástrojov pre Python) sa nenašiel." ;;
     sk:uvask) echo "Nainštalovať uv teraz z astral.sh (len pre tohto používateľa, bez sudo)?" ;;
     sk:uvskip) echo "Bez uv inštalátor nemôže pokračovať. Nainštaluj ho z https://docs.astral.sh/uv/ a spusti ma znova." ;;
@@ -77,6 +84,13 @@ msg() {
     en:s3) echo "Step 3 of 4 - verify" ;;
     en:s4) echo "Step 4 of 4 - your first project" ;;
     en:uvok) echo "uv found:" ;;
+    en:pyok) echo "Python found - will be used:" ;;
+    en:pyno) echo "No Python 3.11+ on this computer - uv will fetch one for the tool (nothing system-wide changes)." ;;
+    en:gitok) echo "git found:" ;;
+    en:gitno) echo "git not found - needed only to install from the git tag. Install it or install from a local folder." ;;
+    en:gitnot) echo "git: not needed for a local install" ;;
+    en:kdxok) echo "kdx is already installed - this run will update it:" ;;
+    en:kdxno) echo "kdx is not installed yet - it will be installed" ;;
     en:uvno) echo "uv (the Python tool installer) was not found." ;;
     en:uvask) echo "Install uv now from astral.sh (current user only, no sudo needed)?" ;;
     en:uvskip) echo "Without uv this installer cannot continue. Install it from https://docs.astral.sh/uv/ and run this again." ;;
@@ -122,6 +136,21 @@ run() {
 printf "\n  ${C_TITLE}◆ %s${C_OFF}\n  %s\n" "$(msg title)" "$(msg intro)"
 
 step "$(msg s1)"
+# What is already here is reused; only what is missing is installed.
+py_found=""
+for candidate in python3 python; do
+  if command -v "$candidate" >/dev/null 2>&1      && "$candidate" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)' >/dev/null 2>&1; then
+    py_found=$(command -v "$candidate"); break
+  fi
+done
+if [ -n "$py_found" ]; then ok "$(msg pyok) $py_found"; else info "$(msg pyno)"; fi
+here=$(cd "$(dirname "$0")" && pwd)
+if [ -z "$SOURCE" ] && [ ! -f "$here/pyproject.toml" ] || case "$SOURCE" in *git+*) true ;; *) false ;; esac; then
+  if command -v git >/dev/null 2>&1; then ok "$(msg gitok) $(command -v git)"; else bad "$(msg gitno)"; fi
+else
+  info "$(msg gitnot)"
+fi
+if command -v kdx >/dev/null 2>&1; then ok "$(msg kdxok) $(command -v kdx)"; else info "$(msg kdxno)"; fi
 if command -v uv >/dev/null 2>&1; then
   ok "$(msg uvok) $(command -v uv)"
 else

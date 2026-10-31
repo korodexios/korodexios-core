@@ -18,6 +18,11 @@ from .render import tr, write_line
 RESOURCES = Path(__file__).resolve().parent.parent / "resources"
 
 
+def agent_playbook() -> str:
+    """Return the playbook written for AI agents (English: agents read it, owners need not)."""
+    return (RESOURCES / "agent-playbook.md").read_text(encoding="utf-8")
+
+
 def conventions_text(language: str) -> tuple[str, str]:
     """Return (language used, text) for *language*, falling back to English."""
     for candidate in (*locale_chain(language), DEFAULT_LOCALE):
@@ -44,6 +49,12 @@ def conventions_command() -> CliCommand:
                 help="Language of the rules: en or sk [your language, else en].",
             ),
             CliArgument(
+                ("--agent",),
+                dest="agent",
+                action="store_true",
+                help="Print the playbook written for AI agents instead (English).",
+            ),
+            CliArgument(
                 ("--write",),
                 dest="write",
                 metavar="FILE",
@@ -55,7 +66,7 @@ def conventions_command() -> CliCommand:
 
 def _conventions(request: CliRequest) -> int:
     chosen = str(request.option("lang") or request.context.i18n.locale)
-    _, text = conventions_text(chosen)
+    text = agent_playbook() if request.flag("agent") else conventions_text(chosen)[1]
     target = request.option("write")
     if not target:
         for line in text.splitlines():

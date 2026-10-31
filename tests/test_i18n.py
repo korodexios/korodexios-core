@@ -533,3 +533,14 @@ def test_the_seed_carries_the_rules_and_a_ci_workflow() -> None:
     assert files["docs/CONVENTIONS.sk.md"].startswith("# Pravidlá")
     assert "uv run mypy" in files[".github/workflows/ci.yml"]
     assert "docs/CONVENTIONS.md" in files["AGENTS.md"]
+
+
+def test_agent_playbook_is_printed_and_seeded(capsys, project_root: Path) -> None:
+    from korodexios_core.cli.init_project import build_files, project_from_inputs
+
+    write_root(project_root)
+    code, out = run(project_root, capsys, "--locale", "sk", "conventions", "--agent")
+    assert code == 0 and out.startswith("# AGENT PLAYBOOK")
+    files = build_files(project_from_inputs("playbook_check"))  # type: ignore[arg-type]
+    assert files["AGENT_PLAYBOOK.md"].startswith("# AGENT PLAYBOOK")
+    assert "AGENT_PLAYBOOK.md" in files["AGENTS.md"]
