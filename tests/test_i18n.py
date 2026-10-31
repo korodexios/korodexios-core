@@ -165,7 +165,7 @@ def test_the_chassis_ships_a_complete_slovak_catalogue() -> None:
     service = build_i18n("sk")
     assert CORE_DOMAIN in service.domains()
     assert service.domains()[CORE_DOMAIN] == core_locales_dir()
-    assert "sk" in service.locales(CORE_DOMAIN)
+    assert {"cs", "de", "en", "es", "fr", "sk"} <= set(service.locales(CORE_DOMAIN))
     for report in service.check(CORE_DOMAIN):
         assert report.complete, report.as_dict()
     assert service.translate("every catalogue is complete") == "každý katalóg je úplný"
@@ -187,9 +187,9 @@ def test_locale_show_and_list(capsys, project_root: Path) -> None:
     assert code == 0 and "jazyk" in out and "command line" in out
 
     code, out = run(project_root, capsys, "locale", "list")
-    assert code == 0 and "korodexios" in out and "en, sk" in out
+    assert code == 0 and "korodexios" in out and "cs, de, en, es, fr, sk" in out
     code, out = run(project_root, capsys, "locale", "list", "--json")
-    assert json.loads(out)["domains"]["korodexios"] == ["en", "sk"]
+    assert json.loads(out)["domains"]["korodexios"] == ["cs", "de", "en", "es", "fr", "sk"]
 
 
 def test_locale_set_writes_the_local_file_and_wins_over_the_default(
@@ -233,7 +233,7 @@ def test_locale_set_leaves_an_unreadable_file_alone(capsys, project_root: Path) 
 
 def test_locale_set_warns_when_a_higher_layer_wins(capsys, project_root: Path) -> None:
     write_root(project_root)
-    code, out = run(project_root, capsys, "--locale", "cs", "locale", "set", "sk")
+    code, out = run(project_root, capsys, "--locale", "en", "locale", "set", "sk")
     assert code == 0 and "still wins" in out
 
 
@@ -245,9 +245,9 @@ def test_locale_check_exit_codes(capsys, project_root: Path) -> None:
     assert code == 0 and json.loads(out)["complete"] is True
     code, out = run(project_root, capsys, "locale", "check", "--domain", "nope")
     assert code == int(ExitCode.USAGE_ERROR)
-    code, out = run(project_root, capsys, "locale", "check", "--language", "fr")
+    code, out = run(project_root, capsys, "locale", "check", "--language", "it")
     assert code == int(ExitCode.CONFIG_ERROR) and "missing" in out
-    code, out = run(project_root, capsys, "locale", "check", "--language", "fr", "--json")
+    code, out = run(project_root, capsys, "locale", "check", "--language", "it", "--json")
     assert code == int(ExitCode.CONFIG_ERROR) and json.loads(out)["complete"] is False
 
 
@@ -492,3 +492,11 @@ def test_stderr_is_never_translated(capsys) -> None:
     captured = capsys.readouterr()
     assert captured.err.strip() == "[i] nothing written"
     assert captured.out.strip() == "[i] nič sa nezapísalo"
+
+
+@pytest.mark.parametrize("locale", ["cs", "de", "es", "fr", "sk"])
+def test_every_shipped_language_translates_the_ui(locale: str) -> None:
+    service = build_i18n(locale)
+    assert service.translate("every catalogue is complete") != "every catalogue is complete"
+    assert service.translate("{count} string(s) left for {locale}", count=2, locale="x")
+    assert "{" not in service.translate("{path} is up to date", path="p")

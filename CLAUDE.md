@@ -21,13 +21,14 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 - **Language (this project only).** The owner writes in Slovak; reply in Slovak. The
   chassis itself is English-only (diagnostics, machine payloads, CLI text, docs), except
   `docs/REVIEW-2026-10.sk.md`. Do not copy this to other projects.
-- **i18n (phase 36, branch `feature/i18n-service`, not committed yet).** The core has a
+- **i18n (phase 36, branch `feature/i18n-service`, committed locally, not pushed).** The core has a
   language service: `kernel/i18n.py` (stdlib only, reads `.po` directly, no compile step),
   config key `core.locale` (`--locale`, `KDX_CORE__LOCALE`, `kdx.local.yml`), catalogues in
-  `src/korodexios_core/locales/` (`korodexios.pot`, `sk/korodexios.po`), CLI `kdx locale
+  `src/korodexios_core/locales/` (`korodexios.pot`; sk, cs, de, es, fr - the non-Slovak
+  ones are machine translations nobody native has reviewed), CLI `kdx locale
   show|list|set|check`. UI strings go through `context.translate()`; stderr diagnostics,
   logs and `--json` stay English. Modules/projects add a domain with
-  `context.i18n.register(domain, dir)`. Still open: translate the remaining commands, make
+  `context.i18n.register(domain, dir)`. New languages: `docs/TRANSLATING.md` (`kdx locale add|todo|apply`). Still open: make
   seeded `i18n.py` delegate to the service, map `KDX_LOCALE`, web console switcher.
 
 - **i18n workflow.** Rendering helpers (`print_section`, key labels, table headers,

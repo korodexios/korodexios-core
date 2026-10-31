@@ -1,0 +1,1703 @@
+# Translation of the korodexios domain into es.
+msgid ""
+msgstr ""
+"Language: es
+"
+"Content-Type: text/plain; charset=UTF-8
+"
+
+#: cli/commands.py
+msgid "  [optional] {name}: needs {module} - {hint}"
+msgstr "  [opcional] {name}: necesita {module} - {hint}"
+
+#: cli/commands.py
+msgid "  [skipped] {name}: {reason}"
+msgstr "  [omitido] {name}: {reason}"
+
+#: renderer
+msgid "(empty)"
+msgstr "(vacío)"
+
+#: cli/commands.py
+msgid "+{hidden} more findings; pass --json for all of them"
+msgstr "+{hidden} hallazgos más; --json los muestra todos"
+
+#: cli/commands.py
+msgid "--args is not valid JSON: {exc}"
+msgstr "--args no es JSON válido: {exc}"
+
+#: cli/commands.py
+msgid "--args must be a JSON object"
+msgstr "--args debe ser un objeto JSON"
+
+#: cli/commands.py
+msgid "--lines must be at least 1, got {count}"
+msgstr "--lines debe ser al menos 1, se recibió {count}"
+
+#: cli/service.py
+msgid "--print changed nothing"
+msgstr "--print no cambió nada"
+
+#: cli/commands.py
+msgid "--rotate and --clear are mutually exclusive"
+msgstr "--rotate y --clear son mutuamente excluyentes"
+
+#: cli/jobs.py
+msgid "Ask a job to stop (its command decides when it can)."
+msgstr "Pide a un trabajo que se detenga (su comando decide cuándo puede)."
+
+#: cli/commands.py
+msgid "Ask a running daemon to re-read its configuration (SIGHUP over IPC)."
+msgstr "Pide a un demonio en ejecución que vuelva a leer su configuración (SIGHUP por IPC)."
+
+#: modules/backup_engine/module.py
+msgid "Backup engine: plan, run, or configure a backup."
+msgstr "Motor de copias de seguridad: planificar, ejecutar o configurar una copia."
+
+#: modules/backup_engine/module.py
+msgid "Backup plan"
+msgstr "Plan de copia"
+
+#: modules/backup_engine/module.py
+msgid "Backup result"
+msgstr "Resultado de la copia"
+
+#: modules/backup_engine/module.py
+msgid "Backup retention"
+msgstr "Retención de copias"
+
+#: modules/system_info/module.py
+msgid "CPU"
+msgstr "CPU"
+
+#: cli/users.py
+msgid "Change a user's role."
+msgstr "Cambia el rol de un usuario."
+
+#: cli/language.py
+msgid "Change nothing; exit 3 when the template is out of date."
+msgstr "No cambia nada; termina con código 3 si la plantilla está desactualizada."
+
+#: cli/commands.py
+msgid "Chassis"
+msgstr "Chasis"
+
+#: cli/commands.py
+msgid "Chassis primitives"
+msgstr "Primitivas del chasis"
+
+#: cli/language.py
+msgid "Check the file and report; write nothing."
+msgstr "Comprueba el archivo e informa; no escribe nada."
+
+#: cli/language.py
+msgid "Choose the language for this machine (writes kdx.local.yml)."
+msgstr "Elige el idioma de este equipo (escribe kdx.local.yml)."
+
+#: cli/language.py
+msgid "Collect translatable strings into the template and update translations."
+msgstr "Reúne los textos traducibles en la plantilla y actualiza las traducciones."
+
+#: cli/language.py
+msgid "Compare catalogues with their templates; exit 3 when one is incomplete."
+msgstr "Compara los catálogos con sus plantillas; termina con código 3 si alguno está incompleto."
+
+#: cli/commands.py
+msgid "Configuration"
+msgstr "Configuración"
+
+#: cli/commands.py
+msgid "Contracts"
+msgstr "Contratos"
+
+#: cli/commands.py
+msgid "Control plane"
+msgstr "Plano de control"
+
+#: modules/backup_engine/module.py
+msgid "Copy even when the size budget is exceeded."
+msgstr "Copia aunque se supere el límite de tamaño."
+
+#: cli/tls.py
+msgid "Create a self-signed certificate for 'kdx run --tls'."
+msgstr "Crea un certificado autofirmado para 'kdx run --tls'."
+
+#: cli/users.py
+msgid "Create a user; prints the new token once."
+msgstr "Crea un usuario; muestra el nuevo token una sola vez."
+
+#: cli/tls.py
+msgid "Create the certificate for an https control plane."
+msgstr "Crea el certificado para un plano de control https."
+
+#: cli/users.py
+msgid "Delete a user; their token stops working at once."
+msgstr "Elimina un usuario; su token deja de funcionar de inmediato."
+
+#: modules/backup_engine/module.py
+msgid "Destination directory for copies."
+msgstr "Directorio de destino de las copias."
+
+#: cli/commands.py
+msgid "Diagnostics"
+msgstr "Diagnóstico"
+
+#: cli/commands.py
+msgid "Directory to create the module in."
+msgstr "Directorio donde se crea el módulo."
+
+#: modules/system_info/module.py
+msgid "Disk"
+msgstr "Disco"
+
+#: cli/jobs.py
+msgid "Emit JSON."
+msgstr "Emite JSON."
+
+#: modules/heartbeat/module.py
+msgid "Emit machine-readable JSON."
+msgstr "Emite JSON legible por máquinas."
+
+#: cli/commands.py
+msgid "Emit the created files as JSON."
+msgstr "Emite los archivos creados como JSON."
+
+#: cli/commands.py
+msgid "Emit the daemon's reply as JSON."
+msgstr "Emite la respuesta del demonio como JSON."
+
+#: cli/commands.py
+msgid "Emit the detail as JSON."
+msgstr "Emite el detalle como JSON."
+
+#: cli/commands.py
+msgid "Emit the listing as JSON."
+msgstr "Emite el listado como JSON."
+
+#: cli/commands.py
+msgid "Emit the live report as JSON."
+msgstr "Emite el informe en vivo como JSON."
+
+#: cli/commands.py
+msgid "Emit the mapping as JSON."
+msgstr "Emite el mapeo como JSON."
+
+#: cli/commands.py
+msgid "Emit the reload summary as JSON."
+msgstr "Emite el resumen de la recarga como JSON."
+
+#: cli/commands.py
+msgid "Emit the report as JSON."
+msgstr "Emite el informe como JSON."
+
+#: modules/system_info/module.py
+msgid "Emit the snapshot as JSON."
+msgstr "Emite la instantánea como JSON."
+
+#: cli/commands.py
+msgid "Event bus"
+msgstr "Bus de eventos"
+
+#: cli/jobs.py
+msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
+msgstr "Patrón de eventos: 'backup.*', 'core.job.**', '*' para todos [*]."
+
+#: cli/tls.py
+msgid "Extra host name or IP the certificate covers (repeatable)."
+msgstr "Nombre de host o IP adicional que cubre el certificado (repetible)."
+
+#: modules/backup_engine/module.py
+msgid "Fail if the copy exceeds SIZE, e.g. 500MB."
+msgstr "Falla si la copia supera TAMAÑO, p. ej. 500MB."
+
+#: modules/system_info/module.py
+msgid "Filesystem path to inspect."
+msgstr "Ruta del sistema de archivos que inspeccionar."
+
+#: cli/jobs.py
+msgid "Follow the daemon's live events (Ctrl+C to stop)."
+msgstr "Sigue los eventos en vivo del demonio (Ctrl+C para detener)."
+
+#: cli/commands.py
+msgid "Hash every declared file and report drift; exit 3 on drift."
+msgstr "Calcula el hash de cada archivo declarado e informa de desviaciones; código 3 si hay desviación."
+
+#: modules/heartbeat/module.py
+msgid "Heartbeat module utilities."
+msgstr "Utilidades del módulo heartbeat."
+
+#: modules/system_info/module.py
+msgid "Host diagnostics (OS, CPU, memory, disk)."
+msgstr "Diagnóstico del host (SO, CPU, memoria, disco)."
+
+#: cli/users.py
+msgid "How many records to show [50]."
+msgstr "Cuántos registros mostrar [50]."
+
+#: cli/jobs.py
+msgid "Include routine ticks, heartbeats, and scheduler runs."
+msgstr "Incluye ticks rutinarios, heartbeats y ejecuciones del planificador."
+
+#: cli/commands.py
+msgid "Inspect auto-discovered modules."
+msgstr "Inspecciona los módulos descubiertos automáticamente."
+
+#: cli/commands.py
+msgid "Inspect the environment, configuration, logging, and modules."
+msgstr "Inspecciona el entorno, la configuración, el registro y los módulos."
+
+#: cli/commands.py
+msgid "Instance and concurrency"
+msgstr "Instancia y concurrencia"
+
+#: modules/system_info/module.py
+msgid "Interactive diagnostics menu (pick the sections to show)."
+msgstr "Menú interactivo de diagnóstico (elige las secciones que mostrar)."
+
+#: modules/backup_engine/module.py
+msgid "Interactive setup: source, destination, filters, then run."
+msgstr "Configuración interactiva: origen, destino, filtros y después ejecutar."
+
+#: cli/users.py
+msgid "Issue a new token for a user; the old one stops working."
+msgstr "Emite un nuevo token para un usuario; el anterior deja de funcionar."
+
+#: cli/language.py
+msgid "JSON object mapping each source string to its translation."
+msgstr "Objeto JSON que asigna a cada texto de origen su traducción."
+
+#: cli/jobs.py
+msgid "Job id, for example job-3."
+msgstr "Id del trabajo, por ejemplo job-3."
+
+#: cli/commands.py
+msgid "Language"
+msgstr "Idioma"
+
+#: cli/language.py
+msgid "Language code, such as de or pt_BR."
+msgstr "Código de idioma, como de o pt_BR."
+
+#: cli/jobs.py
+msgid "List background jobs, newest first."
+msgstr "Lista los trabajos en segundo plano, los más recientes primero."
+
+#: cli/commands.py
+msgid "List discovered modules and their state."
+msgstr "Lista los módulos descubiertos y su estado."
+
+#: cli/language.py
+msgid "List the languages that have a catalogue, per message domain."
+msgstr "Lista los idiomas que tienen catálogo, por dominio de mensajes."
+
+#: cli/language.py
+msgid "List the strings a language still needs, for a translator or an agent."
+msgstr "Lista los textos que aún faltan a un idioma, para un traductor o un agente."
+
+#: cli/users.py
+msgid "List users and their roles."
+msgstr "Lista los usuarios y sus roles."
+
+#: cli/jobs.py
+msgid "List, follow, or cancel commands running in the background on the daemon."
+msgstr "Lista, sigue o cancela los comandos que se ejecutan en segundo plano en el demonio."
+
+#: cli/commands.py
+msgid "Logging"
+msgstr "Registro"
+
+#: cli/users.py
+msgid "Manage named control-plane users and their roles."
+msgstr "Gestiona los usuarios con nombre del plano de control y sus roles."
+
+#: cli/commands.py
+msgid "Memory"
+msgstr "Memoria"
+
+#: cli/language.py
+msgid "Merge translations from a JSON file {source: translation}, checked."
+msgstr "Combina traducciones de un archivo JSON {origen: traducción}, tras comprobarlas."
+
+#: cli/commands.py
+msgid "Module configuration schemas"
+msgstr "Esquemas de configuración de los módulos"
+
+#: cli/commands.py
+msgid "Module name, for example backup_engine."
+msgstr "Nombre del módulo, por ejemplo backup_engine."
+
+#: cli/commands.py
+msgid "Module name; omit for all."
+msgstr "Nombre del módulo; omítelo para todos."
+
+#: cli/commands.py
+msgid "Modules"
+msgstr "Módulos"
+
+#: cli/jobs.py
+msgid "One JSON object per line."
+msgstr "Un objeto JSON por línea."
+
+#: cli/commands.py
+msgid "One-line module description."
+msgstr "Descripción del módulo en una línea."
+
+#: modules/backup_engine/module.py
+msgid "Only copy paths matching PATTERN (repeatable)."
+msgstr "Copia solo las rutas que coincidan con PATRÓN (repetible)."
+
+#: cli/commands.py
+msgid "Only show keys starting with KEY."
+msgstr "Muestra solo las claves que empiecen por CLAVE."
+
+#: cli/language.py
+msgid "Only the first N strings [all]."
+msgstr "Solo los primeros N textos [todos]."
+
+#: cli/users.py
+msgid "Only this kind of action."
+msgstr "Solo este tipo de acción."
+
+#: cli/language.py
+msgid "Only this language."
+msgstr "Solo este idioma."
+
+#: cli/language.py
+msgid "Only this message domain."
+msgstr "Solo este dominio de mensajes."
+
+#: cli/users.py
+msgid "Only this user's records."
+msgstr "Solo los registros de este usuario."
+
+#: modules/web_console/module.py
+msgid "Open the browser console (starts the daemon when none is running)."
+msgstr "Abre la consola en el navegador (inicia el demonio si no hay ninguno)."
+
+#: cli/commands.py
+msgid "Open the interactive command wizard."
+msgstr "Abre el asistente interactivo de comandos."
+
+#: modules/system_info/module.py
+msgid "Operating system"
+msgstr "Sistema operativo"
+
+#: cli/commands.py
+msgid "Paths"
+msgstr "Rutas"
+
+#: modules/system_info/module.py
+msgid "Print a full system snapshot."
+msgstr "Muestra una instantánea completa del sistema."
+
+#: cli/commands.py
+msgid "Print every resolved key with the layer that won."
+msgstr "Muestra cada clave resuelta con la capa que ganó."
+
+#: modules/heartbeat/module.py
+msgid "Print heartbeat counters and the configured interval."
+msgstr "Muestra los contadores de heartbeat y el intervalo configurado."
+
+#: cli/jobs.py
+msgid "Print new output as it arrives, until the job ends."
+msgstr "Muestra la salida nueva a medida que llega, hasta que termina el trabajo."
+
+#: cli/language.py
+msgid "Print the active language and where the choice came from."
+msgstr "Muestra el idioma activo y de dónde viene la elección."
+
+#: cli/commands.py
+msgid "Print the chassis and core API version."
+msgstr "Muestra la versión del chasis y de la API del núcleo."
+
+#: modules/web_console/module.py
+msgid "Print the console URL instead of opening a browser."
+msgstr "Muestra la URL de la consola en lugar de abrir un navegador."
+
+#: cli/commands.py
+msgid "Print the discovered config and env file paths."
+msgstr "Muestra las rutas de los archivos de configuración y env encontrados."
+
+#: cli/commands.py
+msgid "Project identity"
+msgstr "Identidad del proyecto"
+
+#: cli/commands.py
+msgid "Publish one tick and stop (CI and smoke tests)."
+msgstr "Publica un tick y termina (CI y pruebas rápidas)."
+
+#: cli/language.py
+msgid "Python source to scan [the chassis package]."
+msgstr "Código Python que analizar [el paquete del chasis]."
+
+#: cli/commands.py
+msgid "Query a running chassis over its control plane (local or remote)."
+msgstr "Consulta un chasis en ejecución a través de su plano de control (local o remoto)."
+
+#: cli/service.py
+msgid "Register the daemon to start at logon, and start it now."
+msgstr "Registra el demonio para iniciarse al iniciar sesión y lo inicia ahora."
+
+#: cli/tls.py
+msgid "Replace an existing certificate."
+msgstr "Reemplaza un certificado existente."
+
+#: cli/commands.py
+msgid "Replace an existing module directory."
+msgstr "Reemplaza un directorio de módulo existente."
+
+#: modules/system_info/module.py
+msgid "Report disk usage for a path."
+msgstr "Informa del uso de disco de una ruta."
+
+#: cli/commands.py
+msgid "Report keys nothing reads; exit 3 when a key is a typo."
+msgstr "Informa de las claves que nadie lee; código 3 si una clave es una errata."
+
+#: modules/backup_engine/module.py
+msgid "Report the retention window, standing copies, and sweep record."
+msgstr "Informa de la ventana de retención, las copias vigentes y el registro de limpieza."
+
+#: modules/backup_engine/module.py
+msgid "Report what would be copied without writing."
+msgstr "Informa de lo que se copiaría sin escribir."
+
+#: cli/commands.py
+msgid "Run it as a job and print its output live; no timeout."
+msgstr "Lo ejecuta como trabajo y muestra su salida en vivo; sin límite de tiempo."
+
+#: cli/commands.py
+msgid "Run one module command inside a live daemon instead of booting a chassis."
+msgstr "Ejecuta un comando de módulo dentro de un demonio activo en lugar de arrancar un chasis."
+
+#: modules/backup_engine/module.py
+msgid "Run the backup (copies files unless --dry-run)."
+msgstr "Ejecuta la copia (copia archivos salvo con --dry-run)."
+
+#: cli/commands.py
+msgid "Runtime"
+msgstr "Ejecución"
+
+#: cli/service.py
+msgid "Say whether the service is registered and the daemon answers."
+msgstr "Indica si el servicio está registrado y si el demonio responde."
+
+#: cli/commands.py
+msgid "Scaffold a new module package (asks for a name when omitted)."
+msgstr "Crea un nuevo paquete de módulo (pide un nombre si se omite)."
+
+#: cli/commands.py
+msgid "Scaffold a new project from the chassis template."
+msgstr "Crea un nuevo proyecto a partir de la plantilla del chasis."
+
+#: modules/system_info/module.py
+msgid "Section to display without prompting."
+msgstr "Sección que mostrar sin preguntar."
+
+#: cli/service.py
+msgid "Service name [korodexios-<project>]."
+msgstr "Nombre del servicio [korodexios-<proyecto>]."
+
+#: cli/jobs.py
+msgid "Show one job's state and output."
+msgstr "Muestra el estado y la salida de un trabajo."
+
+#: cli/commands.py
+msgid "Show one module in detail (initializes modules)."
+msgstr "Muestra un módulo en detalle (inicializa los módulos)."
+
+#: cli/service.py
+msgid "Show the definition and commands; change nothing."
+msgstr "Muestra la definición y los comandos; no cambia nada."
+
+#: cli/users.py
+msgid "Show who acted over the control plane (commands, jobs, reloads, stops)."
+msgstr "Muestra quién actuó a través del plano de control (comandos, trabajos, recargas, paradas)."
+
+#: cli/language.py
+msgid "Show, choose, and verify the language (message catalogues)."
+msgstr "Muestra, elige y verifica el idioma (catálogos de mensajes)."
+
+#: cli/commands.py
+msgid "Show, follow, truncate, or rotate the chassis log file."
+msgstr "Muestra, sigue, trunca o rota el archivo de registro del chasis."
+
+#: cli/commands.py
+msgid "Show, prove, and validate the resolved configuration."
+msgstr "Muestra, demuestra y valida la configuración resuelta."
+
+#: cli/commands.py
+msgid "Signals"
+msgstr "Señales"
+
+#: modules/backup_engine/module.py
+msgid "Skip paths matching PATTERN (repeatable)."
+msgstr "Omite las rutas que coincidan con PATRÓN (repetible)."
+
+#: modules/backup_engine/module.py
+msgid "Source directory to back up."
+msgstr "Directorio de origen de la copia."
+
+#: cli/language.py
+msgid "Start a new language: an empty catalogue built from the template."
+msgstr "Crea un nuevo idioma: un catálogo vacío construido desde la plantilla."
+
+#: cli/commands.py
+msgid "Start it as a job and return its id at once (see 'kdx jobs')."
+msgstr "Lo inicia como trabajo y devuelve su id enseguida (véase 'kdx jobs')."
+
+#: cli/service.py
+msgid "Start the daemon automatically at logon (Task Scheduler, systemd, launchd)."
+msgstr "Inicia el demonio automáticamente al iniciar sesión (Programador de tareas, systemd, launchd)."
+
+#: cli/jobs.py
+msgid "Stop after this many events (scripts, tests)."
+msgstr "Se detiene tras este número de eventos (scripts, pruebas)."
+
+#: cli/commands.py
+msgid "Stop automatically after SECONDS."
+msgstr "Se detiene automáticamente tras SEGUNDOS."
+
+#: cli/service.py
+msgid "Stop the daemon cleanly and remove the logon registration."
+msgstr "Detiene el demonio limpiamente y quita el registro de inicio de sesión."
+
+#: cli/jobs.py
+msgid "Stop the running daemon cleanly (needs the admin role)."
+msgstr "Detiene limpiamente el demonio en ejecución (requiere el rol admin)."
+
+#: modules/system_info/module.py
+msgid "Uptime"
+msgstr "Tiempo activo"
+
+#: cli/users.py
+msgid "User name (a-z, 0-9, '.', '_', '-')."
+msgstr "Nombre de usuario (a-z, 0-9, '.', '_', '-')."
+
+#: modules/backup_engine/module.py
+msgid "Validate inputs and show what a backup would copy."
+msgstr "Valida las entradas y muestra lo que copiaría una copia."
+
+#: cli/commands.py
+msgid "Verify the project's declared file set without rewriting it."
+msgstr "Verifica el conjunto de archivos declarado del proyecto sin reescribirlo."
+
+#: cli/commands.py
+msgid "a SIGHUP to the daemon does the same thing"
+msgstr "un SIGHUP al demonio hace lo mismo"
+
+#: cli/users.py
+msgid "action"
+msgstr "acción"
+
+#: cli/commands.py
+msgid "active"
+msgstr "activo"
+
+#: cli/users.py
+msgid "add one with: kdx users add NAME --role operator"
+msgstr "añade uno con: kdx users add NOMBRE --role operator"
+
+#: cli/commands.py
+msgid "app"
+msgstr "aplicación"
+
+#: cli/commands.py
+msgid "archive the log file and start a fresh one"
+msgstr "archiva el archivo de registro y empieza uno nuevo"
+
+#: cli/commands.py
+msgid "arguments as a JSON object, for example --args JSON"
+msgstr "argumentos como objeto JSON, por ejemplo --args JSON"
+
+#: cli/service.py
+msgid "asked the running daemon to stop cleanly"
+msgstr "se pidió al demonio en ejecución que se detenga limpiamente"
+
+#: cli/jobs.py
+msgid "asked {job_id} to stop; it ends at its next safe point"
+msgstr "se pidió a {job_id} que se detenga; termina en su próximo punto seguro"
+
+#: cli/commands.py
+msgid "async tasks"
+msgstr "tareas asíncronas"
+
+#: cli/commands.py
+msgid "asyncio loop"
+msgstr "bucle asyncio"
+
+#: cli/commands.py
+msgid "auth"
+msgstr "autenticación"
+
+#: cli/commands.py
+msgid "author or owner [Korodexios]"
+msgstr "autor o propietario [Korodexios]"
+
+#: cli/commands.py
+msgid "available"
+msgstr "disponible"
+
+#: cli/commands.py
+msgid "bare chassis: no example modules"
+msgstr "chasis básico: sin módulos de ejemplo"
+
+#: cli/commands.py
+msgid "bind the control plane here (0.0.0.0 for LAN access)"
+msgstr "enlaza aquí el plano de control (0.0.0.0 para acceso desde la LAN)"
+
+#: cli/language.py
+msgid "broken"
+msgstr "rotas"
+
+#: cli/users.py
+msgid "browser:  open http://HOST:8123/ui/ and paste the token"
+msgstr "navegador:  abre http://HOST:8123/ui/ y pega el token"
+
+#: cli/language.py
+msgid "built-in default"
+msgstr "valor predeterminado integrado"
+
+#: modules/backup_engine/module.py
+msgid "cancelled after {copied} file(s); the partial copy stays at {target}"
+msgstr "cancelado tras {copied} archivo(s); la copia parcial queda en {target}"
+
+#: cli/tls.py
+msgid "certificate"
+msgstr "certificado"
+
+#: cli/tls.py
+msgid "certificate ready; start the daemon with 'kdx run --tls'"
+msgstr "certificado listo; inicia el demonio con 'kdx run --tls'"
+
+#: cli/commands.py
+msgid "changed"
+msgstr "cambiado"
+
+#: cli/commands.py
+msgid "chassis"
+msgstr "chasis"
+
+#: cli/commands.py
+msgid "chassis daemon is not running"
+msgstr "el demonio del chasis no está en ejecución"
+
+#: cli/commands.py
+msgid "chassis dependency"
+msgstr "dependencia del chasis"
+
+#: cli/service.py
+msgid "check it: kdx service status   remove it: kdx service uninstall"
+msgstr "compruébalo: kdx service status   elimínalo: kdx service uninstall"
+
+#: cli/language.py
+msgid "chosen by"
+msgstr "elegido por"
+
+#: cli/commands.py
+msgid "command"
+msgstr "comando"
+
+#: cli/commands.py
+msgid "commands"
+msgstr "comandos"
+
+#: cli/commands.py
+msgid "config file"
+msgstr "archivo de configuración"
+
+#: cli/commands.py
+msgid "configuration is understood"
+msgstr "la configuración se entiende"
+
+#: cli/commands.py
+msgid "configuration reloaded; the daemon kept running"
+msgstr "configuración recargada; el demonio siguió funcionando"
+
+#: cli/language.py
+msgid "configured"
+msgstr "configurado"
+
+#: modules/backup_engine/module.py
+msgid "configured, but not run"
+msgstr "configurado, pero no ejecutado"
+
+#: modules/web_console/module.py
+msgid "console"
+msgstr "consola"
+
+#: cli/commands.py
+msgid "contract directory"
+msgstr "directorio de contratos"
+
+#: cli/commands.py
+msgid "contracts: {summary}"
+msgstr "contratos: {summary}"
+
+#: cli/commands.py
+msgid "control-plane port (0 for an ephemeral port)"
+msgstr "puerto del plano de control (0 para un puerto efímero)"
+
+#: cli/commands.py
+msgid "core api"
+msgstr "API del núcleo"
+
+#: cli/language.py
+msgid "core.locale = {value} saved in {path}"
+msgstr "core.locale = {value} guardado en {path}"
+
+#: cli/tls.py
+msgid "covers"
+msgstr "cubre"
+
+#: cli/users.py
+msgid "created"
+msgstr "creado"
+
+#: cli/commands.py
+msgid "cwd"
+msgstr "directorio de trabajo"
+
+#: cli/commands.py
+msgid "daemon"
+msgstr "demonio"
+
+#: cli/commands.py
+msgid "declared"
+msgstr "declarado"
+
+#: cli/service.py
+msgid "definition"
+msgstr "definición"
+
+#: cli/commands.py
+msgid "delivered"
+msgstr "entregado"
+
+#: cli/commands.py
+msgid "dependency cycles"
+msgstr "ciclos de dependencias"
+
+#: cli/commands.py
+msgid "depends"
+msgstr "depende de"
+
+#: cli/commands.py
+msgid "description"
+msgstr "descripción"
+
+#: cli/commands.py
+msgid "discovery file"
+msgstr "archivo de descubrimiento"
+
+#: cli/commands.py
+msgid "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir"
+msgstr "el descubrimiento necesita {parent} en core.modules.extra_paths o pasado con --modules-dir"
+
+#: cli/language.py
+msgid "domain"
+msgstr "dominio"
+
+#: cli/language.py
+msgid "done"
+msgstr "hecho"
+
+#: cli/commands.py
+msgid "drifted"
+msgstr "desviado"
+
+#: cli/commands.py
+msgid "ecosystem"
+msgstr "ecosistema"
+
+#: cli/commands.py
+msgid "endpoint"
+msgstr "punto de conexión"
+
+#: cli/commands.py
+msgid "entrypoint"
+msgstr "punto de entrada"
+
+#: cli/commands.py
+msgid "env file"
+msgstr "archivo env"
+
+#: cli/commands.py
+msgid "env prefix"
+msgstr "prefijo env"
+
+#: cli/commands.py
+msgid "error"
+msgstr "error"
+
+#: cli/commands.py
+msgid "errors served"
+msgstr "errores atendidos"
+
+#: cli/language.py
+msgid "every catalogue is complete"
+msgstr "todos los catálogos están completos"
+
+#: modules/backup_engine/module.py
+msgid "every standing copy is inside the window"
+msgstr "toda copia vigente está dentro de la ventana"
+
+#: cli/commands.py
+msgid "executable"
+msgstr "ejecutable"
+
+#: cli/jobs.py
+msgid "exit"
+msgstr "salida"
+
+#: cli/commands.py
+msgid "exit code"
+msgstr "código de salida"
+
+#: cli/commands.py
+msgid "failed"
+msgstr "fallido"
+
+#: cli/commands.py
+msgid "files written"
+msgstr "archivos escritos"
+
+#: cli/commands.py
+msgid "follow it: kdx jobs show {job_id} --follow"
+msgstr "síguelo: kdx jobs show {job_id} --follow"
+
+#: cli/jobs.py
+msgid "following events at {base_url} (Ctrl+C to stop)"
+msgstr "siguiendo eventos en {base_url} (Ctrl+C para detener)"
+
+#: modules/system_info/module.py
+msgid "free"
+msgstr "libre"
+
+#: cli/users.py
+msgid "from"
+msgstr "desde"
+
+#: cli/language.py
+msgid "fuzzy"
+msgstr "dudoso"
+
+#: cli/commands.py
+msgid "handler errors"
+msgstr "errores de manejadores"
+
+#: cli/commands.py
+msgid "health"
+msgstr "salud"
+
+#: modules/heartbeat/module.py
+msgid "heartbeat module is not registered"
+msgstr "el módulo heartbeat no está registrado"
+
+#: modules/heartbeat/module.py
+msgid "heartbeat {version} is {value}"
+msgstr "heartbeat {version} es {value}"
+
+#: cli/commands.py
+msgid "how the project resolves the chassis: git | index [git]"
+msgstr "cómo obtiene el proyecto el chasis: git | index [git]"
+
+#: cli/jobs.py
+msgid "id"
+msgstr "id"
+
+#: modules/system_info/module.py
+msgid "inodes"
+msgstr "inodos"
+
+#: cli/tls.py
+msgid "install it (Git for Windows ships one), or run this yourself:"
+msgstr "instálalo (Git for Windows incluye uno) o ejecuta esto tú mismo:"
+
+#: cli/commands.py
+msgid "instance lock"
+msgstr "bloqueo de instancia"
+
+#: cli/commands.py
+msgid "interactive mode"
+msgstr "modo interactivo"
+
+#: modules/heartbeat/module.py
+msgid "interval seconds"
+msgstr "intervalo en segundos"
+
+#: cli/commands.py
+msgid "kdx logs -n 200"
+msgstr "kdx logs -n 200"
+
+#: cli/commands.py
+msgid "kdx rpc heartbeat status -- -n 5"
+msgstr "kdx rpc heartbeat status -- -n 5"
+
+#: cli/commands.py
+msgid "kdx rpc needs a command to delegate"
+msgstr "kdx rpc necesita un comando que delegar"
+
+#: cli/commands.py
+msgid "key"
+msgstr "clave"
+
+#: cli/commands.py
+msgid "keys changed"
+msgstr "claves cambiadas"
+
+#: cli/commands.py
+msgid "keys checked"
+msgstr "claves comprobadas"
+
+#: cli/commands.py
+msgid "known keys"
+msgstr "claves conocidas"
+
+#: cli/language.py
+msgid "language"
+msgstr "idioma"
+
+#: cli/language.py
+msgid "languages"
+msgstr "idiomas"
+
+#: cli/commands.py
+msgid "lock held"
+msgstr "bloqueo retenido"
+
+#: cli/commands.py
+msgid "lock holder"
+msgstr "titular del bloqueo"
+
+#: cli/commands.py
+msgid "lock names"
+msgstr "nombres de bloqueos"
+
+#: cli/commands.py
+msgid "log file rotated to {name} ({archived} bytes archived)"
+msgstr "archivo de registro rotado a {name} ({archived} bytes archivados)"
+
+#: cli/commands.py
+msgid "log file truncated ({removed} bytes freed)"
+msgstr "archivo de registro truncado ({removed} bytes liberados)"
+
+#: cli/commands.py
+msgid "looked for {discovery_path}"
+msgstr "se buscó {discovery_path}"
+
+#: cli/jobs.py
+msgid "looked for {path}"
+msgstr "se buscó {path}"
+
+#: cli/service.py
+msgid "manager says"
+msgstr "el gestor dice"
+
+#: cli/commands.py
+msgid "match"
+msgstr "coincidencia"
+
+#: cli/language.py
+msgid "message domains"
+msgstr "dominios de mensajes"
+
+#: cli/commands.py
+msgid "missing"
+msgstr "falta"
+
+#: cli/commands.py
+msgid "module"
+msgstr "módulo"
+
+#: cli/commands.py
+msgid "module command path to delegate, for example: kdx rpc heartbeat status"
+msgstr "ruta del comando de módulo a delegar, por ejemplo: kdx rpc heartbeat status"
+
+#: cli/commands.py
+msgid "module discovery problems:"
+msgstr "problemas de descubrimiento de módulos:"
+
+#: cli/commands.py
+msgid "module routes"
+msgstr "rutas de módulos"
+
+#: cli/commands.py
+msgid "module {name} created"
+msgstr "módulo {name} creado"
+
+#: cli/commands.py
+msgid "modules"
+msgstr "módulos"
+
+#: cli/commands.py
+msgid "name"
+msgstr "nombre"
+
+#: cli/commands.py
+msgid "named locks"
+msgstr "bloqueos con nombre"
+
+#: cli/commands.py
+msgid "next: cd {root} && uv sync --extra dev && uv run {script} run"
+msgstr "siguiente: cd {root} && uv sync --extra dev && uv run {script} run"
+
+#: cli/language.py
+msgid "next: kdx locale todo {locale} --json"
+msgstr "siguiente: kdx locale todo {locale} --json"
+
+#: cli/commands.py
+msgid "next: kdx modules list"
+msgstr "siguiente: kdx modules list"
+
+#: renderer
+msgid "no"
+msgstr "no"
+
+#: cli/users.py
+msgid "no audit records yet in {path}"
+msgstr "aún no hay registros de auditoría en {path}"
+
+#: cli/jobs.py
+msgid "no background jobs yet; start one with: kdx rpc --follow COMMAND"
+msgstr "aún no hay trabajos en segundo plano; inicia uno con: kdx rpc --follow COMANDO"
+
+#: cli/language.py
+msgid "no catalogue for {locale}; run kdx locale add {locale}"
+msgstr "no hay catálogo para {locale}; ejecuta kdx locale add {locale}"
+
+#: cli/commands.py
+msgid "no chassis daemon answering; run 'kdx run' first"
+msgstr "ningún demonio del chasis responde; ejecuta primero 'kdx run'"
+
+#: cli/commands.py
+msgid "no commands are registered yet"
+msgstr "aún no hay comandos registrados"
+
+#: cli/commands.py
+msgid "no configuration keys start with {prefix}"
+msgstr "ninguna clave de configuración empieza por {prefix}"
+
+#: cli/commands.py
+msgid "no control plane answering at {base_url}"
+msgstr "ningún plano de control responde en {base_url}"
+
+#: cli/jobs.py
+msgid "no control plane answering at {base_url}: {exc}"
+msgstr "ningún plano de control responde en {base_url}: {exc}"
+
+#: cli/commands.py
+msgid "no control plane answering at {endpoint}"
+msgstr "ningún plano de control responde en {endpoint}"
+
+#: cli/jobs.py
+msgid "no daemon is answering; start one with 'kdx run'"
+msgstr "ningún demonio responde; inicia uno con 'kdx run'"
+
+#: modules/web_console/module.py
+msgid "no daemon is running and this command has no chassis"
+msgstr "no hay ningún demonio en ejecución y este comando no tiene chasis"
+
+#: cli/commands.py
+msgid "no diagnostics findings"
+msgstr "sin hallazgos de diagnóstico"
+
+#: cli/commands.py
+msgid "no log file found at {log_path}"
+msgstr "no se encontró ningún archivo de registro en {log_path}"
+
+#: cli/language.py
+msgid "no message domain named {name}; known: {known}"
+msgstr "no hay ningún dominio de mensajes llamado {name}; conocidos: {known}"
+
+#: cli/commands.py
+msgid "no module declares a configuration schema"
+msgstr "ningún módulo declara un esquema de configuración"
+
+#: cli/commands.py
+msgid "no modules discovered yet"
+msgstr "aún no se ha descubierto ningún módulo"
+
+#: cli/commands.py
+msgid "no modules registered"
+msgstr "no hay módulos registrados"
+
+#: cli/users.py
+msgid "no named users yet; the shared core.ipc.token is the owner"
+msgstr "aún no hay usuarios con nombre; el core.ipc.token compartido es el propietario"
+
+#: cli/commands.py
+msgid "no project or module declared a contract file set"
+msgstr "ningún proyecto ni módulo declaró un conjunto de archivos de contrato"
+
+#: cli/language.py
+msgid "no translations to check; only the source language exists"
+msgstr "no hay traducciones que comprobar; solo existe el idioma de origen"
+
+#: modules/backup_engine/module.py
+msgid "nothing copied yet: this was a plan"
+msgstr "aún no se ha copiado nada: esto fue un plan"
+
+#: cli/commands.py
+msgid "nothing written"
+msgstr "no se escribió nada"
+
+#: cli/language.py
+msgid "obsolete"
+msgstr "obsoleto"
+
+#: cli/tls.py
+msgid "on another machine, trust it with: kdx --tls-ca cert.pem status --target https://HOST:8123"
+msgstr "en otro equipo, confía en él con: kdx --tls-ca cert.pem status --target https://HOST:8123"
+
+#: modules/web_console/module.py
+msgid "open this URL; it carries the session token:"
+msgstr "abre esta URL; incluye el token de sesión:"
+
+#: modules/web_console/module.py
+msgid "opened the web console in your browser"
+msgstr "consola web abierta en el navegador"
+
+#: cli/tls.py
+msgid "openssl could not run: {exc}"
+msgstr "no se pudo ejecutar openssl: {exc}"
+
+#: cli/tls.py
+msgid "openssl failed: {reason}"
+msgstr "openssl falló: {reason}"
+
+#: cli/tls.py
+msgid "openssl was not found on this host"
+msgstr "no se encontró openssl en este equipo"
+
+#: cli/commands.py
+msgid "origin"
+msgstr "origen"
+
+#: cli/users.py
+msgid "outcome"
+msgstr "resultado"
+
+#: cli/commands.py
+msgid "package"
+msgstr "paquete"
+
+#: modules/backup_engine/module.py
+msgid "pass --force to copy anyway"
+msgstr "pasa --force para copiar de todos modos"
+
+#: cli/commands.py
+msgid "pass --force to replace its files"
+msgstr "pasa --force para reemplazar sus archivos"
+
+#: cli/commands.py
+msgid "pass --token TOKEN, or set core.ipc.token / KDX_CORE__IPC__TOKEN"
+msgstr "pasa --token TOKEN o define core.ipc.token / KDX_CORE__IPC__TOKEN"
+
+#: cli/commands.py
+msgid "path"
+msgstr "ruta"
+
+#: cli/commands.py
+msgid "pid"
+msgstr "pid"
+
+#: cli/language.py
+msgid "placeholders"
+msgstr "marcadores"
+
+#: cli/commands.py
+msgid "platform"
+msgstr "plataforma"
+
+#: cli/commands.py
+msgid "port of --host [core.ipc.port]"
+msgstr "puerto de --host [core.ipc.port]"
+
+#: cli/commands.py
+msgid "post to http://host:port directly, skipping the local discovery file"
+msgstr "envía directamente a http://host:port, omitiendo el archivo de descubrimiento local"
+
+#: cli/commands.py
+msgid "precedence: CLI > environment > config file > built-in defaults"
+msgstr "precedencia: CLI > entorno > archivo de configuración > valores predeterminados integrados"
+
+#: cli/commands.py
+msgid "print only log lines, no decorations"
+msgstr "muestra solo las líneas del registro, sin adornos"
+
+#: cli/commands.py
+msgid "print sensitive values in clear instead of masked"
+msgstr "muestra los valores sensibles en claro en lugar de enmascarados"
+
+#: cli/commands.py
+msgid "print the last N lines [50]"
+msgstr "muestra las últimas N líneas [50]"
+
+#: cli/commands.py
+msgid "priority"
+msgstr "prioridad"
+
+#: cli/commands.py
+msgid "process memory"
+msgstr "memoria del proceso"
+
+#: cli/commands.py
+msgid "project keys"
+msgstr "claves del proyecto"
+
+#: cli/commands.py
+msgid "project name; prompted when omitted"
+msgstr "nombre del proyecto; se pregunta si se omite"
+
+#: cli/commands.py
+msgid "project {name} created"
+msgstr "proyecto {name} creado"
+
+#: cli/commands.py
+msgid "published"
+msgstr "publicado"
+
+#: cli/commands.py
+msgid "python"
+msgstr "python"
+
+#: cli/commands.py
+msgid "python | fullstack"
+msgstr "python | fullstack"
+
+#: cli/commands.py
+msgid "query http://host:port directly, skipping the local discovery file"
+msgstr "consulta directamente http://host:port, omitiendo el archivo de descubrimiento local"
+
+#: cli/commands.py
+msgid "query this host (with --port) instead of the local endpoint"
+msgstr "consulta este host (con --port) en lugar del punto local"
+
+#: cli/service.py
+msgid "register it with: kdx service install"
+msgstr "regístralo con: kdx service install"
+
+#: cli/service.py
+msgid "registered"
+msgstr "registrado"
+
+#: cli/commands.py
+msgid "reload failed: {payload}"
+msgstr "la recarga falló: {payload}"
+
+#: cli/commands.py
+msgid "reloads"
+msgstr "recargas"
+
+#: cli/commands.py
+msgid "requests served"
+msgstr "solicitudes atendidas"
+
+#: cli/commands.py
+msgid "requires core"
+msgstr "requiere núcleo"
+
+#: cli/commands.py
+msgid "resident"
+msgstr "residente"
+
+#: cli/users.py
+msgid "role"
+msgstr "rol"
+
+#: cli/commands.py
+msgid "root"
+msgstr "raíz"
+
+#: cli/commands.py
+msgid "running"
+msgstr "en ejecución"
+
+#: cli/commands.py
+msgid "scheduled tasks"
+msgstr "tareas programadas"
+
+#: modules/heartbeat/module.py
+msgid "seconds since last beat"
+msgstr "segundos desde el último latido"
+
+#: cli/commands.py
+msgid "sensitive values are masked; pass --reveal to print them in clear"
+msgstr "los valores sensibles están enmascarados; pasa --reveal para mostrarlos en claro"
+
+#: cli/service.py
+msgid "service"
+msgstr "servicio"
+
+#: cli/commands.py
+msgid "shared token for a remote endpoint with auth enabled"
+msgstr "token compartido para un punto remoto con autenticación activada"
+
+#: cli/commands.py
+msgid "shutdown"
+msgstr "apagado"
+
+#: cli/commands.py
+msgid "slow handlers"
+msgstr "manejadores lentos"
+
+#: cli/commands.py
+msgid "source"
+msgstr "fuente"
+
+#: cli/commands.py
+msgid "start 'kdx run' again so {discovery_path} is refreshed"
+msgstr "vuelve a iniciar 'kdx run' para que se actualice {discovery_path}"
+
+#: modules/web_console/module.py
+msgid "start one with 'kdx run', then run 'kdx ui' again"
+msgstr "inicia uno con 'kdx run' y luego ejecuta 'kdx ui' otra vez"
+
+#: cli/commands.py
+msgid "started {job_id}: {command}"
+msgstr "{job_id} iniciado: {command}"
+
+#: cli/commands.py
+msgid "state"
+msgstr "estado"
+
+#: cli/commands.py
+msgid "static mounts"
+msgstr "montajes estáticos"
+
+#: cli/commands.py
+msgid "stderr encoding"
+msgstr "codificación de stderr"
+
+#: cli/commands.py
+msgid "stdin tty"
+msgstr "stdin es un terminal"
+
+#: cli/commands.py
+msgid "stdout encoding"
+msgstr "codificación de stdout"
+
+#: cli/commands.py
+msgid "stdout tty"
+msgstr "stdout es un terminal"
+
+#: cli/jobs.py
+msgid "still running; follow it with: kdx jobs show {job_id} --follow"
+msgstr "sigue en ejecución; síguelo con: kdx jobs show {job_id} --follow"
+
+#: cli/commands.py
+msgid "stop --follow after SECONDS (CI friendly)"
+msgstr "detiene --follow tras SEGUNDOS (apto para CI)"
+
+#: cli/commands.py
+msgid "stop it:   kdx jobs cancel {job_id}"
+msgstr "detenerlo:   kdx jobs cancel {job_id}"
+
+#: cli/commands.py
+msgid "stream newly appended lines until Ctrl-C"
+msgstr "muestra las líneas nuevas añadidas hasta Ctrl-C"
+
+#: cli/commands.py
+msgid "subscriptions"
+msgstr "suscripciones"
+
+#: cli/jobs.py
+msgid "talk to http(s)://host:port instead of the local daemon"
+msgstr "habla con http(s)://host:port en lugar del demonio local"
+
+#: cli/commands.py
+msgid "target directory (default: ./<name>)"
+msgstr "directorio de destino (predeterminado: ./<nombre>)"
+
+#: cli/commands.py
+msgid "task names"
+msgstr "nombres de tareas"
+
+#: cli/users.py
+msgid "terminal: kdx status --target http://HOST:8123 --token TOKEN"
+msgstr "terminal: kdx status --target http://HOST:8123 --token TOKEN"
+
+#: cli/commands.py
+msgid "the chassis reads these files and never rewrites one"
+msgstr "el chasis lee estos archivos y nunca reescribe ninguno"
+
+#: modules/web_console/module.py
+msgid "the control plane is disabled (core.ipc.enabled: false)"
+msgstr "el plano de control está desactivado (core.ipc.enabled: false)"
+
+#: cli/commands.py
+msgid "the daemon answered HTTP {code}"
+msgstr "el demonio respondió HTTP {code}"
+
+#: cli/jobs.py
+msgid "the daemon at {base_url} is stopping"
+msgstr "el demonio en {base_url} se está deteniendo"
+
+#: cli/jobs.py
+msgid "the daemon closed the feed (it is stopping)"
+msgstr "el demonio cerró el flujo (se está deteniendo)"
+
+#: cli/jobs.py
+msgid "the daemon refused the event feed (HTTP {code})"
+msgstr "el demonio rechazó el flujo de eventos (HTTP {code})"
+
+#: cli/commands.py
+msgid "the daemon rejected this client (token required)"
+msgstr "el demonio rechazó a este cliente (se requiere token)"
+
+#: cli/commands.py
+msgid "the daemon rejected this client ({endpoint} requires a token)"
+msgstr "el demonio rechazó a este cliente ({endpoint} requiere un token)"
+
+#: cli/service.py
+msgid "the daemon starts at logon and is starting now"
+msgstr "el demonio se inicia al iniciar sesión y se está iniciando ahora"
+
+#: cli/jobs.py
+msgid "the event feed ended: {exc}"
+msgstr "el flujo de eventos terminó: {exc}"
+
+#: cli/commands.py
+msgid "the live state of a running daemon: 'kdx status' or 'kdx ui'"
+msgstr "el estado en vivo de un demonio en ejecución: 'kdx status' o 'kdx ui'"
+
+#: cli/users.py
+msgid "the shared core.ipc.token is the built-in admin 'owner'"
+msgstr "el core.ipc.token compartido es el administrador integrado 'owner'"
+
+#: modules/backup_engine/module.py
+msgid "the window is off: copies stand until the window opens or a sweep is asked for"
+msgstr "la ventana está desactivada: las copias permanecen hasta que se abra la ventana o se pida una limpieza"
+
+#: modules/heartbeat/module.py
+msgid "ticker runs"
+msgstr "ejecuciones del ticker"
+
+#: modules/heartbeat/module.py
+msgid "ticker scheduled"
+msgstr "ticker programado"
+
+#: modules/heartbeat/module.py
+msgid "ticks"
+msgstr "ticks"
+
+#: cli/jobs.py
+msgid "time"
+msgstr "hora"
+
+#: cli/commands.py
+msgid "timings"
+msgstr "tiempos"
+
+#: cli/users.py
+msgid "token"
+msgstr "token"
+
+#: cli/commands.py
+msgid "total"
+msgstr "total"
+
+#: cli/commands.py
+msgid "truncate the log file (asks first)"
+msgstr "trunca el archivo de registro (pregunta antes)"
+
+#: cli/commands.py
+msgid "unknown dependencies"
+msgstr "dependencias desconocidas"
+
+#: cli/commands.py
+msgid "unknown keys"
+msgstr "claves desconocidas"
+
+#: cli/commands.py
+msgid "uptime"
+msgstr "tiempo activo"
+
+#: modules/system_info/module.py
+msgid "used"
+msgstr "usado"
+
+#: cli/jobs.py
+msgid "user"
+msgstr "usuario"
+
+#: cli/users.py
+msgid "user {name} removed; their token no longer works"
+msgstr "usuario {name} eliminado; su token ya no funciona"
+
+#: cli/commands.py
+msgid "value"
+msgstr "valor"
+
+#: cli/commands.py
+msgid "version"
+msgstr "versión"
+
+#: cli/jobs.py
+msgid "watch it with: kdx jobs show {job_id} --follow"
+msgstr "síguelo con: kdx jobs show {job_id} --follow"
+
+#: cli/commands.py
+msgid "without uv: pip install -e '.[dev]' && {script} run"
+msgstr "sin uv: pip install -e '.[dev]' && {script} run"
+
+#: cli/commands.py
+msgid "workers dead"
+msgstr "workers caídos"
+
+#: cli/commands.py
+msgid "workers watched"
+msgstr "workers vigilados"
+
+#: cli/commands.py
+msgid "write into a directory that already holds files"
+msgstr "escribe en un directorio que ya contiene archivos"
+
+#: renderer
+msgid "yes"
+msgstr "sí"
+
+#: cli/jobs.py
+msgid "your token for that daemon (core.ipc.token or one from 'kdx users add')"
+msgstr "tu token para ese demonio (core.ipc.token o uno de 'kdx users add')"
+
+#: cli/tls.py
+msgid "{cert} already exists; pass --force to replace it"
+msgstr "{cert} ya existe; pasa --force para reemplazarlo"
+
+#: modules/backup_engine/module.py
+msgid "{copied}/{total} file(s), {size} so far"
+msgstr "{copied}/{total} archivo(s), {size} hasta ahora"
+
+#: cli/language.py
+msgid "{count} catalogue(s) need attention"
+msgstr "{count} catálogo(s) requieren atención"
+
+#: cli/commands.py
+msgid "{count} configuration findings need attention"
+msgstr "{count} hallazgos de configuración requieren atención"
+
+#: cli/language.py
+msgid "{count} string(s) left for {locale}"
+msgstr "quedan {count} textos para {locale}"
+
+#: cli/language.py
+msgid "{count} strings written to {path}"
+msgstr "{count} textos escritos en {path}"
+
+#: cli/language.py
+msgid "{count} translation(s) accepted for {locale}"
+msgstr "{count} traducción(es) aceptadas para {locale}"
+
+#: cli/commands.py
+msgid "{directory} already holds a module"
+msgstr "{directory} ya contiene un módulo"
+
+#: modules/backup_engine/module.py
+msgid "{expired_now} copy(ies) stand past the window; the next sweep removes them"
+msgstr "{expired_now} copia(s) superan la ventana; la próxima limpieza las elimina"
+
+#: cli/jobs.py
+msgid "{id}  {state}  {command}  (by {value}, {seconds}s)"
+msgstr "{id}  {state}  {command}  (por {value}, {seconds}s)"
+
+#: cli/jobs.py
+msgid "{job_id} is already {state}; nothing to stop"
+msgstr "{job_id} ya está {state}; nada que detener"
+
+#: cli/commands.py
+msgid "{job_id} started; Ctrl+C stops watching, not the job"
+msgstr "{job_id} iniciado; Ctrl+C deja de seguirlo, no detiene el trabajo"
+
+#: cli/language.py
+msgid "{locale}: {added} new, {stale} obsolete"
+msgstr "{locale}: {added} nuevos, {stale} obsoletos"
+
+#: cli/users.py
+msgid "{name} is now {role}"
+msgstr "{name} ahora tiene el rol {role}"
+
+#: cli/service.py
+msgid "{name} removed; the daemon no longer starts at logon"
+msgstr "{name} eliminado; el demonio ya no se inicia al iniciar sesión"
+
+#: cli/service.py
+msgid "{name} was not registered; nothing to remove"
+msgstr "{name} no estaba registrado; nada que eliminar"
+
+#: cli/commands.py
+msgid "{name}: {count} keys, required={required} secrets={secrets}"
+msgstr "{name}: {count} claves, obligatorias={required} secretas={secrets}"
+
+#: cli/language.py
+msgid "{origin} still wins over kdx.local.yml; the new value applies once it is removed"
+msgstr "{origin} sigue teniendo prioridad sobre kdx.local.yml; el nuevo valor se aplica cuando se quite"
+
+#: cli/language.py
+msgid "{path} already exists"
+msgstr "{path} ya existe"
+
+#: cli/language.py
+msgid "{path} cannot be read as JSON: {reason}"
+msgstr "{path} no se puede leer como JSON: {reason}"
+
+#: cli/language.py
+msgid "{path} cannot be read, so it was left alone: {reason}"
+msgstr "{path} no se puede leer, así que se dejó intacto: {reason}"
+
+#: cli/language.py
+msgid "{path} could not be written: {reason}"
+msgstr "{path} no se pudo escribir: {reason}"
+
+#: cli/language.py
+msgid "{path} created"
+msgstr "{path} creado"
+
+#: cli/language.py
+msgid "{path} does not exist; run kdx locale extract"
+msgstr "{path} no existe; ejecuta kdx locale extract"
+
+#: cli/language.py
+msgid "{path} is not a directory"
+msgstr "{path} no es un directorio"
+
+#: cli/language.py
+msgid "{path} is out of date; run kdx locale extract"
+msgstr "{path} está desactualizado; ejecuta kdx locale extract"
+
+#: cli/language.py
+msgid "{path} is up to date"
+msgstr "{path} está al día"
+
+#: cli/language.py
+msgid "{path} must hold a JSON object"
+msgstr "{path} debe contener un objeto JSON"
+
+#: cli/commands.py
+msgid "{path}: declared but not found"
+msgstr "{path}: declarado pero no encontrado"
+
+#: cli/commands.py
+msgid "{path}: declared {declared}..., read {actual}..."
+msgstr "{path}: declarado {declared}..., leído {actual}..."
+
+#: cli/service.py
+msgid "{program} could not run: {exc}"
+msgstr "{program} no se pudo ejecutar: {exc}"
+
+#: cli/service.py
+msgid "{shown} failed: {value}"
+msgstr "{shown} falló: {value}"
+
+#: cli/language.py
+msgid "{value} is not a language code; use a form such as sk or sk_SK, or 'auto'"
+msgstr "{value} no es un código de idioma; usa una forma como sk o sk_SK, o 'auto'"
+
+#: cli/language.py
+msgid "{value} is not a language to translate into"
+msgstr "{value} no es un idioma al que se pueda traducir"
+
+#: cli/users.py
+msgid "{verb}; this token is shown only now - hand it over privately"
+msgstr "{verb}; este token solo se muestra ahora - entrégalo en privado"

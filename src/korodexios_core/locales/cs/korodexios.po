@@ -1,0 +1,1703 @@
+# Translation of the korodexios domain into cs.
+msgid ""
+msgstr ""
+"Language: cs
+"
+"Content-Type: text/plain; charset=UTF-8
+"
+
+#: cli/commands.py
+msgid "  [optional] {name}: needs {module} - {hint}"
+msgstr "  [volitelné] {name}: potřebuje {module} - {hint}"
+
+#: cli/commands.py
+msgid "  [skipped] {name}: {reason}"
+msgstr "  [přeskočeno] {name}: {reason}"
+
+#: renderer
+msgid "(empty)"
+msgstr "(prázdné)"
+
+#: cli/commands.py
+msgid "+{hidden} more findings; pass --json for all of them"
+msgstr "+{hidden} dalších nálezů; všechny vypíše --json"
+
+#: cli/commands.py
+msgid "--args is not valid JSON: {exc}"
+msgstr "--args není platný JSON: {exc}"
+
+#: cli/commands.py
+msgid "--args must be a JSON object"
+msgstr "--args musí být objekt JSON"
+
+#: cli/commands.py
+msgid "--lines must be at least 1, got {count}"
+msgstr "--lines musí být alespoň 1, zadáno {count}"
+
+#: cli/service.py
+msgid "--print changed nothing"
+msgstr "--print nic nezměnil"
+
+#: cli/commands.py
+msgid "--rotate and --clear are mutually exclusive"
+msgstr "--rotate a --clear se navzájem vylučují"
+
+#: cli/jobs.py
+msgid "Ask a job to stop (its command decides when it can)."
+msgstr "Požádá úlohu o zastavení (kdy se zastaví, určuje její příkaz)."
+
+#: cli/commands.py
+msgid "Ask a running daemon to re-read its configuration (SIGHUP over IPC)."
+msgstr "Požádá běžícího démona, aby znovu načetl konfiguraci (SIGHUP přes IPC)."
+
+#: modules/backup_engine/module.py
+msgid "Backup engine: plan, run, or configure a backup."
+msgstr "Zálohování: naplánuje, spustí nebo nastaví zálohu."
+
+#: modules/backup_engine/module.py
+msgid "Backup plan"
+msgstr "Plán zálohy"
+
+#: modules/backup_engine/module.py
+msgid "Backup result"
+msgstr "Výsledek zálohy"
+
+#: modules/backup_engine/module.py
+msgid "Backup retention"
+msgstr "Uchovávání záloh"
+
+#: modules/system_info/module.py
+msgid "CPU"
+msgstr "CPU"
+
+#: cli/users.py
+msgid "Change a user's role."
+msgstr "Změní roli uživatele."
+
+#: cli/language.py
+msgid "Change nothing; exit 3 when the template is out of date."
+msgstr "Nic nemění; skončí kódem 3, je-li šablona zastaralá."
+
+#: cli/commands.py
+msgid "Chassis"
+msgstr "Šasi"
+
+#: cli/commands.py
+msgid "Chassis primitives"
+msgstr "Základní prvky šasi"
+
+#: cli/language.py
+msgid "Check the file and report; write nothing."
+msgstr "Zkontroluje soubor a ohlásí výsledek; nic nezapíše."
+
+#: cli/language.py
+msgid "Choose the language for this machine (writes kdx.local.yml)."
+msgstr "Zvolí jazyk pro tento počítač (zapíše kdx.local.yml)."
+
+#: cli/language.py
+msgid "Collect translatable strings into the template and update translations."
+msgstr "Sbírá přeložitelné texty do šablony a doplňuje překlady."
+
+#: cli/language.py
+msgid "Compare catalogues with their templates; exit 3 when one is incomplete."
+msgstr "Porovná katalogy s jejich šablonami; skončí kódem 3, je-li některý neúplný."
+
+#: cli/commands.py
+msgid "Configuration"
+msgstr "Konfigurace"
+
+#: cli/commands.py
+msgid "Contracts"
+msgstr "Kontrakty"
+
+#: cli/commands.py
+msgid "Control plane"
+msgstr "Řídicí rovina"
+
+#: modules/backup_engine/module.py
+msgid "Copy even when the size budget is exceeded."
+msgstr "Zkopíruje i při překročení limitu velikosti."
+
+#: cli/tls.py
+msgid "Create a self-signed certificate for 'kdx run --tls'."
+msgstr "Vytvoří samopodepsaný certifikát pro 'kdx run --tls'."
+
+#: cli/users.py
+msgid "Create a user; prints the new token once."
+msgstr "Vytvoří uživatele; nový token vypíše jen jednou."
+
+#: cli/tls.py
+msgid "Create the certificate for an https control plane."
+msgstr "Vytvoří certifikát pro řídicí rovinu přes https."
+
+#: cli/users.py
+msgid "Delete a user; their token stops working at once."
+msgstr "Smaže uživatele; jeho token okamžitě přestane platit."
+
+#: modules/backup_engine/module.py
+msgid "Destination directory for copies."
+msgstr "Cílový adresář pro kopie."
+
+#: cli/commands.py
+msgid "Diagnostics"
+msgstr "Diagnostika"
+
+#: cli/commands.py
+msgid "Directory to create the module in."
+msgstr "Adresář, ve kterém se modul vytvoří."
+
+#: modules/system_info/module.py
+msgid "Disk"
+msgstr "Disk"
+
+#: cli/jobs.py
+msgid "Emit JSON."
+msgstr "Vypíše JSON."
+
+#: modules/heartbeat/module.py
+msgid "Emit machine-readable JSON."
+msgstr "Vypíše strojově čitelný JSON."
+
+#: cli/commands.py
+msgid "Emit the created files as JSON."
+msgstr "Vypíše vytvořené soubory jako JSON."
+
+#: cli/commands.py
+msgid "Emit the daemon's reply as JSON."
+msgstr "Vypíše odpověď démona jako JSON."
+
+#: cli/commands.py
+msgid "Emit the detail as JSON."
+msgstr "Vypíše detail jako JSON."
+
+#: cli/commands.py
+msgid "Emit the listing as JSON."
+msgstr "Vypíše seznam jako JSON."
+
+#: cli/commands.py
+msgid "Emit the live report as JSON."
+msgstr "Vypíše živý report jako JSON."
+
+#: cli/commands.py
+msgid "Emit the mapping as JSON."
+msgstr "Vypíše mapování jako JSON."
+
+#: cli/commands.py
+msgid "Emit the reload summary as JSON."
+msgstr "Vypíše souhrn načtení jako JSON."
+
+#: cli/commands.py
+msgid "Emit the report as JSON."
+msgstr "Vypíše report jako JSON."
+
+#: modules/system_info/module.py
+msgid "Emit the snapshot as JSON."
+msgstr "Vypíše snímek jako JSON."
+
+#: cli/commands.py
+msgid "Event bus"
+msgstr "Sběrnice událostí"
+
+#: cli/jobs.py
+msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
+msgstr "Vzor událostí: 'backup.*', 'core.job.**', '*' pro všechny [*]."
+
+#: cli/tls.py
+msgid "Extra host name or IP the certificate covers (repeatable)."
+msgstr "Další název hostitele nebo IP, které certifikát pokrývá (opakovatelné)."
+
+#: modules/backup_engine/module.py
+msgid "Fail if the copy exceeds SIZE, e.g. 500MB."
+msgstr "Selže, pokud kopie překročí VELIKOST, např. 500MB."
+
+#: modules/system_info/module.py
+msgid "Filesystem path to inspect."
+msgstr "Cesta v souborovém systému ke kontrole."
+
+#: cli/jobs.py
+msgid "Follow the daemon's live events (Ctrl+C to stop)."
+msgstr "Sleduje události démona živě (zastavíš je Ctrl+C)."
+
+#: cli/commands.py
+msgid "Hash every declared file and report drift; exit 3 on drift."
+msgstr "Spočítá hash každého deklarovaného souboru a ohlásí odchylky; při odchylce skončí kódem 3."
+
+#: modules/heartbeat/module.py
+msgid "Heartbeat module utilities."
+msgstr "Nástroje modulu heartbeat."
+
+#: modules/system_info/module.py
+msgid "Host diagnostics (OS, CPU, memory, disk)."
+msgstr "Diagnostika hostitele (OS, CPU, paměť, disk)."
+
+#: cli/users.py
+msgid "How many records to show [50]."
+msgstr "Kolik záznamů zobrazit [50]."
+
+#: cli/jobs.py
+msgid "Include routine ticks, heartbeats, and scheduler runs."
+msgstr "Zahrne pravidelné tiky, heartbeaty a běhy plánovače."
+
+#: cli/commands.py
+msgid "Inspect auto-discovered modules."
+msgstr "Prozkoumá automaticky nalezené moduly."
+
+#: cli/commands.py
+msgid "Inspect the environment, configuration, logging, and modules."
+msgstr "Zkontroluje prostředí, konfiguraci, logování a moduly."
+
+#: cli/commands.py
+msgid "Instance and concurrency"
+msgstr "Instance a souběžnost"
+
+#: modules/system_info/module.py
+msgid "Interactive diagnostics menu (pick the sections to show)."
+msgstr "Interaktivní menu diagnostiky (vyber sekce k zobrazení)."
+
+#: modules/backup_engine/module.py
+msgid "Interactive setup: source, destination, filters, then run."
+msgstr "Interaktivní nastavení: zdroj, cíl, filtry a poté spuštění."
+
+#: cli/users.py
+msgid "Issue a new token for a user; the old one stops working."
+msgstr "Vydá uživateli nový token; starý přestane platit."
+
+#: cli/language.py
+msgid "JSON object mapping each source string to its translation."
+msgstr "Objekt JSON, který přiřadí každému zdrojovému textu jeho překlad."
+
+#: cli/jobs.py
+msgid "Job id, for example job-3."
+msgstr "Id úlohy, například job-3."
+
+#: cli/commands.py
+msgid "Language"
+msgstr "Jazyk"
+
+#: cli/language.py
+msgid "Language code, such as de or pt_BR."
+msgstr "Kód jazyka, například de nebo pt_BR."
+
+#: cli/jobs.py
+msgid "List background jobs, newest first."
+msgstr "Vypíše úlohy na pozadí, nejnovější první."
+
+#: cli/commands.py
+msgid "List discovered modules and their state."
+msgstr "Vypíše nalezené moduly a jejich stav."
+
+#: cli/language.py
+msgid "List the languages that have a catalogue, per message domain."
+msgstr "Vypíše jazyky, které mají katalog, podle domény zpráv."
+
+#: cli/language.py
+msgid "List the strings a language still needs, for a translator or an agent."
+msgstr "Vypíše texty, které jazyku ještě chybí, pro překladatele nebo agenta."
+
+#: cli/users.py
+msgid "List users and their roles."
+msgstr "Vypíše uživatele a jejich role."
+
+#: cli/jobs.py
+msgid "List, follow, or cancel commands running in the background on the daemon."
+msgstr "Vypíše, sleduje nebo zruší příkazy běžící na pozadí v démonovi."
+
+#: cli/commands.py
+msgid "Logging"
+msgstr "Logování"
+
+#: cli/users.py
+msgid "Manage named control-plane users and their roles."
+msgstr "Spravuje pojmenované uživatele řídicí roviny a jejich role."
+
+#: cli/commands.py
+msgid "Memory"
+msgstr "Paměť"
+
+#: cli/language.py
+msgid "Merge translations from a JSON file {source: translation}, checked."
+msgstr "Sloučí překlady ze souboru JSON {zdroj: překlad} po kontrole."
+
+#: cli/commands.py
+msgid "Module configuration schemas"
+msgstr "Schémata konfigurace modulů"
+
+#: cli/commands.py
+msgid "Module name, for example backup_engine."
+msgstr "Název modulu, například backup_engine."
+
+#: cli/commands.py
+msgid "Module name; omit for all."
+msgstr "Název modulu; bez něj všechny."
+
+#: cli/commands.py
+msgid "Modules"
+msgstr "Moduly"
+
+#: cli/jobs.py
+msgid "One JSON object per line."
+msgstr "Jeden objekt JSON na řádek."
+
+#: cli/commands.py
+msgid "One-line module description."
+msgstr "Jednořádkový popis modulu."
+
+#: modules/backup_engine/module.py
+msgid "Only copy paths matching PATTERN (repeatable)."
+msgstr "Zkopíruje pouze cesty odpovídající VZORU (opakovatelné)."
+
+#: cli/commands.py
+msgid "Only show keys starting with KEY."
+msgstr "Zobrazí pouze klíče začínající na KLÍČ."
+
+#: cli/language.py
+msgid "Only the first N strings [all]."
+msgstr "Pouze prvních N textů [všechny]."
+
+#: cli/users.py
+msgid "Only this kind of action."
+msgstr "Pouze tento druh akce."
+
+#: cli/language.py
+msgid "Only this language."
+msgstr "Pouze tento jazyk."
+
+#: cli/language.py
+msgid "Only this message domain."
+msgstr "Pouze tato doména zpráv."
+
+#: cli/users.py
+msgid "Only this user's records."
+msgstr "Pouze záznamy tohoto uživatele."
+
+#: modules/web_console/module.py
+msgid "Open the browser console (starts the daemon when none is running)."
+msgstr "Otevře konzoli v prohlížeči (pokud démon neběží, spustí ho)."
+
+#: cli/commands.py
+msgid "Open the interactive command wizard."
+msgstr "Otevře interaktivního průvodce příkazy."
+
+#: modules/system_info/module.py
+msgid "Operating system"
+msgstr "Operační systém"
+
+#: cli/commands.py
+msgid "Paths"
+msgstr "Cesty"
+
+#: modules/system_info/module.py
+msgid "Print a full system snapshot."
+msgstr "Vypíše úplný snímek systému."
+
+#: cli/commands.py
+msgid "Print every resolved key with the layer that won."
+msgstr "Vypíše každý vyřešený klíč s vrstvou, která zvítězila."
+
+#: modules/heartbeat/module.py
+msgid "Print heartbeat counters and the configured interval."
+msgstr "Vypíše čítače heartbeatu a nastavený interval."
+
+#: cli/jobs.py
+msgid "Print new output as it arrives, until the job ends."
+msgstr "Průběžně vypisuje nový výstup, dokud úloha neskončí."
+
+#: cli/language.py
+msgid "Print the active language and where the choice came from."
+msgstr "Vypíše aktivní jazyk a odkud se jeho volba vzala."
+
+#: cli/commands.py
+msgid "Print the chassis and core API version."
+msgstr "Vypíše verzi šasi a core API."
+
+#: modules/web_console/module.py
+msgid "Print the console URL instead of opening a browser."
+msgstr "Vypíše adresu konzole místo otevření prohlížeče."
+
+#: cli/commands.py
+msgid "Print the discovered config and env file paths."
+msgstr "Vypíše cesty nalezených konfiguračních souborů a souboru env."
+
+#: cli/commands.py
+msgid "Project identity"
+msgstr "Identita projektu"
+
+#: cli/commands.py
+msgid "Publish one tick and stop (CI and smoke tests)."
+msgstr "Publikuje jeden tik a skončí (CI a rychlé testy)."
+
+#: cli/language.py
+msgid "Python source to scan [the chassis package]."
+msgstr "Zdrojový kód v Pythonu k prohledání [balíček šasi]."
+
+#: cli/commands.py
+msgid "Query a running chassis over its control plane (local or remote)."
+msgstr "Zeptá se běžícího šasi přes řídicí rovinu (lokálně nebo vzdáleně)."
+
+#: cli/service.py
+msgid "Register the daemon to start at logon, and start it now."
+msgstr "Zaregistruje démona ke spuštění při přihlášení a hned ho spustí."
+
+#: cli/tls.py
+msgid "Replace an existing certificate."
+msgstr "Nahradí existující certifikát."
+
+#: cli/commands.py
+msgid "Replace an existing module directory."
+msgstr "Nahradí existující adresář modulu."
+
+#: modules/system_info/module.py
+msgid "Report disk usage for a path."
+msgstr "Ohlásí využití disku pro cestu."
+
+#: cli/commands.py
+msgid "Report keys nothing reads; exit 3 when a key is a typo."
+msgstr "Ohlásí klíče, které nic nečte; je-li klíč překlep, skončí kódem 3."
+
+#: modules/backup_engine/module.py
+msgid "Report the retention window, standing copies, and sweep record."
+msgstr "Ohlásí okno uchovávání, platné kopie a záznam o čištění."
+
+#: modules/backup_engine/module.py
+msgid "Report what would be copied without writing."
+msgstr "Ohlásí, co by se zkopírovalo, bez zápisu."
+
+#: cli/commands.py
+msgid "Run it as a job and print its output live; no timeout."
+msgstr "Spustí ho jako úlohu a vypisuje výstup živě; bez časového limitu."
+
+#: cli/commands.py
+msgid "Run one module command inside a live daemon instead of booting a chassis."
+msgstr "Spustí příkaz modulu v běžícím démonovi místo startu šasi."
+
+#: modules/backup_engine/module.py
+msgid "Run the backup (copies files unless --dry-run)."
+msgstr "Spustí zálohu (kopíruje soubory, pokud není --dry-run)."
+
+#: cli/commands.py
+msgid "Runtime"
+msgstr "Běh"
+
+#: cli/service.py
+msgid "Say whether the service is registered and the daemon answers."
+msgstr "Řekne, zda je služba registrována a zda démon odpovídá."
+
+#: cli/commands.py
+msgid "Scaffold a new module package (asks for a name when omitted)."
+msgstr "Vytvoří kostru nového modulu (bez názvu se na něj zeptá)."
+
+#: cli/commands.py
+msgid "Scaffold a new project from the chassis template."
+msgstr "Vytvoří kostru nového projektu ze šablony šasi."
+
+#: modules/system_info/module.py
+msgid "Section to display without prompting."
+msgstr "Sekce k zobrazení bez ptaní."
+
+#: cli/service.py
+msgid "Service name [korodexios-<project>]."
+msgstr "Název služby [korodexios-<projekt>]."
+
+#: cli/jobs.py
+msgid "Show one job's state and output."
+msgstr "Zobrazí stav a výstup jedné úlohy."
+
+#: cli/commands.py
+msgid "Show one module in detail (initializes modules)."
+msgstr "Zobrazí jeden modul podrobně (inicializuje moduly)."
+
+#: cli/service.py
+msgid "Show the definition and commands; change nothing."
+msgstr "Zobrazí definici a příkazy; nic nemění."
+
+#: cli/users.py
+msgid "Show who acted over the control plane (commands, jobs, reloads, stops)."
+msgstr "Zobrazí, kdo jednal přes řídicí rovinu (příkazy, úlohy, načtení, zastavení)."
+
+#: cli/language.py
+msgid "Show, choose, and verify the language (message catalogues)."
+msgstr "Zobrazí, zvolí a ověří jazyk (katalogy zpráv)."
+
+#: cli/commands.py
+msgid "Show, follow, truncate, or rotate the chassis log file."
+msgstr "Zobrazí, sleduje, vyprázdní nebo rotuje logový soubor šasi."
+
+#: cli/commands.py
+msgid "Show, prove, and validate the resolved configuration."
+msgstr "Zobrazí, prokáže a ověří vyřešenou konfiguraci."
+
+#: cli/commands.py
+msgid "Signals"
+msgstr "Signály"
+
+#: modules/backup_engine/module.py
+msgid "Skip paths matching PATTERN (repeatable)."
+msgstr "Přeskočí cesty odpovídající VZORU (opakovatelné)."
+
+#: modules/backup_engine/module.py
+msgid "Source directory to back up."
+msgstr "Zdrojový adresář k zálohování."
+
+#: cli/language.py
+msgid "Start a new language: an empty catalogue built from the template."
+msgstr "Založí nový jazyk: prázdný katalog vytvořený ze šablony."
+
+#: cli/commands.py
+msgid "Start it as a job and return its id at once (see 'kdx jobs')."
+msgstr "Spustí ho jako úlohu a hned vrátí její id (viz 'kdx jobs')."
+
+#: cli/service.py
+msgid "Start the daemon automatically at logon (Task Scheduler, systemd, launchd)."
+msgstr "Spustí démona automaticky při přihlášení (Plánovač úloh, systemd, launchd)."
+
+#: cli/jobs.py
+msgid "Stop after this many events (scripts, tests)."
+msgstr "Skončí po tomto počtu událostí (skripty, testy)."
+
+#: cli/commands.py
+msgid "Stop automatically after SECONDS."
+msgstr "Automaticky skončí po SEKUNDÁCH."
+
+#: cli/service.py
+msgid "Stop the daemon cleanly and remove the logon registration."
+msgstr "Čistě zastaví démona a odstraní registraci při přihlášení."
+
+#: cli/jobs.py
+msgid "Stop the running daemon cleanly (needs the admin role)."
+msgstr "Čistě zastaví běžícího démona (vyžaduje roli admin)."
+
+#: modules/system_info/module.py
+msgid "Uptime"
+msgstr "Doba běhu"
+
+#: cli/users.py
+msgid "User name (a-z, 0-9, '.', '_', '-')."
+msgstr "Jméno uživatele (a-z, 0-9, '.', '_', '-')."
+
+#: modules/backup_engine/module.py
+msgid "Validate inputs and show what a backup would copy."
+msgstr "Ověří vstupy a ukáže, co by záloha zkopírovala."
+
+#: cli/commands.py
+msgid "Verify the project's declared file set without rewriting it."
+msgstr "Ověří deklarovanou sadu souborů projektu bez jejího přepsání."
+
+#: cli/commands.py
+msgid "a SIGHUP to the daemon does the same thing"
+msgstr "totéž udělá SIGHUP poslaný démonovi"
+
+#: cli/users.py
+msgid "action"
+msgstr "akce"
+
+#: cli/commands.py
+msgid "active"
+msgstr "aktivní"
+
+#: cli/users.py
+msgid "add one with: kdx users add NAME --role operator"
+msgstr "přidej ho přes: kdx users add JMÉNO --role operator"
+
+#: cli/commands.py
+msgid "app"
+msgstr "aplikace"
+
+#: cli/commands.py
+msgid "archive the log file and start a fresh one"
+msgstr "archivuje logový soubor a začne nový"
+
+#: cli/commands.py
+msgid "arguments as a JSON object, for example --args JSON"
+msgstr "argumenty jako objekt JSON, například --args JSON"
+
+#: cli/service.py
+msgid "asked the running daemon to stop cleanly"
+msgstr "požádal jsem běžícího démona o čisté zastavení"
+
+#: cli/jobs.py
+msgid "asked {job_id} to stop; it ends at its next safe point"
+msgstr "požádal jsem {job_id} o zastavení; skončí v nejbližším bezpečném bodě"
+
+#: cli/commands.py
+msgid "async tasks"
+msgstr "asynchronní úlohy"
+
+#: cli/commands.py
+msgid "asyncio loop"
+msgstr "smyčka asyncio"
+
+#: cli/commands.py
+msgid "auth"
+msgstr "ověřování"
+
+#: cli/commands.py
+msgid "author or owner [Korodexios]"
+msgstr "autor nebo vlastník [Korodexios]"
+
+#: cli/commands.py
+msgid "available"
+msgstr "dostupné"
+
+#: cli/commands.py
+msgid "bare chassis: no example modules"
+msgstr "holé šasi: bez ukázkových modulů"
+
+#: cli/commands.py
+msgid "bind the control plane here (0.0.0.0 for LAN access)"
+msgstr "zpřístupní řídicí rovinu zde (0.0.0.0 pro přístup z LAN)"
+
+#: cli/language.py
+msgid "broken"
+msgstr "porušené"
+
+#: cli/users.py
+msgid "browser:  open http://HOST:8123/ui/ and paste the token"
+msgstr "prohlížeč: otevři http://HOST:8123/ui/ a vlož token"
+
+#: cli/language.py
+msgid "built-in default"
+msgstr "vestavěná výchozí hodnota"
+
+#: modules/backup_engine/module.py
+msgid "cancelled after {copied} file(s); the partial copy stays at {target}"
+msgstr "zrušeno po {copied} souboru(ech); částečná kopie zůstává v {target}"
+
+#: cli/tls.py
+msgid "certificate"
+msgstr "certifikát"
+
+#: cli/tls.py
+msgid "certificate ready; start the daemon with 'kdx run --tls'"
+msgstr "certifikát je připraven; spusť démona přes 'kdx run --tls'"
+
+#: cli/commands.py
+msgid "changed"
+msgstr "změněno"
+
+#: cli/commands.py
+msgid "chassis"
+msgstr "šasi"
+
+#: cli/commands.py
+msgid "chassis daemon is not running"
+msgstr "démon šasi neběží"
+
+#: cli/commands.py
+msgid "chassis dependency"
+msgstr "závislost na šasi"
+
+#: cli/service.py
+msgid "check it: kdx service status   remove it: kdx service uninstall"
+msgstr "ověř: kdx service status   odstraň: kdx service uninstall"
+
+#: cli/language.py
+msgid "chosen by"
+msgstr "zvolil"
+
+#: cli/commands.py
+msgid "command"
+msgstr "příkaz"
+
+#: cli/commands.py
+msgid "commands"
+msgstr "příkazy"
+
+#: cli/commands.py
+msgid "config file"
+msgstr "konfigurační soubor"
+
+#: cli/commands.py
+msgid "configuration is understood"
+msgstr "konfigurace je srozumitelná"
+
+#: cli/commands.py
+msgid "configuration reloaded; the daemon kept running"
+msgstr "konfigurace byla znovu načtena; démon běžel dál"
+
+#: cli/language.py
+msgid "configured"
+msgstr "nastaveno"
+
+#: modules/backup_engine/module.py
+msgid "configured, but not run"
+msgstr "nastaveno, ale nespuštěno"
+
+#: modules/web_console/module.py
+msgid "console"
+msgstr "konzole"
+
+#: cli/commands.py
+msgid "contract directory"
+msgstr "adresář kontraktů"
+
+#: cli/commands.py
+msgid "contracts: {summary}"
+msgstr "kontrakty: {summary}"
+
+#: cli/commands.py
+msgid "control-plane port (0 for an ephemeral port)"
+msgstr "port řídicí roviny (0 pro dočasný port)"
+
+#: cli/commands.py
+msgid "core api"
+msgstr "core API"
+
+#: cli/language.py
+msgid "core.locale = {value} saved in {path}"
+msgstr "core.locale = {value} uloženo v {path}"
+
+#: cli/tls.py
+msgid "covers"
+msgstr "pokrývá"
+
+#: cli/users.py
+msgid "created"
+msgstr "vytvořeno"
+
+#: cli/commands.py
+msgid "cwd"
+msgstr "pracovní adresář"
+
+#: cli/commands.py
+msgid "daemon"
+msgstr "démon"
+
+#: cli/commands.py
+msgid "declared"
+msgstr "deklarováno"
+
+#: cli/service.py
+msgid "definition"
+msgstr "definice"
+
+#: cli/commands.py
+msgid "delivered"
+msgstr "doručeno"
+
+#: cli/commands.py
+msgid "dependency cycles"
+msgstr "cykly závislostí"
+
+#: cli/commands.py
+msgid "depends"
+msgstr "závisí na"
+
+#: cli/commands.py
+msgid "description"
+msgstr "popis"
+
+#: cli/commands.py
+msgid "discovery file"
+msgstr "soubor objevování"
+
+#: cli/commands.py
+msgid "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir"
+msgstr "objevování potřebuje {parent} v core.modules.extra_paths nebo zadané přes --modules-dir"
+
+#: cli/language.py
+msgid "domain"
+msgstr "doména"
+
+#: cli/language.py
+msgid "done"
+msgstr "hotovo"
+
+#: cli/commands.py
+msgid "drifted"
+msgstr "odchýleno"
+
+#: cli/commands.py
+msgid "ecosystem"
+msgstr "ekosystém"
+
+#: cli/commands.py
+msgid "endpoint"
+msgstr "koncový bod"
+
+#: cli/commands.py
+msgid "entrypoint"
+msgstr "vstupní bod"
+
+#: cli/commands.py
+msgid "env file"
+msgstr "soubor env"
+
+#: cli/commands.py
+msgid "env prefix"
+msgstr "prefix env"
+
+#: cli/commands.py
+msgid "error"
+msgstr "chyba"
+
+#: cli/commands.py
+msgid "errors served"
+msgstr "obsloužené chyby"
+
+#: cli/language.py
+msgid "every catalogue is complete"
+msgstr "každý katalog je úplný"
+
+#: modules/backup_engine/module.py
+msgid "every standing copy is inside the window"
+msgstr "každá platná kopie je v okně"
+
+#: cli/commands.py
+msgid "executable"
+msgstr "spustitelný soubor"
+
+#: cli/jobs.py
+msgid "exit"
+msgstr "konec"
+
+#: cli/commands.py
+msgid "exit code"
+msgstr "kód ukončení"
+
+#: cli/commands.py
+msgid "failed"
+msgstr "selhalo"
+
+#: cli/commands.py
+msgid "files written"
+msgstr "zapsané soubory"
+
+#: cli/commands.py
+msgid "follow it: kdx jobs show {job_id} --follow"
+msgstr "sleduj ji: kdx jobs show {job_id} --follow"
+
+#: cli/jobs.py
+msgid "following events at {base_url} (Ctrl+C to stop)"
+msgstr "sleduji události na {base_url} (zastavíš Ctrl+C)"
+
+#: modules/system_info/module.py
+msgid "free"
+msgstr "volné"
+
+#: cli/users.py
+msgid "from"
+msgstr "od"
+
+#: cli/language.py
+msgid "fuzzy"
+msgstr "nepřesné"
+
+#: cli/commands.py
+msgid "handler errors"
+msgstr "chyby obslužných funkcí"
+
+#: cli/commands.py
+msgid "health"
+msgstr "zdraví"
+
+#: modules/heartbeat/module.py
+msgid "heartbeat module is not registered"
+msgstr "modul heartbeat není registrován"
+
+#: modules/heartbeat/module.py
+msgid "heartbeat {version} is {value}"
+msgstr "heartbeat {version} je {value}"
+
+#: cli/commands.py
+msgid "how the project resolves the chassis: git | index [git]"
+msgstr "jak projekt získá šasi: git | index [git]"
+
+#: cli/jobs.py
+msgid "id"
+msgstr "id"
+
+#: modules/system_info/module.py
+msgid "inodes"
+msgstr "inody"
+
+#: cli/tls.py
+msgid "install it (Git for Windows ships one), or run this yourself:"
+msgstr "nainstaluj ho (Git for Windows ho obsahuje), nebo to spusť sám:"
+
+#: cli/commands.py
+msgid "instance lock"
+msgstr "zámek instance"
+
+#: cli/commands.py
+msgid "interactive mode"
+msgstr "interaktivní režim"
+
+#: modules/heartbeat/module.py
+msgid "interval seconds"
+msgstr "interval v sekundách"
+
+#: cli/commands.py
+msgid "kdx logs -n 200"
+msgstr "kdx logs -n 200"
+
+#: cli/commands.py
+msgid "kdx rpc heartbeat status -- -n 5"
+msgstr "kdx rpc heartbeat status -- -n 5"
+
+#: cli/commands.py
+msgid "kdx rpc needs a command to delegate"
+msgstr "kdx rpc potřebuje příkaz k delegování"
+
+#: cli/commands.py
+msgid "key"
+msgstr "klíč"
+
+#: cli/commands.py
+msgid "keys changed"
+msgstr "změněné klíče"
+
+#: cli/commands.py
+msgid "keys checked"
+msgstr "zkontrolované klíče"
+
+#: cli/commands.py
+msgid "known keys"
+msgstr "známé klíče"
+
+#: cli/language.py
+msgid "language"
+msgstr "jazyk"
+
+#: cli/language.py
+msgid "languages"
+msgstr "jazyky"
+
+#: cli/commands.py
+msgid "lock held"
+msgstr "zámek držen"
+
+#: cli/commands.py
+msgid "lock holder"
+msgstr "držitel zámku"
+
+#: cli/commands.py
+msgid "lock names"
+msgstr "názvy zámků"
+
+#: cli/commands.py
+msgid "log file rotated to {name} ({archived} bytes archived)"
+msgstr "logový soubor byl rotován do {name} (archivováno {archived} bajtů)"
+
+#: cli/commands.py
+msgid "log file truncated ({removed} bytes freed)"
+msgstr "logový soubor byl vyprázdněn (uvolněno {removed} bajtů)"
+
+#: cli/commands.py
+msgid "looked for {discovery_path}"
+msgstr "hledal jsem {discovery_path}"
+
+#: cli/jobs.py
+msgid "looked for {path}"
+msgstr "hledal jsem {path}"
+
+#: cli/service.py
+msgid "manager says"
+msgstr "správce hlásí"
+
+#: cli/commands.py
+msgid "match"
+msgstr "shoda"
+
+#: cli/language.py
+msgid "message domains"
+msgstr "domény zpráv"
+
+#: cli/commands.py
+msgid "missing"
+msgstr "chybí"
+
+#: cli/commands.py
+msgid "module"
+msgstr "modul"
+
+#: cli/commands.py
+msgid "module command path to delegate, for example: kdx rpc heartbeat status"
+msgstr "cesta příkazu modulu k delegování, například: kdx rpc heartbeat status"
+
+#: cli/commands.py
+msgid "module discovery problems:"
+msgstr "problémy při objevování modulů:"
+
+#: cli/commands.py
+msgid "module routes"
+msgstr "trasy modulů"
+
+#: cli/commands.py
+msgid "module {name} created"
+msgstr "modul {name} byl vytvořen"
+
+#: cli/commands.py
+msgid "modules"
+msgstr "moduly"
+
+#: cli/commands.py
+msgid "name"
+msgstr "název"
+
+#: cli/commands.py
+msgid "named locks"
+msgstr "pojmenované zámky"
+
+#: cli/commands.py
+msgid "next: cd {root} && uv sync --extra dev && uv run {script} run"
+msgstr "dále: cd {root} && uv sync --extra dev && uv run {script} run"
+
+#: cli/language.py
+msgid "next: kdx locale todo {locale} --json"
+msgstr "dále: kdx locale todo {locale} --json"
+
+#: cli/commands.py
+msgid "next: kdx modules list"
+msgstr "dále: kdx modules list"
+
+#: renderer
+msgid "no"
+msgstr "ne"
+
+#: cli/users.py
+msgid "no audit records yet in {path}"
+msgstr "v {path} zatím nejsou žádné záznamy auditu"
+
+#: cli/jobs.py
+msgid "no background jobs yet; start one with: kdx rpc --follow COMMAND"
+msgstr "zatím žádné úlohy na pozadí; spusť jednu přes: kdx rpc --follow PŘÍKAZ"
+
+#: cli/language.py
+msgid "no catalogue for {locale}; run kdx locale add {locale}"
+msgstr "pro {locale} není katalog; spusť kdx locale add {locale}"
+
+#: cli/commands.py
+msgid "no chassis daemon answering; run 'kdx run' first"
+msgstr "žádný démon šasi neodpovídá; nejdřív spusť 'kdx run'"
+
+#: cli/commands.py
+msgid "no commands are registered yet"
+msgstr "zatím nejsou registrovány žádné příkazy"
+
+#: cli/commands.py
+msgid "no configuration keys start with {prefix}"
+msgstr "žádné konfigurační klíče nezačínají na {prefix}"
+
+#: cli/commands.py
+msgid "no control plane answering at {base_url}"
+msgstr "na {base_url} neodpovídá žádná řídicí rovina"
+
+#: cli/jobs.py
+msgid "no control plane answering at {base_url}: {exc}"
+msgstr "na {base_url} neodpovídá žádná řídicí rovina: {exc}"
+
+#: cli/commands.py
+msgid "no control plane answering at {endpoint}"
+msgstr "na {endpoint} neodpovídá žádná řídicí rovina"
+
+#: cli/jobs.py
+msgid "no daemon is answering; start one with 'kdx run'"
+msgstr "žádný démon neodpovídá; spusť ho přes 'kdx run'"
+
+#: modules/web_console/module.py
+msgid "no daemon is running and this command has no chassis"
+msgstr "neběží žádný démon a tento příkaz nemá šasi"
+
+#: cli/commands.py
+msgid "no diagnostics findings"
+msgstr "žádné nálezy diagnostiky"
+
+#: cli/commands.py
+msgid "no log file found at {log_path}"
+msgstr "v {log_path} se nenašel logový soubor"
+
+#: cli/language.py
+msgid "no message domain named {name}; known: {known}"
+msgstr "žádná doména zpráv s názvem {name}; známé: {known}"
+
+#: cli/commands.py
+msgid "no module declares a configuration schema"
+msgstr "žádný modul nedeklaruje schéma konfigurace"
+
+#: cli/commands.py
+msgid "no modules discovered yet"
+msgstr "zatím nebyly nalezeny žádné moduly"
+
+#: cli/commands.py
+msgid "no modules registered"
+msgstr "žádné registrované moduly"
+
+#: cli/users.py
+msgid "no named users yet; the shared core.ipc.token is the owner"
+msgstr "zatím žádní pojmenovaní uživatelé; vlastníkem je sdílený core.ipc.token"
+
+#: cli/commands.py
+msgid "no project or module declared a contract file set"
+msgstr "žádný projekt ani modul nedeklaroval sadu souborů kontraktu"
+
+#: cli/language.py
+msgid "no translations to check; only the source language exists"
+msgstr "není co kontrolovat; existuje jen zdrojový jazyk"
+
+#: modules/backup_engine/module.py
+msgid "nothing copied yet: this was a plan"
+msgstr "zatím se nic nezkopírovalo: šlo o plán"
+
+#: cli/commands.py
+msgid "nothing written"
+msgstr "nic se nezapsalo"
+
+#: cli/language.py
+msgid "obsolete"
+msgstr "zastaralé"
+
+#: cli/tls.py
+msgid "on another machine, trust it with: kdx --tls-ca cert.pem status --target https://HOST:8123"
+msgstr "na jiném počítači mu důvěřuj přes: kdx --tls-ca cert.pem status --target https://HOST:8123"
+
+#: modules/web_console/module.py
+msgid "open this URL; it carries the session token:"
+msgstr "otevři tuto adresu; obsahuje token relace:"
+
+#: modules/web_console/module.py
+msgid "opened the web console in your browser"
+msgstr "webová konzole se otevřela v prohlížeči"
+
+#: cli/tls.py
+msgid "openssl could not run: {exc}"
+msgstr "openssl se nepodařilo spustit: {exc}"
+
+#: cli/tls.py
+msgid "openssl failed: {reason}"
+msgstr "openssl selhal: {reason}"
+
+#: cli/tls.py
+msgid "openssl was not found on this host"
+msgstr "openssl se na tomto počítači nenašel"
+
+#: cli/commands.py
+msgid "origin"
+msgstr "původ"
+
+#: cli/users.py
+msgid "outcome"
+msgstr "výsledek"
+
+#: cli/commands.py
+msgid "package"
+msgstr "balíček"
+
+#: modules/backup_engine/module.py
+msgid "pass --force to copy anyway"
+msgstr "pokud chceš přesto kopírovat, přidej --force"
+
+#: cli/commands.py
+msgid "pass --force to replace its files"
+msgstr "pokud chceš nahradit jeho soubory, přidej --force"
+
+#: cli/commands.py
+msgid "pass --token TOKEN, or set core.ipc.token / KDX_CORE__IPC__TOKEN"
+msgstr "zadej --token TOKEN nebo nastav core.ipc.token / KDX_CORE__IPC__TOKEN"
+
+#: cli/commands.py
+msgid "path"
+msgstr "cesta"
+
+#: cli/commands.py
+msgid "pid"
+msgstr "pid"
+
+#: cli/language.py
+msgid "placeholders"
+msgstr "zástupná pole"
+
+#: cli/commands.py
+msgid "platform"
+msgstr "platforma"
+
+#: cli/commands.py
+msgid "port of --host [core.ipc.port]"
+msgstr "port pro --host [core.ipc.port]"
+
+#: cli/commands.py
+msgid "post to http://host:port directly, skipping the local discovery file"
+msgstr "pošle přímo na http://host:port bez lokálního souboru objevování"
+
+#: cli/commands.py
+msgid "precedence: CLI > environment > config file > built-in defaults"
+msgstr "priorita: CLI > prostředí > konfigurační soubor > vestavěné výchozí hodnoty"
+
+#: cli/commands.py
+msgid "print only log lines, no decorations"
+msgstr "vypíše jen řádky logu, bez ozdob"
+
+#: cli/commands.py
+msgid "print sensitive values in clear instead of masked"
+msgstr "vypíše citlivé hodnoty otevřeně místo maskovaných"
+
+#: cli/commands.py
+msgid "print the last N lines [50]"
+msgstr "vypíše posledních N řádků [50]"
+
+#: cli/commands.py
+msgid "priority"
+msgstr "priorita"
+
+#: cli/commands.py
+msgid "process memory"
+msgstr "paměť procesu"
+
+#: cli/commands.py
+msgid "project keys"
+msgstr "klíče projektu"
+
+#: cli/commands.py
+msgid "project name; prompted when omitted"
+msgstr "název projektu; pokud chybí, zeptá se"
+
+#: cli/commands.py
+msgid "project {name} created"
+msgstr "projekt {name} byl vytvořen"
+
+#: cli/commands.py
+msgid "published"
+msgstr "publikováno"
+
+#: cli/commands.py
+msgid "python"
+msgstr "python"
+
+#: cli/commands.py
+msgid "python | fullstack"
+msgstr "python | fullstack"
+
+#: cli/commands.py
+msgid "query http://host:port directly, skipping the local discovery file"
+msgstr "zeptá se přímo na http://host:port bez lokálního souboru objevování"
+
+#: cli/commands.py
+msgid "query this host (with --port) instead of the local endpoint"
+msgstr "zeptá se tohoto hostitele (s --port) místo lokálního koncového bodu"
+
+#: cli/service.py
+msgid "register it with: kdx service install"
+msgstr "zaregistruj ji přes: kdx service install"
+
+#: cli/service.py
+msgid "registered"
+msgstr "registrováno"
+
+#: cli/commands.py
+msgid "reload failed: {payload}"
+msgstr "načtení selhalo: {payload}"
+
+#: cli/commands.py
+msgid "reloads"
+msgstr "načtení"
+
+#: cli/commands.py
+msgid "requests served"
+msgstr "obsloužené požadavky"
+
+#: cli/commands.py
+msgid "requires core"
+msgstr "vyžaduje core"
+
+#: cli/commands.py
+msgid "resident"
+msgstr "rezidentní"
+
+#: cli/users.py
+msgid "role"
+msgstr "role"
+
+#: cli/commands.py
+msgid "root"
+msgstr "kořen"
+
+#: cli/commands.py
+msgid "running"
+msgstr "běží"
+
+#: cli/commands.py
+msgid "scheduled tasks"
+msgstr "naplánované úlohy"
+
+#: modules/heartbeat/module.py
+msgid "seconds since last beat"
+msgstr "sekund od posledního úderu"
+
+#: cli/commands.py
+msgid "sensitive values are masked; pass --reveal to print them in clear"
+msgstr "citlivé hodnoty jsou maskované; pro otevřený výpis přidej --reveal"
+
+#: cli/service.py
+msgid "service"
+msgstr "služba"
+
+#: cli/commands.py
+msgid "shared token for a remote endpoint with auth enabled"
+msgstr "sdílený token pro vzdálený koncový bod se zapnutým ověřováním"
+
+#: cli/commands.py
+msgid "shutdown"
+msgstr "vypnutí"
+
+#: cli/commands.py
+msgid "slow handlers"
+msgstr "pomalé obslužné funkce"
+
+#: cli/commands.py
+msgid "source"
+msgstr "zdroj"
+
+#: cli/commands.py
+msgid "start 'kdx run' again so {discovery_path} is refreshed"
+msgstr "spusť 'kdx run' znovu, aby se {discovery_path} obnovil"
+
+#: modules/web_console/module.py
+msgid "start one with 'kdx run', then run 'kdx ui' again"
+msgstr "spusť ho přes 'kdx run' a potom znovu 'kdx ui'"
+
+#: cli/commands.py
+msgid "started {job_id}: {command}"
+msgstr "spuštěna {job_id}: {command}"
+
+#: cli/commands.py
+msgid "state"
+msgstr "stav"
+
+#: cli/commands.py
+msgid "static mounts"
+msgstr "statická připojení"
+
+#: cli/commands.py
+msgid "stderr encoding"
+msgstr "kódování stderr"
+
+#: cli/commands.py
+msgid "stdin tty"
+msgstr "stdin je terminál"
+
+#: cli/commands.py
+msgid "stdout encoding"
+msgstr "kódování stdout"
+
+#: cli/commands.py
+msgid "stdout tty"
+msgstr "stdout je terminál"
+
+#: cli/jobs.py
+msgid "still running; follow it with: kdx jobs show {job_id} --follow"
+msgstr "stále běží; sleduj ji přes: kdx jobs show {job_id} --follow"
+
+#: cli/commands.py
+msgid "stop --follow after SECONDS (CI friendly)"
+msgstr "ukončí --follow po SEKUNDÁCH (vhodné pro CI)"
+
+#: cli/commands.py
+msgid "stop it:   kdx jobs cancel {job_id}"
+msgstr "zastav ji:   kdx jobs cancel {job_id}"
+
+#: cli/commands.py
+msgid "stream newly appended lines until Ctrl-C"
+msgstr "průběžně vypisuje nové řádky, dokud nestiskneš Ctrl-C"
+
+#: cli/commands.py
+msgid "subscriptions"
+msgstr "odběry"
+
+#: cli/jobs.py
+msgid "talk to http(s)://host:port instead of the local daemon"
+msgstr "komunikuje s http(s)://host:port místo lokálního démona"
+
+#: cli/commands.py
+msgid "target directory (default: ./<name>)"
+msgstr "cílový adresář (výchozí: ./<název>)"
+
+#: cli/commands.py
+msgid "task names"
+msgstr "názvy úloh"
+
+#: cli/users.py
+msgid "terminal: kdx status --target http://HOST:8123 --token TOKEN"
+msgstr "terminál: kdx status --target http://HOST:8123 --token TOKEN"
+
+#: cli/commands.py
+msgid "the chassis reads these files and never rewrites one"
+msgstr "šasi tyto soubory pouze čte a žádný nepřepisuje"
+
+#: modules/web_console/module.py
+msgid "the control plane is disabled (core.ipc.enabled: false)"
+msgstr "řídicí rovina je vypnutá (core.ipc.enabled: false)"
+
+#: cli/commands.py
+msgid "the daemon answered HTTP {code}"
+msgstr "démon odpověděl HTTP {code}"
+
+#: cli/jobs.py
+msgid "the daemon at {base_url} is stopping"
+msgstr "démon na {base_url} se zastavuje"
+
+#: cli/jobs.py
+msgid "the daemon closed the feed (it is stopping)"
+msgstr "démon ukončil přenos (zastavuje se)"
+
+#: cli/jobs.py
+msgid "the daemon refused the event feed (HTTP {code})"
+msgstr "démon odmítl přenos událostí (HTTP {code})"
+
+#: cli/commands.py
+msgid "the daemon rejected this client (token required)"
+msgstr "démon tohoto klienta odmítl (vyžaduje token)"
+
+#: cli/commands.py
+msgid "the daemon rejected this client ({endpoint} requires a token)"
+msgstr "démon tohoto klienta odmítl ({endpoint} vyžaduje token)"
+
+#: cli/service.py
+msgid "the daemon starts at logon and is starting now"
+msgstr "démon se spouští při přihlášení a právě se spouští"
+
+#: cli/jobs.py
+msgid "the event feed ended: {exc}"
+msgstr "přenos událostí skončil: {exc}"
+
+#: cli/commands.py
+msgid "the live state of a running daemon: 'kdx status' or 'kdx ui'"
+msgstr "živý stav běžícího démona: 'kdx status' nebo 'kdx ui'"
+
+#: cli/users.py
+msgid "the shared core.ipc.token is the built-in admin 'owner'"
+msgstr "sdílený core.ipc.token je vestavěný admin 'owner'"
+
+#: modules/backup_engine/module.py
+msgid "the window is off: copies stand until the window opens or a sweep is asked for"
+msgstr "okno je vypnuté: kopie zůstávají, dokud se okno neotevře nebo se nepožádá o čištění"
+
+#: modules/heartbeat/module.py
+msgid "ticker runs"
+msgstr "běhy tickeru"
+
+#: modules/heartbeat/module.py
+msgid "ticker scheduled"
+msgstr "ticker naplánován"
+
+#: modules/heartbeat/module.py
+msgid "ticks"
+msgstr "tiky"
+
+#: cli/jobs.py
+msgid "time"
+msgstr "čas"
+
+#: cli/commands.py
+msgid "timings"
+msgstr "časování"
+
+#: cli/users.py
+msgid "token"
+msgstr "token"
+
+#: cli/commands.py
+msgid "total"
+msgstr "celkem"
+
+#: cli/commands.py
+msgid "truncate the log file (asks first)"
+msgstr "vyprázdní logový soubor (nejdřív se zeptá)"
+
+#: cli/commands.py
+msgid "unknown dependencies"
+msgstr "neznámé závislosti"
+
+#: cli/commands.py
+msgid "unknown keys"
+msgstr "neznámé klíče"
+
+#: cli/commands.py
+msgid "uptime"
+msgstr "doba běhu"
+
+#: modules/system_info/module.py
+msgid "used"
+msgstr "využito"
+
+#: cli/jobs.py
+msgid "user"
+msgstr "uživatel"
+
+#: cli/users.py
+msgid "user {name} removed; their token no longer works"
+msgstr "uživatel {name} byl odstraněn; jeho token už nefunguje"
+
+#: cli/commands.py
+msgid "value"
+msgstr "hodnota"
+
+#: cli/commands.py
+msgid "version"
+msgstr "verze"
+
+#: cli/jobs.py
+msgid "watch it with: kdx jobs show {job_id} --follow"
+msgstr "sleduj ji přes: kdx jobs show {job_id} --follow"
+
+#: cli/commands.py
+msgid "without uv: pip install -e '.[dev]' && {script} run"
+msgstr "bez uv: pip install -e '.[dev]' && {script} run"
+
+#: cli/commands.py
+msgid "workers dead"
+msgstr "mrtvá vlákna"
+
+#: cli/commands.py
+msgid "workers watched"
+msgstr "sledovaná vlákna"
+
+#: cli/commands.py
+msgid "write into a directory that already holds files"
+msgstr "zapíše do adresáře, který už obsahuje soubory"
+
+#: renderer
+msgid "yes"
+msgstr "ano"
+
+#: cli/jobs.py
+msgid "your token for that daemon (core.ipc.token or one from 'kdx users add')"
+msgstr "tvůj token pro toho démona (core.ipc.token nebo z 'kdx users add')"
+
+#: cli/tls.py
+msgid "{cert} already exists; pass --force to replace it"
+msgstr "{cert} už existuje; pro nahrazení přidej --force"
+
+#: modules/backup_engine/module.py
+msgid "{copied}/{total} file(s), {size} so far"
+msgstr "{copied}/{total} souborů, zatím {size}"
+
+#: cli/language.py
+msgid "{count} catalogue(s) need attention"
+msgstr "{count} katalog(ů) vyžaduje pozornost"
+
+#: cli/commands.py
+msgid "{count} configuration findings need attention"
+msgstr "{count} nálezů v konfiguraci vyžaduje pozornost"
+
+#: cli/language.py
+msgid "{count} string(s) left for {locale}"
+msgstr "pro {locale} zbývá {count} textů"
+
+#: cli/language.py
+msgid "{count} strings written to {path}"
+msgstr "{count} textů zapsáno do {path}"
+
+#: cli/language.py
+msgid "{count} translation(s) accepted for {locale}"
+msgstr "pro {locale} bylo přijato překladů: {count}"
+
+#: cli/commands.py
+msgid "{directory} already holds a module"
+msgstr "{directory} už obsahuje modul"
+
+#: modules/backup_engine/module.py
+msgid "{expired_now} copy(ies) stand past the window; the next sweep removes them"
+msgstr "{expired_now} kopií přesahuje okno; další čištění je odstraní"
+
+#: cli/jobs.py
+msgid "{id}  {state}  {command}  (by {value}, {seconds}s)"
+msgstr "{id}  {state}  {command}  (spustil {value}, {seconds}s)"
+
+#: cli/jobs.py
+msgid "{job_id} is already {state}; nothing to stop"
+msgstr "{job_id} je už {state}; není co zastavit"
+
+#: cli/commands.py
+msgid "{job_id} started; Ctrl+C stops watching, not the job"
+msgstr "{job_id} se spustila; Ctrl+C zastaví sledování, ne úlohu"
+
+#: cli/language.py
+msgid "{locale}: {added} new, {stale} obsolete"
+msgstr "{locale}: {added} nových, {stale} zastaralých"
+
+#: cli/users.py
+msgid "{name} is now {role}"
+msgstr "{name} má nyní roli {role}"
+
+#: cli/service.py
+msgid "{name} removed; the daemon no longer starts at logon"
+msgstr "{name} byla odstraněna; démon se už nespouští při přihlášení"
+
+#: cli/service.py
+msgid "{name} was not registered; nothing to remove"
+msgstr "{name} nebyla registrována; není co odstranit"
+
+#: cli/commands.py
+msgid "{name}: {count} keys, required={required} secrets={secrets}"
+msgstr "{name}: {count} klíčů, povinné={required} tajné={secrets}"
+
+#: cli/language.py
+msgid "{origin} still wins over kdx.local.yml; the new value applies once it is removed"
+msgstr "{origin} má stále přednost před kdx.local.yml; nová hodnota platí, až ho odstraníš"
+
+#: cli/language.py
+msgid "{path} already exists"
+msgstr "{path} už existuje"
+
+#: cli/language.py
+msgid "{path} cannot be read as JSON: {reason}"
+msgstr "{path} nelze přečíst jako JSON: {reason}"
+
+#: cli/language.py
+msgid "{path} cannot be read, so it was left alone: {reason}"
+msgstr "{path} nelze přečíst, proto jsem ho nechal beze změny: {reason}"
+
+#: cli/language.py
+msgid "{path} could not be written: {reason}"
+msgstr "{path} se nepodařilo zapsat: {reason}"
+
+#: cli/language.py
+msgid "{path} created"
+msgstr "{path} byl vytvořen"
+
+#: cli/language.py
+msgid "{path} does not exist; run kdx locale extract"
+msgstr "{path} neexistuje; spusť kdx locale extract"
+
+#: cli/language.py
+msgid "{path} is not a directory"
+msgstr "{path} není adresář"
+
+#: cli/language.py
+msgid "{path} is out of date; run kdx locale extract"
+msgstr "{path} je zastaralý; spusť kdx locale extract"
+
+#: cli/language.py
+msgid "{path} is up to date"
+msgstr "{path} je aktuální"
+
+#: cli/language.py
+msgid "{path} must hold a JSON object"
+msgstr "{path} musí obsahovat objekt JSON"
+
+#: cli/commands.py
+msgid "{path}: declared but not found"
+msgstr "{path}: deklarováno, ale nenalezeno"
+
+#: cli/commands.py
+msgid "{path}: declared {declared}..., read {actual}..."
+msgstr "{path}: deklarováno {declared}..., načteno {actual}..."
+
+#: cli/service.py
+msgid "{program} could not run: {exc}"
+msgstr "{program} se nepodařilo spustit: {exc}"
+
+#: cli/service.py
+msgid "{shown} failed: {value}"
+msgstr "{shown} selhalo: {value}"
+
+#: cli/language.py
+msgid "{value} is not a language code; use a form such as sk or sk_SK, or 'auto'"
+msgstr "{value} není kód jazyka; použij tvar jako sk nebo sk_SK, případně 'auto'"
+
+#: cli/language.py
+msgid "{value} is not a language to translate into"
+msgstr "{value} není jazyk, do kterého lze překládat"
+
+#: cli/users.py
+msgid "{verb}; this token is shown only now - hand it over privately"
+msgstr "{verb}; tento token se zobrazí pouze teď - předej ho soukromě"
