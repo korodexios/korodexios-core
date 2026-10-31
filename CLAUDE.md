@@ -42,6 +42,8 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
   Never translate `--json` keys/values, logs, stderr diagnostics, exit codes, the
   `[✓] [?] [!] [i]` tags, or config keys.
 
+- **Project conventions.** The rules for any new project (modules, SDD/TDD/BDD, security, CI/CD, agents) live in `src/korodexios_core/resources/conventions.md` + `.sk.md` (`kdx conventions`); `kdx init` copies them into the seed. Keep both languages in step when editing.
+
 ## Ask first (outward-facing / hard to reverse)
 
 - No `git push`, no tag (e.g. `v0.4.0`), no merge to `main`: the owner decides.

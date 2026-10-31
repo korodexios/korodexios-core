@@ -278,6 +278,10 @@ msgstr "Jazyk"
 msgid "Language code, such as de or pt_BR."
 msgstr "Kód jazyka, napríklad de alebo pt_BR."
 
+#: cli/conventions.py
+msgid "Language of the rules: en or sk [your language, else en]."
+msgstr "Jazyk pravidiel: en alebo sk [váš jazyk, inak en]."
+
 #: cli/jobs.py
 msgid "List background jobs, newest first."
 msgstr "Vypíše úlohy na pozadí, najnovšie prvé."
@@ -417,6 +421,10 @@ msgstr "Vypíše adresu konzoly namiesto otvorenia prehliadača."
 #: cli/commands.py
 msgid "Print the discovered config and env file paths."
 msgstr "Vypíše cesty nájdených konfiguračných súborov a súboru env."
+
+#: cli/conventions.py
+msgid "Print the project rules and conventions (how to build and work on a project)."
+msgstr "Vypíš pravidlá a konvencie projektu (ako projekt stavať a ako na ňom pracovať)."
 
 #: cli/commands.py
 msgid "Project identity"
@@ -581,6 +589,10 @@ msgstr "Overí vstupy a ukáže, čo by záloha skopírovala."
 #: cli/commands.py
 msgid "Verify the project's declared file set without rewriting it."
 msgstr "Overí deklarovanú sadu súborov projektu bez jej prepísania."
+
+#: cli/conventions.py
+msgid "Write the rules to FILE instead of printing them."
+msgstr "Zapíš pravidlá do FILE namiesto vypísania."
 
 #: cli/commands.py
 msgid "a SIGHUP to the daemon does the same thing"
@@ -1646,11 +1658,11 @@ msgstr "{path} sa nedá prečítať ako JSON: {reason}"
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr "{path} sa nedá prečítať, preto som ho nechal bez zmeny: {reason}"
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} could not be written: {reason}"
 msgstr "{path} sa nepodarilo zapísať: {reason}"
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} created"
 msgstr "{path} bol vytvorený"
 

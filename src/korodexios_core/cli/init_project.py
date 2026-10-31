@@ -281,6 +281,9 @@ def build_files(project: ProjectTemplate) -> dict[str, str]:
         "README.md": _readme(project),
         "AGENTS.md": _agents(project),
         "docs/AGENTS_GUIDE.md": _docs_agents_guide(project),
+        "docs/CONVENTIONS.md": _conventions_text("en"),
+        "docs/CONVENTIONS.sk.md": _conventions_text("sk"),
+        ".github/workflows/ci.yml": _ci_workflow(project),
         "docs/ARCHITECTURE.md": _docs_architecture(project),
         "Makefile": _makefile(project),
         "kdx.yml": _config_yml(project),
@@ -476,6 +479,7 @@ def _readme(project: ProjectTemplate) -> str:
         "kdx.yml                  # project configuration (the config layer)",
         ".env.example             # copy to .env for the env layer",
         "AGENTS.md                # working agreement for humans and coding agents",
+        "docs/CONVENTIONS.md      # project rules: modules, tests, security, CI/CD (also .sk.md)",
         "docs/AGENTS_GUIDE.md      # the contract, for humans and AI agents",
         "docs/ARCHITECTURE.md       # how this project is wired",
         ".agents/skills/          # playbooks: how to extend this project safely",
@@ -874,11 +878,52 @@ def _docs_architecture(project: ProjectTemplate) -> str:
     return "\n".join(lines).replace("@BT@", chr(96))
 
 
+def _conventions_text(language: str) -> str:
+    from .conventions import conventions_text
+
+    return conventions_text(language)[1]
+
+
+def _ci_workflow(project: ProjectTemplate) -> str:
+    return "\n".join(
+        [
+            "name: CI",
+            "",
+            "on:",
+            "  push:",
+            "    branches: [main]",
+            "  pull_request:",
+            "",
+            "permissions:",
+            "  contents: read",
+            "",
+            "jobs:",
+            "  check:",
+            "    name: ruff, mypy, pytest",
+            "    runs-on: ${{ matrix.os }}",
+            "    timeout-minutes: 15",
+            "    strategy:",
+            "      fail-fast: false",
+            "      matrix:",
+            "        os: [ubuntu-latest, windows-latest]",
+            "    steps:",
+            "      - uses: actions/checkout@v4",
+            "      - uses: astral-sh/setup-uv@v5",
+            "      - run: uv sync --extra dev",
+            "      - run: uv run ruff check src tests",
+            "      - run: uv run mypy",
+            "      - run: uv run pytest -q",
+            "",
+        ]
+    )
+
+
 def _agents(project: ProjectTemplate) -> str:
     lines = [
         f"# AGENTS.md - {project.title}",
         "",
-        "Working agreement for anyone editing this repository.",
+        "Working agreement for anyone editing this repository. Read",
+        "@BT@docs/CONVENTIONS.md@BT@ too: modules, tests first, security, CI/CD, agents.",
         "",
         "## Commands",
         "",

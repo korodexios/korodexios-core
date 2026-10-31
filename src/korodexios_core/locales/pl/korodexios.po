@@ -278,6 +278,10 @@ msgstr "Język"
 msgid "Language code, such as de or pt_BR."
 msgstr "Kod języka, na przykład de lub pt_BR."
 
+#: cli/conventions.py
+msgid "Language of the rules: en or sk [your language, else en]."
+msgstr "Język zasad: en lub sk [twój język, w razie braku en]."
+
 #: cli/jobs.py
 msgid "List background jobs, newest first."
 msgstr "Wypisz zadania w tle, od najnowszych."
@@ -417,6 +421,10 @@ msgstr "Wypisz adres URL konsoli zamiast otwierać przeglądarkę."
 #: cli/commands.py
 msgid "Print the discovered config and env file paths."
 msgstr "Wypisz wykryte ścieżki plików konfiguracji i env."
+
+#: cli/conventions.py
+msgid "Print the project rules and conventions (how to build and work on a project)."
+msgstr "Wypisz zasady i konwencje projektu (jak budować projekt i jak przy nim pracować)."
 
 #: cli/commands.py
 msgid "Project identity"
@@ -581,6 +589,10 @@ msgstr "Sprawdź dane wejściowe i pokaż, co skopiowałaby kopia zapasowa."
 #: cli/commands.py
 msgid "Verify the project's declared file set without rewriting it."
 msgstr "Zweryfikuj zadeklarowany zestaw plików projektu bez jego przepisywania."
+
+#: cli/conventions.py
+msgid "Write the rules to FILE instead of printing them."
+msgstr "Zapisz zasady do FILE zamiast je wypisywać."
 
 #: cli/commands.py
 msgid "a SIGHUP to the daemon does the same thing"
@@ -1646,11 +1658,11 @@ msgstr "{path} nie da się odczytać jako JSON: {reason}"
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr "{path} nie da się odczytać, więc go nie ruszono: {reason}"
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} could not be written: {reason}"
 msgstr "{path} nie udało się zapisać: {reason}"
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} created"
 msgstr "{path} utworzono"
 

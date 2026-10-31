@@ -15,6 +15,9 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
   a language. The web console has a language selector (`/api/v1/ui/i18n`), `KDX_LOCALE` selects
   the language, and `kdx init` projects read `.po` catalogues through the same service (no
   `msgfmt` step).
+- **`kdx conventions`** prints the project rules (modules, spec/test first, security, CI/CD,
+  working with AI agents) in English or Slovak; `kdx init` now also seeds them as
+  `docs/CONVENTIONS*.md` together with a CI workflow.
 
 ## [0.4.0] - 2026-10-31
 

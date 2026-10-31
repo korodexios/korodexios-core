@@ -276,6 +276,10 @@ msgstr ""
 msgid "Language code, such as de or pt_BR."
 msgstr ""
 
+#: cli/conventions.py
+msgid "Language of the rules: en or sk [your language, else en]."
+msgstr ""
+
 #: cli/jobs.py
 msgid "List background jobs, newest first."
 msgstr ""
@@ -414,6 +418,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "Print the discovered config and env file paths."
+msgstr ""
+
+#: cli/conventions.py
+msgid "Print the project rules and conventions (how to build and work on a project)."
 msgstr ""
 
 #: cli/commands.py
@@ -578,6 +586,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "Verify the project's declared file set without rewriting it."
+msgstr ""
+
+#: cli/conventions.py
+msgid "Write the rules to FILE instead of printing them."
 msgstr ""
 
 #: cli/commands.py
@@ -1644,11 +1656,11 @@ msgstr ""
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr ""
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} could not be written: {reason}"
 msgstr ""
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} created"
 msgstr ""
 
