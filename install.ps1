@@ -17,6 +17,9 @@
 .PARAMETER Yes
   Answer yes to every question (for scripts).
 
+.PARAMETER NoPathUpdate
+  Do not let uv edit your PATH / shell profile (for tests and locked-down machines).
+
 .PARAMETER DryRun
   Show every step and command, run nothing.
 
@@ -31,7 +34,8 @@ param(
     [ValidateSet("", "en", "sk")]
     [string]$Language = "",
     [switch]$Yes,
-    [switch]$DryRun
+    [switch]$DryRun,
+    [switch]$NoPathUpdate
 )
 
 $ErrorActionPreference = "Stop"
@@ -66,9 +70,10 @@ $Text = @{
         done    = "Installed. The command is 'kdx'."
         path    = "Open a new terminal if 'kdx' is not found yet - the PATH changes only apply to new windows."
         ver     = "Version: {0}"
-        doctor  = "Running 'kdx doctor' - it explains the state of your setup:"
+        doctor  = "Checking that kdx starts (modules it found):"
         initask = "Create a first project now? (asks a few questions, writes a folder)"
         initwhy = "Later you can do it yourself: kdx init my-project"
+        nameask = "Name of the project (letters, digits, underscore)"
         next    = "Next steps"
         n1      = "kdx --help            all commands, in plain words"
         n2      = "kdx conventions       the rules for building a project (add --lang sk for Slovak)"
@@ -101,9 +106,10 @@ $Text = @{
         done    = "Hotovo. Príkaz sa volá 'kdx'."
         path    = "Ak 'kdx' ešte nenájde, otvor nový terminál - zmena PATH platí až v nových oknách."
         ver     = "Verzia: {0}"
-        doctor  = "Spúšťam 'kdx doctor' - vysvetlí stav tvojho nastavenia:"
+        doctor  = "Kontrolujem, že kdx štartuje (moduly, ktoré našiel):"
         initask = "Vytvoriť teraz prvý projekt? (opýta sa pár otázok a vytvorí priečinok)"
         initwhy = "Neskôr to zvládneš aj sám: kdx init moj-projekt"
+        nameask = "Názov projektu (písmená, čísla, podčiarkovník)"
         next    = "Čo ďalej"
         n1      = "kdx --help            všetky príkazy, jednoducho vysvetlené"
         n2      = "kdx conventions       pravidlá stavby projektu (--lang en pre angličtinu)"
@@ -189,26 +195,37 @@ try {
     Write-Info ($T.src -f $Source)
     Write-Info $T.doing
     Invoke-Step "uv tool install --force `"$Source`"" { uv tool install --force "$Source" }
-    if (-not $DryRun) { Invoke-Step "uv tool update-shell" { uv tool update-shell; $global:LASTEXITCODE = 0 } }
+    if (-not $DryRun -and -not $NoPathUpdate) { Invoke-Step "uv tool update-shell" { uv tool update-shell; $global:LASTEXITCODE = 0 } }
     Write-Ok $T.done
     Write-Info $T.path
 
     # --- 3. verify ----------------------------------------------------------
     Write-Step $T.s3
     if (-not $DryRun) {
-        $env:Path = "$env:USERPROFILE\.local\bin;$env:Path"
+        $bin = (& uv tool dir --bin 2>$null | Out-String).Trim()
+        if ($bin) { $env:Path = "$bin;$env:Path" }
         Write-Ok ($T.ver -f ((& kdx version) -join " "))
         Write-Info $T.doctor
-        & kdx --locale $Language doctor
+        # Run in a throw-away folder so the check leaves nothing behind in your current one.
+        $scratch = Join-Path ([System.IO.Path]::GetTempPath()) ("kdx-verify-" + [guid]::NewGuid().ToString("N"))
+        New-Item -ItemType Directory -Path $scratch | Out-Null
+        Push-Location $scratch
+        try { & kdx --locale $Language --no-log-file --home $scratch modules list } finally { Pop-Location; Remove-Item -Recurse -Force $scratch -ErrorAction SilentlyContinue }
     } else {
         Invoke-Step "kdx version" {}
-        Invoke-Step "kdx doctor" {}
+        Invoke-Step "kdx modules list" {}
     }
 
     # --- 4. first project ---------------------------------------------------
     Write-Step $T.s4
     if (Confirm-Step $T.initask) {
-        Invoke-Step "kdx init" { & kdx --locale $Language init }
+        $name = "my_project"
+        if (-not $Yes) {
+            Write-Ask "$($T.nameask) [$name] "
+            $typed = Read-Host
+            if ($typed) { $name = $typed }
+        }
+        Invoke-Step "kdx init $name" { & kdx --locale $Language init $name }
     } else {
         Write-Info $T.initwhy
     }

@@ -9,6 +9,7 @@
 #   ./install.sh --lang sk       Slovak messages
 #   ./install.sh --yes           answer yes to every question
 #   ./install.sh --dry-run       show every step, run nothing
+#   ./install.sh --no-path-update  do not let uv edit your PATH / shell profile
 #   ./install.sh --source SRC    install SRC instead of this folder / the released tag
 
 set -eu
@@ -18,6 +19,7 @@ SOURCE=""
 LANGUAGE=""
 YES=0
 DRY=0
+NO_PATH=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -25,7 +27,8 @@ while [ $# -gt 0 ]; do
     --source) SOURCE="${2:-}"; shift 2 ;;
     --yes|-y) YES=1; shift ;;
     --dry-run) DRY=1; shift ;;
-    -h|--help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --no-path-update) NO_PATH=1; shift ;;
+    -h|--help) sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "unknown option: $1 (try --help)" >&2; exit 2 ;;
   esac
 done
@@ -67,8 +70,9 @@ msg() {
     sk:done) echo "Hotovo. Príkaz sa volá 'kdx'." ;;
     sk:path) echo "Ak 'kdx' ešte nenájde, otvor nový terminál - zmena PATH platí až v nových reláciách." ;;
     sk:ver) echo "Verzia:" ;;
-    sk:doctor) echo "Spúšťam 'kdx doctor' - vysvetlí stav tvojho nastavenia:" ;;
+    sk:doctor) echo "Kontrolujem, že kdx štartuje (moduly, ktoré našiel):" ;;
     sk:initask) echo "Vytvoriť teraz prvý projekt? (opýta sa pár otázok a vytvorí priečinok)" ;;
+    sk:nameask) echo "Názov projektu (písmená, čísla, podčiarkovník)" ;;
     sk:initwhy) echo "Neskôr to zvládneš aj sám: kdx init moj-projekt" ;;
     sk:next) echo "Čo ďalej" ;;
     sk:n1) echo "kdx --help            všetky príkazy, jednoducho vysvetlené" ;;
@@ -99,8 +103,9 @@ msg() {
     en:done) echo "Installed. The command is 'kdx'." ;;
     en:path) echo "Open a new terminal if 'kdx' is not found yet - PATH changes only apply to new sessions." ;;
     en:ver) echo "Version:" ;;
-    en:doctor) echo "Running 'kdx doctor' - it explains the state of your setup:" ;;
+    en:doctor) echo "Checking that kdx starts (modules it found):" ;;
     en:initask) echo "Create a first project now? (asks a few questions, writes a folder)" ;;
+    en:nameask) echo "Name of the project (letters, digits, underscore)" ;;
     en:initwhy) echo "Later you can do it yourself: kdx init my-project" ;;
     en:next) echo "Next steps" ;;
     en:n1) echo "kdx --help            all commands, in plain words" ;;
@@ -173,7 +178,7 @@ fi
 info "$(msg src) $SOURCE"
 info "$(msg doing)"
 run uv tool install --force "$SOURCE"
-[ "$DRY" -eq 0 ] && { uv tool update-shell >/dev/null 2>&1 || true; PATH="$HOME/.local/bin:$PATH"; export PATH; }
+[ "$DRY" -eq 0 ] && { [ "$NO_PATH" -eq 1 ] || uv tool update-shell >/dev/null 2>&1 || true; bin=$(uv tool dir --bin 2>/dev/null || echo "$HOME/.local/bin"); PATH="$bin:$PATH"; export PATH; }
 ok "$(msg done)"
 info "$(msg path)"
 
@@ -181,15 +186,23 @@ step "$(msg s3)"
 if [ "$DRY" -eq 0 ]; then
   ok "$(msg ver) $(kdx version)"
   info "$(msg doctor)"
-  kdx --locale "$LANGUAGE" doctor || true
+  scratch=$(mktemp -d)  # throw-away folder: the check leaves nothing in your current one
+  (cd "$scratch" && kdx --locale "$LANGUAGE" --no-log-file --home "$scratch" modules list) || true
+  rm -rf "$scratch"
 else
   run kdx version
-  run kdx doctor
+  run kdx modules list
 fi
 
 step "$(msg s4)"
 if confirm "$(msg initask)"; then
-  run kdx --locale "$LANGUAGE" init
+  name="my_project"
+  if [ "$YES" -eq 0 ] && [ -t 0 ]; then
+    printf "${C_ASK}[?] %s [%s] ${C_OFF}" "$(msg nameask)" "$name"
+    read -r typed
+    [ -n "$typed" ] && name="$typed"
+  fi
+  run kdx --locale "$LANGUAGE" init "$name"
 else
   info "$(msg initwhy)"
 fi
