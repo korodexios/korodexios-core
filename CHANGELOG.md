@@ -5,6 +5,16 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+_Nothing pending._
+
+## [0.4.0] - 2026-10-31
+
+A security review and what grew out of it, additive on the frozen `v2` line. The control
+plane is safer by default, a team can share one chassis with personal tokens, roles, and
+an audit log, and everything a daemon does is reachable from the terminal first - with a
+browser console (`kdx ui`) as a thin layer on top. One behaviour changed on purpose:
+`core.ipc.auth: false` opens status reads only; RPC and reload now always need a token.
+
 ### Security
 
 - **Owner-only secrets on Windows**: the discovery file (it holds the token) and the TLS key
