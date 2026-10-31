@@ -152,7 +152,9 @@ def normalize_exact_key(key: str, token: str) -> str | None:
     ]
     if not segments:
         return None
-    return KEY_SEPARATOR.join(segments)
+    dotted = KEY_SEPARATOR.join(segments)
+    # KDX_LOCALE is the short, documented name of core.locale (the seeded projects use it too).
+    return "core.locale" if dotted == "locale" else dotted
 
 
 def normalize_env_key(

@@ -500,3 +500,11 @@ def test_every_shipped_language_translates_the_ui(locale: str) -> None:
     assert service.translate("every catalogue is complete") != "every catalogue is complete"
     assert service.translate("{count} string(s) left for {locale}", count=2, locale="x")
     assert "{" not in service.translate("{path} is up to date", path="p")
+
+
+def test_kdx_locale_is_the_short_name_of_core_locale() -> None:
+    from korodexios_core.config.loaders import normalize_env_key
+
+    assert normalize_env_key("KDX_LOCALE") == "core.locale"
+    assert normalize_env_key("KORODEXIOS_LOCALE") == "core.locale"
+    assert normalize_env_key("KDX_CORE__LOCALE") == "core.locale"
