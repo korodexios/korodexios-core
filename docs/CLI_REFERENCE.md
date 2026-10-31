@@ -68,6 +68,7 @@ manifests it needs. The sdist carries `docs/`, `README.md`, `AGENTS.md`, `llms.t
 | `--no-autodiscover` | disable module auto-discovery for this run | autodiscover on |
 | `--enable-module NAME` / `--disable-module NAME` | force one module on or off (repeatable) | - |
 | `--name NAME` | chassis display name (banner, doctor) | `korodexios` |
+| `--locale LOCALE` | language of help and messages (`core.locale`); command and flag names stay English | `en` |
 | `--no-color` | disable coloured output | colour on a TTY |
 | `-q, --quiet` | warnings and errors only | - |
 | `-v, --verbose` | debug logging and tracebacks | - |
@@ -522,6 +523,23 @@ streams bus events live (routine ticks hidden by default). `kdx ui` passes the t
 (`/ui/#token=...`), which never reaches a server or a log; the page keeps it in
 `sessionStorage` only. Disable the console with `--disable-module web_console`, or keep it
 from opening a browser with `modules.web_console.open_browser: false`.
+
+## Languages (`kdx locale`)
+
+Help text and messages follow `core.locale` (`--locale sk`, `KDX_CORE__LOCALE`, `kdx.local.yml`,
+`kdx.yml`; `auto` reads `LC_ALL`/`LANG`). Shipped: en, sk, cs, de, es, fr. Command names, flags,
+`--json`, logs and stderr stay English.
+
+| Command | Effect |
+| --- | --- |
+| `kdx locale show` | active language and where it came from |
+| `kdx locale list` | available languages per domain |
+| `kdx locale set LOCALE` | write `core.locale` into `kdx.local.yml` |
+| `kdx locale check [--language L]` | completeness of catalogues; exit 3 if incomplete |
+| `kdx locale extract [--check]` | refresh the template from the source |
+| `kdx locale add L` / `todo L [--json]` / `apply L FILE` | add a language, list what is missing, merge translations |
+
+See [TRANSLATING.md](TRANSLATING.md).
 
 ## Exit codes
 
