@@ -95,7 +95,7 @@ def test_seed_ships_the_translation_convention() -> None:
     project = project_from_inputs("locale_check")  # type: ignore[arg-type]
     files = build_files(project)  # type: ignore[arg-type]
     i18n = files["src/locale_check/i18n.py"]
-    assert "import gettext" in i18n
+    assert "korodexios_core.kernel.i18n" in i18n
     assert "def translate(" in i18n and "def available_locales(" in i18n
     pot = files["src/locale_check/locales/locale_check.pot"]
     assert pot.startswith("# Translatable strings for")
