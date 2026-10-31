@@ -9,6 +9,7 @@ CORE_DEFAULTS: Final[dict[str, Any]] = {
     "core.name": "korodexios",
     "core.distribution": "korodexios-core",
     "core.home": None,
+    "core.locale": "en",
     "core.log.level": "INFO",
     "core.log.dir": "var/log",
     "core.log.file": "kdx.log",

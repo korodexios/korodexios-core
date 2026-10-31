@@ -43,6 +43,11 @@ class ArgparseSurface:
         """Return the core context handed to every handler."""
         return self._context
 
+    def _say(self, text: str) -> str:
+        """Translate help text; only the chassis's own domain, so a module's stays as written."""
+        translate = getattr(self._context, "translate", None)
+        return str(translate(text)) if callable(translate) and text else text
+
     def add_command(self, command: CliCommand) -> None:
         """Create one subparser tree, at whatever depth the command declares.
 
@@ -64,7 +69,9 @@ class ArgparseSurface:
     ) -> argparse.ArgumentParser:
         try:
             parser = parent.add_parser(
-                command.name, help=command.help or argparse.SUPPRESS, parents=self._parents
+                command.name,
+                help=self._say(command.help) or argparse.SUPPRESS,
+                parents=self._parents,
             )
         except argparse.ArgumentError as exc:
             raise CliError(
@@ -120,7 +127,7 @@ class ArgparseSurface:
     def _add_arguments(
         self, parser: argparse.ArgumentParser, arguments: tuple[CliArgument, ...]
     ) -> None:
-        add_command_arguments(parser, arguments)
+        add_command_arguments(parser, arguments, self._say)
 
     def resolve(
         self, namespace: argparse.Namespace

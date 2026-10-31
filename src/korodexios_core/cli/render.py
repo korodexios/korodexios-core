@@ -4,10 +4,43 @@ from __future__ import annotations
 
 import json
 import sys
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from typing import Any
 
 from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, tags_for
+
+_TAGS = frozenset({TAG_ERROR, TAG_NOTE, TAG_OK, "[?]", "[!]", "[i]"})
+
+
+_translator: Callable[[str], str] | None = None
+
+
+def set_translator(translator: Callable[[str], str] | None) -> None:
+    """Install (or, with None, remove) the function that translates fixed UI text.
+
+    Only text the chassis wrote itself passes through it: section titles, key labels,
+    table headers, the fixed words yes/no, and whole static messages. Values, JSON, and
+    anything dynamic are never touched, so a machine reading stdout sees the same bytes
+    in every language.
+    """
+    global _translator
+    _translator = translator
+
+
+def _tr(text: str) -> str:
+    return text if _translator is None or not text else _translator(text)
+
+
+def _tr_message(message: str) -> str:
+    """Translate a whole static message that may start with spaces and one status tag."""
+    if _translator is None or not message:
+        return message
+    body = message.lstrip(" ")
+    lead = message[: len(message) - len(body)]
+    tag, _, rest = body.partition(" ")
+    if rest and tag in _TAGS:
+        return f"{lead}{tag} {_translator(rest)}"
+    return f"{lead}{_translator(body)}"
 
 
 def _ascii_tags(message: str, stream: Any) -> str:
@@ -23,7 +56,7 @@ def _ascii_tags(message: str, stream: Any) -> str:
 def write_line(message: str = "", *, stream: Any = None) -> None:
     """Write one line to stdout (the UI channel) unless *stream* says otherwise."""
     target = sys.stdout if stream is None else stream
-    print(_ascii_tags(message, target), file=target)
+    print(_ascii_tags(_tr_message(message), target), file=target)
 
 
 def write_status(message: str, *, tag: str = TAG_OK, stream: Any = None) -> None:
@@ -42,7 +75,7 @@ def render_key_values(
     lines: list[str] = []
     for key, value in pairs:
         rendered = _render(value)
-        lines.append(f"{pad}{str(key).ljust(key_width)} {rendered}")
+        lines.append(f"{pad}{_tr(str(key)).ljust(key_width)} {rendered}")
     return lines
 
 
@@ -67,7 +100,7 @@ def render_table(
     """Render a fixed-width text table from stringifiable cells."""
     grid: list[list[str]] = [[_render(cell) for cell in row] for row in rows]
     if headers:
-        grid.insert(0, [str(header) for header in headers])
+        grid.insert(0, [_tr(str(header)) for header in headers])
     if not grid:
         return []
     columns = max(len(row) for row in grid)
@@ -99,7 +132,8 @@ def print_table(
 def render_section(title: str, *, indent: int = 0) -> str:
     """Render an underlined section heading."""
     pad = " " * indent
-    return f"{pad}{title}\n{pad}{'-' * max(4, len(title))}"
+    shown = _tr(title)
+    return f"{pad}{shown}\n{pad}{'-' * max(4, len(shown))}"
 
 
 def print_section(title: str, *, indent: int = 0, stream: Any = None) -> None:
@@ -115,7 +149,7 @@ def dump_json(payload: Any, *, stream: Any = None) -> None:
 
 def format_bool(value: bool) -> str:
     """Render a boolean as a friendly yes/no."""
-    return "yes" if value else "no"
+    return _tr("yes" if value else "no")
 
 
 def format_ms(value: float | None) -> str:
@@ -129,11 +163,11 @@ def _render(value: Any) -> str:
     if value is None:
         return "-"
     if isinstance(value, bool):
-        return "yes" if value else "no"
+        return _tr("yes" if value else "no")
     if isinstance(value, (list, tuple, set, frozenset)):
-        return ", ".join(_render(item) for item in value) or "(empty)"
+        return ", ".join(_render(item) for item in value) or _tr("(empty)")
     if isinstance(value, dict):
-        return ", ".join(f"{key}={_render(item)}" for key, item in value.items()) or "(empty)"
+        return ", ".join(f"{key}={_render(item)}" for key, item in value.items()) or _tr("(empty)")
     return str(value)
 
 
@@ -150,6 +184,7 @@ __all__ = [
     "render_key_values",
     "render_section",
     "render_table",
+    "set_translator",
     "tags_for",
     "write_line",
     "write_status",

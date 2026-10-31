@@ -17,6 +17,7 @@ from ..logging.engine import KorodexiosLogger, LoggerFactory
 from ..paths import AppPaths
 from ..version import CORE_API_VERSION, __version__
 from .async_runtime import AsyncRuntime
+from .i18n import CORE_DOMAIN, I18n
 from .scheduler import TaskScheduler
 from .supervision import WorkerRecord, WorkerSupervisor
 
@@ -44,6 +45,11 @@ class CoreContext:
     async_runtime: AsyncRuntime | None = None
     supervisor: WorkerSupervisor | None = None
     scheduler: TaskScheduler | None = None
+    i18n: I18n = field(default_factory=I18n)
+
+    def translate(self, message: str, *, domain: str = CORE_DOMAIN, **fields: Any) -> str:
+        """Return *message* in the active locale; the source string when untranslated."""
+        return self.i18n.translate(message, domain=domain, **fields)
 
     def logger_for(self, name: str) -> KorodexiosLogger:
         """Return a logger namespaced below the chassis namespace."""
@@ -212,6 +218,7 @@ class CoreContext:
             "async": self.async_runtime.as_dict() if self.async_runtime else {"running": False},
             "workers": self.supervisor.stats() if self.supervisor else {"watched": 0},
             "scheduler": self.scheduler.stats() if self.scheduler else {"scheduled": 0},
+            "locale": self.i18n.locale,
             "locks": {"names": list(self.paths.named_lock_files())},
         }
 

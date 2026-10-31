@@ -492,6 +492,8 @@ def _doctor_command(request: CliRequest) -> int:
     report = chassis.health_report()
     interactive = _interactivity(chassis)
     report["interface"] = interactive
+    language = request.context.i18n
+    report["language"] = {"locale": language.locale, "available": list(language.locales())}
     if request.flag("as_json"):
         dump_json(report)
         return int(ExitCode.SUCCESS)
@@ -549,6 +551,13 @@ def _doctor_command(request: CliRequest) -> int:
             ("stdin tty", interactive["stdin_tty"]),
             ("stdout tty", interactive["stdout_tty"]),
             ("interactive mode", format_bool(interactive["interactive"])),
+        ]
+    )
+    print_section("Language")
+    print_key_values(
+        [
+            ("active", language.locale),
+            ("available", ", ".join(language.locales())),
         ]
     )
     print_section("Paths")

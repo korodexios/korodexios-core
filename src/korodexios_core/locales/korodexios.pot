@@ -1,0 +1,1401 @@
+# Translatable strings of the korodexios domain.
+# Copy to <locale>/korodexios.po and fill in the msgstr lines.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#: renderer
+msgid "(empty)"
+msgstr ""
+
+#: cli/commands.py:1410
+msgid "--args must be a JSON object"
+msgstr ""
+
+#: cli/service.py:338
+msgid "--print changed nothing"
+msgstr ""
+
+#: cli/commands.py:795
+msgid "--rotate and --clear are mutually exclusive"
+msgstr ""
+
+#: cli/jobs.py:68
+msgid "Ask a job to stop (its command decides when it can)."
+msgstr ""
+
+#: cli/commands.py:225
+msgid "Ask a running daemon to re-read its configuration (SIGHUP over IPC)."
+msgstr ""
+
+#: modules/backup_engine/module.py:401
+msgid "Backup engine: plan, run, or configure a backup."
+msgstr ""
+
+#: modules/backup_engine/module.py:1103
+msgid "Backup plan"
+msgstr ""
+
+#: modules/backup_engine/module.py:1148
+msgid "Backup result"
+msgstr ""
+
+#: modules/backup_engine/module.py:1204
+msgid "Backup retention"
+msgstr ""
+
+#: modules/system_info/module.py:459
+msgid "CPU"
+msgstr ""
+
+#: cli/users.py:72
+msgid "Change a user's role."
+msgstr ""
+
+#: cli/language.py:83
+msgid "Change nothing; exit 3 when the template is out of date."
+msgstr ""
+
+#: cli/commands.py:501
+msgid "Chassis"
+msgstr ""
+
+#: cli/commands.py:626
+msgid "Chassis primitives"
+msgstr ""
+
+#: cli/language.py:61
+msgid "Choose the language for this machine (writes kdx.local.yml)."
+msgstr ""
+
+#: cli/language.py:74
+msgid "Collect translatable strings into the template and update translations."
+msgstr ""
+
+#: cli/language.py:88
+msgid "Compare catalogues with their templates; exit 3 when one is incomplete."
+msgstr ""
+
+#: cli/commands.py:565
+msgid "Configuration"
+msgstr ""
+
+#: cli/commands.py:524
+msgid "Contracts"
+msgstr ""
+
+#: cli/commands.py:580
+msgid "Control plane"
+msgstr ""
+
+#: modules/backup_engine/module.py:423
+msgid "Copy even when the size budget is exceeded."
+msgstr ""
+
+#: cli/tls.py:52
+msgid "Create a self-signed certificate for 'kdx run --tls'."
+msgstr ""
+
+#: cli/users.py:45
+msgid "Create a user; prints the new token once."
+msgstr ""
+
+#: cli/tls.py:46
+msgid "Create the certificate for an https control plane."
+msgstr ""
+
+#: cli/users.py:58
+msgid "Delete a user; their token stops working at once."
+msgstr ""
+
+#: modules/backup_engine/module.py:1030
+msgid "Destination directory for copies."
+msgstr ""
+
+#: cli/commands.py:654
+msgid "Diagnostics"
+msgstr ""
+
+#: cli/commands.py:329
+msgid "Directory to create the module in."
+msgstr ""
+
+#: modules/system_info/module.py:436
+msgid "Disk"
+msgstr ""
+
+#: cli/jobs.py:39
+msgid "Emit JSON."
+msgstr ""
+
+#: modules/heartbeat/module.py:131
+msgid "Emit machine-readable JSON."
+msgstr ""
+
+#: cli/commands.py:347
+msgid "Emit the created files as JSON."
+msgstr ""
+
+#: cli/commands.py:269
+msgid "Emit the daemon's reply as JSON."
+msgstr ""
+
+#: cli/commands.py:362
+msgid "Emit the detail as JSON."
+msgstr ""
+
+#: cli/commands.py:312
+msgid "Emit the listing as JSON."
+msgstr ""
+
+#: cli/commands.py:192
+msgid "Emit the live report as JSON."
+msgstr ""
+
+#: cli/commands.py:386
+msgid "Emit the mapping as JSON."
+msgstr ""
+
+#: cli/commands.py:231
+msgid "Emit the reload summary as JSON."
+msgstr ""
+
+#: cli/commands.py:82
+msgid "Emit the report as JSON."
+msgstr ""
+
+#: modules/system_info/module.py:146
+msgid "Emit the snapshot as JSON."
+msgstr ""
+
+#: cli/commands.py:1016
+msgid "Event bus"
+msgstr ""
+
+#: cli/jobs.py:85
+msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
+msgstr ""
+
+#: cli/tls.py:61
+msgid "Extra host name or IP the certificate covers (repeatable)."
+msgstr ""
+
+#: modules/backup_engine/module.py:1050
+msgid "Fail if the copy exceeds SIZE, e.g. 500MB."
+msgstr ""
+
+#: modules/system_info/module.py:178
+msgid "Filesystem path to inspect."
+msgstr ""
+
+#: cli/jobs.py:79
+msgid "Follow the daemon's live events (Ctrl+C to stop)."
+msgstr ""
+
+#: cli/commands.py:459
+msgid "Hash every declared file and report drift; exit 3 on drift."
+msgstr ""
+
+#: modules/heartbeat/module.py:118
+msgid "Heartbeat module utilities."
+msgstr ""
+
+#: modules/system_info/module.py:133
+msgid "Host diagnostics (OS, CPU, memory, disk)."
+msgstr ""
+
+#: cli/users.py:94
+msgid "How many records to show [50]."
+msgstr ""
+
+#: cli/jobs.py:89
+msgid "Include routine ticks, heartbeats, and scheduler runs."
+msgstr ""
+
+#: cli/commands.py:301
+msgid "Inspect auto-discovered modules."
+msgstr ""
+
+#: cli/commands.py:76
+msgid "Inspect the environment, configuration, logging, and modules."
+msgstr ""
+
+#: cli/commands.py:603
+msgid "Instance and concurrency"
+msgstr ""
+
+#: modules/system_info/module.py:152
+msgid "Interactive diagnostics menu (pick the sections to show)."
+msgstr ""
+
+#: modules/backup_engine/module.py:443
+msgid "Interactive setup: source, destination, filters, then run."
+msgstr ""
+
+#: cli/users.py:65
+msgid "Issue a new token for a user; the old one stops working."
+msgstr ""
+
+#: cli/jobs.py:40
+msgid "Job id, for example job-3."
+msgstr ""
+
+#: cli/commands.py:556
+msgid "Language"
+msgstr ""
+
+#: cli/jobs.py:51
+msgid "List background jobs, newest first."
+msgstr ""
+
+#: cli/commands.py:306
+msgid "List discovered modules and their state."
+msgstr ""
+
+#: cli/language.py:54
+msgid "List the languages that have a catalogue, per message domain."
+msgstr ""
+
+#: cli/users.py:38
+msgid "List users and their roles."
+msgstr ""
+
+#: cli/jobs.py:47
+msgid "List, follow, or cancel commands running in the background on the daemon."
+msgstr ""
+
+#: cli/commands.py:574
+msgid "Logging"
+msgstr ""
+
+#: cli/users.py:33
+msgid "Manage named control-plane users and their roles."
+msgstr ""
+
+#: cli/commands.py:1026
+msgid "Memory"
+msgstr ""
+
+#: cli/commands.py:1304
+msgid "Module configuration schemas"
+msgstr ""
+
+#: cli/commands.py:323
+msgid "Module name, for example backup_engine."
+msgstr ""
+
+#: cli/commands.py:357
+msgid "Module name; omit for all."
+msgstr ""
+
+#: cli/commands.py:666
+msgid "Modules"
+msgstr ""
+
+#: cli/jobs.py:96
+msgid "One JSON object per line."
+msgstr ""
+
+#: cli/commands.py:335
+msgid "One-line module description."
+msgstr ""
+
+#: modules/backup_engine/module.py:1037
+msgid "Only copy paths matching PATTERN (repeatable)."
+msgstr ""
+
+#: cli/commands.py:380
+msgid "Only show keys starting with KEY."
+msgstr ""
+
+#: cli/users.py:100
+msgid "Only this kind of action."
+msgstr ""
+
+#: cli/language.py:94
+msgid "Only this language."
+msgstr ""
+
+#: cli/language.py:35
+msgid "Only this message domain."
+msgstr ""
+
+#: cli/users.py:96
+msgid "Only this user's records."
+msgstr ""
+
+#: modules/web_console/module.py:152
+msgid "Open the browser console (starts the daemon when none is running)."
+msgstr ""
+
+#: cli/commands.py:44
+msgid "Open the interactive command wizard."
+msgstr ""
+
+#: modules/system_info/module.py:453
+msgid "Operating system"
+msgstr ""
+
+#: cli/commands.py:563
+msgid "Paths"
+msgstr ""
+
+#: modules/system_info/module.py:138
+msgid "Print a full system snapshot."
+msgstr ""
+
+#: cli/commands.py:377
+msgid "Print every resolved key with the layer that won."
+msgstr ""
+
+#: modules/heartbeat/module.py:123
+msgid "Print heartbeat counters and the configured interval."
+msgstr ""
+
+#: cli/jobs.py:61
+msgid "Print new output as it arrives, until the job ends."
+msgstr ""
+
+#: cli/language.py:47
+msgid "Print the active language and where the choice came from."
+msgstr ""
+
+#: cli/commands.py:70
+msgid "Print the chassis and core API version."
+msgstr ""
+
+#: modules/web_console/module.py:161
+msgid "Print the console URL instead of opening a browser."
+msgstr ""
+
+#: cli/commands.py:400
+msgid "Print the discovered config and env file paths."
+msgstr ""
+
+#: cli/commands.py:513
+msgid "Project identity"
+msgstr ""
+
+#: cli/commands.py:427
+msgid "Publish one tick and stop (CI and smoke tests)."
+msgstr ""
+
+#: cli/language.py:81
+msgid "Python source to scan [the chassis package]."
+msgstr ""
+
+#: cli/commands.py:186
+msgid "Query a running chassis over its control plane (local or remote)."
+msgstr ""
+
+#: cli/service.py:76
+msgid "Register the daemon to start at logon, and start it now."
+msgstr ""
+
+#: cli/tls.py:67
+msgid "Replace an existing certificate."
+msgstr ""
+
+#: cli/commands.py:341
+msgid "Replace an existing module directory."
+msgstr ""
+
+#: modules/system_info/module.py:168
+msgid "Report disk usage for a path."
+msgstr ""
+
+#: cli/commands.py:406
+msgid "Report keys nothing reads; exit 3 when a key is a typo."
+msgstr ""
+
+#: modules/backup_engine/module.py:429
+msgid "Report the retention window, standing copies, and sweep record."
+msgstr ""
+
+#: modules/backup_engine/module.py:1056
+msgid "Report what would be copied without writing."
+msgstr ""
+
+#: cli/commands.py:281
+msgid "Run it as a job and print its output live; no timeout."
+msgstr ""
+
+#: cli/commands.py:251
+msgid "Run one module command inside a live daemon instead of booting a chassis."
+msgstr ""
+
+#: modules/backup_engine/module.py:413
+msgid "Run the backup (copies files unless --dry-run)."
+msgstr ""
+
+#: cli/commands.py:541
+msgid "Runtime"
+msgstr ""
+
+#: cli/service.py:96
+msgid "Say whether the service is registered and the daemon answers."
+msgstr ""
+
+#: cli/commands.py:320
+msgid "Scaffold a new module package (asks for a name when omitted)."
+msgstr ""
+
+#: cli/commands.py:136
+msgid "Scaffold a new project from the chassis template."
+msgstr ""
+
+#: modules/system_info/module.py:162
+msgid "Section to display without prompting."
+msgstr ""
+
+#: cli/service.py:67
+msgid "Service name [korodexios-<project>]."
+msgstr ""
+
+#: cli/jobs.py:55
+msgid "Show one job's state and output."
+msgstr ""
+
+#: cli/commands.py:355
+msgid "Show one module in detail (initializes modules)."
+msgstr ""
+
+#: cli/service.py:83
+msgid "Show the definition and commands; change nothing."
+msgstr ""
+
+#: cli/users.py:88
+msgid "Show who acted over the control plane (commands, jobs, reloads, stops)."
+msgstr ""
+
+#: cli/language.py:42
+msgid "Show, choose, and verify the language (message catalogues)."
+msgstr ""
+
+#: cli/commands.py:90
+msgid "Show, follow, truncate, or rotate the chassis log file."
+msgstr ""
+
+#: cli/commands.py:372
+msgid "Show, prove, and validate the resolved configuration."
+msgstr ""
+
+#: cli/commands.py:576
+msgid "Signals"
+msgstr ""
+
+#: modules/backup_engine/module.py:1044
+msgid "Skip paths matching PATTERN (repeatable)."
+msgstr ""
+
+#: modules/backup_engine/module.py:1027
+msgid "Source directory to back up."
+msgstr ""
+
+#: cli/commands.py:275
+msgid "Start it as a job and return its id at once (see 'kdx jobs')."
+msgstr ""
+
+#: cli/service.py:71
+msgid "Start the daemon automatically at logon (Task Scheduler, systemd, launchd)."
+msgstr ""
+
+#: cli/jobs.py:93
+msgid "Stop after this many events (scripts, tests)."
+msgstr ""
+
+#: cli/commands.py:433
+msgid "Stop automatically after SECONDS."
+msgstr ""
+
+#: cli/service.py:89
+msgid "Stop the daemon cleanly and remove the logon registration."
+msgstr ""
+
+#: cli/jobs.py:106
+msgid "Stop the running daemon cleanly (needs the admin role)."
+msgstr ""
+
+#: modules/system_info/module.py:474
+msgid "Uptime"
+msgstr ""
+
+#: cli/users.py:25
+msgid "User name (a-z, 0-9, '.', '_', '-')."
+msgstr ""
+
+#: modules/backup_engine/module.py:406
+msgid "Validate inputs and show what a backup would copy."
+msgstr ""
+
+#: cli/commands.py:454
+msgid "Verify the project's declared file set without rewriting it."
+msgstr ""
+
+#: cli/commands.py:1363
+msgid "a SIGHUP to the daemon does the same thing"
+msgstr ""
+
+#: cli/users.py:229
+msgid "action"
+msgstr ""
+
+#: cli/commands.py:559
+msgid "active"
+msgstr ""
+
+#: cli/users.py:138
+msgid "add one with: kdx users add NAME --role operator"
+msgstr ""
+
+#: cli/commands.py:504
+msgid "app"
+msgstr ""
+
+#: cli/commands.py:115
+msgid "archive the log file and start a fresh one"
+msgstr ""
+
+#: cli/commands.py:263
+msgid "arguments as a JSON object, for example --args JSON"
+msgstr ""
+
+#: cli/service.py:375
+msgid "asked the running daemon to stop cleanly"
+msgstr ""
+
+#: cli/commands.py:613
+msgid "async tasks"
+msgstr ""
+
+#: cli/commands.py:611
+msgid "asyncio loop"
+msgstr ""
+
+#: cli/commands.py:993
+msgid "auth"
+msgstr ""
+
+#: cli/commands.py:154
+msgid "author or owner [Korodexios]"
+msgstr ""
+
+#: cli/commands.py:560
+msgid "available"
+msgstr ""
+
+#: cli/commands.py:166
+msgid "bare chassis: no example modules"
+msgstr ""
+
+#: cli/commands.py:439
+msgid "bind the control plane here (0.0.0.0 for LAN access)"
+msgstr ""
+
+#: cli/language.py:257
+msgid "broken"
+msgstr ""
+
+#: cli/users.py:157
+msgid "browser:  open http://HOST:8123/ui/ and paste the token"
+msgstr ""
+
+#: cli/language.py:120
+msgid "built-in default"
+msgstr ""
+
+#: cli/tls.py:157
+msgid "certificate"
+msgstr ""
+
+#: cli/tls.py:158
+msgid "certificate ready; start the daemon with 'kdx run --tls'"
+msgstr ""
+
+#: cli/commands.py:1386
+msgid "changed"
+msgstr ""
+
+#: cli/commands.py:905
+msgid "chassis"
+msgstr ""
+
+#: cli/commands.py:956
+msgid "chassis daemon is not running"
+msgstr ""
+
+#: cli/commands.py:906
+msgid "chassis dependency"
+msgstr ""
+
+#: cli/service.py:356
+msgid "check it: kdx service status   remove it: kdx service uninstall"
+msgstr ""
+
+#: cli/language.py:142
+msgid "chosen by"
+msgstr ""
+
+#: cli/commands.py:1477
+msgid "command"
+msgstr ""
+
+#: cli/commands.py:690
+msgid "commands"
+msgstr ""
+
+#: cli/commands.py:568
+msgid "config file"
+msgstr ""
+
+#: cli/commands.py:1330
+msgid "configuration is understood"
+msgstr ""
+
+#: cli/commands.py:1389
+msgid "configuration reloaded; the daemon kept running"
+msgstr ""
+
+#: cli/language.py:141
+msgid "configured"
+msgstr ""
+
+#: modules/backup_engine/module.py:1255
+msgid "configured, but not run"
+msgstr ""
+
+#: modules/web_console/module.py:340
+msgid "console"
+msgstr ""
+
+#: cli/commands.py:518
+msgid "contract directory"
+msgstr ""
+
+#: cli/commands.py:446
+msgid "control-plane port (0 for an ephemeral port)"
+msgstr ""
+
+#: cli/commands.py:506
+msgid "core api"
+msgstr ""
+
+#: cli/language.py:206
+msgid "core.locale = {value} saved in {path}"
+msgstr ""
+
+#: cli/tls.py:157
+msgid "covers"
+msgstr ""
+
+#: cli/users.py:142
+msgid "created"
+msgstr ""
+
+#: cli/commands.py:548
+msgid "cwd"
+msgstr ""
+
+#: cli/commands.py:610
+msgid "daemon"
+msgstr ""
+
+#: cli/commands.py:528
+msgid "declared"
+msgstr ""
+
+#: cli/service.py:334
+msgid "definition"
+msgstr ""
+
+#: cli/commands.py:1020
+msgid "delivered"
+msgstr ""
+
+#: cli/commands.py:674
+msgid "dependency cycles"
+msgstr ""
+
+#: cli/commands.py:690
+msgid "depends"
+msgstr ""
+
+#: cli/commands.py:744
+msgid "description"
+msgstr ""
+
+#: cli/commands.py:590
+msgid "discovery file"
+msgstr ""
+
+#: cli/language.py:161
+msgid "domain"
+msgstr ""
+
+#: cli/language.py:257
+msgid "done"
+msgstr ""
+
+#: cli/commands.py:530
+msgid "drifted"
+msgstr ""
+
+#: cli/commands.py:902
+msgid "ecosystem"
+msgstr ""
+
+#: cli/commands.py:585
+msgid "endpoint"
+msgstr ""
+
+#: cli/commands.py:1127
+msgid "entrypoint"
+msgstr ""
+
+#: cli/commands.py:569
+msgid "env file"
+msgstr ""
+
+#: cli/commands.py:570
+msgid "env prefix"
+msgstr ""
+
+#: cli/commands.py:1131
+msgid "error"
+msgstr ""
+
+#: cli/commands.py:589
+msgid "errors served"
+msgstr ""
+
+#: cli/language.py:270
+msgid "every catalogue is complete"
+msgstr ""
+
+#: modules/backup_engine/module.py:1217
+msgid "every standing copy is inside the window"
+msgstr ""
+
+#: cli/commands.py:545
+msgid "executable"
+msgstr ""
+
+#: cli/jobs.py:166
+msgid "exit"
+msgstr ""
+
+#: cli/commands.py:1478
+msgid "exit code"
+msgstr ""
+
+#: cli/commands.py:672
+msgid "failed"
+msgstr ""
+
+#: cli/commands.py:904
+msgid "files written"
+msgstr ""
+
+#: modules/system_info/module.py:442
+msgid "free"
+msgstr ""
+
+#: cli/users.py:229
+msgid "from"
+msgstr ""
+
+#: cli/language.py:257
+msgid "fuzzy"
+msgstr ""
+
+#: cli/commands.py:1021
+msgid "handler errors"
+msgstr ""
+
+#: cli/commands.py:1132
+msgid "health"
+msgstr ""
+
+#: modules/heartbeat/module.py:206
+msgid "heartbeat module is not registered"
+msgstr ""
+
+#: cli/commands.py:178
+msgid "how the project resolves the chassis: git | index [git]"
+msgstr ""
+
+#: cli/jobs.py:166
+msgid "id"
+msgstr ""
+
+#: modules/system_info/module.py:443
+msgid "inodes"
+msgstr ""
+
+#: cli/tls.py:143
+msgid "install it (Git for Windows ships one), or run this yourself:"
+msgstr ""
+
+#: cli/commands.py:607
+msgid "instance lock"
+msgstr ""
+
+#: cli/commands.py:553
+msgid "interactive mode"
+msgstr ""
+
+#: modules/heartbeat/module.py:219
+msgid "interval seconds"
+msgstr ""
+
+#: cli/commands.py:782
+msgid "kdx logs -n 200"
+msgstr ""
+
+#: cli/commands.py:1399
+msgid "kdx rpc heartbeat status -- -n 5"
+msgstr ""
+
+#: cli/commands.py:1398
+msgid "kdx rpc needs a command to delegate"
+msgstr ""
+
+#: cli/commands.py:1230
+msgid "key"
+msgstr ""
+
+#: cli/commands.py:1385
+msgid "keys changed"
+msgstr ""
+
+#: cli/commands.py:1297
+msgid "keys checked"
+msgstr ""
+
+#: cli/commands.py:571
+msgid "known keys"
+msgstr ""
+
+#: cli/language.py:140
+msgid "language"
+msgstr ""
+
+#: cli/language.py:161
+msgid "languages"
+msgstr ""
+
+#: cli/commands.py:608
+msgid "lock held"
+msgstr ""
+
+#: cli/commands.py:609
+msgid "lock holder"
+msgstr ""
+
+#: cli/commands.py:645
+msgid "lock names"
+msgstr ""
+
+#: cli/service.py:414
+msgid "manager says"
+msgstr ""
+
+#: cli/commands.py:529
+msgid "match"
+msgstr ""
+
+#: cli/language.py:144
+msgid "message domains"
+msgstr ""
+
+#: cli/commands.py:531
+msgid "missing"
+msgstr ""
+
+#: cli/commands.py:1479
+msgid "module"
+msgstr ""
+
+#: cli/commands.py:257
+msgid "module command path to delegate, for example: kdx rpc heartbeat status"
+msgstr ""
+
+#: cli/commands.py:694
+msgid "module discovery problems:"
+msgstr ""
+
+#: cli/commands.py:592
+msgid "module routes"
+msgstr ""
+
+#: cli/commands.py:903
+msgid "modules"
+msgstr ""
+
+#: cli/commands.py:516
+msgid "name"
+msgstr ""
+
+#: cli/commands.py:640
+msgid "named locks"
+msgstr ""
+
+#: cli/commands.py:1090
+msgid "next: kdx modules list"
+msgstr ""
+
+#: renderer
+msgid "no"
+msgstr ""
+
+#: cli/jobs.py:158
+msgid "no background jobs yet; start one with: kdx rpc --follow COMMAND"
+msgstr ""
+
+#: cli/commands.py:1417
+msgid "no chassis daemon answering; run 'kdx run' first"
+msgstr ""
+
+#: cli/commands.py:59
+msgid "no commands are registered yet"
+msgstr ""
+
+#: cli/jobs.py:120
+msgid "no daemon is answering; start one with 'kdx run'"
+msgstr ""
+
+#: modules/web_console/module.py:302
+msgid "no daemon is running and this command has no chassis"
+msgstr ""
+
+#: cli/commands.py:657
+msgid "no diagnostics findings"
+msgstr ""
+
+#: cli/language.py:234
+msgid "no message domain named {name}; known: {known}"
+msgstr ""
+
+#: cli/commands.py:1306
+msgid "no module declares a configuration schema"
+msgstr ""
+
+#: cli/commands.py:728
+msgid "no modules discovered yet"
+msgstr ""
+
+#: cli/commands.py:1115
+msgid "no modules registered"
+msgstr ""
+
+#: cli/users.py:137
+msgid "no named users yet; the shared core.ipc.token is the owner"
+msgstr ""
+
+#: cli/commands.py:1165
+msgid "no project or module declared a contract file set"
+msgstr ""
+
+#: cli/language.py:245
+msgid "no translations to check; only the source language exists"
+msgstr ""
+
+#: modules/backup_engine/module.py:1105
+msgid "nothing copied yet: this was a plan"
+msgstr ""
+
+#: cli/commands.py:1062
+msgid "nothing written"
+msgstr ""
+
+#: cli/language.py:257
+msgid "obsolete"
+msgstr ""
+
+#: cli/tls.py:160
+msgid "on another machine, trust it with: kdx --tls-ca cert.pem status --target https://HOST:8123"
+msgstr ""
+
+#: modules/web_console/module.py:345
+msgid "open this URL; it carries the session token:"
+msgstr ""
+
+#: modules/web_console/module.py:343
+msgid "opened the web console in your browser"
+msgstr ""
+
+#: cli/tls.py:142
+msgid "openssl was not found on this host"
+msgstr ""
+
+#: cli/commands.py:690
+msgid "origin"
+msgstr ""
+
+#: cli/users.py:229
+msgid "outcome"
+msgstr ""
+
+#: cli/commands.py:901
+msgid "package"
+msgstr ""
+
+#: modules/backup_engine/module.py:1127
+msgid "pass --force to copy anyway"
+msgstr ""
+
+#: cli/commands.py:1059
+msgid "pass --force to replace its files"
+msgstr ""
+
+#: cli/commands.py:970
+msgid "pass --token TOKEN, or set core.ipc.token / KDX_CORE__IPC__TOKEN"
+msgstr ""
+
+#: cli/commands.py:538
+msgid "path"
+msgstr ""
+
+#: cli/commands.py:547
+msgid "pid"
+msgstr ""
+
+#: cli/commands.py:546
+msgid "platform"
+msgstr ""
+
+#: cli/commands.py:211
+msgid "port of --host [core.ipc.port]"
+msgstr ""
+
+#: cli/commands.py:237
+msgid "post to http://host:port directly, skipping the local discovery file"
+msgstr ""
+
+#: cli/commands.py:1232
+msgid "precedence: CLI > environment > config file > built-in defaults"
+msgstr ""
+
+#: cli/commands.py:121
+msgid "print only log lines, no decorations"
+msgstr ""
+
+#: cli/commands.py:392
+msgid "print sensitive values in clear instead of masked"
+msgstr ""
+
+#: cli/commands.py:97
+msgid "print the last N lines [50]"
+msgstr ""
+
+#: cli/commands.py:1125
+msgid "priority"
+msgstr ""
+
+#: cli/commands.py:596
+msgid "process memory"
+msgstr ""
+
+#: cli/commands.py:1299
+msgid "project keys"
+msgstr ""
+
+#: cli/commands.py:142
+msgid "project name; prompted when omitted"
+msgstr ""
+
+#: cli/commands.py:1019
+msgid "published"
+msgstr ""
+
+#: cli/commands.py:544
+msgid "python"
+msgstr ""
+
+#: cli/commands.py:160
+msgid "python | fullstack"
+msgstr ""
+
+#: cli/commands.py:198
+msgid "query http://host:port directly, skipping the local discovery file"
+msgstr ""
+
+#: cli/commands.py:204
+msgid "query this host (with --port) instead of the local endpoint"
+msgstr ""
+
+#: cli/service.py:419
+msgid "register it with: kdx service install"
+msgstr ""
+
+#: cli/service.py:413
+msgid "registered"
+msgstr ""
+
+#: cli/commands.py:1384
+msgid "reloads"
+msgstr ""
+
+#: cli/commands.py:588
+msgid "requests served"
+msgstr ""
+
+#: cli/commands.py:1128
+msgid "requires core"
+msgstr ""
+
+#: cli/commands.py:1027
+msgid "resident"
+msgstr ""
+
+#: cli/users.py:142
+msgid "role"
+msgstr ""
+
+#: cli/commands.py:900
+msgid "root"
+msgstr ""
+
+#: cli/commands.py:583
+msgid "running"
+msgstr ""
+
+#: cli/commands.py:630
+msgid "scheduled tasks"
+msgstr ""
+
+#: modules/heartbeat/module.py:221
+msgid "seconds since last beat"
+msgstr ""
+
+#: cli/commands.py:1235
+msgid "sensitive values are masked; pass --reveal to print them in clear"
+msgstr ""
+
+#: cli/service.py:333
+msgid "service"
+msgstr ""
+
+#: cli/commands.py:217
+msgid "shared token for a remote endpoint with auth enabled"
+msgstr ""
+
+#: cli/commands.py:995
+msgid "shutdown"
+msgstr ""
+
+#: cli/commands.py:1022
+msgid "slow handlers"
+msgstr ""
+
+#: cli/commands.py:1001
+msgid "source"
+msgstr ""
+
+#: modules/web_console/module.py:303
+msgid "start one with 'kdx run', then run 'kdx ui' again"
+msgstr ""
+
+#: cli/commands.py:507
+msgid "state"
+msgstr ""
+
+#: cli/commands.py:649
+msgid "static mounts"
+msgstr ""
+
+#: cli/commands.py:550
+msgid "stderr encoding"
+msgstr ""
+
+#: cli/commands.py:551
+msgid "stdin tty"
+msgstr ""
+
+#: cli/commands.py:549
+msgid "stdout encoding"
+msgstr ""
+
+#: cli/commands.py:552
+msgid "stdout tty"
+msgstr ""
+
+#: cli/commands.py:128
+msgid "stop --follow after SECONDS (CI friendly)"
+msgstr ""
+
+#: cli/commands.py:103
+msgid "stream newly appended lines until Ctrl-C"
+msgstr ""
+
+#: cli/commands.py:1023
+msgid "subscriptions"
+msgstr ""
+
+#: cli/jobs.py:32
+msgid "talk to http(s)://host:port instead of the local daemon"
+msgstr ""
+
+#: cli/commands.py:148
+msgid "target directory (default: ./<name>)"
+msgstr ""
+
+#: cli/commands.py:636
+msgid "task names"
+msgstr ""
+
+#: cli/users.py:156
+msgid "terminal: kdx status --target http://HOST:8123 --token TOKEN"
+msgstr ""
+
+#: cli/commands.py:1198
+msgid "the chassis reads these files and never rewrites one"
+msgstr ""
+
+#: modules/web_console/module.py:306
+msgid "the control plane is disabled (core.ipc.enabled: false)"
+msgstr ""
+
+#: cli/jobs.py:283
+msgid "the daemon closed the feed (it is stopping)"
+msgstr ""
+
+#: cli/commands.py:1372
+msgid "the daemon rejected this client (token required)"
+msgstr ""
+
+#: cli/service.py:354
+msgid "the daemon starts at logon and is starting now"
+msgstr ""
+
+#: cli/commands.py:749
+msgid "the live state of a running daemon: 'kdx status' or 'kdx ui'"
+msgstr ""
+
+#: cli/users.py:144
+msgid "the shared core.ipc.token is the built-in admin 'owner'"
+msgstr ""
+
+#: modules/backup_engine/module.py:1208
+msgid "the window is off: copies stand until the window opens or a sweep is asked for"
+msgstr ""
+
+#: modules/heartbeat/module.py:223
+msgid "ticker runs"
+msgstr ""
+
+#: modules/heartbeat/module.py:222
+msgid "ticker scheduled"
+msgstr ""
+
+#: modules/heartbeat/module.py:220
+msgid "ticks"
+msgstr ""
+
+#: cli/jobs.py:166
+msgid "time"
+msgstr ""
+
+#: cli/commands.py:1130
+msgid "timings"
+msgstr ""
+
+#: cli/users.py:154
+msgid "token"
+msgstr ""
+
+#: cli/commands.py:671
+msgid "total"
+msgstr ""
+
+#: cli/commands.py:109
+msgid "truncate the log file (asks first)"
+msgstr ""
+
+#: cli/commands.py:673
+msgid "unknown dependencies"
+msgstr ""
+
+#: cli/commands.py:1298
+msgid "unknown keys"
+msgstr ""
+
+#: cli/commands.py:508
+msgid "uptime"
+msgstr ""
+
+#: modules/system_info/module.py:441
+msgid "used"
+msgstr ""
+
+#: cli/jobs.py:166
+msgid "user"
+msgstr ""
+
+#: cli/commands.py:1230
+msgid "value"
+msgstr ""
+
+#: cli/commands.py:505
+msgid "version"
+msgstr ""
+
+#: cli/commands.py:619
+msgid "workers dead"
+msgstr ""
+
+#: cli/commands.py:618
+msgid "workers watched"
+msgstr ""
+
+#: cli/commands.py:172
+msgid "write into a directory that already holds files"
+msgstr ""
+
+#: renderer
+msgid "yes"
+msgstr ""
+
+#: cli/jobs.py:36
+msgid "your token for that daemon (core.ipc.token or one from 'kdx users add')"
+msgstr ""
+
+#: cli/language.py:267
+msgid "{count} catalogue(s) need attention"
+msgstr ""
+
+#: cli/language.py:302
+msgid "{count} strings written to {path}"
+msgstr ""
+
+#: cli/language.py:314
+msgid "{locale}: {added} new, {stale} obsolete"
+msgstr ""
+
+#: cli/language.py:212
+msgid "{origin} still wins over kdx.local.yml; the new value applies once it is removed"
+msgstr ""
+
+#: cli/language.py:188
+msgid "{path} cannot be read, so it was left alone: {reason}"
+msgstr ""
+
+#: cli/language.py:201
+msgid "{path} could not be written: {reason}"
+msgstr ""
+
+#: cli/language.py:287
+msgid "{path} is not a directory"
+msgstr ""
+
+#: cli/language.py:297
+msgid "{path} is out of date; run kdx locale extract"
+msgstr ""
+
+#: cli/language.py:295
+msgid "{path} is up to date"
+msgstr ""
+
+#: cli/language.py:178
+msgid "{value} is not a language code; use a form such as sk or sk_SK, or 'auto'"
+msgstr ""

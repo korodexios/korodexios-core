@@ -29,7 +29,11 @@ _TYPE_MAP: dict[str, Callable[[Any], Any]] = {
 }
 
 
-def add_command_arguments(parser: Any, arguments: Sequence[CliArgument]) -> None:
+def add_command_arguments(
+    parser: Any,
+    arguments: Sequence[CliArgument],
+    translate: Callable[[str], str] | None = None,
+) -> None:
     """Attach declarative arguments to an argparse parser.
 
     The surface builds the real CLI this way, and so does the chassis when a
@@ -40,7 +44,7 @@ def add_command_arguments(parser: Any, arguments: Sequence[CliArgument]) -> None
         kwargs: dict[str, Any] = {}
         is_positional = all(not str(flag).startswith("-") for flag in argument.flags)
         if argument.help:
-            kwargs["help"] = argument.help
+            kwargs["help"] = translate(argument.help) if translate else argument.help
         if argument.metavar:
             kwargs["metavar"] = argument.metavar
         if argument.action:

@@ -21,7 +21,8 @@ from ..paths import AppPaths
 from ..version import format_version
 from .commands import core_commands, render_rpc_reply, wizard_command
 from .jobs import events_command, jobs_command, stop_command
-from .render import write_line
+from .language import locale_command
+from .render import set_translator, write_line
 from .service import service_command
 from .surface import HANDLER_ATTR, ArgparseSurface
 from .tls import tls_command
@@ -197,6 +198,12 @@ def _add_global_flags(parser: argparse.ArgumentParser) -> None:
         type=float,
         default=argparse.SUPPRESS,
         help="Lifecycle tick interval [1.0].",
+    )
+    group.add_argument(
+        "--locale",
+        metavar="LOCALE",
+        default=argparse.SUPPRESS,
+        help="Language of messages, such as sk or sk_SK, or auto [en].",
     )
     group.add_argument(
         "--stop-timeout",
@@ -382,6 +389,9 @@ def _cli_overrides(namespace: argparse.Namespace) -> dict[str, Any]:
     tick_interval = getattr(namespace, "tick_interval", None)
     if tick_interval is not None:
         overrides["core.lifecycle.tick_interval"] = float(tick_interval)
+    locale = getattr(namespace, "locale", None)
+    if locale:
+        overrides["core.locale"] = str(locale)
     stop_timeout = getattr(namespace, "stop_timeout", None)
     if stop_timeout is not None:
         overrides["core.lifecycle.stop_timeout"] = float(stop_timeout)
@@ -613,6 +623,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         context = chassis.context
         context.registry = chassis.registry
         context.chassis = chassis
+        set_translator(context.translate)
 
         flags = global_flags()
         parser = build_root_parser(flags)
@@ -628,6 +639,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         surface.add_command(events_command())
         surface.add_command(stop_command())
         surface.add_command(service_command())
+        surface.add_command(locale_command())
         chassis.collect_cli(surface)
 
         try:
@@ -663,6 +675,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         _render_unexpected(exc, verbose=bool(getattr(pre_args, "verbose", False)))
         return int(ExitCode.ERROR)
     finally:
+        set_translator(None)
         if chassis is not None and chassis.state.value != "stopped":
             try:
                 chassis.shutdown()

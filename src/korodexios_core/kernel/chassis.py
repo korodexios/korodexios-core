@@ -53,6 +53,7 @@ from .diagnostics import (
     diagnostic_check,
 )
 from .discovery import DiscoveryReport, ModuleDiscovery
+from .i18n import build_i18n
 from .instance_lock import InstanceLock
 from .ipc import (
     DISCOVERY_NAME,
@@ -272,6 +273,7 @@ class Chassis:
             async_runtime=async_runtime,
             supervisor=supervisor,
             scheduler=scheduler,
+            i18n=build_i18n(config.get_str("core.locale", "en")),
         )
         registry = ModuleRegistry(log.child("registry"), bus=bus)
         context.registry = registry
