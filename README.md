@@ -13,6 +13,9 @@ clients that talk to the same core and never reimplement it.
 - **Dependencies:** `pyyaml` (config files), `rich` (the wizard layer)
 - **Release:** `v0.4.0`, core API frozen at `v2`
 
+**Install in one go:** `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) - a guided,
+coloured installer in English or Slovak (`--dry-run` shows the steps without running them).
+
 ---
 
 ## Documentation
@@ -27,6 +30,7 @@ clients that talk to the same core and never reimplement it.
 | [docs/REVIEW-2026-10.sk.md](docs/REVIEW-2026-10.sk.md) | owner (Slovak) | the October 2026 security and architecture review: findings, fixes, next steps |
 | [docs/AGENTS_GUIDE.md](docs/AGENTS_GUIDE.md) | AI agents, LLMs | contract-first reference: golden rules, module blueprint, manifest spec, verification loop |
 | [llms.txt](llms.txt) | AI agents, LLMs | byte-identical mirror of the agent guide, sized for a context window |
+| [docs/CONVENTIONS.md](docs/CONVENTIONS.md) | both, new projects | the rules for building any project: small modules, spec and test first, security, CI/CD, working with agents (`kdx conventions`, also in Slovak) |
 | [AGENTS.md](AGENTS.md) | both | the working agreement: commands, layout, rules, the verification bar |
 | [.agents/skills/](.agents/skills/) | AI agents | playbooks: project setup, CLI wizard UX, verification |
 

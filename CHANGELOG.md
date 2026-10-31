@@ -18,6 +18,8 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - **`kdx conventions`** prints the project rules (modules, spec/test first, security, CI/CD,
   working with AI agents) in English or Slovak; `kdx init` now also seeds them as
   `docs/CONVENTIONS*.md` together with a CI workflow.
+- **Guided installers** `install.sh` / `install.ps1`: coloured, four separated steps, English or
+  Slovak, ask before installing anything, `--dry-run` to preview.
 
 ## [0.4.0] - 2026-10-31
 

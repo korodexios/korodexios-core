@@ -18,6 +18,7 @@ docs. `kdx --help` lists every command, including the ones modules contributed.
 | Install | Command | Notes |
 | --- | --- | --- |
 | uv, in the chassis repository | `uv venv --python 3.13 && uv sync --extra dev && uv run kdx doctor` | uv (Astral) owns the environment; `make` resolves to `uv run` when uv is on `PATH` |
+| guided installer | `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) | four coloured steps - check, install, verify, first project; asks before installing uv; `--lang sk`, `--yes`, `--dry-run` (`-Language`, `-Yes`, `-DryRun` on Windows) |
 | uv tool | `uv tool install korodexios-core` | a global `kdx` on PATH, no project involved |
 | git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/kdx-core.git@v0.4.0"` | the documented pin before an index publish; needs network |
 | git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/kdx-core.git@v0.4.0"` | what `kdx init --chassis-source git` writes into the seed |
