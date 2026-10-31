@@ -11,7 +11,10 @@ clients that talk to the same core and never reimplement it.
 - **Bootstrap:** uv (Astral) owns the environment - `uv venv`, `uv sync --extra dev`,
   `uv run kdx ...`, `uv tool install korodexios-core`, `uv lock` for a consumer's own pins
 - **Dependencies:** `pyyaml` (config files), `rich` (the wizard layer)
-- **Release:** `v0.3.2`, core API frozen at `v2`
+- **Release:** `v0.4.0`, core API frozen at `v2`
+
+**Install in one go:** `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) - a guided,
+coloured installer in English or Slovak (`--dry-run` shows the steps without running them).
 
 ---
 
@@ -24,8 +27,10 @@ clients that talk to the same core and never reimplement it.
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | humans, engineers | microkernel design, config flow, event bus, IPC, signals, API freeze |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | everyone | the phase history and what ships next |
 | [CHANGELOG.md](CHANGELOG.md) | humans, operators | notable changes per release, newest first |
+| [docs/REVIEW-2026-10.sk.md](docs/REVIEW-2026-10.sk.md) | owner (Slovak) | the October 2026 security and architecture review: findings, fixes, next steps |
 | [docs/AGENTS_GUIDE.md](docs/AGENTS_GUIDE.md) | AI agents, LLMs | contract-first reference: golden rules, module blueprint, manifest spec, verification loop |
 | [llms.txt](llms.txt) | AI agents, LLMs | byte-identical mirror of the agent guide, sized for a context window |
+| [docs/CONVENTIONS.md](docs/CONVENTIONS.md) | both, new projects | the rules for building any project: small modules, spec and test first, security, CI/CD, working with agents (`kdx conventions`, also in Slovak) |
 | [AGENTS.md](AGENTS.md) | both | the working agreement: commands, layout, rules, the verification bar |
 | [.agents/skills/](.agents/skills/) | AI agents | playbooks: project setup, CLI wizard UX, verification |
 
@@ -59,13 +64,18 @@ kdx backup run --dry-run         # simulate; --exclude patterns are honoured
 kdx modules create my_plugin --path ./my_plugins
 kdx init my_service --path ../my_service   # seed a whole new project from the chassis
 kdx wizard                       # interactive numbered-menu wizard (TTY only)
+kdx ui                           # browser console: status, every module command, logs, config
+kdx tls init && kdx run --tls    # https control plane (self-signed, via openssl)
+kdx users add jana --role operator   # a personal token with a role; kdx audit shows who did what
+kdx rpc --follow backup run      # run inside the daemon with live output; kdx jobs / kdx events / kdx stop
+kdx service install              # start the daemon at logon (Task Scheduler / systemd / launchd)
 ```
 
 Pin the chassis the way a consumer project does, entirely with uv:
 
 ```bash
 uv tool install korodexios-core   # a global kdx on PATH, no project involved
-uv pip install "korodexios-core @ git+https://github.com/korodexios/kdx-core.git@v0.3.2"
+uv pip install "korodexios-core @ git+https://github.com/korodexios/kdx-core.git@v0.4.0"
 uv lock                          # and 'uv add' for this project's own pinned dependencies
 ```
 
@@ -122,7 +132,7 @@ src/korodexios_core/
              # chassis, signals, ipc
   cli/       # thin clients: argparse surface, rich wizard, core commands,
              # project templating (init_project.py), scaffolding (scaffold.py)
-  modules/   # built-in proof modules: heartbeat, system_info, backup_engine - a pure
+  modules/   # built-in modules: heartbeat, system_info, backup_engine, web_console - a pure
              # discovery root: adding code here is the intended extension point
 docs/        # the documentation suite, including the roadmap
 .agents/skills/  # canonical playbooks, seeded into every project
@@ -135,7 +145,9 @@ tests/       # pytest; no network, no sleeps longer than one lifecycle tick
 with `pid`, `port`, `host`, and `token`. Six endpoints answer: `GET /health`,
 `GET /api/v1/schema` (the machine-readable contract), `GET /api/v1/status`,
 `POST /api/v1/shutdown`, `POST /api/v1/reload`, and `POST /api/v1/rpc`; authenticated reads
-require the token (`X-Kdx-Token`, compared in constant time) unless `core.ipc.auth: false`.
+require the token (`X-Kdx-Token`, compared in constant time) unless `core.ipc.auth: false`,
+which opens reads only - reload and RPC always need the token. A request from a foreign
+web origin (or a DNS-rebinding `Host`) is refused, so a browser tab cannot drive the daemon.
 Modules add their own paths declaratively with `ipc_routes()`, and the contract endpoint
 lists them. Set `core.ipc.host: 0.0.0.0` to serve
 the LAN, and `kdx status --target host:port` to query a remote chassis.

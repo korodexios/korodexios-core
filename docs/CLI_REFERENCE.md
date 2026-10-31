@@ -18,9 +18,10 @@ docs. `kdx --help` lists every command, including the ones modules contributed.
 | Install | Command | Notes |
 | --- | --- | --- |
 | uv, in the chassis repository | `uv venv --python 3.13 && uv sync --extra dev && uv run kdx doctor` | uv (Astral) owns the environment; `make` resolves to `uv run` when uv is on `PATH` |
+| guided installer | `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) | four coloured steps - check, install, verify, first project; asks before installing uv; `--lang sk`, `--yes`, `--dry-run` (`-Language`, `-Yes`, `-DryRun` on Windows) |
 | uv tool | `uv tool install korodexios-core` | a global `kdx` on PATH, no project involved |
-| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/kdx-core.git@v0.3.2"` | the documented pin before an index publish; needs network |
-| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/kdx-core.git@v0.3.2"` | what `kdx init --chassis-source git` writes into the seed |
+| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/kdx-core.git@v0.4.0"` | the documented pin before an index publish; needs network |
+| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/kdx-core.git@v0.4.0"` | what `kdx init --chassis-source git` writes into the seed |
 | pipx, or venv + pip | `pipx install korodexios-core`; `python3 -m venv .venv && pip install -e ".[dev]"` | the fallback when uv is absent - and it fails as written on a PEP 668 `EXTERNALLY-MANAGED` interpreter with no `pip` and no `ensurepip` |
 | from an index | `uv pip install korodexios-core`, or `pip install korodexios-core` | once published; a consumer pins it with `uv lock` |
 
@@ -50,6 +51,8 @@ manifests it needs. The sdist carries `docs/`, `README.md`, `AGENTS.md`, `llms.t
 | `--auth` / `--no-auth` | require or allow anonymous control-plane reads | auth on |
 | `--ipc-token TOKEN` | static shared secret for the control plane | empty (ephemeral) |
 | `--ipc-timeout SECONDS` | client timeout for control-plane reads | `2.0` |
+| `--tls` | serve the control plane over https (`core.ipc.tls`) | off |
+| `--tls-ca FILE` | certificate to trust when calling a remote https daemon | system store |
 | `--no-ipc` | do not open the control plane in `kdx run` | ipc enabled |
 | `--instance-lock` / `--no-instance-lock` | claim or skip `var/chassis.lock` for this run | lock claimed |
 | `--asyncio` / `--no-asyncio` | start or skip the chassis-managed asyncio loop | loop off |
@@ -66,6 +69,7 @@ manifests it needs. The sdist carries `docs/`, `README.md`, `AGENTS.md`, `llms.t
 | `--no-autodiscover` | disable module auto-discovery for this run | autodiscover on |
 | `--enable-module NAME` / `--disable-module NAME` | force one module on or off (repeatable) | - |
 | `--name NAME` | chassis display name (banner, doctor) | `korodexios` |
+| `--locale LOCALE` | language of help and messages (`core.locale`); command and flag names stay English | `en` |
 | `--no-color` | disable coloured output | colour on a TTY |
 | `-q, --quiet` | warnings and errors only | - |
 | `-v, --verbose` | debug logging and tracebacks | - |
@@ -296,7 +300,7 @@ The seed ships `kdx.yml`, `.env.example`, `Makefile`, `README.md`, `AGENTS.md`,
 smoke tests. It passes `make check` on arrival.
 
 The chassis dependency is pinned to the repository by default
-(`korodexios-core @ git+https://github.com/korodexios/kdx-core.git@v0.3.2`), so a fresh
+(`korodexios-core @ git+https://github.com/korodexios/kdx-core.git@v0.4.0`), so a fresh
 venv can `pip install -e .` the seeded project before any index publish. Pass
 `--chassis-source index` once the package is on an index; an unknown choice is refused
 with a hint. A git pin needs network and uv at install time - `uv venv`,
@@ -397,6 +401,146 @@ kdx status --target http://HOST:8123 --token my-static-lan-key
 
 A wildcard bind (`0.0.0.0`, `::`) is announced as `127.0.0.1` in `var/chassis.ipc`, so
 local clients need no change; remote clients pass `--target`.
+
+### https in three commands
+
+```bash
+kdx tls init --host nas.lan          # self-signed cert in var/tls/ (needs openssl)
+kdx run --tls --host 0.0.0.0         # serve https on the LAN
+kdx --tls-ca cert.pem status --target https://nas.lan:8123 --token SECRET   # from elsewhere
+```
+
+Local clients (`kdx status`, `kdx --remote`, `kdx ui`) need nothing extra: the discovery
+file names the certificate. A browser shows a warning for a self-signed certificate once;
+on the daemon's own machine plain http on `127.0.0.1` is already private, so TLS matters
+for LAN access.
+
+`--no-auth` opens **reads** only. `POST /api/v1/rpc` and `POST /api/v1/reload` always need
+the token, and shutdown needs it unless `core.ipc.allow_anonymous_shutdown` is set. The
+control plane speaks plain HTTP: on a LAN the token travels in clear, so reach a remote
+daemon over a VPN (WireGuard, Tailscale), an SSH tunnel
+(`ssh -L 8123:127.0.0.1:8123 host`), or a TLS reverse proxy rather than an open network.
+
+## Start at logon (`kdx service`)
+
+```bash
+kdx service install --print     # show exactly what would be registered; change nothing
+kdx service install             # start the daemon at every logon, and start it now
+kdx service status              # registered? does the daemon answer?
+kdx service uninstall           # stop it cleanly, then remove the registration
+```
+
+Each host's own service manager does the work, as the current user and without
+administrator rights:
+
+| Host | Registration | Restart on failure |
+| --- | --- | --- |
+| Windows | Task Scheduler task `\Korodexios\<name>` at logon, defined by XML in `var/service/`, run through `pythonw.exe` (no console window) | 3 times, a minute apart |
+| Linux | systemd user unit `~/.config/systemd/user/<name>.service` (`loginctl enable-linger USER` to start at boot without logging in) | `Restart=on-failure` |
+| macOS | LaunchAgent `~/Library/LaunchAgents/dev.korodexios.<name>.plist` | `KeepAlive` on failure |
+
+The daemon runs as `<python> -m korodexios_core --home <root> run`, so it keeps working when
+the `kdx` shim is not on `PATH`; its output goes to the rotating log (`kdx logs`).
+`--service NAME` picks another name, for several projects on one machine.
+
+## Jobs, live events, and stop (`kdx jobs`, `kdx events`, `kdx stop`)
+
+Everything the web console does against a daemon works in the terminal too.
+
+```bash
+kdx rpc --follow backup run -- --source D:/photos    # run in the daemon, print output live
+kdx rpc --background backup run                      # start it, return the job id at once
+kdx jobs list                                        # id, state, user, command, exit, time
+kdx jobs show job-3 --follow                         # attach to a running job
+kdx jobs cancel job-3                                # ask it to stop at its next safe point
+kdx events                                           # live bus events (routine ticks hidden)
+kdx events 'core.job.**' --json -n 10                # filtered, machine-readable, bounded
+kdx stop                                             # stop the daemon cleanly (admin)
+```
+
+Every command takes `--target URL --token T` for another machine. `kdx rpc --follow` has no
+timeout: it starts a job and polls it, so a long backup is fine; Ctrl+C stops watching, not
+the job. A job's exit code becomes the command's exit code; a cancelled job exits `130`.
+
+Cancelling is cooperative: the job's command checks `request.cancelled()` between units of
+work. `backup run` checks before every file, keeps what it already copied, and says so. A
+command that never checks runs to its end. Only the job's owner or an admin may cancel it.
+
+Arguments after `--` reach the command exactly as typed - a path with dots, slashes, or
+spaces arrives whole.
+
+## Users, roles, and the audit log
+
+One shared token is one operator. For a team, give each person a token of their own:
+
+```bash
+kdx users add jana --role operator     # prints Jana's token once
+kdx users list                         # who has access, with which role
+kdx users role jana viewer             # change a role
+kdx users rotate jana                  # new token; the old one stops working
+kdx users remove jana                  # access ends at once
+kdx audit -n 20                        # who did what over the control plane
+kdx audit --user jana --action rpc --json
+```
+
+| Role | May |
+| --- | --- |
+| `viewer` | status, logs, configuration, events, jobs - read only |
+| `operator` | also run module commands, in the foreground or as jobs |
+| `admin` | also commands marked `danger`, reload, stop, the audit log in the GUI |
+
+Users live in `data/users.json` (only SHA-256 hashes of tokens, owner-only file), and a
+running daemon sees a change on its next request. The shared `core.ipc.token` keeps working
+as the built-in admin `owner`, so a one-person setup needs nothing new. A teammate uses
+their token exactly like the shared one: `kdx status --target http://HOST:8123 --token T`,
+`kdx --remote ...`, or the web console's token field. `GET /api/v1/whoami` answers who a
+token belongs to.
+
+Every action over the control plane - commands, jobs, reloads, stops, and every refused
+attempt (wrong token, role too weak) - is one line in `data/audit.jsonl` (rotates at 5 MiB,
+one generation kept). Reads are not recorded. Roles limit what the control plane lets a
+caller ask for; every command still runs under the daemon's operating-system account.
+
+## Web console (`kdx ui`)
+
+```bash
+kdx ui                 # open the browser console of the running daemon
+kdx ui --no-browser    # print the URL instead (headless host, SSH session)
+```
+
+The built-in `web_console` module serves a browser GUI from the daemon itself at
+`http://127.0.0.1:8123/ui/`: an overview (modules, scheduler, memory, control plane), every
+module command as a form generated from its declared `CliArgument`s, the log tail with
+follow mode, the resolved configuration with provenance (secrets masked), diagnostics, and
+**Reload config** / **Stop daemon** buttons. When no daemon is running, `kdx ui` boots one
+in the foreground (as `kdx run` would) and opens the console once the control plane is up.
+
+The page is a thin client: every command runs as a background job through
+`POST /api/v1/rpc`, so the GUI shows the output while it grows, and the same output and
+exit code the terminal would. A command a module marked `danger=True` (such as
+`backup run`) needs a second click; one marked `remote=False` (such as the interactive
+`backup configure`) is shown as "terminal" with the line to run there. The **Events** tab
+streams bus events live (routine ticks hidden by default). `kdx ui` passes the token in the URL fragment
+(`/ui/#token=...`), which never reaches a server or a log; the page keeps it in
+`sessionStorage` only. Disable the console with `--disable-module web_console`, or keep it
+from opening a browser with `modules.web_console.open_browser: false`.
+
+## Languages (`kdx locale`)
+
+Help text and messages follow `core.locale` (`--locale sk`, `KDX_CORE__LOCALE`, `kdx.local.yml`,
+`kdx.yml`; `auto` reads `LC_ALL`/`LANG`). Shipped: en, sk, cs, de, es, fr, pl. Command names, flags,
+`--json`, logs and stderr stay English.
+
+| Command | Effect |
+| --- | --- |
+| `kdx locale show` | active language and where it came from |
+| `kdx locale list` | available languages per domain |
+| `kdx locale set LOCALE` | write `core.locale` into `kdx.local.yml` |
+| `kdx locale check [--language L]` | completeness of catalogues; exit 3 if incomplete |
+| `kdx locale extract [--check]` | refresh the template from the source |
+| `kdx locale add L` / `todo L [--json]` / `apply L FILE` | add a language, list what is missing, merge translations |
+
+See [TRANSLATING.md](TRANSLATING.md).
 
 ## Exit codes
 

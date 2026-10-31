@@ -1,0 +1,210 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Audit"
+msgstr "Audyt"
+
+msgid "Cancel"
+msgstr "Anuluj"
+
+msgid "Commands"
+msgstr "Polecenia"
+
+msgid "Config"
+msgstr "Konfiguracja"
+
+msgid "Connect"
+msgstr "Połącz"
+
+msgid "Diagnostics"
+msgstr "Diagnostyka"
+
+msgid "Events"
+msgstr "Zdarzenia"
+
+msgid "Language"
+msgstr "Język"
+
+msgid "Logs"
+msgstr "Logi"
+
+msgid "Modules"
+msgstr "Moduły"
+
+msgid "No records yet."
+msgstr "Brak jeszcze rekordów."
+
+msgid "Overview"
+msgstr "Przegląd"
+
+msgid "Pick a command on the left. Every module command appears here automatically, with a form built from its declared arguments."
+msgstr "Wybierz polecenie po lewej. Każde polecenie modułu pojawia się tu automatycznie, z formularzem zbudowanym z jego argumentów."
+
+msgid "Re-read configuration (kdx reload)"
+msgstr "Wczytaj konfigurację ponownie (kdx reload)"
+
+msgid "Refresh"
+msgstr "Odśwież"
+
+msgid "Refresh everything"
+msgstr "Odśwież wszystko"
+
+msgid "Reload config"
+msgstr "Wczytaj konfigurację"
+
+msgid "Run"
+msgstr "Uruchom"
+
+msgid "Scheduled tasks"
+msgstr "Zaplanowane zadania"
+
+msgid "Session token needed"
+msgstr "Wymagany token sesji"
+
+msgid "Stop daemon"
+msgstr "Zatrzymaj demona"
+
+msgid "Stop the daemon (exit 0)"
+msgstr "Zatrzymaj demona (exit 0)"
+
+msgid "action"
+msgstr "akcja"
+
+msgid "changes"
+msgstr "zmienia"
+
+msgid "command"
+msgstr "polecenie"
+
+msgid "commands"
+msgstr "polecenia"
+
+msgid "connecting…"
+msgstr "łączenie…"
+
+msgid "daemon is stopping"
+msgstr "demon się zatrzymuje"
+
+msgid "description"
+msgstr "opis"
+
+msgid "event"
+msgstr "zdarzenie"
+
+msgid "failures"
+msgstr "błędy"
+
+msgid "filter"
+msgstr "filtr"
+
+msgid "filter audit"
+msgstr "filtruj audyt"
+
+msgid "filter by user, action, command"
+msgstr "filtruj wg użytkownika, akcji, polecenia"
+
+msgid "filter commands"
+msgstr "filtruj polecenia"
+
+msgid "filter events"
+msgstr "filtruj zdarzenia"
+
+msgid "filter keys"
+msgstr "filtruj klucze"
+
+msgid "filter keys, e.g. core.ipc."
+msgstr "filtruj klucze, np. core.ipc."
+
+msgid "filter log lines"
+msgstr "filtruj wiersze logu"
+
+msgid "follow"
+msgstr "śledź"
+
+msgid "from"
+msgstr "z"
+
+msgid "interval"
+msgstr "interwał"
+
+msgid "key"
+msgstr "klucz"
+
+msgid "last error"
+msgstr "ostatni błąd"
+
+msgid "lines"
+msgstr "wiersze"
+
+msgid "module"
+msgstr "moduł"
+
+msgid "name"
+msgstr "nazwa"
+
+msgid "no module commands"
+msgstr "brak poleceń modułów"
+
+msgid "offline"
+msgstr "offline"
+
+msgid "origin"
+msgstr "pochodzenie"
+
+msgid "outcome"
+msgstr "wynik"
+
+msgid "pause"
+msgstr "wstrzymaj"
+
+msgid "payload"
+msgstr "dane"
+
+msgid "precedence: CLI > environment > kdx.local.yml > kdx.yml > defaults; secrets are masked"
+msgstr "pierwszeństwo: CLI > środowisko > kdx.local.yml > kdx.yml > domyślne; sekrety są zamaskowane"
+
+msgid "reloaded: nothing changed"
+msgstr "wczytano ponownie: nic się nie zmieniło"
+
+msgid "running"
+msgstr "działa"
+
+msgid "runs"
+msgstr "uruchomienia"
+
+msgid "show routine (tick, heartbeat, tasks)"
+msgstr "pokaż rutynowe (tick, heartbeat, zadania)"
+
+msgid "source"
+msgstr "źródło"
+
+msgid "starting…"
+msgstr "uruchamianie…"
+
+msgid "state"
+msgstr "stan"
+
+msgid "task"
+msgstr "zadanie"
+
+msgid "terminal"
+msgstr "terminal"
+
+msgid "time"
+msgstr "czas"
+
+msgid "token"
+msgstr "token"
+
+msgid "user"
+msgstr "użytkownik"
+
+msgid "value"
+msgstr "wartość"
+
+msgid "version"
+msgstr "wersja"
+
+msgid "who this token belongs to"
+msgstr "do kogo należy ten token"

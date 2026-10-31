@@ -1,0 +1,13 @@
+# Built-in module manifest, read by korodexios_core.kernel.discovery.
+[module]
+name = "web_console"
+description = "Browser GUI on the control plane: status, module commands, logs, config."
+version = "0.1.0"
+entrypoint = "MODULE"
+enabled = true
+priority = 90
+requires_core = ">=0.1"
+
+[metadata]
+tags = ["gui", "thin-client"]
+owner = "korodexios"

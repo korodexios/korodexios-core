@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import os
 import shutil
+import sys
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 from datetime import datetime
 from pathlib import Path
@@ -14,6 +16,7 @@ from ...cli.render import (
     dump_json,
     print_key_values,
     print_section,
+    tr,
     write_status,
 )
 from ...config.schema import ConfigField, ConfigKind, ConfigSchema
@@ -411,6 +414,7 @@ class BackupEngineModule(Module):
                         help="Run the backup (copies files unless --dry-run).",
                         module_name=self.name,
                         handler=_run_command,
+                        danger=True,
                         args=(
                             *_plan_arguments(),
                             CliArgument(
@@ -440,6 +444,7 @@ class BackupEngineModule(Module):
                         help="Interactive setup: source, destination, filters, then run.",
                         module_name=self.name,
                         handler=_configure_command,
+                        remote=False,
                     ),
                 ),
             )
@@ -510,7 +515,14 @@ class BackupEngineModule(Module):
         """Build a plan from the resolved settings and overrides."""
         return build_plan(self.settings(**overrides))
 
-    def run_backup(self, plan: BackupPlan, *, dry_run: bool | None = None) -> BackupResult:
+    def run_backup(
+        self,
+        plan: BackupPlan,
+        *,
+        dry_run: bool | None = None,
+        should_stop: Callable[[], bool] | None = None,
+        progress: Callable[[BackupResult, int], object] | None = None,
+    ) -> BackupResult:
         """Execute a plan under the run lock and remember the counters.
 
         The lock is the chassis primitive, not a private file: it is the same name
@@ -519,7 +531,9 @@ class BackupEngineModule(Module):
         """
         handle = self._acquire_run_lock()
         try:
-            result = execute_plan(plan, dry_run=dry_run)
+            result = execute_plan(
+                plan, dry_run=dry_run, should_stop=should_stop, progress=progress
+            )
         finally:
             self._release_run_lock(handle)
         self._runs += 1
@@ -1093,6 +1107,20 @@ def _plan_command(request: CliRequest) -> int:
     return int(ExitCode.SUCCESS)
 
 
+def _report_progress(result: BackupResult, total: int) -> None:
+    """Say how far a long copy has come; the terminal and a followed job both see it."""
+    write_status(
+        tr(
+            "{copied}/{total} file(s), {size} so far",
+            copied=result.copied,
+            total=total,
+            size=format_bytes(result.bytes_copied),
+        ),
+        tag=TAG_NOTE,
+    )
+    sys.stdout.flush()
+
+
 def _run_command(request: CliRequest) -> int:
     module = _module(request)
     overrides = _overrides(request)
@@ -1107,7 +1135,12 @@ def _run_command(request: CliRequest) -> int:
         write_status(str(exc), tag=TAG_NOTE)
         plan = build_plan(replace(module.settings(**overrides), max_bytes=None))
     try:
-        result = module.run_backup(plan, dry_run=overrides.get("dry_run"))
+        result = module.run_backup(
+            plan,
+            dry_run=overrides.get("dry_run"),
+            should_stop=request.cancelled,
+            progress=None if request.flag("as_json") else _report_progress,
+        )
     except BackupError as exc:
         # A run the lock refused is news the operator can act on, not a crash.
         if request.flag("as_json"):
@@ -1117,9 +1150,19 @@ def _run_command(request: CliRequest) -> int:
         return int(ExitCode.ERROR)
     if request.flag("as_json"):
         dump_json(result.as_dict())
-        return int(ExitCode.SUCCESS)
+        return int(ExitCode.ABORTED if result.cancelled else ExitCode.SUCCESS)
     print_section("Backup result")
     print_key_values(describe_result(result))
+    if result.cancelled:
+        write_status(
+            tr(
+                "cancelled after {copied} file(s); the partial copy stays at {target}",
+                copied=result.copied,
+                target=result.plan.target,
+            ),
+            tag=TAG_NOTE,
+        )
+        return int(ExitCode.ABORTED)
     tag = TAG_NOTE if result.dry_run else TAG_OK
     write_status(
         f"{result.copied} file(s) {'would be' if result.dry_run else ''} copied".replace("  ", " "),
@@ -1176,7 +1219,10 @@ def _retention_command(request: CliRequest) -> int:
         )
     elif report.expired_now:
         write_status(
-            f"{report.expired_now} copy(ies) stand past the window; the next sweep removes them",
+            tr(
+                "{expired_now} copy(ies) stand past the window; the next sweep removes them",
+                expired_now=report.expired_now,
+            ),
             tag=TAG_NOTE,
         )
     else:

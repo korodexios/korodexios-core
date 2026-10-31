@@ -7,6 +7,94 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ### Added
 
+- **Language service (phase 36)**: `kdx locale show|list|set|check|extract|add|todo|apply`,
+  `--locale`, config key `core.locale`, `.po` catalogues read directly (no compile step).
+  Help text, tables, labels and messages are translated; command names, flags, `--json`,
+  logs and stderr stay English. Catalogues: sk, cs, de, es, fr, pl (machine translations, not
+  reviewed by native speakers). `docs/TRANSLATING.md` describes how a person or an agent adds
+  a language. The web console has a language selector (`/api/v1/ui/i18n`), `KDX_LOCALE` selects
+  the language, and `kdx init` projects read `.po` catalogues through the same service (no
+  `msgfmt` step).
+- **`kdx conventions`** prints the project rules (modules, spec/test first, security, CI/CD,
+  working with AI agents) in English or Slovak; `kdx init` now also seeds them as
+  `docs/CONVENTIONS*.md` together with a CI workflow.
+- **`AGENT_PLAYBOOK.md`** (also `kdx conventions --agent`): how an AI agent proceeds in any
+  project built on the core - architecture limits, the spec/test/gate loop, security, what to
+  ask first, how to report. `kdx init` seeds it and points `AGENTS.md` at it.
+- **Guided installers** `install.sh` / `install.ps1`: coloured, four separated steps, English or
+  Slovak; they check Python, git and an existing `kdx`, reuse what is present, ask before
+  installing anything, and `--dry-run` previews the steps.
+
+## [0.4.0] - 2026-10-31
+
+A security review and what grew out of it, additive on the frozen `v2` line. The control
+plane is safer by default, a team can share one chassis with personal tokens, roles, and
+an audit log, and everything a daemon does is reachable from the terminal first - with a
+browser console (`kdx ui`) as a thin layer on top. One behaviour changed on purpose:
+`core.ipc.auth: false` opens status reads only; RPC and reload now always need a token.
+
+### Security
+
+- **Owner-only secrets on Windows**: the discovery file (it holds the token) and the TLS key
+  are restricted to the current account with `icacls` before they reach their final path;
+  POSIX keeps mode `0600`. Previously Windows ignored the mode and the file inherited the
+  folder's ACL.
+- **`core.ipc.auth: false` no longer opens `POST /api/v1/rpc` and `POST /api/v1/reload`.**
+  The setting was documented as "anonymous reads", but it also let any client run module
+  commands with caller-chosen arguments - `backup run` with any `source` and `dest`, for one -
+  and, because the body was decoded whatever its `Content-Type`, a foreign web page could do
+  the same with a CORS "simple" POST. Both routes now always require the token.
+- **Browser guard**: a request whose `Origin` is not the daemon's own is refused with `403`,
+  and on a loopback bind so is a `Host` that is not a loopback name (DNS rebinding).
+- **An empty token matches nothing**: a control plane holding an empty secret no longer lets
+  a request that sends none through a guarded route.
+- **Slow clients time out**: each connection's socket reads and writes are bounded at 30 s,
+  so a client that never finishes its request no longer pins a server thread.
+
+### Added
+
+- **`kdx service install|status|uninstall`**: the daemon starts at logon through the host's
+  own service manager, as the current user, no administrator rights - a Task Scheduler task
+  defined by XML and run through `pythonw.exe` on Windows, a systemd user unit on Linux, a
+  LaunchAgent on macOS, each restarting the daemon if it fails. `--print` shows the
+  definition and commands without changing anything; `uninstall` stops the daemon cleanly
+  first. `python -m korodexios_core` runs the console client.
+- **Terminal parity for daemon work**: `kdx rpc --background` / `--follow` (live output, no
+  timeout), `kdx jobs list|show [--follow]|cancel`, `kdx events [PATTERN] [--all] [-n N]
+  [--json]`, and `kdx stop`; all take `--target` / `--token`.
+- **Cooperative cancel**: `POST /api/v1/jobs {"cancel": id}` (owner or admin),
+  `CliRequest.cancelled()` for handlers; `backup run` stops between files, keeps the partial
+  copy, reports progress every 2 s on long runs, and exits `130`. The web console has a
+  Cancel button on running jobs.
+- **Users and roles**: `kdx users add NAME --role viewer|operator|admin` issues a personal
+  token (stored only as a SHA-256 hash in `data/users.json`, owner-only); `list`, `role`,
+  `rotate`, `remove` manage it, and a running daemon sees changes on the next request. Reads
+  need viewer, commands operator, `danger` commands / reload / stop admin;
+  `CliCommand(role=...)` can ask for more. The shared token remains the admin `owner`.
+- **Audit log**: every command, job, reload, stop, and refused attempt over the control
+  plane is recorded in `data/audit.jsonl`; `kdx audit [--user] [--action] [--json]` reads
+  it, and admins see it in the web console. `GET /api/v1/whoami` names the caller.
+- **Command permissions**: `CliCommand(remote=False)` keeps a command on the daemon's own
+  terminal (RPC answers `403`); `CliCommand(danger=True)` makes the web console ask twice.
+  `backup configure` (an interactive wizard) is terminal-only, `backup run` is marked danger.
+- **Background jobs**: `POST /api/v1/rpc` with `"background": true` answers `202` with a job
+  id; `GET /api/v1/jobs[?id=]` reports state and live output; `core.job.started` /
+  `core.job.finished` on the bus. The web console runs every command this way.
+- **Streamed responses** (`IpcStream`) and a live **Events** tab in the web console
+  (`GET /api/v1/ui/events`, server-sent events read with `fetch` so the token never sits in
+  a URL).
+- **https control plane**: `kdx tls init` (self-signed P-256 certificate via openssl),
+  `kdx run --tls` / `core.ipc.tls`, `core.ipc.tls_cert` / `tls_key`, and `--tls-ca` /
+  `core.ipc.tls_ca` for remote clients. Local clients verify through the discovery file.
+- **Web console (`kdx ui`)**: the new built-in `web_console` module serves a browser GUI from
+  the daemon at `/ui/` - overview, every module command as a form generated from its
+  declared arguments, log tail with follow, configuration with provenance (secrets masked),
+  diagnostics, reload and stop. `kdx ui` opens it with the token in the URL fragment, and
+  boots the daemon first when none is running. Pure stdlib plus static files: no new
+  dependency, no CDN, a strict Content-Security-Policy.
+- **RPC replies carry the command's output** (`result.output`), so `kdx --remote` and
+  `kdx rpc` print what the command printed instead of only its exit code.
+
 - **`kdx backup retention`**: an operator can now ask what the retention policy has done
   without reading JSON by hand. The report answers from three honest sources: the window
   and sweep beat from the configuration, the stamped copies standing in the destination
@@ -16,6 +104,23 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
   process; a running daemon's own record answers through `kdx status`, `kdx doctor`,
   `kdx --remote backup retention`, or the new read-only control-plane route
   `GET /api/v1/backup/retention`.
+
+### Fixed
+
+- **A delegated command never prompts**: a command run over RPC inside a daemon that was
+  started from a terminal could block on the daemon's keyboard; its `UserExperience` is now
+  non-interactive under RPC and takes the defaults.
+- **`kdx modules list` says `discovered`** instead of the registry's `new` for modules the
+  one-shot command never started, and points at `kdx status` / `kdx ui` for live state.
+- **A console-less daemon no longer dies on its first log line**: started through
+  `pythonw.exe` (Task Scheduler), `sys.stdout` and `sys.stderr` are `None`; they now point at
+  the null device and the log file keeps the record.
+- **RPC arguments arrive whole**: `kdx rpc backup run -- --source C:/data/v1.2` used to send
+  the arguments inside the command string, where the daemon split them on `/` and `.`; any
+  path broke. The command path and its arguments now travel separately, and only real
+  subcommand names are walked.
+- **RPC argument errors say what was wrong** (`invalid choice: 'x'`) instead of
+  `did not parse (exit 2)`, and argparse no longer writes usage to the daemon's stderr.
 
 ## [0.3.2] - 2026-10-27
 

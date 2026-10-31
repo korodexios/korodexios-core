@@ -281,6 +281,10 @@ def build_files(project: ProjectTemplate) -> dict[str, str]:
         "README.md": _readme(project),
         "AGENTS.md": _agents(project),
         "docs/AGENTS_GUIDE.md": _docs_agents_guide(project),
+        "AGENT_PLAYBOOK.md": _agent_playbook(),
+        "docs/CONVENTIONS.md": _conventions_text("en"),
+        "docs/CONVENTIONS.sk.md": _conventions_text("sk"),
+        ".github/workflows/ci.yml": _ci_workflow(project),
         "docs/ARCHITECTURE.md": _docs_architecture(project),
         "Makefile": _makefile(project),
         "kdx.yml": _config_yml(project),
@@ -460,7 +464,7 @@ def _readme(project: ProjectTemplate) -> str:
         f"src/{project.package}/",
         "  cli.py                 # entry point: boots the chassis with --home at this root",
         "  i18n.py                # translate(): stdlib gettext; source strings fall back",
-        f"  locales/               # {project.package}.pot template; .mo catalogues ignored",
+        f"  locales/               # {project.package}.pot; <locale>/{project.package}.po",
     ]
     if project.minimal:
         lines += ["  modules/               # drop module packages here; discovery finds them"]
@@ -476,6 +480,8 @@ def _readme(project: ProjectTemplate) -> str:
         "kdx.yml                  # project configuration (the config layer)",
         ".env.example             # copy to .env for the env layer",
         "AGENTS.md                # working agreement for humans and coding agents",
+        "AGENT_PLAYBOOK.md        # how an AI agent proceeds in this project (read first)",
+        "docs/CONVENTIONS.md      # project rules: modules, tests, security, CI/CD (also .sk.md)",
         "docs/AGENTS_GUIDE.md      # the contract, for humans and AI agents",
         "docs/ARCHITECTURE.md       # how this project is wired",
         ".agents/skills/          # playbooks: how to extend this project safely",
@@ -491,16 +497,16 @@ def _readme(project: ProjectTemplate) -> str:
         "",
         "User-facing strings resolve through @BT@i18n.translate()@BT@: the chassis"
         " stays English-neutral and writes machine payloads, while this project"
-        " owns its language. Copy the template, compile a catalogue, and select a locale:",
+        " owns its language. Copy the template into a catalogue and select a locale:",
         "",
         fence + "bash",
-        "LOCALE=sk; D=locales/$LOCALE/LC_MESSAGES",
-        f"cp src/{project.package}/locales/{project.package}.pot $D/{project.package}.po",
-        f"msgfmt $D/{project.package}.po -o $D/{project.package}.mo",
+        "LOCALE=sk; D=src/" + project.package + "/locales/$LOCALE",
+        f"mkdir -p $D && cp src/{project.package}/locales/{project.package}.pot \\",
+        f"  $D/{project.package}.po",
         f"KDX_LOCALE=$LOCALE {project.script} doctor",
         fence,
         "",
-        "Without a compiled catalogue the source string comes back, so nothing is"
+        "Without a catalogue the source string comes back, so nothing is"
         " blocked on translation.",
         "",
         "## Configuration precedence",
@@ -874,11 +880,59 @@ def _docs_architecture(project: ProjectTemplate) -> str:
     return "\n".join(lines).replace("@BT@", chr(96))
 
 
+def _agent_playbook() -> str:
+    from .conventions import agent_playbook
+
+    return agent_playbook()
+
+
+def _conventions_text(language: str) -> str:
+    from .conventions import conventions_text
+
+    return conventions_text(language)[1]
+
+
+def _ci_workflow(project: ProjectTemplate) -> str:
+    return "\n".join(
+        [
+            "name: CI",
+            "",
+            "on:",
+            "  push:",
+            "    branches: [main]",
+            "  pull_request:",
+            "",
+            "permissions:",
+            "  contents: read",
+            "",
+            "jobs:",
+            "  check:",
+            "    name: ruff, mypy, pytest",
+            "    runs-on: ${{ matrix.os }}",
+            "    timeout-minutes: 15",
+            "    strategy:",
+            "      fail-fast: false",
+            "      matrix:",
+            "        os: [ubuntu-latest, windows-latest]",
+            "    steps:",
+            "      - uses: actions/checkout@v4",
+            "      - uses: astral-sh/setup-uv@v5",
+            "      - run: uv sync --extra dev",
+            "      - run: uv run ruff check src tests",
+            "      - run: uv run mypy",
+            "      - run: uv run pytest -q",
+            "",
+        ]
+    )
+
+
 def _agents(project: ProjectTemplate) -> str:
     lines = [
         f"# AGENTS.md - {project.title}",
         "",
-        "Working agreement for anyone editing this repository.",
+        "Working agreement for anyone editing this repository. Read",
+        "@BT@AGENT_PLAYBOOK.md@BT@ first (how to proceed in every task), then",
+        "@BT@docs/CONVENTIONS.md@BT@ (the longer rules for people).",
         "",
         "## Commands",
         "",
@@ -983,6 +1037,10 @@ def _gitignore() -> str:
             ".env.local",
             "kdx.local.*",
             "korodexios.local.*",
+            "data/users.json",
+            "data/users.json.tmp.*",
+            "data/audit.jsonl",
+            "data/audit.jsonl.1",
             "node_modules/",
             "web/dist/",
             "*.mo",
@@ -1032,58 +1090,45 @@ def _i18n_source(project: ProjectTemplate) -> str:
             f'"""Locale-aware messages for {project.title}: the chassis stays neutral.',
             "",
             "The chassis writes English diagnostics and machine payloads. User-facing",
-            "strings in this project resolve through translate(). Catalogue sources live",
-            "next to this file under locales/<locale>/LC_MESSAGES/, compile to .mo, and",
-            "are selected by KDX_LOCALE. Without a compiled catalogue the source string",
-            "comes back, so the project runs before any translation exists.",
+            "strings in this project resolve through translate(), which uses the chassis",
+            "language service: catalogues live next to this file as",
+            "locales/<locale>/<project>.po (plain text, no compile step) and are selected",
+            "by KDX_LOCALE. Without a catalogue the source string comes back, so the",
+            "project runs before any translation exists.",
             '"""',
             "",
             "from __future__ import annotations",
             "",
-            "import gettext",
             "import os",
             "from pathlib import Path",
             "from typing import Final",
             "",
+            "from korodexios_core.kernel.i18n import I18n, environment_locale, normalize_locale",
+            "",
             f'PACKAGE: Final[str] = "{package}"',
             'LOCALE_DIR: Final[Path] = Path(__file__).resolve().parent / "locales"',
             'DEFAULT_LOCALE: Final[str] = "en"',
-            'ENV_KEYS: Final[tuple[str, ...]] = ("KDX_LOCALE", "LC_ALL", "LC_MESSAGES", "LANG")',
+            "",
+            "SERVICE: Final[I18n] = I18n()",
+            "SERVICE.register(PACKAGE, LOCALE_DIR)",
             "",
             "",
             "def available_locales() -> tuple[str, ...]:",
-            '    """Return the locales with a compiled catalogue, always including the default."""',
-            "    found: set[str] = {DEFAULT_LOCALE}",
-            "    if LOCALE_DIR.is_dir():",
-            '        for compiled in LOCALE_DIR.glob("*/LC_MESSAGES/" + PACKAGE + ".mo"):',
-            "            found.add(compiled.parent.parent.name)",
-            "    return tuple(sorted(found))",
+            '    """Return the locales with a catalogue, always including the default."""',
+            "    return SERVICE.locales(PACKAGE)",
             "",
             "",
             "def current_locale() -> str:",
-            '    """Resolve the locale from the environment, falling back to the default."""',
-            "    for key in ENV_KEYS:",
-            '        value = os.environ.get(key, "").strip()',
-            "        if not value:",
-            "            continue",
-            '        cleaned = value.split(".", 1)[0].replace("-", "_")',
-            "        if cleaned in available_locales():",
-            "            return cleaned",
-            "    return DEFAULT_LOCALE",
+            '    """Resolve the locale (KDX_LOCALE first, then LC_ALL, LC_MESSAGES, LANG)."""',
+            '    named = normalize_locale(os.environ.get("KDX_LOCALE", ""))',
+            "    chosen = named or environment_locale()",
+            "    return chosen if chosen in available_locales() else DEFAULT_LOCALE",
             "",
             "",
             "def translate(message: str, **fields: object) -> str:",
             '    """Return *message* in the current locale, formatted with *fields*."""',
-            "    catalog = gettext.translation(",
-            "        PACKAGE,",
-            "        localedir=str(LOCALE_DIR),",
-            "        languages=[current_locale()],",
-            "        fallback=True,",
-            "    )",
-            "    text = catalog.gettext(message)",
-            "    if not fields:",
-            "        return text",
-            "    return text.format(**{key: str(value) for key, value in fields.items()})",
+            "    SERVICE.set_locale(current_locale())",
+            "    return SERVICE.translate(message, domain=PACKAGE, **fields)",
             "",
         ]
     )
@@ -1093,10 +1138,8 @@ def _locales_template(project: ProjectTemplate) -> str:
     package = project.package
     lines = [
         f"# Translatable strings for {project.title}.",
-        f"# Copy this template to locales/<locale>/LC_MESSAGES/{package}.po, fill the",
-        "# msgstr entries, then compile it:",
-        f"#   msgfmt locales/<locale>/LC_MESSAGES/{package}.po -o <same>.mo",
-        "# and select the locale with KDX_LOCALE=<locale>.",
+        f"# Copy this template to locales/<locale>/{package}.po, fill the msgstr",
+        "# entries (no compile step), and select the locale with KDX_LOCALE=<locale>.",
         'msgid ""',
         'msgstr ""',
         f'"Project-Id-Version: {package} 0.1.0\\n"',
@@ -1333,7 +1376,7 @@ def _smoke_test(project: ProjectTemplate) -> str:
         "",
         "",
         "def test_translation_falls_back_to_the_source_string() -> None:",
-        '    """Without a compiled catalogue the source string comes back, formatted."""',
+        '    """Without a catalogue the source string comes back, formatted."""',
         '    missing = "kdx.yml not found next to the package; using {cwd}"',
         '    assert translate(missing, cwd="/tmp") == missing.replace("{cwd}", "/tmp")',
         '    assert "en" in available_locales()',

@@ -7,7 +7,7 @@ import threading
 import time
 from typing import Any
 
-from ...cli.render import print_key_values, write_line
+from ...cli.render import print_key_values, tr, write_line
 from ...config.schema import ConfigField, ConfigKind, ConfigSchema
 from ...constants import TAG_NOTE, TAG_OK
 from ...kernel.cli_contract import CliArgument, CliCommand, CliRequest, CliSurface
@@ -223,7 +223,14 @@ def _status_command(request: CliRequest) -> int:
             ("ticker runs", health.get("ticker_runs", 0)),
         ]
     )
-    write_line(f"{TAG_OK} heartbeat {record.spec.version} is {record.state.value}")
+    write_line(
+        f"{TAG_OK} "
+        + tr(
+            "heartbeat {version} is {value}",
+            version=record.spec.version,
+            value=record.state.value,
+        )
+    )
     return 0
 
 

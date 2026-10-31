@@ -18,22 +18,27 @@ import mimetypes
 import os
 import re
 import secrets
+import ssl
 import sys
 import threading
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path, PurePosixPath
 from typing import Any, Final, cast
 
 from ..constants import IPC_SCHEMA_VERSION
+from ..paths import restrict_to_owner
 from ..units import page_size
 from ..version import CORE_API_VERSION
+from .audit import AuditLog
 from .instance_lock import pid_alive
+from .jobs import JobLimitError
+from .users import OWNER_NAME, Caller, UserStore, acting_as
 
 DISCOVERY_NAME = "chassis.ipc"
 TOKEN_HEADER = "X-Kdx-Token"
@@ -58,6 +63,13 @@ instead of dying.
 PAYLOAD_TOO_LARGE: Final[int] = 413
 """The status the control plane answers when a request body exceeds the limit."""
 
+REQUEST_TIMEOUT_SECONDS: Final[float] = 30.0
+"""How long one connection may stall on the socket before the handler drops it.
+
+Every connection owns a thread, so a client that opens a socket and never finishes its
+request line (or its announced body) would otherwise pin that thread forever. The bound
+covers socket reads and writes only; a slow command behind /api/v1/rpc is not cut off."""
+
 WINDOWS_DEVICE_NAMES: Final[frozenset[str]] = frozenset(
     {"con", "prn", "aux", "nul"}
     | {f"com{index}" for index in range(1, 10)}
@@ -77,6 +89,8 @@ SHUTDOWN_PATH = "/api/v1/shutdown"
 SCHEMA_PATH = "/api/v1/schema"
 RPC_PATH = "/api/v1/rpc"
 RELOAD_PATH = "/api/v1/reload"
+JOBS_PATH = "/api/v1/jobs"
+WHOAMI_PATH = "/api/v1/whoami"
 ROUTES = (
     HEALTH_PATH,
     STATUS_PATH,
@@ -84,7 +98,13 @@ ROUTES = (
     SCHEMA_PATH,
     RPC_PATH,
     RELOAD_PATH,
+    JOBS_PATH,
+    WHOAMI_PATH,
 )
+ACTING_ROUTES: Final[frozenset[str]] = frozenset(
+    {"/api/v1/rpc", "/api/v1/reload", "/api/v1/shutdown"}
+)
+"""Routes that change something; every attempt on them is audited, refused or not."""
 RPC_METHODS = ("POST",)
 RELOAD_METHODS = ("POST",)
 
@@ -373,6 +393,21 @@ class IpcResponse:
 
 
 @dataclass(frozen=True, slots=True)
+class IpcStream:
+    """A response written chunk by chunk until its iterator ends: server-sent events.
+
+    A route returns this when the answer is a feed rather than a document. The chassis
+    sends the headers at once, writes each chunk as the iterator yields it, and closes
+    the connection when the iterator is exhausted or the client goes away - at which
+    point the iterator is closed, so a 'finally' in a generator releases what it holds.
+    """
+
+    chunks: Iterable[bytes]
+    content_type: str = "text/event-stream; charset=utf-8"
+    headers: tuple[tuple[str, str], ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
 class IpcStaticMount:
     """One directory a module serves under a route prefix.
 
@@ -514,6 +549,14 @@ def is_loopback_host(host: str) -> bool:
     return str(host).strip() in LOOPBACK_HOSTS
 
 
+def _host_name(host_header: str) -> str:
+    """Return the host part of a 'Host' header: 'a:1' -> 'a', '[::1]:1' -> '::1'."""
+    text = host_header.strip().lower()
+    if text.startswith("["):
+        return text[1:].split("]", 1)[0]
+    return text.rsplit(":", 1)[0] if text.count(":") == 1 else text
+
+
 class IpcError(ValueError):
     """Raised when the control plane cannot be started or reached."""
 
@@ -584,16 +627,33 @@ class IpcDiscovery:
     started_at: float
     path: Path | None = None
     scheme: str = "http"
+    cafile: str = ""
+    """Certificate a client trusts for an https endpoint; empty means the system store."""
 
     def as_dict(self) -> dict[str, Any]:
         """Return the JSON shape written to the discovery file."""
-        return {
+        payload: dict[str, Any] = {
             "pid": self.pid,
             "port": self.port,
             "host": self.host,
             "token": self.token,
             "started_at": self.started_at,
         }
+        if self.scheme != "http":
+            payload["scheme"] = self.scheme
+        if self.cafile:
+            payload["cafile"] = self.cafile
+        return payload
+
+    def ssl_context(self) -> ssl.SSLContext | None:
+        """Return the verifying TLS context for an https endpoint, None for plain http.
+
+        Verification is never switched off: a self-signed daemon certificate is trusted
+        by naming it as *cafile*, which is what the local discovery file does on its own.
+        """
+        if self.scheme != "https":
+            return None
+        return ssl.create_default_context(cafile=self.cafile or None)
 
     def base_url(self) -> str:
         """Return the base URL for this endpoint."""
@@ -606,6 +666,7 @@ class IpcDiscovery:
         *,
         default_port: int = DEFAULT_PORT,
         token: str = "",
+        cafile: str = "",
     ) -> IpcDiscovery:
         """Build a client-side endpoint from 'http://host:port', 'host:port', or 'host'.
 
@@ -637,6 +698,7 @@ class IpcDiscovery:
             started_at=0.0,
             path=None,
             scheme=parts.scheme or "http",
+            cafile=str(cafile or ""),
         )
 
     def is_process_alive(self) -> bool:
@@ -676,10 +738,39 @@ class IpcDiscovery:
             data=body,
         )
         try:
-            with urllib.request.urlopen(request, timeout=timeout) as response:
+            with urllib.request.urlopen(
+                request, timeout=timeout, context=self.ssl_context()
+            ) as response:
                 return int(response.status), _decode(response.read())
         except urllib.error.HTTPError as exc:
             return int(exc.code), _decode(exc.read())
+
+    def events(self, route: str, *, timeout: float = 60.0) -> Iterator[dict[str, Any]]:
+        """Yield each server-sent event of *route* as a decoded JSON object, until it ends.
+
+        The server sends a keepalive comment every 15 s, so *timeout* only fires when the
+        daemon is gone. A frame that is not JSON is skipped.
+        """
+        headers = {"Accept": "text/event-stream"}
+        if self.token:
+            headers[TOKEN_HEADER] = self.token
+        request = urllib.request.Request(self.base_url() + route, headers=headers)
+        with urllib.request.urlopen(request, timeout=timeout, context=self.ssl_context()) as feed:
+            data: list[str] = []
+            for raw in feed:
+                line = raw.decode("utf-8", "replace").rstrip("\r\n")
+                if line.startswith("data: "):
+                    data.append(line[6:])
+                    continue
+                if line or not data:
+                    continue
+                try:
+                    decoded = json.loads("\n".join(data))
+                except ValueError:
+                    decoded = None
+                data = []
+                if isinstance(decoded, dict):
+                    yield decoded
 
     def call(
         self,
@@ -714,6 +805,8 @@ class IpcDiscovery:
                 token=str(raw.get("token", "")),
                 started_at=float(raw.get("started_at", 0.0)),
                 path=Path(path),
+                scheme=str(raw.get("scheme", "http")),
+                cafile=str(raw.get("cafile", "")),
             )
         except (TypeError, ValueError):
             return None
@@ -749,6 +842,8 @@ class IpcOptions:
     auth: bool = True
     allow_anonymous_shutdown: bool = False
     fallback_attempts: int = 5
+    tls_cert: Path | None = None
+    tls_key: Path | None = None
 
 
 class _ControlServer(ThreadingHTTPServer):
@@ -769,7 +864,9 @@ def _is_teardown_error(exc: BaseException) -> bool:
     answering a client: the peer goes away, the descriptor goes away, and the handler is
     left holding a write nobody will read. That is an ending, not a fault.
     """
-    if isinstance(exc, (BrokenPipeError, ConnectionResetError, ConnectionAbortedError)):
+    if isinstance(
+        exc, (BrokenPipeError, ConnectionResetError, ConnectionAbortedError, TimeoutError)
+    ):
         return True
     return isinstance(exc, OSError) and int(getattr(exc, "errno", 0) or 0) in _TEARDOWN_ERRNOS
 
@@ -779,6 +876,24 @@ class _ControlHandler(BaseHTTPRequestHandler):
 
     protocol_version = "HTTP/1.1"
     server_version = "korodexios"
+    timeout = REQUEST_TIMEOUT_SECONDS
+
+    def handle(self) -> None:
+        """Serve the connection; a failed TLS handshake ends it without a traceback.
+
+        Over https the handshake runs on the first read, inside this thread, so a plain
+        http probe or a client that does not trust the certificate surfaces here as an
+        SSLError. That is the client's mistake, not the daemon's, and it is noted at
+        debug level instead of being printed to the daemon's stderr.
+        """
+        try:
+            super().handle()
+        except ssl.SSLError as exc:
+            self.close_connection = True
+            ipc = getattr(self.server, "kdx_ipc", None)
+            logger = getattr(ipc, "logger", None)
+            if logger is not None:
+                logger.debug("ipc tls handshake refused", error=str(exc))
 
     def do_HEAD(self) -> None:
         """Answer a header-only read; static assets and caches rely on it."""
@@ -821,27 +936,79 @@ class _ControlHandler(BaseHTTPRequestHandler):
 
     def _route(self, method: str) -> None:
         ipc = cast("_ControlServer", self.server).kdx_ipc
+        refusal = ipc.cross_origin_refusal(self.headers.get("Host"), self.headers.get("Origin"))
+        if refusal is not None:
+            self._reply(
+                403,
+                {
+                    "error": refusal,
+                    "hint": "call the control plane from the CLI, curl, or a page the "
+                    "daemon serves itself; a foreign web page may not drive it",
+                },
+            )
+            return
+        caller = ipc.identify(self.headers.get(TOKEN_HEADER))
+        with acting_as(caller):
+            self._route_as(ipc, method, caller)
+
+    def _refuse(
+        self, ipc: IpcServer, path: str, caller: Caller | None, required: str
+    ) -> None:
+        """Answer 401 (who are you?) or 403 (not allowed), and audit an attempt to act."""
+        acting = path in ACTING_ROUTES
+        if caller is None:
+            if acting:
+                ipc.audit_event(path, None, "unauthenticated", address=self._address())
+            self._reply(
+                401,
+                {
+                    "error": f"{TOKEN_HEADER} header missing or invalid for {path}",
+                    "hint": "present core.ipc.token or a user token from 'kdx users add'; "
+                    "core.ipc.auth: false opens status reads only",
+                },
+            )
+            return
+        if acting:
+            # A known caller may say what they tried to run; an unknown one is not read.
+            command = ""
+            if path == RPC_PATH:
+                payload = self._read_payload()
+                if isinstance(payload, Mapping):
+                    command = str(payload.get("command") or "")
+            ipc.audit_event(
+                path, caller, f"denied: needs {required}", command=command,
+                address=self._address(),
+            )
+        self._reply(
+            403,
+            {
+                "error": f"{path} needs the {required} role; {caller.name} is {caller.role}",
+                "hint": "an admin can change it with 'kdx users role NAME ROLE'",
+            },
+        )
+
+    def _address(self) -> str:
+        return str(self.client_address[0]) if self.client_address else ""
+
+    def _route_as(self, ipc: IpcServer, method: str, caller: Caller | None) -> None:
         path = normalize_route_path(self.path)
         module_route = ipc.lookup_route(path)
         if path not in ROUTES and module_route is None:
             mounted = ipc.lookup_static(path)
             if mounted is not None:
-                self._serve_static(ipc, mounted[0], mounted[1], method)
+                self._serve_static(ipc, mounted[0], mounted[1], method, caller)
                 return
             self._reply(404, {"error": f"no such endpoint: {path}"})
             return
         if module_route is not None:
-            self._serve_module_route(ipc, module_route, method)
+            self._serve_module_route(ipc, module_route, method, caller)
             return
-        if ipc.requires_token(path) and not ipc.token_matches(self.headers.get(TOKEN_HEADER)):
-            self._reply(
-                401,
-                {
-                    "error": f"{TOKEN_HEADER} header missing or invalid for {path}",
-                    "hint": "set core.ipc.auth to false for anonymous reads, or "
-                    "core.ipc.allow_anonymous_shutdown to true for anonymous shutdown",
-                },
-            )
+        required = ipc.required_role(path)
+        if required is not None and (caller is None or not caller.allows(required)):
+            self._refuse(ipc, path, caller, required)
+            return
+        if path == WHOAMI_PATH:
+            self._reply(200, ipc.whoami(caller))
             return
         if path == HEALTH_PATH:
             self._reply(200, ipc.health())
@@ -862,7 +1029,10 @@ class _ControlHandler(BaseHTTPRequestHandler):
             if method != "POST":
                 self._reply(405, {"error": "reload expects POST"})
                 return
-            self._reply(200, ipc.request_reload())
+            answer = ipc.request_reload()
+            ipc.audit_event(RELOAD_PATH, caller, "ok", detail=answer.get("changed"),
+                            address=self._address())
+            self._reply(200, answer)
             return
         if path == RPC_PATH:
             if method != "POST":
@@ -872,7 +1042,39 @@ class _ControlHandler(BaseHTTPRequestHandler):
             if payload is PAYLOAD_TOO_LARGE:
                 self._reply(PAYLOAD_TOO_LARGE, {"error": "request body too large"})
                 return
-            self._reply(*ipc.handle_rpc(payload))
+            status, answer = ipc.handle_rpc(payload)
+            command = str(payload.get("command") or "") if isinstance(payload, Mapping) else ""
+            if status == 202:
+                outcome = f"started {answer['job']['id']}"
+                command = str(answer["job"].get("command") or command)
+            elif status == 200:
+                command = str(answer["result"].get("path") or command)
+                outcome = f"exit {answer['result'].get('exit_code')}"
+            else:
+                outcome = f"refused {status}: {answer.get('error', '')}"
+            action = "job" if isinstance(payload, Mapping) and payload.get("background") else "rpc"
+            args = payload.get("args") if isinstance(payload, Mapping) else None
+            ipc.audit_event(action, caller, outcome, command=command, detail=args,
+                            address=self._address())
+            self._reply(status, answer)
+            return
+        if path == JOBS_PATH:
+            if method == "POST":
+                if caller is not None and not caller.allows("operator"):
+                    self._refuse(ipc, path, caller, "operator")
+                    return
+                payload = self._read_payload()
+                job_id = payload.get("cancel") if isinstance(payload, Mapping) else None
+                if not job_id:
+                    self._reply(400, {"error": "POST /api/v1/jobs expects {\"cancel\": \"job-N\"}"})
+                    return
+                self._reply(*ipc.handle_cancel(str(job_id)))
+                return
+            if method != "GET":
+                self._reply(405, {"error": "jobs expects GET, or POST {\"cancel\": id}"})
+                return
+            query = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
+            self._reply(*ipc.handle_jobs(str(query.get("id", [""])[0])))
             return
         if method != "POST":
             self._reply(405, {"error": "shutdown expects POST"})
@@ -881,10 +1083,13 @@ class _ControlHandler(BaseHTTPRequestHandler):
         # is the contract that the shutdown was requested, so a client that sees it
         # must be able to rely on it having happened. Replying first raced the call
         # on slow runners, where the response landed before the counter moved.
+        ipc.audit_event(SHUTDOWN_PATH, caller, "ok", address=self._address())
         ipc.request_shutdown()
         self._reply(200, {"accepted": True, "state": ipc.health()["state"]})
 
-    def _serve_module_route(self, ipc: IpcServer, route: IpcRoute, method: str) -> None:
+    def _serve_module_route(
+        self, ipc: IpcServer, route: IpcRoute, method: str, caller: Caller | None = None
+    ) -> None:
         """Answer one module-declared route, mapping the handler result to HTTP."""
         if not route.allows(method):
             self._reply(
@@ -892,15 +1097,12 @@ class _ControlHandler(BaseHTTPRequestHandler):
                 {"error": f"{route.path} accepts {', '.join(route.methods)}", "method": method},
             )
             return
-        if route.auth and not ipc.token_matches(self.headers.get(TOKEN_HEADER)):
-            self._reply(
-                401,
-                {
-                    "error": f"{TOKEN_HEADER} header missing or invalid for {route.path}",
-                    "hint": "this module route requires the shared control-plane token",
-                },
-            )
-            return
+        if route.auth:
+            # A read needs a viewer; a module route that accepts a write needs an operator.
+            required = "viewer" if method in ("GET", "HEAD") else "operator"
+            if caller is None or not caller.allows(required):
+                self._refuse(ipc, route.path, caller, required)
+                return
         request = IpcRequest(
             method=method,
             path=route.path,
@@ -934,6 +1136,9 @@ class _ControlHandler(BaseHTTPRequestHandler):
         is rendered as JSON exactly as it always was - so a module that never
         heard of content types still gets the v1 behaviour for free.
         """
+        if isinstance(payload, IpcStream):
+            self._stream(payload)
+            return
         if isinstance(payload, IpcResponse):
             # The response owns its status and media type; the route only decided
             # the path, so 'IpcResponse.text(..., status=201)' means 201.
@@ -948,7 +1153,12 @@ class _ControlHandler(BaseHTTPRequestHandler):
         self._reply(status, payload)
 
     def _serve_static(
-        self, ipc: IpcServer, mount: IpcStaticMount, subpath: str, method: str
+        self,
+        ipc: IpcServer,
+        mount: IpcStaticMount,
+        subpath: str,
+        method: str,
+        caller: Caller | None = None,
     ) -> None:
         """Serve one file from a mounted static directory, with its own media type."""
         if not mount.allows(method):
@@ -960,14 +1170,8 @@ class _ControlHandler(BaseHTTPRequestHandler):
                 },
             )
             return
-        if mount.auth and not ipc.token_matches(self.headers.get(TOKEN_HEADER)):
-            self._reply(
-                401,
-                {
-                    "error": f"{TOKEN_HEADER} header missing or invalid for {mount.prefix}",
-                    "hint": "this static mount requires the shared control-plane token",
-                },
-            )
+        if mount.auth and (caller is None or not caller.allows("viewer")):
+            self._refuse(ipc, mount.prefix, caller, "viewer")
             return
         target = mount.resolve(subpath)
         if target is None:
@@ -1006,6 +1210,31 @@ class _ControlHandler(BaseHTTPRequestHandler):
             headers,
             body=str(method).upper() != "HEAD",
         )
+
+    def _stream(self, stream: IpcStream) -> None:
+        """Write a feed chunk by chunk; a vanished client ends it quietly."""
+        chunks = iter(stream.chunks)
+        try:
+            self.send_response(200)
+            self.send_header("Content-Type", stream.content_type)
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("X-Accel-Buffering", "no")
+            for key, value in stream.headers:
+                self.send_header(str(key), str(value))
+            self.send_header("Connection", "close")
+            self.close_connection = True
+            self.end_headers()
+            for chunk in chunks:
+                self.wfile.write(bytes(chunk))
+                self.wfile.flush()
+        except OSError as exc:
+            if not _is_teardown_error(exc):
+                raise
+            self._note_socket_gone(exc, "stream")
+        finally:
+            close = getattr(chunks, "close", None)
+            if callable(close):
+                close()
 
     def _read_payload(self) -> Any:
         """Return the decoded JSON request body, or None when there is none.
@@ -1104,6 +1333,11 @@ class IpcServer:
         static_dirs: Sequence[IpcStaticMount] | None = None,
         rpc_fn: Callable[[str, Mapping[str, Any]], Any] | None = None,
         reload_fn: Callable[[], Mapping[str, Any]] | None = None,
+        submit_fn: Callable[[str, Mapping[str, Any]], Mapping[str, Any]] | None = None,
+        jobs_fn: Callable[[str], Any] | None = None,
+        cancel_fn: Callable[[str], Any] | None = None,
+        users: UserStore | None = None,
+        audit: AuditLog | None = None,
     ) -> None:
         self._status_fn = status_fn
         self._shutdown_fn = shutdown_fn
@@ -1126,6 +1360,11 @@ class IpcServer:
             self.add_static_dir(mount)
         self._rpc_fn = rpc_fn
         self._reload_fn = reload_fn
+        self._submit_fn = submit_fn
+        self._jobs_fn = jobs_fn
+        self._cancel_fn = cancel_fn
+        self.users = users
+        self.audit = audit
 
     def add_route(self, route: IpcRoute) -> IpcServer:
         """Publish *route* on the control plane; a re-registration replaces it."""
@@ -1208,9 +1447,102 @@ class IpcServer:
         return None
 
     def token_matches(self, presented: str | None) -> bool:
-        """Return True when *presented* is the shared secret, in constant time."""
-        expected = self.discovery_token
-        return hmac.compare_digest(str(presented or ""), str(expected))
+        """Return True when *presented* is the shared secret, in constant time.
+
+        An empty secret matches nothing: a control plane started with no token must
+        not let every client that also sends none through a guarded route.
+        """
+        expected = str(self.discovery_token or "")
+        if not expected:
+            return False
+        return hmac.compare_digest(str(presented or ""), expected)
+
+    def identify(self, presented: str | None) -> Caller | None:
+        """Return who *presented* is: the shared token's owner, a named user, or None."""
+        if self.token_matches(presented):
+            return Caller(OWNER_NAME, "admin", "shared")
+        if self.users is not None:
+            try:
+                user = self.users.authenticate(presented)
+            except ValueError:
+                user = None
+            if user is not None:
+                return Caller(user.name, user.role, "user")
+        return None
+
+    def required_role(self, route: str) -> str | None:
+        """Return the role *route* needs, or None when anyone may call it.
+
+        Reads need a viewer, running a command needs an operator, and reload and
+        shutdown need an admin. 'core.ipc.auth: false' opens the status read only;
+        'allow_anonymous_shutdown' (with auth off) opens shutdown.
+        """
+        if route in (HEALTH_PATH, SCHEMA_PATH, WHOAMI_PATH):
+            return None
+        if route == STATUS_PATH:
+            return "viewer" if self._options.auth else None
+        if route == JOBS_PATH:
+            return "viewer"
+        if route == RPC_PATH:
+            return "operator"
+        if route == RELOAD_PATH:
+            return "admin"
+        if route == SHUTDOWN_PATH:
+            anonymous = not self._options.auth and self._options.allow_anonymous_shutdown
+            return None if anonymous else "admin"
+        return "viewer"
+
+    def whoami(self, caller: Caller | None) -> dict[str, Any]:
+        """Return who the request was made as, and which routes that opens."""
+        if caller is None:
+            return {"name": None, "role": None, "source": "anonymous", "can": []}
+        can = [route for route in ROUTES if self.required_role(route) is None
+               or caller.allows(str(self.required_role(route)))]
+        return {**caller.as_dict(), "can": can}
+
+    def audit_event(
+        self,
+        action: str,
+        caller: Caller | None,
+        outcome: str,
+        *,
+        command: str = "",
+        detail: Any = None,
+        address: str = "",
+    ) -> None:
+        """Record one control-plane action when an audit log is attached."""
+        if self.audit is not None:
+            # A route path names the action by its last segment: '/api/v1/rpc' is 'rpc'.
+            name = action.rsplit("/", 1)[-1] if action.startswith("/") else action
+            self.audit.record(
+                name, caller=caller, outcome=outcome, command=command,
+                detail=detail, address=address,
+            )
+
+    def cross_origin_refusal(self, host: str | None, origin: str | None) -> str | None:
+        """Return why a browser-borne request must be refused, or None to serve it.
+
+        Two attacks reach a local daemon through a web browser. A foreign page can POST
+        a CORS 'simple' request (text/plain, no preflight) straight at 127.0.0.1, and a
+        DNS-rebinding page can make the browser treat the daemon as its own origin. The
+        first always carries an 'Origin' that is not the daemon's own; the second carries
+        a 'Host' that is not a loopback name. Neither header is sent by the CLI, curl, or
+        a Docker probe, so refusing them costs no legitimate client anything.
+        """
+        host_text = str(host or "").strip()
+        if host_text and is_loopback_host(self._bound_host or self._options.host):
+            name = _host_name(host_text)
+            if not is_loopback_host(name):
+                return f"Host {host_text!r} is not a loopback name for a loopback control plane"
+        origin_text = str(origin or "").strip()
+        if not origin_text:
+            return None
+        parsed = urllib.parse.urlsplit(origin_text)
+        if parsed.scheme not in ("http", "https") or not parsed.netloc:
+            return f"Origin {origin_text!r} is not a web origin this control plane serves"
+        if not host_text or parsed.netloc.lower() != host_text.lower():
+            return f"Origin {origin_text!r} is not this control plane's own origin"
+        return None
 
     def count_error(self) -> None:
         """Record that a module route handler raised."""
@@ -1235,12 +1567,22 @@ class IpcServer:
             return 400, {"ok": False, "error": "rpc body needs a 'command' field"}
         raw_args = payload.get("args")
         args: dict[str, Any] = dict(raw_args) if isinstance(raw_args, Mapping) else {}
+        background = bool(payload.get("background"))
+        if background and self._submit_fn is None:
+            return 501, {"ok": False, "error": "this control plane runs no background jobs"}
         try:
+            if background and self._submit_fn is not None:
+                job = dict(self._submit_fn(command, args))
+                return 202, {"ok": True, "command": command, "job": job}
             result = self._rpc_fn(command, args)
+        except PermissionError as exc:
+            return 403, {"ok": False, "command": command, "error": str(exc)}
         except LookupError as exc:
             return 404, {"ok": False, "command": command, "error": str(exc)}
         except TypeError as exc:
             return 400, {"ok": False, "command": command, "error": str(exc)}
+        except JobLimitError as exc:
+            return 429, {"ok": False, "command": command, "error": str(exc)}
         except Exception as exc:
             self._errors += 1
             return 500, {
@@ -1249,6 +1591,29 @@ class IpcServer:
                 "error": f"{type(exc).__name__}: {exc}",
             }
         return 200, {"ok": True, "command": command, "result": result}
+
+    def handle_cancel(self, job_id: str) -> tuple[int, Any]:
+        """Ask one job to stop; 404 when unknown, 403 when it is someone else's."""
+        self._requests += 1
+        if self._cancel_fn is None:
+            return 501, {"error": "this control plane runs no background jobs"}
+        try:
+            found = self._cancel_fn(job_id)
+        except PermissionError as exc:
+            return 403, {"error": str(exc)}
+        if found is None:
+            return 404, {"error": f"no job {job_id!r}"}
+        return 200, found
+
+    def handle_jobs(self, job_id: str) -> tuple[int, Any]:
+        """Answer one job (with its output so far) or the list of jobs (without)."""
+        self._requests += 1
+        if self._jobs_fn is None:
+            return 501, {"error": "this control plane runs no background jobs"}
+        found = self._jobs_fn(job_id.strip())
+        if job_id.strip() and found is None:
+            return 404, {"error": f"no job {job_id!r}; finished jobs are forgotten in time"}
+        return 200, found
 
     def start(self) -> IpcServer:
         """Bind to the loopback interface, announce the endpoint, serve in background."""
@@ -1273,6 +1638,20 @@ class IpcServer:
                 hint="Free core.ipc.port or set it to 0 to take an ephemeral port.",
             ) from last_error
         httpd.daemon_threads = True
+        scheme = "http"
+        if self._options.tls_cert is not None:
+            try:
+                httpd.socket = self._tls_context().wrap_socket(
+                    httpd.socket, server_side=True, do_handshake_on_connect=False
+                )
+            except (OSError, ssl.SSLError) as exc:
+                httpd.server_close()
+                raise IpcError(
+                    f"cannot serve TLS with {self._options.tls_cert}: {exc}",
+                    hint="run 'kdx tls init', or point core.ipc.tls_cert and "
+                    "core.ipc.tls_key at a readable PEM certificate and key",
+                ) from exc
+            scheme = "https"
         self._httpd = httpd
         self._started_at = time.time()
         bound_host = str(httpd.server_address[0])
@@ -1288,6 +1667,8 @@ class IpcServer:
             token=self._options.token,
             started_at=self._started_at,
             path=self._options.discovery_path,
+            scheme=scheme,
+            cafile=str(self._options.tls_cert) if scheme == "https" else "",
         )
         self._bound_host = bound_host
         httpd.kdx_ipc = self
@@ -1312,6 +1693,24 @@ class IpcServer:
                 else None,
             )
         return self
+
+    def _tls_context(self) -> ssl.SSLContext:
+        """Return the server context: TLS 1.2 or newer, the configured certificate.
+
+        The handshake is deferred to the connection's own handler thread (it happens on
+        the first read), so a client that connects and stalls holds only its own thread
+        and is dropped by the socket timeout, never the accept loop.
+        """
+        context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
+        key = self._options.tls_key or self._options.tls_cert
+        context.load_cert_chain(str(self._options.tls_cert), str(key))
+        return context
+
+    @property
+    def tls(self) -> bool:
+        """Return True when the control plane speaks https."""
+        return self._discovery is not None and self._discovery.scheme == "https"
 
     def stop(self, timeout: float = 5.0) -> None:
         """Stop accepting requests, close the socket, remove the discovery file."""
@@ -1339,18 +1738,15 @@ class IpcServer:
         return self._discovery.token if self._discovery is not None else self._options.token
 
     def requires_token(self, route: str) -> bool:
-        """Return True when *route* must present the shared token.
+        """Return True when *route* must present a token (see required_role).
 
-        Policy: /health and /api/v1/schema are always open (liveness and static
-        metadata carry no state). Reads follow core.ipc.auth. Shutdown stays
-        authenticated unless the operator explicitly allows anonymous shutdown - a
-        LAN-visible port must not be a stop button.
+        Policy: /health, /api/v1/schema, and /api/v1/whoami are always open. Status
+        reads follow core.ipc.auth. RPC, reload, and jobs always need a token: they act
+        or reveal command output, and 'auth: false' promises anonymous status reads
+        only. Shutdown stays authenticated unless the operator explicitly allows
+        anonymous shutdown - a LAN-visible port must not be a stop button.
         """
-        if route in (HEALTH_PATH, SCHEMA_PATH):
-            return False
-        if route in (STATUS_PATH, RPC_PATH, RELOAD_PATH):
-            return bool(self._options.auth)
-        return bool(self._options.auth) or not bool(self._options.allow_anonymous_shutdown)
+        return self.required_role(route) is not None
 
     @property
     def bound_host(self) -> str:
@@ -1458,8 +1854,25 @@ class IpcServer:
                     "path": RPC_PATH,
                     "auth": self.requires_token(RPC_PATH),
                     "content_type": CONTENT_JSON,
-                    "summary": "delegate one command to the running chassis",
-                    "fields": ["command", "ok", "result"],
+                    "summary": "delegate one command; 'background': true starts a job",
+                    "fields": ["command", "job", "ok", "result"],
+                },
+                {
+                    "method": "GET",
+                    "path": JOBS_PATH,
+                    "auth": self.requires_token(JOBS_PATH),
+                    "content_type": CONTENT_JSON,
+                    "summary": "background jobs; '?id=job-N' adds that job's output so far; "
+                    "POST {\"cancel\": id} asks one to stop",
+                    "fields": ["command", "exit_code", "id", "output", "state"],
+                },
+                {
+                    "method": "GET",
+                    "path": WHOAMI_PATH,
+                    "auth": self.requires_token(WHOAMI_PATH),
+                    "content_type": CONTENT_JSON,
+                    "summary": "who the presented token belongs to, and which routes it opens",
+                    "fields": ["can", "name", "role", "source"],
                 },
             ],
             "module_routes": [route.as_dict() for route in self.module_routes()],
@@ -1480,6 +1893,7 @@ class IpcServer:
         payload["path"] = str(self._discovery.path) if self._discovery.path else None
         payload["bound_host"] = self._bound_host
         payload["lan_accessible"] = self._lan_accessible
+        payload["tls"] = self.tls
         payload["auth"] = bool(self._options.auth)
         payload["allow_anonymous_shutdown"] = bool(self._options.allow_anonymous_shutdown)
         payload["token_source"] = str(self._options.token_source)
@@ -1508,14 +1922,15 @@ class IpcServer:
         with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
             handle.write(payload)
             handle.flush()
+        # Owner-only before the rename, so the token is never readable at the final path
+        # by anyone else - on Windows, too, where the 0600 mode above means nothing.
+        restrict_to_owner(temporary)
         try:
             os.replace(str(temporary), str(target))
         except OSError:
             with contextlib.suppress(OSError):
                 temporary.unlink()
             raise
-        with contextlib.suppress(OSError):
-            os.chmod(str(target), 0o600)
 
     def _remove_discovery(self) -> None:
         target = self._options.discovery_path

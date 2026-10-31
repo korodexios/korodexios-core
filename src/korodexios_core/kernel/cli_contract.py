@@ -7,6 +7,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
+from .users import ROLES
+
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from .context import CoreContext
 
@@ -27,7 +29,11 @@ _TYPE_MAP: dict[str, Callable[[Any], Any]] = {
 }
 
 
-def add_command_arguments(parser: Any, arguments: Sequence[CliArgument]) -> None:
+def add_command_arguments(
+    parser: Any,
+    arguments: Sequence[CliArgument],
+    translate: Callable[[str], str] | None = None,
+) -> None:
     """Attach declarative arguments to an argparse parser.
 
     The surface builds the real CLI this way, and so does the chassis when a
@@ -38,7 +44,7 @@ def add_command_arguments(parser: Any, arguments: Sequence[CliArgument]) -> None
         kwargs: dict[str, Any] = {}
         is_positional = all(not str(flag).startswith("-") for flag in argument.flags)
         if argument.help:
-            kwargs["help"] = argument.help
+            kwargs["help"] = translate(argument.help) if translate else argument.help
         if argument.metavar:
             kwargs["metavar"] = argument.metavar
         if argument.action:
@@ -112,7 +118,14 @@ class CliArgument:
 
 @dataclass(frozen=True, slots=True)
 class CliCommand:
-    """A command (or command group) contributed to the root CLI surface."""
+    """A command (or command group) contributed to the root CLI surface.
+
+    Two flags say how far a command may travel, and a group's flag covers every
+    command below it. 'remote=False' keeps a command on the operator's own terminal:
+    the control plane refuses to run it over RPC (an interactive wizard, or anything
+    that must not be triggered from another machine). 'danger=True' marks a command
+    that changes things - it still runs remotely, but a GUI asks before it does.
+    """
 
     name: str
     help: str = ""
@@ -122,10 +135,20 @@ class CliCommand:
     module_name: str | None = None
     group: str = "module"
     show_in_wizard: bool = True
+    remote: bool = True
+    danger: bool = False
+    role: str = ""
+    """The least role a control-plane caller needs: '' means operator, or admin when
+    'danger' is set. A group's role covers its children; the strongest one wins."""
 
     def __post_init__(self) -> None:
         if not self.name.strip():
             raise ValueError("a CLI command needs a name")
+        if self.role and self.role not in ROLES:
+            raise ValueError(
+                f"command {self.name!r} asks for role {self.role!r}; use one of "
+                f"{', '.join(ROLES)}"
+            )
         if self.handler is None and not self.subcommands:
             raise ValueError(
                 f"command {self.name!r} needs either a handler or subcommands to be useful"
@@ -192,6 +215,16 @@ class CliRequest:
         if value is None:
             value = self.options.get(name, default)
         return default if value is None else value
+
+    def cancelled(self) -> bool:
+        """Return True once the caller asked this command to stop early.
+
+        Only a background job can be cancelled ('kdx jobs cancel', the GUI); everywhere
+        else this stays False. A long-running handler checks it between units of work
+        and returns as soon as it is safe, saying what was left undone.
+        """
+        event = self.options.get("cancel") if self.options else None
+        return bool(event is not None and event.is_set())
 
     def flag(self, name: str) -> bool:
         """Return True when a boolean flag was supplied."""
