@@ -32,7 +32,9 @@ from ...constants import TAG_ERROR, TAG_NOTE, TAG_OK
 from ...events.bus import Event
 from ...kernel.audit import read_audit
 from ...kernel.cli_contract import CliArgument, CliCommand, CliRequest, CliSurface
+from ...kernel.context import CoreContext
 from ...kernel.contract import Module
+from ...kernel.i18n import I18n, normalize_locale, parse_po
 from ...kernel.ipc import (
     DISCOVERY_NAME,
     IpcDiscovery,
@@ -50,6 +52,9 @@ LOGS_PATH = "/api/v1/ui/logs"
 CONFIG_PATH = "/api/v1/ui/config"
 EVENTS_PATH = "/api/v1/ui/events"
 AUDIT_PATH = "/api/v1/ui/audit"
+I18N_PATH = "/api/v1/ui/i18n"
+WEB_DOMAIN = "korodexios-web"
+WEB_LOCALES_DIR = Path(__file__).resolve().parent / "locales"
 EVENT_QUEUE_SIZE = 500
 KEEPALIVE_SECONDS = 15.0
 STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -74,6 +79,11 @@ class WebConsoleModule(Module):
         self._closing = threading.Event()
         self._feeds: set[queue.Queue[Event | None]] = set()
         self._feeds_lock = threading.Lock()
+
+    def init(self, context: CoreContext) -> None:
+        """Register the page's own message domain with the language service."""
+        super().init(context)
+        context.i18n.register(WEB_DOMAIN, WEB_LOCALES_DIR)
 
     def start(self) -> None:
         """Open the event feeds for business."""
@@ -128,6 +138,12 @@ class WebConsoleModule(Module):
                 handler=self._config_route,
                 module=self.name,
                 summary="resolved configuration with provenance, secrets masked",
+            ),
+            IpcRoute(
+                path=I18N_PATH,
+                handler=self._i18n_route,
+                module=self.name,
+                summary="the page's messages in a language ('?locale=de'; default core.locale)",
             ),
             IpcRoute(
                 path=AUDIT_PATH,
@@ -199,6 +215,24 @@ class WebConsoleModule(Module):
 
     def _catalog_route(self, request: IpcRequest) -> dict[str, Any]:
         return self.catalog()
+
+    def i18n_payload(self, locale: str | None = None) -> dict[str, Any]:
+        """Return the page's messages for *locale* (default: the chassis language)."""
+        service = self.require_context().i18n
+        chosen = normalize_locale(locale) if locale else service.locale
+        view = I18n(chosen or service.locale)
+        view.register(WEB_DOMAIN, WEB_LOCALES_DIR)
+        template = WEB_LOCALES_DIR / f"{WEB_DOMAIN}.pot"
+        sources = [e.msgid for e in parse_po(template.read_text(encoding="utf-8")) if e.msgid]
+        return {
+            "locale": view.locale,
+            "locales": list(view.locales(WEB_DOMAIN)),
+            "messages": {m: view.translate(m, domain=WEB_DOMAIN) for m in sources},
+        }
+
+    def _i18n_route(self, request: IpcRequest) -> dict[str, Any]:
+        requested = request.query.get("locale", [""])[0]
+        return self.i18n_payload(requested or None)
 
     def _logs_route(self, request: IpcRequest) -> dict[str, Any]:
         """Return the newest log lines; '?lines=N' picks how many."""

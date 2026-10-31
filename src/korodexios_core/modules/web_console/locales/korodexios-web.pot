@@ -1,0 +1,281 @@
+# Translatable strings of the korodexios-web domain.
+# Copy to <locale>/korodexios-web.po and fill in the msgstr lines.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#: static/index.html
+msgid "Audit"
+msgstr ""
+
+#: static/index.html
+msgid "Cancel"
+msgstr ""
+
+#: static/index.html
+msgid "Commands"
+msgstr ""
+
+#: static/index.html
+msgid "Config"
+msgstr ""
+
+#: static/index.html
+msgid "Connect"
+msgstr ""
+
+#: static/index.html
+msgid "Diagnostics"
+msgstr ""
+
+#: static/index.html
+msgid "Events"
+msgstr ""
+
+#: static/index.html
+msgid "Language"
+msgstr ""
+
+#: static/index.html
+msgid "Logs"
+msgstr ""
+
+#: static/index.html
+msgid "Modules"
+msgstr ""
+
+#: static/index.html
+msgid "No records yet."
+msgstr ""
+
+#: static/index.html
+msgid "Overview"
+msgstr ""
+
+#: static/index.html
+msgid "Pick a command on the left. Every module command appears here automatically, with a form built from its declared arguments."
+msgstr ""
+
+#: static/index.html
+msgid "Re-read configuration (kdx reload)"
+msgstr ""
+
+#: static/index.html
+msgid "Refresh"
+msgstr ""
+
+#: static/index.html
+msgid "Refresh everything"
+msgstr ""
+
+#: static/index.html
+msgid "Reload config"
+msgstr ""
+
+#: static/index.html
+msgid "Run"
+msgstr ""
+
+#: static/index.html
+msgid "Scheduled tasks"
+msgstr ""
+
+#: static/index.html
+msgid "Session token needed"
+msgstr ""
+
+#: static/index.html
+msgid "Stop daemon"
+msgstr ""
+
+#: static/index.html
+msgid "Stop the daemon (exit 0)"
+msgstr ""
+
+#: static/index.html
+msgid "action"
+msgstr ""
+
+#: static/index.html
+msgid "changes"
+msgstr ""
+
+#: static/index.html
+msgid "command"
+msgstr ""
+
+#: static/index.html
+msgid "commands"
+msgstr ""
+
+#: static/index.html
+msgid "connecting…"
+msgstr ""
+
+#: static/index.html
+msgid "daemon is stopping"
+msgstr ""
+
+#: static/index.html
+msgid "description"
+msgstr ""
+
+#: static/index.html
+msgid "event"
+msgstr ""
+
+#: static/index.html
+msgid "failures"
+msgstr ""
+
+#: static/index.html
+msgid "filter"
+msgstr ""
+
+#: static/index.html
+msgid "filter audit"
+msgstr ""
+
+#: static/index.html
+msgid "filter by user, action, command"
+msgstr ""
+
+#: static/index.html
+msgid "filter commands"
+msgstr ""
+
+#: static/index.html
+msgid "filter events"
+msgstr ""
+
+#: static/index.html
+msgid "filter keys"
+msgstr ""
+
+#: static/index.html
+msgid "filter keys, e.g. core.ipc."
+msgstr ""
+
+#: static/index.html
+msgid "filter log lines"
+msgstr ""
+
+#: static/index.html
+msgid "follow"
+msgstr ""
+
+#: static/index.html
+msgid "from"
+msgstr ""
+
+#: static/index.html
+msgid "interval"
+msgstr ""
+
+#: static/index.html
+msgid "key"
+msgstr ""
+
+#: static/index.html
+msgid "last error"
+msgstr ""
+
+#: static/index.html
+msgid "lines"
+msgstr ""
+
+#: static/index.html
+msgid "module"
+msgstr ""
+
+#: static/index.html
+msgid "name"
+msgstr ""
+
+#: static/index.html
+msgid "no module commands"
+msgstr ""
+
+#: static/index.html
+msgid "offline"
+msgstr ""
+
+#: static/index.html
+msgid "origin"
+msgstr ""
+
+#: static/index.html
+msgid "outcome"
+msgstr ""
+
+#: static/index.html
+msgid "pause"
+msgstr ""
+
+#: static/index.html
+msgid "payload"
+msgstr ""
+
+#: static/index.html
+msgid "precedence: CLI > environment > kdx.local.yml > kdx.yml > defaults; secrets are masked"
+msgstr ""
+
+#: static/index.html
+msgid "reloaded: nothing changed"
+msgstr ""
+
+#: static/index.html
+msgid "running"
+msgstr ""
+
+#: static/index.html
+msgid "runs"
+msgstr ""
+
+#: static/index.html
+msgid "show routine (tick, heartbeat, tasks)"
+msgstr ""
+
+#: static/index.html
+msgid "source"
+msgstr ""
+
+#: static/index.html
+msgid "starting…"
+msgstr ""
+
+#: static/index.html
+msgid "state"
+msgstr ""
+
+#: static/index.html
+msgid "task"
+msgstr ""
+
+#: static/index.html
+msgid "terminal"
+msgstr ""
+
+#: static/index.html
+msgid "time"
+msgstr ""
+
+#: static/index.html
+msgid "token"
+msgstr ""
+
+#: static/index.html
+msgid "user"
+msgstr ""
+
+#: static/index.html
+msgid "value"
+msgstr ""
+
+#: static/index.html
+msgid "version"
+msgstr ""
+
+#: static/index.html
+msgid "who this token belongs to"
+msgstr ""

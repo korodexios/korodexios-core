@@ -12,7 +12,9 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
   Help text, tables, labels and messages are translated; command names, flags, `--json`,
   logs and stderr stay English. Catalogues: sk, cs, de, es, fr, pl (machine translations, not
   reviewed by native speakers). `docs/TRANSLATING.md` describes how a person or an agent adds
-  a language.
+  a language. The web console has a language selector (`/api/v1/ui/i18n`), `KDX_LOCALE` selects
+  the language, and `kdx init` projects read `.po` catalogues through the same service (no
+  `msgfmt` step).
 
 ## [0.4.0] - 2026-10-31
 

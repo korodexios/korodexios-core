@@ -28,7 +28,7 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
   ones are machine translations nobody native has reviewed), CLI `kdx locale
   show|list|set|check`. UI strings go through `context.translate()`; stderr diagnostics,
   logs and `--json` stay English. Modules/projects add a domain with
-  `context.i18n.register(domain, dir)`. New languages: `docs/TRANSLATING.md` (`kdx locale add|todo|apply`). Still open: web console switcher (`KDX_LOCALE` now maps to `core.locale`).
+  `context.i18n.register(domain, dir)`. New languages: `docs/TRANSLATING.md` (`kdx locale add|todo|apply`). Web console: domain `korodexios-web` (`modules/web_console/locales/`), route `/api/v1/ui/i18n`, language selector in the top bar; dynamic JS texts with values stay English. `KDX_LOCALE` maps to `core.locale`; seeded `i18n.py` uses the service.
 
 - **i18n workflow.** Rendering helpers (`print_section`, key labels, table headers,
   static `write_line`/`write_status`, command/argument `help=`) are translated centrally

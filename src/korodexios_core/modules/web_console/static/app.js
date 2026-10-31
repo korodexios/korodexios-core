@@ -21,6 +21,55 @@
     return (ROLE_RANK[mine] ?? -1) >= (ROLE_RANK[role] ?? 99);
   }
 
+  // ---- language ------------------------------------------------------------
+  // The page's texts live in the daemon's catalogues (domain korodexios-web); the
+  // original English of each static element is kept in data-en so a switch always
+  // translates from the source, never from an earlier translation.
+
+  const LOCALE_KEY = "kdx-console-locale";
+  const LANGUAGE_NAMES = { en: "English", sk: "Slovenčina", cs: "Čeština", de: "Deutsch", es: "Español", fr: "Français", pl: "Polski" };
+  const i18n = { locale: "en", messages: {} };
+  const KEEP_AS_IS = new Set(["state-pill", "events-state", "toast", "app-name", "app-version"]);
+
+  function t(text) {
+    const key = String(text);
+    return Object.prototype.hasOwnProperty.call(i18n.messages, key) ? i18n.messages[key] : key;
+  }
+
+  function squash(text) { return text.replace(/\s+/g, " ").trim(); }
+
+  function markStatic() {
+    document.querySelectorAll("body *").forEach((node) => {
+      if (KEEP_AS_IS.has(node.id) || ["SCRIPT", "STYLE", "OPTION", "CODE", "PRE"].includes(node.tagName)) return;
+      if (node.children.length === 0 && node.childNodes.length === 1 && node.firstChild.nodeType === 3) {
+        const text = squash(node.textContent);
+        if (text) node.dataset.en = text;
+      }
+      ["placeholder", "title", "aria-label"].forEach((attr) => {
+        if (node.hasAttribute(attr)) node.dataset["en" + attr.replace(/(^|-)([a-z])/g, (m, d, c) => c.toUpperCase())] = node.getAttribute(attr);
+      });
+    });
+  }
+
+  function applyStatic() {
+    document.documentElement.lang = i18n.locale;
+    document.querySelectorAll("[data-en]").forEach((node) => { node.textContent = t(node.dataset.en); });
+    [["placeholder", "enPlaceholder"], ["title", "enTitle"], ["aria-label", "enAriaLabel"]].forEach(([attr, key]) => {
+      document.querySelectorAll("*").forEach((node) => { if (node.dataset && node.dataset[key]) node.setAttribute(attr, t(node.dataset[key])); });
+    });
+  }
+
+  async function loadI18n(requested) {
+    const query = requested ? `?locale=${encodeURIComponent(requested)}` : "";
+    const { payload } = await api(`/api/v1/ui/i18n${query}`);
+    i18n.locale = payload.locale || "en";
+    i18n.messages = payload.messages || {};
+    const select = $("lang");
+    select.replaceChildren(...(payload.locales || ["en"]).map((code) => el("option", { value: code, text: LANGUAGE_NAMES[code] || code })));
+    select.value = i18n.locale;
+    applyStatic();
+  }
+
   // ---- small helpers -------------------------------------------------------
 
   const $ = (id) => document.getElementById(id);
@@ -28,7 +77,7 @@
   function el(tag, props, children) {
     const node = document.createElement(tag);
     Object.entries(props || {}).forEach(([key, value]) => {
-      if (key === "text") node.textContent = value == null ? "" : String(value);
+      if (key === "text") node.textContent = value == null ? "" : t(value);
       else if (key === "class") node.className = value;
       else if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
       else if (value !== undefined && value !== null && value !== false) node.setAttribute(key, value === true ? "" : value);
@@ -39,7 +88,7 @@
 
   function toast(message, isError) {
     const box = $("toast");
-    box.textContent = message;
+    box.textContent = t(message);
     box.className = isError ? "toast error" : "toast";
     box.hidden = false;
     clearTimeout(toast.timer);
@@ -145,7 +194,7 @@
   }
 
   function setOffline() {
-    $("state-pill").textContent = "offline";
+    $("state-pill").textContent = t("offline");
     $("state-pill").className = "pill bad";
     $("uptime").textContent = "";
   }
@@ -630,8 +679,19 @@
     });
   });
 
+  $("lang").addEventListener("change", () => {
+    const code = $("lang").value;
+    try { localStorage.setItem(LOCALE_KEY, code); } catch (e) { /* private mode */ }
+    guarded(() => loadI18n(code));
+  });
+
+  function savedLocale() {
+    try { return localStorage.getItem(LOCALE_KEY) || ""; } catch (e) { return ""; }
+  }
+
   function refreshAll() {
     guarded(async () => {
+      await loadI18n(savedLocale());
       await loadMe();
       await loadStatus();
       await loadCatalog();
@@ -642,6 +702,7 @@
     });
   }
 
+  markStatic();
   state.token = readToken();
   if (!state.token) showGate("");
   refreshAll();

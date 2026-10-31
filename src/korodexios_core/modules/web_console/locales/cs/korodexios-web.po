@@ -1,0 +1,210 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Audit"
+msgstr "Audit"
+
+msgid "Cancel"
+msgstr "Zrušit"
+
+msgid "Commands"
+msgstr "Příkazy"
+
+msgid "Config"
+msgstr "Konfigurace"
+
+msgid "Connect"
+msgstr "Připojit"
+
+msgid "Diagnostics"
+msgstr "Diagnostika"
+
+msgid "Events"
+msgstr "Události"
+
+msgid "Language"
+msgstr "Jazyk"
+
+msgid "Logs"
+msgstr "Logy"
+
+msgid "Modules"
+msgstr "Moduly"
+
+msgid "No records yet."
+msgstr "Zatím žádné záznamy."
+
+msgid "Overview"
+msgstr "Přehled"
+
+msgid "Pick a command on the left. Every module command appears here automatically, with a form built from its declared arguments."
+msgstr "Vyberte příkaz vlevo. Každý příkaz modulu se zde objeví automaticky s formulářem sestaveným z jeho argumentů."
+
+msgid "Re-read configuration (kdx reload)"
+msgstr "Znovu načíst konfiguraci (kdx reload)"
+
+msgid "Refresh"
+msgstr "Obnovit"
+
+msgid "Refresh everything"
+msgstr "Obnovit vše"
+
+msgid "Reload config"
+msgstr "Načíst konfiguraci"
+
+msgid "Run"
+msgstr "Spustit"
+
+msgid "Scheduled tasks"
+msgstr "Plánované úlohy"
+
+msgid "Session token needed"
+msgstr "Je třeba token relace"
+
+msgid "Stop daemon"
+msgstr "Zastavit démona"
+
+msgid "Stop the daemon (exit 0)"
+msgstr "Zastavit démona (exit 0)"
+
+msgid "action"
+msgstr "akce"
+
+msgid "changes"
+msgstr "mění"
+
+msgid "command"
+msgstr "příkaz"
+
+msgid "commands"
+msgstr "příkazy"
+
+msgid "connecting…"
+msgstr "připojování…"
+
+msgid "daemon is stopping"
+msgstr "démon se zastavuje"
+
+msgid "description"
+msgstr "popis"
+
+msgid "event"
+msgstr "událost"
+
+msgid "failures"
+msgstr "selhání"
+
+msgid "filter"
+msgstr "filtr"
+
+msgid "filter audit"
+msgstr "filtrovat audit"
+
+msgid "filter by user, action, command"
+msgstr "filtrovat podle uživatele, akce, příkazu"
+
+msgid "filter commands"
+msgstr "filtrovat příkazy"
+
+msgid "filter events"
+msgstr "filtrovat události"
+
+msgid "filter keys"
+msgstr "filtrovat klíče"
+
+msgid "filter keys, e.g. core.ipc."
+msgstr "filtrovat klíče, např. core.ipc."
+
+msgid "filter log lines"
+msgstr "filtrovat řádky logu"
+
+msgid "follow"
+msgstr "sledovat"
+
+msgid "from"
+msgstr "odkud"
+
+msgid "interval"
+msgstr "interval"
+
+msgid "key"
+msgstr "klíč"
+
+msgid "last error"
+msgstr "poslední chyba"
+
+msgid "lines"
+msgstr "řádky"
+
+msgid "module"
+msgstr "modul"
+
+msgid "name"
+msgstr "název"
+
+msgid "no module commands"
+msgstr "žádné příkazy modulů"
+
+msgid "offline"
+msgstr "offline"
+
+msgid "origin"
+msgstr "původ"
+
+msgid "outcome"
+msgstr "výsledek"
+
+msgid "pause"
+msgstr "pozastavit"
+
+msgid "payload"
+msgstr "data"
+
+msgid "precedence: CLI > environment > kdx.local.yml > kdx.yml > defaults; secrets are masked"
+msgstr "pořadí: CLI > prostředí > kdx.local.yml > kdx.yml > výchozí; tajné hodnoty jsou zamaskované"
+
+msgid "reloaded: nothing changed"
+msgstr "načteno znovu: nic se nezměnilo"
+
+msgid "running"
+msgstr "běží"
+
+msgid "runs"
+msgstr "běhy"
+
+msgid "show routine (tick, heartbeat, tasks)"
+msgstr "zobrazit rutinní (tick, heartbeat, úlohy)"
+
+msgid "source"
+msgstr "zdroj"
+
+msgid "starting…"
+msgstr "spouští se…"
+
+msgid "state"
+msgstr "stav"
+
+msgid "task"
+msgstr "úloha"
+
+msgid "terminal"
+msgstr "terminál"
+
+msgid "time"
+msgstr "čas"
+
+msgid "token"
+msgstr "token"
+
+msgid "user"
+msgstr "uživatel"
+
+msgid "value"
+msgstr "hodnota"
+
+msgid "version"
+msgstr "verze"
+
+msgid "who this token belongs to"
+msgstr "komu patří tento token"

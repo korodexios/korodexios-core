@@ -20,6 +20,7 @@ from korodexios_core.modules.web_console.module import (
     CATALOG_PATH,
     CONFIG_PATH,
     EVENTS_PATH,
+    I18N_PATH,
     LOGS_PATH,
     STATIC_DIR,
     WebConsoleModule,
@@ -256,3 +257,37 @@ def test_events_route_streams_over_http(project_root) -> None:
                 seen += response.readline()
     finally:
         chassis.shutdown()
+
+
+def test_i18n_route_translates_the_page(project_root) -> None:
+    chassis = ipc_chassis(project_root)
+    chassis.initialize()
+    try:
+        console = console_of(chassis)
+        english = console._i18n_route(request_for(I18N_PATH))
+        assert english["locale"] == "en"
+        assert english["messages"]["Overview"] == "Overview"
+        assert {"cs", "de", "en", "es", "fr", "pl", "sk"} <= set(english["locales"])
+        slovak = console._i18n_route(request_for(I18N_PATH, locale="sk"))
+        assert slovak["locale"] == "sk"
+        assert slovak["messages"]["Overview"] == "Prehľad"
+        assert console._i18n_route(request_for(I18N_PATH, locale="xx"))["messages"]["Run"] == "Run"
+    finally:
+        chassis.shutdown()
+
+
+def test_every_static_text_of_the_page_has_a_message() -> None:
+    """A text added to index.html without a catalogue entry would stay English."""
+    import re
+
+    from korodexios_core.kernel.i18n import parse_po
+    from korodexios_core.modules.web_console.module import WEB_LOCALES_DIR
+
+    known = {e.msgid for e in parse_po((WEB_LOCALES_DIR / "korodexios-web.pot").read_text("utf-8"))}
+    page = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    for match in re.finditer(r'(?:placeholder|aria-label)="([^"]+)"', page):
+        assert match.group(1) in known, match.group(1)
+    for locale in ("sk", "cs", "de", "es", "fr", "pl"):
+        text = (WEB_LOCALES_DIR / locale / "korodexios-web.po").read_text("utf-8")
+        done = {e.msgid for e in parse_po(text) if e.translated}
+        assert known <= done, (locale, sorted(known - done))
