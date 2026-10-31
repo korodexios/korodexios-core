@@ -10,7 +10,7 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - **Language service (phase 36)**: `kdx locale show|list|set|check|extract|add|todo|apply`,
   `--locale`, config key `core.locale`, `.po` catalogues read directly (no compile step).
   Help text, tables, labels and messages are translated; command names, flags, `--json`,
-  logs and stderr stay English. Catalogues: sk, cs, de, es, fr (machine translations, not
+  logs and stderr stay English. Catalogues: sk, cs, de, es, fr, pl (machine translations, not
   reviewed by native speakers). `docs/TRANSLATING.md` describes how a person or an agent adds
   a language.
 

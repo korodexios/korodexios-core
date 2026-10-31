@@ -24,7 +24,7 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 - **i18n (phase 36, branch `feature/i18n-service`, committed locally, not pushed).** The core has a
   language service: `kernel/i18n.py` (stdlib only, reads `.po` directly, no compile step),
   config key `core.locale` (`--locale`, `KDX_CORE__LOCALE`, `kdx.local.yml`), catalogues in
-  `src/korodexios_core/locales/` (`korodexios.pot`; sk, cs, de, es, fr - the non-Slovak
+  `src/korodexios_core/locales/` (`korodexios.pot`; sk, cs, de, es, fr, pl - the non-Slovak
   ones are machine translations nobody native has reviewed), CLI `kdx locale
   show|list|set|check`. UI strings go through `context.translate()`; stderr diagnostics,
   logs and `--json` stay English. Modules/projects add a domain with

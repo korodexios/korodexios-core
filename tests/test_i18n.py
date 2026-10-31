@@ -165,7 +165,7 @@ def test_the_chassis_ships_a_complete_slovak_catalogue() -> None:
     service = build_i18n("sk")
     assert CORE_DOMAIN in service.domains()
     assert service.domains()[CORE_DOMAIN] == core_locales_dir()
-    assert {"cs", "de", "en", "es", "fr", "sk"} <= set(service.locales(CORE_DOMAIN))
+    assert {"cs", "de", "en", "es", "fr", "pl", "sk"} <= set(service.locales(CORE_DOMAIN))
     for report in service.check(CORE_DOMAIN):
         assert report.complete, report.as_dict()
     assert service.translate("every catalogue is complete") == "každý katalóg je úplný"
@@ -187,9 +187,9 @@ def test_locale_show_and_list(capsys, project_root: Path) -> None:
     assert code == 0 and "jazyk" in out and "command line" in out
 
     code, out = run(project_root, capsys, "locale", "list")
-    assert code == 0 and "korodexios" in out and "cs, de, en, es, fr, sk" in out
+    assert code == 0 and "korodexios" in out and "cs, de, en, es, fr, pl, sk" in out
     code, out = run(project_root, capsys, "locale", "list", "--json")
-    assert json.loads(out)["domains"]["korodexios"] == ["cs", "de", "en", "es", "fr", "sk"]
+    assert json.loads(out)["domains"]["korodexios"] == ["cs", "de", "en", "es", "fr", "pl", "sk"]
 
 
 def test_locale_set_writes_the_local_file_and_wins_over_the_default(
@@ -494,7 +494,7 @@ def test_stderr_is_never_translated(capsys) -> None:
     assert captured.out.strip() == "[i] nič sa nezapísalo"
 
 
-@pytest.mark.parametrize("locale", ["cs", "de", "es", "fr", "sk"])
+@pytest.mark.parametrize("locale", ["cs", "de", "es", "fr", "pl", "sk"])
 def test_every_shipped_language_translates_the_ui(locale: str) -> None:
     service = build_i18n(locale)
     assert service.translate("every catalogue is complete") != "every catalogue is complete"

@@ -527,7 +527,7 @@ from opening a browser with `modules.web_console.open_browser: false`.
 ## Languages (`kdx locale`)
 
 Help text and messages follow `core.locale` (`--locale sk`, `KDX_CORE__LOCALE`, `kdx.local.yml`,
-`kdx.yml`; `auto` reads `LC_ALL`/`LANG`). Shipped: en, sk, cs, de, es, fr. Command names, flags,
+`kdx.yml`; `auto` reads `LC_ALL`/`LANG`). Shipped: en, sk, cs, de, es, fr, pl. Command names, flags,
 `--json`, logs and stderr stay English.
 
 | Command | Effect |
