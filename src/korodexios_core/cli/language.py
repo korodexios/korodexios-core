@@ -8,6 +8,7 @@ follows the usual precedence: ``--locale sk``, ``KDX_CORE__LOCALE``, ``kdx.local
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
@@ -23,8 +24,15 @@ from ..kernel.i18n import (
     CatalogReport,
     I18n,
     normalize_locale,
+    parse_po,
 )
-from ..kernel.i18n_extract import merge_po, render_pot, scan_tree, stale_entries
+from ..kernel.i18n_extract import (
+    compose_po,
+    new_po,
+    render_pot,
+    scan_tree,
+    todo_items,
+)
 from .render import dump_json, print_key_values, print_table, write_line
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -33,6 +41,7 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 LOCAL_FILE_NAME = "kdx.local.yml"
 JSON_ARG = CliArgument(("--json",), dest="as_json", action="store_true", help="Emit JSON.")
 DOMAIN_ARG = CliArgument(("--domain",), metavar="DOMAIN", help="Only this message domain.")
+LOCALE_ARG = CliArgument(("locale",), metavar="LOCALE", help="Language code, such as de or pt_BR.")
 
 
 def locale_command() -> CliCommand:
@@ -84,6 +93,42 @@ def locale_command() -> CliCommand:
                 ),
             ),
             CliCommand(
+                name="add",
+                help="Start a new language: an empty catalogue built from the template.",
+                handler=_add,
+                group="core",
+                remote=False,
+                args=(LOCALE_ARG, DOMAIN_ARG),
+            ),
+            CliCommand(
+                name="todo",
+                help="List the strings a language still needs, for a translator or an agent.",
+                handler=_todo,
+                group="core",
+                args=(
+                    LOCALE_ARG,
+                    DOMAIN_ARG,
+                    CliArgument(("--limit",), type="int", metavar="N",
+                                help="Only the first N strings [all]."),
+                    JSON_ARG,
+                ),
+            ),
+            CliCommand(
+                name="apply",
+                help="Merge translations from a JSON file {source: translation}, checked.",
+                handler=_apply,
+                group="core",
+                remote=False,
+                args=(
+                    LOCALE_ARG,
+                    CliArgument(("file",), metavar="FILE", type="path",
+                                help="JSON object mapping each source string to its translation."),
+                    DOMAIN_ARG,
+                    CliArgument(("--dry-run",), dest="dry_run", action="store_true",
+                                help="Check the file and report; write nothing."),
+                ),
+            ),
+            CliCommand(
                 name="check",
                 help="Compare catalogues with their templates; exit 3 when one is incomplete.",
                 handler=_check,
@@ -107,6 +152,8 @@ def _chassis(request: CliRequest) -> Chassis:
 
 
 def _service(request: CliRequest) -> I18n:
+    """Return the language service after modules had the chance to register their domains."""
+    _chassis(request).ensure_initialized()
     return request.context.i18n
 
 
@@ -305,13 +352,130 @@ def _extract(request: CliRequest) -> int:
         catalog = service.catalog(domain, locale)
         if catalog is None or catalog.path is None:
             continue
-        text, added = merge_po(catalog.path.read_text(encoding="utf-8"), messages)
-        if added:
+        before = catalog.path.read_text(encoding="utf-8")
+        text, _, _ = compose_po(domain, locale, wanted, before, {})
+        if text != before:
             catalog.path.write_text(text, encoding="utf-8")
-        stale = len(stale_entries(text, messages))
+        had = {entry.msgid for entry in parse_po(before)}
+        added = len(messages.keys() - had)
+        stale = len(had - messages.keys())
         write_line(
             f"{TAG_NOTE} "
             + _t(request, "{locale}: {added} new, {stale} obsolete", locale=locale,
                  added=added, stale=stale)
         )
     return int(ExitCode.SUCCESS)
+
+
+def _target(request: CliRequest) -> tuple[str, str, Path] | int:
+    """Return (domain, locale, catalogue path) or an exit code after saying what is wrong."""
+    service = _service(request)
+    domain = str(request.option("domain", CORE_DOMAIN))
+    directory = service.domains().get(domain)
+    locale = normalize_locale(str(request.option("locale", "")))
+    if directory is None:
+        known = ", ".join(sorted(service.domains()))
+        message = _t(request, "no message domain named {name}; known: {known}",
+                     name=repr(domain), known=known)
+        write_line(f"{TAG_ERROR} {message}")
+        return int(ExitCode.USAGE_ERROR)
+    if not locale or locale == DEFAULT_LOCALE:
+        write_line(f"{TAG_ERROR} " + _t(request, "{value} is not a language to translate into",
+                                        value=repr(str(request.option("locale", "")))))
+        return int(ExitCode.USAGE_ERROR)
+    return domain, locale, directory / locale / f"{domain}.po"
+
+
+def _template(request: CliRequest, domain: str) -> str | None:
+    path = _service(request).domains()[domain] / f"{domain}.pot"
+    if path.is_file():
+        return path.read_text(encoding="utf-8")
+    write_line(f"{TAG_ERROR} " + _t(request, "{path} does not exist; run kdx locale extract",
+                                    path=path))
+    return None
+
+
+def _add(request: CliRequest) -> int:
+    target = _target(request)
+    if isinstance(target, int):
+        return target
+    domain, locale, path = target
+    if path.exists():
+        write_line(f"{TAG_ERROR} " + _t(request, "{path} already exists", path=path))
+        return int(ExitCode.USAGE_ERROR)
+    template = _template(request, domain)
+    if template is None:
+        return int(ExitCode.CONFIG_ERROR)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(new_po(domain, locale, template), encoding="utf-8")
+    write_line(f"{TAG_OK} " + _t(request, "{path} created", path=path))
+    write_line(f"{TAG_NOTE} " + _t(request, "next: kdx locale todo {locale} --json", locale=locale))
+    return int(ExitCode.SUCCESS)
+
+
+def _todo(request: CliRequest) -> int:
+    target = _target(request)
+    if isinstance(target, int):
+        return target
+    domain, locale, path = target
+    template = _template(request, domain)
+    if template is None:
+        return int(ExitCode.CONFIG_ERROR)
+    if not path.is_file():
+        message = _t(request, "no catalogue for {locale}; run kdx locale add {locale}",
+                     locale=locale)
+        write_line(f"{TAG_ERROR} {message}")
+        return int(ExitCode.USAGE_ERROR)
+    items = todo_items(template, path.read_text(encoding="utf-8"))
+    limit = request.option("limit", 0)
+    shown = items[: int(limit)] if limit else items
+    if request.flag("as_json"):
+        dump_json({
+            "domain": domain, "locale": locale, "remaining": len(items),
+            "rules": [
+                "Translate msgid into the target language; keep every {placeholder} unchanged.",
+                "Do not translate command names, flags, paths, config keys, or code.",
+                "Reply with a JSON object {msgid: translation} and pass it to kdx locale apply.",
+            ],
+            "items": [item.as_dict() for item in shown],
+        })
+        return int(ExitCode.SUCCESS)
+    print_table(
+        [[item.msgid, ", ".join(item.placeholders) or "-"] for item in shown],
+        headers=("source", "placeholders"),
+    )
+    write_line(f"{TAG_NOTE} " + _t(request, "{count} string(s) left for {locale}",
+                                  count=len(items), locale=locale))
+    return int(ExitCode.SUCCESS)
+
+
+def _apply(request: CliRequest) -> int:
+    target = _target(request)
+    if isinstance(target, int):
+        return target
+    domain, locale, path = target
+    template = _template(request, domain)
+    if template is None:
+        return int(ExitCode.CONFIG_ERROR)
+    source = Path(str(request.option("file", "")))
+    try:
+        raw = json.loads(source.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, ValueError) as exc:
+        write_line(f"{TAG_ERROR} " + _t(request, "{path} cannot be read as JSON: {reason}",
+                                        path=source, reason=exc))
+        return int(ExitCode.USAGE_ERROR)
+    if not isinstance(raw, dict):
+        write_line(f"{TAG_ERROR} " + _t(request, "{path} must hold a JSON object", path=source))
+        return int(ExitCode.USAGE_ERROR)
+    current = path.read_text(encoding="utf-8") if path.is_file() else ""
+    text, applied, rejected = compose_po(
+        domain, locale, template, current, {str(k): str(v) for k, v in raw.items()}
+    )
+    if not request.flag("dry_run") and applied:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+    write_line(f"{TAG_OK} " + _t(request, "{count} translation(s) accepted for {locale}",
+                                 count=len(applied), locale=locale))
+    for msgid, reason in rejected.items():
+        write_line(f"{TAG_ERROR} {msgid!r}: {reason}")
+    return int(ExitCode.CONFIG_ERROR if rejected else ExitCode.SUCCESS)

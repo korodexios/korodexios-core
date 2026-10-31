@@ -21,12 +21,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
-from .i18n import PoEntry, parse_po
+from .i18n import parse_po, placeholders
 
 FIXED_WORDS: Final[tuple[str, ...]] = ("yes", "no", "(empty)")
 """Words the renderer prints by itself for booleans and empty collections."""
 
-_TRANSLATE_CALLS: Final[frozenset[str]] = frozenset({"translate", "_t"})
+_TRANSLATE_CALLS: Final[frozenset[str]] = frozenset({"translate", "_t", "tr"})
 _MESSAGE_CALLS: Final[frozenset[str]] = frozenset({"write_line", "write_status"})
 _HELP_OWNERS: Final[frozenset[str]] = frozenset({"CliCommand", "CliArgument"})
 
@@ -110,7 +110,7 @@ def scan_source(source: str, label: str) -> list[Found]:
 
 
 def scan_tree(root: Path, extra: Iterable[str] = FIXED_WORDS) -> dict[str, str]:
-    """Return {message: first place seen} for every ``.py`` file below *root*."""
+    """Return {message: first file seen in} for every ``.py`` file below *root*."""
     messages: dict[str, str] = {}
     for path in sorted(root.rglob("*.py")):
         if "__pycache__" in path.parts:
@@ -121,7 +121,7 @@ def scan_tree(root: Path, extra: Iterable[str] = FIXED_WORDS) -> dict[str, str]:
         except (OSError, UnicodeDecodeError, SyntaxError):
             continue
         for item in found:
-            messages.setdefault(item.message, item.where)
+            messages.setdefault(item.message, label)  # file only: a moved line is no diff
     for word in extra:
         messages.setdefault(word, "renderer")
     return messages
@@ -147,18 +147,106 @@ def render_pot(domain: str, messages: dict[str, str]) -> str:
     return "\n".join(lines)
 
 
-def merge_po(existing: str, messages: dict[str, str]) -> tuple[str, int]:
-    """Append the *messages* a translation lacks, with an empty msgstr; return (text, added)."""
-    known = {entry.msgid for entry in parse_po(existing)}
-    missing = [message for message in sorted(messages) if message not in known]
-    if not missing:
-        return existing, 0
-    lines = [existing.rstrip("\n"), ""]
-    for message in missing:
-        lines += [f"#: {messages[message]}", f"msgid {_quote(message)}", 'msgstr ""', ""]
-    return "\n".join(lines), len(missing)
+@dataclass(frozen=True, slots=True)
+class TodoItem:
+    """One string a translator still has to handle."""
+
+    msgid: str
+    where: str
+    placeholders: tuple[str, ...]
+    current: str
+    fuzzy: bool
+
+    def as_dict(self) -> dict[str, object]:
+        """Return a JSON-friendly view."""
+        return {
+            "msgid": self.msgid,
+            "where": self.where,
+            "placeholders": list(self.placeholders),
+            "current": self.current,
+            "fuzzy": self.fuzzy,
+        }
 
 
-def stale_entries(po_text: str, messages: dict[str, str]) -> list[PoEntry]:
-    """Return the entries of a translation whose source string no longer exists."""
-    return [entry for entry in parse_po(po_text) if entry.msgid not in messages]
+def new_po(domain: str, locale: str, template: str) -> str:
+    """Return an empty translation of *domain* for *locale*, built from the *template*."""
+    lines = template.splitlines()
+    header = '"Content-Type: text/plain; charset=UTF-8\n"'
+    out: list[str] = []
+    for line in lines:
+        if line.startswith("# Translatable strings"):
+            line = f"# Translation of the {domain} domain into {locale}."
+        elif line.startswith("# Copy to"):
+            continue
+        elif line == header:
+            out.append(f'"Language: {locale}\n"')
+        out.append(line)
+    return "\n".join(out).rstrip("\n") + "\n"
+
+
+def todo_items(template: str, translation: str) -> list[TodoItem]:
+    """Return the template strings *translation* has not translated (or left fuzzy)."""
+    have = {entry.msgid: entry for entry in parse_po(translation)}
+    items: list[TodoItem] = []
+    for entry in parse_po(template):
+        done = have.get(entry.msgid)
+        if done is not None and done.translated:
+            continue
+        items.append(
+            TodoItem(
+                msgid=entry.msgid,
+                where=entry.where,
+                placeholders=tuple(sorted(placeholders(entry.msgid))),
+                current=done.msgstr if done is not None else "",
+                fuzzy=bool(done and done.fuzzy),
+            )
+        )
+    return items
+
+
+def compose_po(
+    domain: str,
+    locale: str,
+    template: str,
+    translation: str,
+    updates: dict[str, str],
+) -> tuple[str, dict[str, str], dict[str, str]]:
+    """Return (new text, applied, rejected-with-reason) after merging *updates*.
+
+    The file is rebuilt in template order, so it never keeps an obsolete entry or a
+    stale location. An update is rejected when its string is not in the template, is
+    empty, or names different ``{fields}`` than its source.
+    """
+    wanted = {entry.msgid: entry for entry in parse_po(template)}
+    have = {entry.msgid: entry for entry in parse_po(translation)}
+    applied: dict[str, str] = {}
+    rejected: dict[str, str] = {}
+    for msgid, msgstr in updates.items():
+        if msgid not in wanted:
+            rejected[msgid] = "not in the template (run kdx locale extract)"
+        elif not str(msgstr).strip():
+            rejected[msgid] = "empty translation"
+        elif placeholders(str(msgstr)) != placeholders(msgid):
+            rejected[msgid] = "placeholders differ from the source"
+        else:
+            applied[msgid] = str(msgstr)
+    lines = [
+        f"# Translation of the {domain} domain into {locale}.",
+        'msgid ""',
+        'msgstr ""',
+        f'"Language: {locale}\n"',
+        '"Content-Type: text/plain; charset=UTF-8\n"',
+        "",
+    ]
+    for msgid, entry in wanted.items():
+        previous = have.get(msgid)
+        text = applied.get(msgid)
+        if text is None:
+            text = previous.msgstr if previous is not None else ""
+        stale = msgid not in applied and previous is not None and previous.fuzzy
+        flag = ["#, fuzzy"] if stale else []
+        lines += [
+            f"#: {entry.where}", *flag,
+            f"msgid {_quote(msgid)}", f"msgstr {_quote(text)}", "",
+        ]
+    return "\n".join(lines), applied, rejected

@@ -12,10 +12,10 @@ from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, tags_for
 _TAGS = frozenset({TAG_ERROR, TAG_NOTE, TAG_OK, "[?]", "[!]", "[i]"})
 
 
-_translator: Callable[[str], str] | None = None
+_translator: Callable[..., str] | None = None
 
 
-def set_translator(translator: Callable[[str], str] | None) -> None:
+def set_translator(translator: Callable[..., str] | None) -> None:
     """Install (or, with None, remove) the function that translates fixed UI text.
 
     Only text the chassis wrote itself passes through it: section titles, key labels,
@@ -25,6 +25,19 @@ def set_translator(translator: Callable[[str], str] | None) -> None:
     """
     global _translator
     _translator = translator
+
+
+def tr(message: str, /, **fields: Any) -> str:
+    """Return *message* translated and filled with *fields*; the source text when untranslated.
+
+    Use it for a sentence with values in it: the sentence is the translatable unit and
+    the values stay out of the catalogue ('{count} string(s) left for {locale}').
+    """
+    if _translator is not None:
+        return _translator(message, **fields)
+    if not fields:
+        return message
+    return message.format(**{key: str(value) for key, value in fields.items()})
 
 
 def _tr(text: str) -> str:
@@ -56,7 +69,8 @@ def _ascii_tags(message: str, stream: Any) -> str:
 def write_line(message: str = "", *, stream: Any = None) -> None:
     """Write one line to stdout (the UI channel) unless *stream* says otherwise."""
     target = sys.stdout if stream is None else stream
-    print(_ascii_tags(_tr_message(message), target), file=target)
+    shown = _tr_message(message) if target is sys.stdout else message
+    print(_ascii_tags(shown, target), file=target)
 
 
 def write_status(message: str, *, tag: str = TAG_OK, stream: Any = None) -> None:

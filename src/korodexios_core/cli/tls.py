@@ -23,7 +23,7 @@ from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
 from ..kernel.chassis import TLS_CERT_NAME, TLS_DIR_NAME, TLS_KEY_NAME
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
 from ..paths import restrict_to_owner
-from .render import print_key_values, write_line
+from .render import print_key_values, tr, write_line
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from ..kernel.chassis import Chassis
@@ -133,7 +133,10 @@ def _init_command(request: CliRequest) -> int:
     tls_dir = Path(chassis.paths.state_dir) / TLS_DIR_NAME
     cert, key = tls_dir / TLS_CERT_NAME, tls_dir / TLS_KEY_NAME
     if cert.exists() and not request.flag("force"):
-        write_line(f"{TAG_NOTE} {cert} already exists; pass --force to replace it")
+        write_line(
+            f"{TAG_NOTE} "
+            + tr("{cert} already exists; pass --force to replace it", cert=cert)
+        )
         return int(ExitCode.SUCCESS)
     names = certificate_names(request.option("hosts") or ())
     openssl = find_openssl()
@@ -147,11 +150,11 @@ def _init_command(request: CliRequest) -> int:
     try:
         completed = subprocess.run(command, capture_output=True, text=True, timeout=60, check=False)
     except (OSError, subprocess.SubprocessError) as exc:
-        write_line(f"{TAG_ERROR} openssl could not run: {exc}")
+        write_line(f"{TAG_ERROR} " + tr("openssl could not run: {exc}", exc=exc))
         return int(ExitCode.ERROR)
     if completed.returncode != 0 or not cert.is_file() or not key.is_file():
         reason = completed.stderr.strip() or f"exit {completed.returncode}"
-        write_line(f"{TAG_ERROR} openssl failed: {reason}")
+        write_line(f"{TAG_ERROR} " + tr("openssl failed: {reason}", reason=reason))
         return int(ExitCode.ERROR)
     restrict_to_owner(key)
     print_key_values([("certificate", cert), ("key", key), ("covers", ", ".join(names))])

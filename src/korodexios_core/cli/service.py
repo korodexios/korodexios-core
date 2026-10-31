@@ -31,7 +31,7 @@ from xml.sax.saxutils import escape
 from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
 from ..kernel.ipc import DISCOVERY_NAME, SHUTDOWN_PATH, IpcDiscovery
-from .render import print_key_values, write_line
+from .render import print_key_values, tr, write_line
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from ..kernel.chassis import Chassis
@@ -344,11 +344,21 @@ def _install(request: CliRequest) -> int:
         try:
             completed = run(command)
         except (OSError, subprocess.SubprocessError) as exc:
-            write_line(f"{TAG_ERROR} {command[0]} could not run: {exc}")
+            write_line(
+                f"{TAG_ERROR} "
+                + tr("{program} could not run: {exc}", program=command[0], exc=exc)
+            )
             return int(ExitCode.ERROR)
         if completed.returncode != 0:
             reason = (completed.stderr or completed.stdout or "").strip()
-            write_line(f"{TAG_ERROR} {_shown(command)} failed: {reason or completed.returncode}")
+            write_line(
+                f"{TAG_ERROR} "
+                + tr(
+                    "{shown} failed: {value}",
+                    shown=_shown(command),
+                    value=reason or completed.returncode,
+                )
+            )
             return int(ExitCode.ERROR)
     print_key_values([("service", plan.name), ("definition", plan.definition_path)])
     write_line(f"{TAG_OK} the daemon starts at logon and is starting now")
@@ -379,7 +389,10 @@ def _uninstall(request: CliRequest) -> int:
         try:
             completed = run(command)
         except (OSError, subprocess.SubprocessError) as exc:
-            write_line(f"{TAG_ERROR} {command[0]} could not run: {exc}")
+            write_line(
+                f"{TAG_ERROR} "
+                + tr("{program} could not run: {exc}", program=command[0], exc=exc)
+            )
             return int(ExitCode.ERROR)
         if completed.returncode != 0:
             failures += 1
@@ -388,9 +401,15 @@ def _uninstall(request: CliRequest) -> int:
     if plan.definition_path.exists():
         plan.definition_path.unlink()
     if failures == len(plan.uninstall):
-        write_line(f"{TAG_NOTE} {plan.name} was not registered; nothing to remove")
+        write_line(
+            f"{TAG_NOTE} "
+            + tr("{name} was not registered; nothing to remove", name=plan.name)
+        )
         return int(ExitCode.SUCCESS)
-    write_line(f"{TAG_OK} {plan.name} removed; the daemon no longer starts at logon")
+    write_line(
+        f"{TAG_OK} "
+        + tr("{name} removed; the daemon no longer starts at logon", name=plan.name)
+    )
     return int(ExitCode.SUCCESS)
 
 

@@ -77,6 +77,7 @@ class PoEntry:
     msgstr: str
     fuzzy: bool = False
     line: int = 0
+    where: str = ""
 
     @property
     def translated(self) -> bool:
@@ -97,11 +98,13 @@ def parse_po(text: str) -> list[PoEntry]:
     fuzzy = False
     start = 0
     pending_fuzzy = False
+    pending_where = ""
+    where = ""
 
     def flush() -> None:
         nonlocal msgid, msgstr, fuzzy
         if msgid:
-            entries.append(PoEntry(msgid, msgstr, fuzzy, start))
+            entries.append(PoEntry(msgid, msgstr, fuzzy, start, where))
         msgid, msgstr, fuzzy = None, "", False
 
     for number, raw in enumerate(text.splitlines(), start=1):
@@ -111,11 +114,14 @@ def parse_po(text: str) -> list[PoEntry]:
         if line.startswith("#"):
             if line.startswith("#,") and "fuzzy" in line:
                 pending_fuzzy = True
+            elif line.startswith("#:"):
+                pending_where = line[2:].strip()
             continue
         if line.startswith("msgid "):
             flush()
             msgid, target, start = _unquote(line[6:]), "id", number
             fuzzy, pending_fuzzy = pending_fuzzy, False
+            where, pending_where = pending_where, ""
         elif line.startswith("msgstr "):
             msgstr, target = _unquote(line[7:]), "str"
         elif line.startswith('"'):
@@ -187,6 +193,11 @@ def _read_entries(path: Path) -> dict[str, PoEntry]:
     except (OSError, UnicodeDecodeError):
         return {}
     return {entry.msgid: entry for entry in parse_po(text)}
+
+
+def placeholders(text: str) -> frozenset[str]:
+    """Return the ``{field}`` names a message uses."""
+    return frozenset(_FIELD.findall(text))
 
 
 def _fields(text: str) -> frozenset[str]:
@@ -266,7 +277,7 @@ class I18n:
                         found.add(cleaned)
         return tuple(sorted(found))
 
-    def translate(self, message: str, *, domain: str = CORE_DOMAIN, **fields: object) -> str:
+    def translate(self, message: str, /, *, domain: str = CORE_DOMAIN, **fields: object) -> str:
         """Return *message* in the active locale, formatted with *fields*.
 
         A missing locale, catalogue, or entry yields the source string itself. A

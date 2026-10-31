@@ -316,15 +316,15 @@ def test_extraction_finds_ui_text_and_skips_names() -> None:
 
 
 def test_extract_check_merge_and_stale(tmp_path: Path, capsys, project_root: Path) -> None:
-    from korodexios_core.kernel.i18n_extract import merge_po, render_pot, stale_entries
+    from korodexios_core.kernel.i18n_extract import compose_po, render_pot
 
     messages = {"hello": "a.py:1", "new one": "a.py:2"}
     pot = render_pot("demo", messages)
     assert 'msgid "new one"' in pot
-    merged, added = merge_po(PO, messages)
-    assert added == 1 and 'msgid "new one"' in merged
-    assert merge_po(merged, messages) == (merged, 0)
-    assert [e.msgid for e in stale_entries(PO, {"hello": ""})] == ["bye {name}"]
+    merged, applied, rejected = compose_po("demo", "sk", pot, PO, {})
+    assert 'msgid "new one"' in merged and 'msgstr "ahoj"' in merged and not applied
+    assert "dovidenia" not in merged  # not in this template: dropped as obsolete
+    assert rejected == {}
 
     write_root(project_root)
     code, out = run(project_root, capsys, "locale", "extract", "--check")
@@ -369,3 +369,126 @@ def _demo(locales: Path, configured: str) -> I18n:
     service = I18n(configured)
     service.register("demo", locales)
     return service
+
+
+def _with_demo_domain(monkeypatch, tmp_path: Path) -> Path:
+    locales = tmp_path / "locales"
+    locales.mkdir()
+    (locales / "demo.pot").write_text(
+        POT + '\n#: a.py:3\nmsgid "n files in {path}"\nmsgstr ""\n', encoding="utf-8"
+    )
+    monkeypatch.setattr(
+        "korodexios_core.kernel.chassis.build_i18n",
+        lambda configured: _demo(locales, configured),
+    )
+    return locales
+
+
+def test_add_todo_and_apply_make_a_new_language(
+    monkeypatch, tmp_path: Path, capsys, project_root: Path
+) -> None:
+    locales = _with_demo_domain(monkeypatch, tmp_path)
+    write_root(project_root)
+    base = ("--domain", "demo")
+    code, _ = run(project_root, capsys, "locale", "todo", "de", *base)
+    assert code == int(ExitCode.USAGE_ERROR)  # no catalogue yet
+    code, out = run(project_root, capsys, "locale", "add", "de", *base)
+    assert code == 0 and (locales / "de" / "demo.po").is_file()
+    code, _ = run(project_root, capsys, "locale", "add", "de", *base)
+    assert code == int(ExitCode.USAGE_ERROR)  # already there
+    for bad in ("en", "???"):
+        code, _ = run(project_root, capsys, "locale", "add", bad, *base)
+        assert code == int(ExitCode.USAGE_ERROR)
+
+    code, out = run(project_root, capsys, "locale", "todo", "de", "--json", *base)
+    todo = json.loads(out)
+    assert code == 0 and todo["remaining"] == 3 and todo["rules"]
+    path_item = next(i for i in todo["items"] if i["msgid"] == "n files in {path}")
+    assert path_item["placeholders"] == ["path"] and path_item["where"] == "a.py:3"
+    code, out = run(project_root, capsys, "locale", "todo", "de", "--limit", "1", *base)
+    assert code == 0 and "3 " in out
+
+    answer = tmp_path / "de.json"
+    answer.write_text(
+        json.dumps({
+            "hello": "hallo",
+            "bye {name}": "tschüss {nom}",      # wrong placeholder
+            "n files in {path}": "{path}: n Dateien",
+            "unknown": "x",                     # not in the template
+            "": " ",
+        }),
+        encoding="utf-8",
+    )
+    code, out = run(project_root, capsys, "locale", "apply", "de", str(answer), "--dry-run", *base)
+    assert code == int(ExitCode.CONFIG_ERROR) and "placeholders differ" in out
+    assert "hallo" not in (locales / "de" / "demo.po").read_text(encoding="utf-8")
+    code, out = run(project_root, capsys, "locale", "apply", "de", str(answer), *base)
+    assert code == int(ExitCode.CONFIG_ERROR) and "not in the template" in out
+    written = (locales / "de" / "demo.po").read_text(encoding="utf-8")
+    assert 'msgstr "hallo"' in written and "tschüss" not in written
+
+    service = I18n("de")
+    service.register("demo", locales)
+    assert service.translate("hello", domain="demo") == "hallo"
+    code, out = run(project_root, capsys, "locale", "todo", "de", "--json", *base)
+    assert json.loads(out)["remaining"] == 1
+
+    answer.write_text(json.dumps({"bye {name}": "tschüss {name}"}), encoding="utf-8")
+    code, _ = run(project_root, capsys, "locale", "apply", "de", str(answer), *base)
+    assert code == 0
+    code, out = run(project_root, capsys, "locale", "todo", "de", *base)
+    assert "0 string(s) left" in out
+
+
+def test_apply_rejects_bad_input(monkeypatch, tmp_path: Path, capsys, project_root: Path) -> None:
+    _with_demo_domain(monkeypatch, tmp_path)
+    write_root(project_root)
+    base = ("--domain", "demo")
+    run(project_root, capsys, "locale", "add", "de", *base)
+    missing = tmp_path / "nope.json"
+    code, _ = run(project_root, capsys, "locale", "apply", "de", str(missing), *base)
+    assert code == int(ExitCode.USAGE_ERROR)
+    listing = tmp_path / "list.json"
+    listing.write_text("[1, 2]", encoding="utf-8")
+    code, _ = run(project_root, capsys, "locale", "apply", "de", str(listing), *base)
+    assert code == int(ExitCode.USAGE_ERROR)
+    code, _ = run(project_root, capsys, "locale", "apply", "de", str(listing), "--domain", "x")
+    assert code == int(ExitCode.USAGE_ERROR)
+
+
+def test_add_needs_a_template(monkeypatch, tmp_path: Path, capsys, project_root: Path) -> None:
+    locales = _with_demo_domain(monkeypatch, tmp_path)
+    (locales / "demo.pot").unlink()
+    write_root(project_root)
+    code, _ = run(project_root, capsys, "locale", "add", "de", "--domain", "demo")
+    assert code == int(ExitCode.CONFIG_ERROR)
+
+
+def test_tr_fills_fields_with_and_without_a_translator() -> None:
+    from korodexios_core.cli import render
+
+    assert render.tr("{n} file(s)", n=3) == "3 file(s)"
+    assert render.tr("plain") == "plain"
+    render.set_translator(build_i18n("sk").translate)
+    try:
+        assert render.tr("{count} string(s) left for {locale}", count=2, locale="de") == (
+            "pre de ostáva 2 textov"
+        )
+    finally:
+        render.set_translator(None)
+
+
+def test_stderr_is_never_translated(capsys) -> None:
+    import sys
+
+    from korodexios_core.cli import render
+
+    render.set_translator(build_i18n("sk").translate)
+    try:
+        render.write_line("[i] nothing written", stream=sys.stderr)
+        render.write_line("[i] nothing written")
+    finally:
+        render.set_translator(None)
+    captured = capsys.readouterr()
+    assert captured.err.strip() == "[i] nothing written"
+    assert captured.out.strip() == "[i] nič sa nezapísalo"

@@ -16,6 +16,7 @@ from ...cli.render import (
     dump_json,
     print_key_values,
     print_section,
+    tr,
     write_status,
 )
 from ...config.schema import ConfigField, ConfigKind, ConfigSchema
@@ -1109,7 +1110,12 @@ def _plan_command(request: CliRequest) -> int:
 def _report_progress(result: BackupResult, total: int) -> None:
     """Say how far a long copy has come; the terminal and a followed job both see it."""
     write_status(
-        f"{result.copied}/{total} file(s), {format_bytes(result.bytes_copied)} so far",
+        tr(
+            "{copied}/{total} file(s), {size} so far",
+            copied=result.copied,
+            total=total,
+            size=format_bytes(result.bytes_copied),
+        ),
         tag=TAG_NOTE,
     )
     sys.stdout.flush()
@@ -1149,8 +1155,11 @@ def _run_command(request: CliRequest) -> int:
     print_key_values(describe_result(result))
     if result.cancelled:
         write_status(
-            f"cancelled after {result.copied} file(s); the partial copy stays at "
-            f"{result.plan.target}",
+            tr(
+                "cancelled after {copied} file(s); the partial copy stays at {target}",
+                copied=result.copied,
+                target=result.plan.target,
+            ),
             tag=TAG_NOTE,
         )
         return int(ExitCode.ABORTED)
@@ -1210,7 +1219,10 @@ def _retention_command(request: CliRequest) -> int:
         )
     elif report.expired_now:
         write_status(
-            f"{report.expired_now} copy(ies) stand past the window; the next sweep removes them",
+            tr(
+                "{expired_now} copy(ies) stand past the window; the next sweep removes them",
+                expired_now=report.expired_now,
+            ),
             tag=TAG_NOTE,
         )
     else:

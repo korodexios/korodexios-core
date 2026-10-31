@@ -47,7 +47,7 @@ class CoreContext:
     scheduler: TaskScheduler | None = None
     i18n: I18n = field(default_factory=I18n)
 
-    def translate(self, message: str, *, domain: str = CORE_DOMAIN, **fields: Any) -> str:
+    def translate(self, message: str, /, *, domain: str = CORE_DOMAIN, **fields: Any) -> str:
         """Return *message* in the active locale; the source string when untranslated."""
         return self.i18n.translate(message, domain=domain, **fields)
 

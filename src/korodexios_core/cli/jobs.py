@@ -16,7 +16,7 @@ from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
 from ..events.bus import matches
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
 from ..kernel.ipc import JOBS_PATH, SHUTDOWN_PATH, IpcDiscovery
-from .render import dump_json, print_table, write_line
+from .render import dump_json, print_table, tr, write_line
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from ..kernel.chassis import Chassis
@@ -118,7 +118,7 @@ def connect(request: CliRequest) -> IpcDiscovery | None:
     discovery, path = _client_discovery(request, chassis)
     if discovery is None or (not request.option("target") and not discovery.is_process_alive()):
         write_line(f"{TAG_NOTE} no daemon is answering; start one with 'kdx run'")
-        write_line(f"{TAG_NOTE} looked for {path}")
+        write_line(f"{TAG_NOTE} " + tr("looked for {path}", path=path))
         return None
     return discovery
 
@@ -129,7 +129,14 @@ def _call(
     try:
         return discovery.request(route, method=method, payload=payload, timeout=10)
     except OSError as exc:
-        write_line(f"{TAG_ERROR} no control plane answering at {discovery.base_url()}: {exc}")
+        write_line(
+            f"{TAG_ERROR} "
+            + tr(
+                "no control plane answering at {base_url}: {exc}",
+                base_url=discovery.base_url(),
+                exc=exc,
+            )
+        )
         return None
 
 
@@ -215,13 +222,24 @@ def _show(request: CliRequest) -> int:
     if request.flag("as_json"):
         dump_json(job)
         return 0
-    write_line(f"{job['id']}  {job['state']}  {job['command']}  "
-               f"(by {job.get('user') or 'the daemon'}, {job['seconds']}s)")
+    write_line(
+        tr(
+            "{id}  {state}  {command}  (by {value}, {seconds}s)",
+            id=job['id'],
+            state=job['state'],
+            command=job['command'],
+            value=job.get('user') or 'the daemon',
+            seconds=job['seconds'],
+        )
+    )
     output = str(job.get("output") or "").rstrip("\n")
     if output:
         write_line(output)
     if job["state"] in ("running", "cancelling"):
-        write_line(f"{TAG_NOTE} still running; follow it with: kdx jobs show {job_id} --follow")
+        write_line(
+            f"{TAG_NOTE} "
+            + tr("still running; follow it with: kdx jobs show {job_id} --follow", job_id=job_id)
+        )
     return 0
 
 
@@ -240,10 +258,19 @@ def _cancel(request: CliRequest) -> int:
         dump_json(job)
         return 0
     if job["state"] == "cancelling":
-        write_line(f"{TAG_OK} asked {job_id} to stop; it ends at its next safe point")
-        write_line(f"{TAG_NOTE} watch it with: kdx jobs show {job_id} --follow")
+        write_line(
+            f"{TAG_OK} "
+            + tr("asked {job_id} to stop; it ends at its next safe point", job_id=job_id)
+        )
+        write_line(
+            f"{TAG_NOTE} "
+            + tr("watch it with: kdx jobs show {job_id} --follow", job_id=job_id)
+        )
     else:
-        write_line(f"{TAG_NOTE} {job_id} is already {job['state']}; nothing to stop")
+        write_line(
+            f"{TAG_NOTE} "
+            + tr("{job_id} is already {state}; nothing to stop", job_id=job_id, state=job['state'])
+        )
     return 0
 
 
@@ -257,7 +284,10 @@ def _events(request: CliRequest) -> int:
     remaining = int(count) if count is not None else None
     as_json = bool(request.flag("as_json"))
     if not as_json:
-        write_line(f"{TAG_NOTE} following events at {discovery.base_url()} (Ctrl+C to stop)")
+        write_line(
+            f"{TAG_NOTE} "
+            + tr("following events at {base_url} (Ctrl+C to stop)", base_url=discovery.base_url())
+        )
     try:
         for event in discovery.events(EVENTS_PATH):
             name = str(event.get("name", ""))
@@ -276,9 +306,12 @@ def _events(request: CliRequest) -> int:
     except OSError as exc:
         code = getattr(exc, "code", None)
         if code in (401, 403):
-            write_line(f"{TAG_ERROR} the daemon refused the event feed (HTTP {code})")
+            write_line(
+                f"{TAG_ERROR} "
+                + tr("the daemon refused the event feed (HTTP {code})", code=code)
+            )
         else:
-            write_line(f"{TAG_ERROR} the event feed ended: {exc}")
+            write_line(f"{TAG_ERROR} " + tr("the event feed ended: {exc}", exc=exc))
         return int(ExitCode.ERROR)
     write_line(f"{TAG_NOTE} the daemon closed the feed (it is stopping)")
     return 0
@@ -300,7 +333,10 @@ def _stop(request: CliRequest) -> int:
     if code != 200:
         return _failed(code, payload)
     assert discovery is not None
-    write_line(f"{TAG_OK} the daemon at {discovery.base_url()} is stopping")
+    write_line(
+        f"{TAG_OK} "
+        + tr("the daemon at {base_url} is stopping", base_url=discovery.base_url())
+    )
     return 0
 
 

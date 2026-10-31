@@ -27,6 +27,7 @@ from .render import (
     print_key_values,
     print_section,
     print_table,
+    tr,
     write_line,
     write_status,
 )
@@ -750,9 +751,16 @@ def _modules_list_command(request: CliRequest) -> int:
     for failure in chassis.discovery.failures:
         write_line(f"  {TAG_ERROR} {failure.describe()}")
     for item in skipped:
-        write_line(f"  [skipped] {item['name']}: {item['reason']}")
+        write_line(tr("  [skipped] {name}: {reason}", name=item['name'], reason=item['reason']))
     for item in optional:
-        write_line(f"  [optional] {item['name']}: needs {item['module']} - {item['hint']}")
+        write_line(
+            tr(
+                "  [optional] {name}: needs {module} - {hint}",
+                name=item['name'],
+                module=item['module'],
+                hint=item['hint'],
+            )
+        )
     return int(ExitCode.ERROR) if health["failed"] else int(ExitCode.SUCCESS)
 
 
@@ -778,7 +786,7 @@ def _logs_command(request: CliRequest) -> int:
     lines_value = request.option("lines")
     count = int(str(lines_value)) if lines_value is not None else DEFAULT_TAIL_LINES
     if count < 1:
-        write_line(f"{TAG_ERROR} --lines must be at least 1, got {count}")
+        write_line(f"{TAG_ERROR} " + tr("--lines must be at least 1, got {count}", count=count))
         write_line(f"{TAG_NOTE} kdx logs -n 200")
         return int(ExitCode.ERROR)
     timeout_value = request.option("timeout")
@@ -802,7 +810,7 @@ def _logs_command(request: CliRequest) -> int:
             if not chassis.config.get_bool("core.log.file_enabled", True)
             else "the chassis has not written a log line yet"
         )
-        write_line(f"{TAG_NOTE} no log file found at {log_path}")
+        write_line(f"{TAG_NOTE} " + tr("no log file found at {log_path}", log_path=log_path))
         note(reason)
         return int(ExitCode.SUCCESS)
 
@@ -816,7 +824,13 @@ def _logs_command(request: CliRequest) -> int:
         archive, archived = rotate_log(
             log_path, backup_count=chassis.config.get_int("core.log.backup_count", 5)
         )
-        write_status(f"log file rotated to {archive.name} ({archived} bytes archived)")
+        write_status(
+            tr(
+                "log file rotated to {name} ({archived} bytes archived)",
+                name=archive.name,
+                archived=archived,
+            )
+        )
         return int(ExitCode.SUCCESS)
 
     if request.flag("clear"):
@@ -827,7 +841,7 @@ def _logs_command(request: CliRequest) -> int:
             note("log file left alone")
             return int(ExitCode.SUCCESS)
         removed = truncate_log(log_path)
-        write_status(f"log file truncated ({removed} bytes freed)")
+        write_status(tr("log file truncated ({removed} bytes freed)", removed=removed))
         return int(ExitCode.SUCCESS)
 
     if follow:
@@ -894,7 +908,7 @@ def _init_command(request: CliRequest) -> int:
         if exc.hint:
             write_line(f"{TAG_NOTE} {exc.hint}")
         return int(ExitCode.ERROR)
-    write_status(f"project {project.name} created")
+    write_status(tr("project {name} created", name=project.name))
     print_key_values(
         [
             ("root", str(result.root)),
@@ -907,11 +921,16 @@ def _init_command(request: CliRequest) -> int:
         ]
     )
     write_line(
-        f"{TAG_NOTE} next: cd {result.root} && uv sync --extra dev && "
-        f"uv run {project.script} run"
+        f"{TAG_NOTE} "
+        + tr(
+            "next: cd {root} && uv sync --extra dev && uv run {script} run",
+            root=result.root,
+            script=project.script,
+        )
     )
     write_line(
-        f"{TAG_NOTE} without uv: pip install -e '.[dev]' && {project.script} run"
+        f"{TAG_NOTE} "
+        + tr("without uv: pip install -e '.[dev]' && {script} run", script=project.script)
     )
     return int(ExitCode.SUCCESS)
 
@@ -954,26 +973,41 @@ def _status_command(request: CliRequest) -> int:
             dump_json({"running": False, "discovery_file": str(discovery_path)})
         else:
             write_line(f"{TAG_NOTE} chassis daemon is not running")
-            write_line(f"{TAG_NOTE} looked for {discovery_path}")
+            write_line(
+                f"{TAG_NOTE} "
+                + tr("looked for {discovery_path}", discovery_path=discovery_path)
+            )
         return int(ExitCode.SUCCESS)
     endpoint = discovery.base_url()
     try:
         code, payload = discovery.request(STATUS_PATH, timeout=timeout)
     except OSError as exc:
-        write_line(f"{TAG_ERROR} no control plane answering at {endpoint}")
+        write_line(
+            f"{TAG_ERROR} "
+            + tr("no control plane answering at {endpoint}", endpoint=endpoint)
+        )
         write_line(f"{TAG_NOTE} {exc}")
         return int(ExitCode.ERROR)
     if code in (401, 403):
-        write_line(f"{TAG_ERROR} the daemon rejected this client ({endpoint} requires a token)")
+        write_line(
+            f"{TAG_ERROR} "
+            + tr("the daemon rejected this client ({endpoint} requires a token)", endpoint=endpoint)
+        )
         if remote:
             write_line(
                 f"{TAG_NOTE} pass --token TOKEN, or set core.ipc.token / KDX_CORE__IPC__TOKEN"
             )
         else:
-            write_line(f"{TAG_NOTE} start 'kdx run' again so {discovery_path} is refreshed")
+            write_line(
+                f"{TAG_NOTE} "
+                + tr(
+                    "start 'kdx run' again so {discovery_path} is refreshed",
+                    discovery_path=discovery_path,
+                )
+            )
         return int(ExitCode.ERROR)
     if code != 200 or not isinstance(payload, dict):
-        write_line(f"{TAG_ERROR} the daemon answered HTTP {code}")
+        write_line(f"{TAG_ERROR} " + tr("the daemon answered HTTP {code}", code=code))
         return int(ExitCode.ERROR)
     if request.flag("as_json"):
         dump_json(payload)
@@ -1055,7 +1089,10 @@ def _modules_create_command(request: CliRequest) -> int:
     exists = directory.exists() and any(directory.iterdir())
     if exists and not force:
         if not ux.interactive:
-            write_line(f"{TAG_ERROR} {directory} already holds a module")
+            write_line(
+                f"{TAG_ERROR} "
+                + tr("{directory} already holds a module", directory=directory)
+            )
             write_line(f"{TAG_NOTE} pass --force to replace its files")
             return int(ExitCode.ERROR)
         if not ux.confirm(f"Replace existing module {name}?", default=False):
@@ -1079,13 +1116,16 @@ def _modules_create_command(request: CliRequest) -> int:
     if request.flag("as_json"):
         dump_json({"module": name, **result.as_dict()})
         return int(ExitCode.SUCCESS)
-    write_status(f"module {name} created")
+    write_status(tr("module {name} created", name=name))
     print_key_values(rows)
     builtin = Path(chassis.paths.builtin_modules_dir)
     if result.directory.parent.resolve() != builtin.resolve():
         write_line(
-            f"{TAG_NOTE} discovery needs {result.directory.parent} in core.modules.extra_paths "
-            "or passed as --modules-dir"
+            f"{TAG_NOTE} "
+            + tr(
+                "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir",
+                parent=result.directory.parent,
+            )
         )
     write_line(f"{TAG_NOTE} next: kdx modules list")
     return int(ExitCode.SUCCESS)
@@ -1185,16 +1225,26 @@ def _contracts_check_command(request: CliRequest) -> int:
             )
         for entry in named:
             write_line(
-                f"{TAG_ERROR} {entry.get('path')}: declared "
-                f"{str(entry.get('declared', ''))[:12]}..., "
-                f"read {str(entry.get('actual', ''))[:12]}..."
+                f"{TAG_ERROR} "
+                + tr(
+                    "{path}: declared {declared}..., read {actual}...",
+                    path=entry.get("path"),
+                    declared=str(entry.get("declared", ""))[:12],
+                    actual=str(entry.get("actual", ""))[:12],
+                )
             )
         for path in rest:
-            write_line(f"{TAG_ERROR} {path}: declared but not found")
+            write_line(f"{TAG_ERROR} " + tr("{path}: declared but not found", path=path))
         hidden = (len(drifted) + len(missing)) - CONTRACT_NAMED_ROWS * 2
         if hidden > 0:
-            write_line(f"{TAG_NOTE} +{hidden} more findings; pass --json for all of them")
-        write_status(f"contracts: {report.summary()}", tag=TAG_OK if report.ok else TAG_ERROR)
+            write_line(
+                f"{TAG_NOTE} "
+                + tr("+{hidden} more findings; pass --json for all of them", hidden=hidden)
+            )
+        write_status(
+            tr("contracts: {summary}", summary=report.summary()),
+            tag=TAG_OK if report.ok else TAG_ERROR,
+        )
         write_line(f"{TAG_NOTE} the chassis reads these files and never rewrites one")
     if not report.ok:
         if report.drifted:
@@ -1225,7 +1275,10 @@ def _config_show_command(request: CliRequest) -> int:
         dump_json({row[0]: {"value": row[1], "source": row[2]} for row in rows})
         return int(ExitCode.SUCCESS)
     if not rows:
-        write_status(f"no configuration keys start with {prefix!r}", tag=TAG_NOTE)
+        write_status(
+            tr("no configuration keys start with {prefix}", prefix=repr(prefix)),
+            tag=TAG_NOTE,
+        )
         return int(ExitCode.SUCCESS)
     print_table(rows, headers=("key", "value", "source"))
     write_line()
@@ -1307,8 +1360,13 @@ def _config_check_command(request: CliRequest) -> int:
     for name, schema in sorted(declared.items()):
         secrets = ", ".join(schema.secrets()) or "-"
         write_line(
-            f"  {name}: {len(schema.fields)} keys, "
-            f"required={', '.join(schema.required_keys()) or '-'} secrets={secrets}"
+            tr(
+                "{name}: {count} keys, required={required} secrets={secrets}",
+                name=name,
+                count=len(schema.fields),
+                required=", ".join(schema.required_keys()) or "-",
+                secrets=secrets,
+            )
         )
     for key, hint in unknown:
         write_status(
@@ -1323,7 +1381,7 @@ def _config_check_command(request: CliRequest) -> int:
         write_status(f"{issue.key}: {issue.message} [{origin}]", tag=TAG_ERROR)
     if unknown or issues:
         write_status(
-            f"{len(unknown) + len(issues)} configuration findings need attention",
+            tr("{count} configuration findings need attention", count=len(unknown) + len(issues)),
             tag=TAG_NOTE,
         )
         return int(ExitCode.CONFIG_ERROR)
@@ -1359,20 +1417,26 @@ def _reload_command(request: CliRequest) -> int:
     discovery, discovery_path = _client_discovery(request, chassis)
     if discovery is None or not discovery.is_process_alive():
         write_line(f"{TAG_NOTE} chassis daemon is not running")
-        write_line(f"{TAG_NOTE} looked for {discovery_path}")
+        write_line(
+            f"{TAG_NOTE} "
+            + tr("looked for {discovery_path}", discovery_path=discovery_path)
+        )
         write_line(f"{TAG_NOTE} a SIGHUP to the daemon does the same thing")
         return int(ExitCode.SUCCESS)
     try:
         code, payload = discovery.request(RELOAD_PATH, method="POST", timeout=timeout)
     except OSError as exc:
-        write_line(f"{TAG_ERROR} no control plane answering at {discovery.base_url()}")
+        write_line(
+            f"{TAG_ERROR} "
+            + tr("no control plane answering at {base_url}", base_url=discovery.base_url())
+        )
         write_line(f"{TAG_NOTE} {exc}")
         return int(ExitCode.ERROR)
     if code in (401, 403):
         write_line(f"{TAG_ERROR} the daemon rejected this client (token required)")
         return int(ExitCode.ERROR)
     if code >= 400:
-        write_line(f"{TAG_ERROR} reload failed: {payload}")
+        write_line(f"{TAG_ERROR} " + tr("reload failed: {payload}", payload=payload))
         return int(ExitCode.ERROR)
     if request.flag("as_json"):
         dump_json(payload)
@@ -1404,7 +1468,7 @@ def _rpc_command(request: CliRequest) -> int:
         try:
             decoded = json.loads(str(raw_args))
         except ValueError as exc:
-            write_line(f"{TAG_ERROR} --args is not valid JSON: {exc}")
+            write_line(f"{TAG_ERROR} " + tr("--args is not valid JSON: {exc}", exc=exc))
             return int(ExitCode.USAGE_ERROR)
         if not isinstance(decoded, dict):
             write_line(f"{TAG_ERROR} --args must be a JSON object")
@@ -1415,7 +1479,10 @@ def _rpc_command(request: CliRequest) -> int:
     discovery, discovery_path = _client_discovery(request, chassis)
     if discovery is None or not discovery.is_process_alive():
         write_line(f"{TAG_NOTE} no chassis daemon answering; run 'kdx run' first")
-        write_line(f"{TAG_NOTE} looked for {discovery_path}")
+        write_line(
+            f"{TAG_NOTE} "
+            + tr("looked for {discovery_path}", discovery_path=discovery_path)
+        )
         return int(ExitCode.ERROR)
     # The first token names the command; the rest travel as argv, untouched, so the
     # daemon walks subcommands from them and hands every other token to the handler as
@@ -1428,7 +1495,10 @@ def _rpc_command(request: CliRequest) -> int:
     try:
         code, payload = discovery.call(command, args, timeout=timeout)
     except OSError as exc:
-        write_line(f"{TAG_ERROR} no control plane answering at {discovery.base_url()}")
+        write_line(
+            f"{TAG_ERROR} "
+            + tr("no control plane answering at {base_url}", base_url=discovery.base_url())
+        )
         write_line(f"{TAG_NOTE} {exc}")
         return int(ExitCode.ERROR)
     render_rpc_reply(payload, command, as_json=bool(request.flag("as_json")))
@@ -1453,11 +1523,20 @@ def _rpc_as_job(
         if request.flag("as_json"):
             dump_json(payload)
         else:
-            write_line(f"{TAG_OK} started {job_id}: {command}")
-            write_line(f"{TAG_NOTE} follow it: kdx jobs show {job_id} --follow")
-            write_line(f"{TAG_NOTE} stop it:   kdx jobs cancel {job_id}")
+            write_line(
+                f"{TAG_OK} "
+                + tr("started {job_id}: {command}", job_id=job_id, command=command)
+            )
+            write_line(
+                f"{TAG_NOTE} "
+                + tr("follow it: kdx jobs show {job_id} --follow", job_id=job_id)
+            )
+            write_line(f"{TAG_NOTE} " + tr("stop it:   kdx jobs cancel {job_id}", job_id=job_id))
         return int(ExitCode.SUCCESS)
-    write_line(f"{TAG_NOTE} {job_id} started; Ctrl+C stops watching, not the job")
+    write_line(
+        f"{TAG_NOTE} "
+        + tr("{job_id} started; Ctrl+C stops watching, not the job", job_id=job_id)
+    )
     return follow_job(discovery, job_id)
 
 

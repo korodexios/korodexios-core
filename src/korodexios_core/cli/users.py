@@ -16,7 +16,7 @@ from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
 from ..kernel.audit import AUDIT_FILE_NAME, read_audit
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
 from ..kernel.users import ROLES, UserError, UserStore
-from .render import dump_json, print_key_values, print_table, write_line
+from .render import dump_json, print_key_values, print_table, tr, write_line
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from ..kernel.chassis import Chassis
@@ -152,7 +152,10 @@ def _show_token(request: CliRequest, name: str, role: str, token: str, verb: str
         dump_json({"name": name, "role": role, "token": token})
         return
     print_key_values([("user", name), ("role", role), ("token", token)])
-    write_line(f"{TAG_OK} {verb}; this token is shown only now - hand it over privately")
+    write_line(
+        f"{TAG_OK} "
+        + tr("{verb}; this token is shown only now - hand it over privately", verb=verb)
+    )
     write_line(f"{TAG_NOTE} terminal: kdx status --target http://HOST:8123 --token TOKEN")
     write_line(f"{TAG_NOTE} browser:  open http://HOST:8123/ui/ and paste the token")
 
@@ -172,7 +175,10 @@ def _remove(request: CliRequest) -> int:
     def act() -> int:
         name = str(request.option("name"))
         _store(request).remove(name)
-        write_line(f"{TAG_OK} user {name} removed; their token no longer works")
+        write_line(
+            f"{TAG_OK} "
+            + tr("user {name} removed; their token no longer works", name=name)
+        )
         return 0
 
     return _run(act)
@@ -193,7 +199,7 @@ def _rotate(request: CliRequest) -> int:
 def _role(request: CliRequest) -> int:
     def act() -> int:
         updated = _store(request).set_role(str(request.option("name")), str(request.option("role")))
-        write_line(f"{TAG_OK} {updated.name} is now {updated.role}")
+        write_line(f"{TAG_OK} " + tr("{name} is now {role}", name=updated.name, role=updated.role))
         return 0
 
     return _run(act)
@@ -212,7 +218,7 @@ def _audit(request: CliRequest) -> int:
         dump_json({"path": str(path), "entries": entries})
         return 0
     if not entries:
-        write_line(f"{TAG_NOTE} no audit records yet in {path}")
+        write_line(f"{TAG_NOTE} " + tr("no audit records yet in {path}", path=path))
         return 0
     print_table(
         [
