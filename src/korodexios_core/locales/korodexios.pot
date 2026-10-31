@@ -276,10 +276,6 @@ msgstr ""
 msgid "Language code, such as de or pt_BR."
 msgstr ""
 
-#: cli/conventions.py
-msgid "Language of the rules: en or sk [your language, else en]."
-msgstr ""
-
 #: cli/jobs.py
 msgid "List background jobs, newest first."
 msgstr ""
@@ -420,12 +416,8 @@ msgstr ""
 msgid "Print the discovered config and env file paths."
 msgstr ""
 
-#: cli/conventions.py
-msgid "Print the playbook written for AI agents instead (English)."
-msgstr ""
-
-#: cli/conventions.py
-msgid "Print the project rules and conventions (how to build and work on a project)."
+#: cli/playbook.py
+msgid "Print the playbook for AI agents (how to work in a project on the core)."
 msgstr ""
 
 #: cli/commands.py
@@ -592,8 +584,8 @@ msgstr ""
 msgid "Verify the project's declared file set without rewriting it."
 msgstr ""
 
-#: cli/conventions.py
-msgid "Write the rules to FILE instead of printing them."
+#: cli/playbook.py
+msgid "Write the playbook to FILE instead of printing it."
 msgstr ""
 
 #: cli/commands.py
@@ -1660,11 +1652,11 @@ msgstr ""
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr ""
 
-#: cli/conventions.py
+#: cli/language.py
 msgid "{path} could not be written: {reason}"
 msgstr ""
 
-#: cli/conventions.py
+#: cli/language.py
 msgid "{path} created"
 msgstr ""
 

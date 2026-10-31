@@ -20,9 +20,9 @@ from ..kernel.ipc import DISCOVERY_NAME, IpcDiscovery
 from ..paths import AppPaths
 from ..version import format_version
 from .commands import core_commands, render_rpc_reply, wizard_command
-from .conventions import conventions_command
 from .jobs import events_command, jobs_command, stop_command
 from .language import locale_command
+from .playbook import playbook_command
 from .render import set_translator, write_line
 from .service import service_command
 from .surface import HANDLER_ATTR, ArgparseSurface
@@ -641,7 +641,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         surface.add_command(stop_command())
         surface.add_command(service_command())
         surface.add_command(locale_command())
-        surface.add_command(conventions_command())
+        surface.add_command(playbook_command())
         chassis.collect_cli(surface)
 
         try:

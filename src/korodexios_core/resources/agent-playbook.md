@@ -132,5 +132,4 @@ in plain words. If something is risky or surprising, say it first, not last.
 `kdx init <name>` -> `make check` green -> spec 001 -> first module via
 `kdx modules create` -> tests first -> branch protection and CI on the repository ->
 languages with `kdx locale add`. Keep `AGENTS.md` and `CHANGELOG.md` current from the
-first commit. The longer human-oriented rules are in `docs/CONVENTIONS.md`
-(`kdx conventions`).
+first commit.

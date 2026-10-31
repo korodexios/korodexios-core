@@ -20,10 +20,8 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
   a language. The web console has a language selector (`/api/v1/ui/i18n`), `KDX_LOCALE` selects
   the language, and `kdx init` projects read `.po` catalogues through the same service (no
   `msgfmt` step).
-- **`kdx conventions`** prints the project rules (modules, spec/test first, security, CI/CD,
-  working with AI agents) in English or Slovak; `kdx init` now also seeds them as
-  `docs/CONVENTIONS*.md` together with a CI workflow.
-- **`AGENT_PLAYBOOK.md`** (also `kdx conventions --agent`): how an AI agent proceeds in any
+- `kdx init` also seeds a CI workflow (ruff, mypy, pytest on Linux and Windows).
+- **`AGENT_PLAYBOOK.md`** (also `kdx playbook`): how an AI agent proceeds in any
   project built on the core - architecture limits, the spec/test/gate loop, security, what to
   ask first, how to report. `kdx init` seeds it and points `AGENTS.md` at it.
 - **Guided installers** `install.sh` / `install.ps1`: coloured, four separated steps, English or

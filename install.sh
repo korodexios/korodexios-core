@@ -76,7 +76,7 @@ msg() {
     sk:initwhy) echo "Neskôr to zvládneš aj sám: kdx init moj-projekt" ;;
     sk:next) echo "Čo ďalej" ;;
     sk:n1) echo "kdx --help            všetky príkazy, jednoducho vysvetlené" ;;
-    sk:n2) echo "kdx conventions       pravidlá stavby projektu (--lang en pre angličtinu)" ;;
+    sk:n2) echo "kdx playbook         pracovná príručka pre AI agentov" ;;
     sk:n3) echo "kdx locale set sk     slovenčina v nápovede a hláseniach" ;;
     sk:n4) echo "kdx wizard            vedené menu ku každému príkazu" ;;
     sk:dry) echo "Skúšobný beh: nič sa nezmenilo." ;;
@@ -109,7 +109,7 @@ msg() {
     en:initwhy) echo "Later you can do it yourself: kdx init my-project" ;;
     en:next) echo "Next steps" ;;
     en:n1) echo "kdx --help            all commands, in plain words" ;;
-    en:n2) echo "kdx conventions       the rules for building a project (add --lang sk for Slovak)" ;;
+    en:n2) echo "kdx playbook         the working guide for AI agents" ;;
     en:n3) echo "kdx locale set sk     use Slovak for help and messages" ;;
     en:n4) echo "kdx wizard            a guided menu for every command" ;;
     en:dry) echo "Dry run: nothing was changed." ;;

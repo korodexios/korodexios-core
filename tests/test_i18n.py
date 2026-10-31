@@ -510,37 +510,19 @@ def test_kdx_locale_is_the_short_name_of_core_locale() -> None:
     assert normalize_env_key("KDX_CORE__LOCALE") == "core.locale"
 
 
-def test_conventions_print_in_the_chosen_language_and_can_be_written(
+def test_playbook_is_printed_written_and_seeded(
     capsys, project_root: Path, tmp_path: Path
 ) -> None:
-    write_root(project_root)
-    code, out = run(project_root, capsys, "conventions")
-    assert code == 0 and out.startswith("# Project conventions")
-    code, out = run(project_root, capsys, "--locale", "sk", "conventions")
-    assert code == 0 and out.startswith("# Pravidlá a konvencie projektu")
-    code, out = run(project_root, capsys, "conventions", "--lang", "de")  # no German text: English
-    assert code == 0 and out.startswith("# Project conventions")
-    target = tmp_path / "docs" / "CONVENTIONS.md"
-    code, out = run(project_root, capsys, "conventions", "--write", str(target))
-    assert code == 0 and target.read_text(encoding="utf-8").startswith("# Project conventions")
-
-
-def test_the_seed_carries_the_rules_and_a_ci_workflow() -> None:
-    from korodexios_core.cli.init_project import build_files, project_from_inputs
-
-    files = build_files(project_from_inputs("rules_check"))  # type: ignore[arg-type]
-    assert files["docs/CONVENTIONS.md"].startswith("# Project conventions")
-    assert files["docs/CONVENTIONS.sk.md"].startswith("# Pravidlá")
-    assert "uv run mypy" in files[".github/workflows/ci.yml"]
-    assert "docs/CONVENTIONS.md" in files["AGENTS.md"]
-
-
-def test_agent_playbook_is_printed_and_seeded(capsys, project_root: Path) -> None:
     from korodexios_core.cli.init_project import build_files, project_from_inputs
 
     write_root(project_root)
-    code, out = run(project_root, capsys, "--locale", "sk", "conventions", "--agent")
+    code, out = run(project_root, capsys, "--locale", "sk", "playbook")
     assert code == 0 and out.startswith("# AGENT PLAYBOOK")
+    target = tmp_path / "docs" / "PLAYBOOK.md"
+    code, out = run(project_root, capsys, "playbook", "--write", str(target))
+    assert code == 0 and target.read_text(encoding="utf-8").startswith("# AGENT PLAYBOOK")
     files = build_files(project_from_inputs("playbook_check"))  # type: ignore[arg-type]
     assert files["AGENT_PLAYBOOK.md"].startswith("# AGENT PLAYBOOK")
     assert "AGENT_PLAYBOOK.md" in files["AGENTS.md"]
+    assert "uv run mypy" in files[".github/workflows/ci.yml"]
+    assert not any("CONVENTIONS" in name for name in files)

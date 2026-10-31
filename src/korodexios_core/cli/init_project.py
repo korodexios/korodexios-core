@@ -282,8 +282,6 @@ def build_files(project: ProjectTemplate) -> dict[str, str]:
         "AGENTS.md": _agents(project),
         "docs/AGENTS_GUIDE.md": _docs_agents_guide(project),
         "AGENT_PLAYBOOK.md": _agent_playbook(),
-        "docs/CONVENTIONS.md": _conventions_text("en"),
-        "docs/CONVENTIONS.sk.md": _conventions_text("sk"),
         ".github/workflows/ci.yml": _ci_workflow(project),
         "docs/ARCHITECTURE.md": _docs_architecture(project),
         "Makefile": _makefile(project),
@@ -481,7 +479,6 @@ def _readme(project: ProjectTemplate) -> str:
         ".env.example             # copy to .env for the env layer",
         "AGENTS.md                # working agreement for humans and coding agents",
         "AGENT_PLAYBOOK.md        # how an AI agent proceeds in this project (read first)",
-        "docs/CONVENTIONS.md      # project rules: modules, tests, security, CI/CD (also .sk.md)",
         "docs/AGENTS_GUIDE.md      # the contract, for humans and AI agents",
         "docs/ARCHITECTURE.md       # how this project is wired",
         ".agents/skills/          # playbooks: how to extend this project safely",
@@ -881,15 +878,9 @@ def _docs_architecture(project: ProjectTemplate) -> str:
 
 
 def _agent_playbook() -> str:
-    from .conventions import agent_playbook
+    from .playbook import agent_playbook
 
     return agent_playbook()
-
-
-def _conventions_text(language: str) -> str:
-    from .conventions import conventions_text
-
-    return conventions_text(language)[1]
 
 
 def _ci_workflow(project: ProjectTemplate) -> str:
@@ -931,8 +922,7 @@ def _agents(project: ProjectTemplate) -> str:
         f"# AGENTS.md - {project.title}",
         "",
         "Working agreement for anyone editing this repository. Read",
-        "@BT@AGENT_PLAYBOOK.md@BT@ first (how to proceed in every task), then",
-        "@BT@docs/CONVENTIONS.md@BT@ (the longer rules for people).",
+        "@BT@AGENT_PLAYBOOK.md@BT@ first: how to proceed in every task.",
         "",
         "## Commands",
         "",

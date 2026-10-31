@@ -278,10 +278,6 @@ msgstr "Idioma"
 msgid "Language code, such as de or pt_BR."
 msgstr "Código de idioma, como de o pt_BR."
 
-#: cli/conventions.py
-msgid "Language of the rules: en or sk [your language, else en]."
-msgstr "Idioma de las reglas: en o sk [tu idioma, si no en]."
-
 #: cli/jobs.py
 msgid "List background jobs, newest first."
 msgstr "Lista los trabajos en segundo plano, los más recientes primero."
@@ -422,13 +418,9 @@ msgstr "Muestra la URL de la consola en lugar de abrir un navegador."
 msgid "Print the discovered config and env file paths."
 msgstr "Muestra las rutas de los archivos de configuración y env encontrados."
 
-#: cli/conventions.py
-msgid "Print the playbook written for AI agents instead (English)."
-msgstr "Muestra en su lugar el manual escrito para agentes de IA (en inglés)."
-
-#: cli/conventions.py
-msgid "Print the project rules and conventions (how to build and work on a project)."
-msgstr "Muestra las reglas y convenciones del proyecto (cómo construir un proyecto y trabajar en él)."
+#: cli/playbook.py
+msgid "Print the playbook for AI agents (how to work in a project on the core)."
+msgstr "Muestra el manual para agentes de IA (cómo trabajar en un proyecto sobre el núcleo)."
 
 #: cli/commands.py
 msgid "Project identity"
@@ -594,9 +586,9 @@ msgstr "Valida las entradas y muestra lo que copiaría una copia."
 msgid "Verify the project's declared file set without rewriting it."
 msgstr "Verifica el conjunto de archivos declarado del proyecto sin reescribirlo."
 
-#: cli/conventions.py
-msgid "Write the rules to FILE instead of printing them."
-msgstr "Escribe las reglas en FILE en lugar de mostrarlas."
+#: cli/playbook.py
+msgid "Write the playbook to FILE instead of printing it."
+msgstr "Escribe el manual en FILE en lugar de mostrarlo."
 
 #: cli/commands.py
 msgid "a SIGHUP to the daemon does the same thing"
@@ -1662,11 +1654,11 @@ msgstr "{path} no se puede leer como JSON: {reason}"
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr "{path} no se puede leer, así que se dejó intacto: {reason}"
 
-#: cli/conventions.py
+#: cli/language.py
 msgid "{path} could not be written: {reason}"
 msgstr "{path} no se pudo escribir: {reason}"
 
-#: cli/conventions.py
+#: cli/language.py
 msgid "{path} created"
 msgstr "{path} creado"
 
