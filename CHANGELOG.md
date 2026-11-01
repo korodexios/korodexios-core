@@ -12,7 +12,12 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ### Added
 
-- **`kdx reset`**: lists the disposable development data (`core.reset.disposable`, default
+- **`korodexios_core.kernel.txn`** and **`kdx txn list|show|recover|undo`**: a reusable
+  phase-checkpointed file transaction (`prepared` -> `backed_up` -> `applied` -> `committed` ->
+  `finalized`) with a crash-safe journal, backups, recovery that finishes or compensates, and
+  an `undo` that refuses when the result hashes moved. Pluggable `allow` and `reason`
+  callbacks; journals live in `data/txn`.
+- **`kdx reset`**- **`kdx reset`**: lists the disposable development data (`core.reset.disposable`, default
   `var/lib`) and, with `--apply`, deletes it. Durable roots (`data/` plus
   `core.reset.durable`) are never touched, unsafe roots are refused, `.gitkeep` markers stay,
   links are never followed, and it will not run while the daemon is up.

@@ -226,6 +226,10 @@ msgstr "Schlägt fehl, wenn die Kopie GRÖSSE überschreitet, z. B. 500MB."
 msgid "Filesystem path to inspect."
 msgstr "Dateisystempfad zur Prüfung."
 
+#: cli/txn.py
+msgid "Finish or roll back every transaction a crash left in flight."
+msgstr "Schließt jede nach einem Absturz unterbrochene Transaktion ab oder macht sie rückgängig."
+
 #: cli/jobs.py
 msgid "Follow the daemon's live events (Ctrl+C to stop)."
 msgstr "Verfolgt die Live-Ereignisse des Daemons (Strg+C beendet)."
@@ -306,6 +310,10 @@ msgstr "Listet die Sprachen mit Katalog je Nachrichtendomäne auf."
 msgid "List the strings a language still needs, for a translator or an agent."
 msgstr "Listet die Texte auf, die einer Sprache noch fehlen, für Übersetzer oder Agenten."
 
+#: cli/txn.py
+msgid "List transactions, newest first; unfinished ones are marked."
+msgstr "Listet Transaktionen, neueste zuerst; unfertige sind markiert."
+
 #: cli/users.py
 msgid "List users and their roles."
 msgstr "Listet Benutzer und ihre Rollen auf."
@@ -313,6 +321,10 @@ msgstr "Listet Benutzer und ihre Rollen auf."
 #: cli/jobs.py
 msgid "List, follow, or cancel commands running in the background on the daemon."
 msgstr "Listet im Hintergrund laufende Befehle des Daemons auf, verfolgt oder bricht sie ab."
+
+#: cli/txn.py
+msgid "List, recover, and undo file transactions."
+msgstr "Dateitransaktionen auflisten, wiederherstellen und rückgängig machen."
 
 #: cli/reset.py
 msgid "List, then with --apply delete, the disposable development data."
@@ -526,6 +538,10 @@ msgstr "Zeigt Zustand und Ausgabe eines Jobs."
 msgid "Show one module in detail (initializes modules)."
 msgstr "Zeigt ein Modul im Detail (initialisiert die Module)."
 
+#: cli/txn.py
+msgid "Show one transaction and what each file hashed to."
+msgstr "Zeigt eine Transaktion und den Hash jeder Datei."
+
 #: cli/service.py
 msgid "Show the definition and commands; change nothing."
 msgstr "Zeigt die Definition und die Befehle; ändert nichts."
@@ -586,6 +602,14 @@ msgstr "Beendet den Daemon sauber und entfernt die Anmeldeeinrichtung."
 msgid "Stop the running daemon cleanly (needs the admin role)."
 msgstr "Beendet den laufenden Daemon sauber (erfordert die Rolle admin)."
 
+#: cli/txn.py
+msgid "Take back a finished transaction (refused if its files changed since)."
+msgstr "Macht eine abgeschlossene Transaktion rückgängig (abgelehnt, wenn sich ihre Dateien seither geändert haben)."
+
+#: cli/txn.py
+msgid "Transaction id (see 'kdx txn list')."
+msgstr "Transaktions-ID (siehe 'kdx txn list')."
+
 #: modules/system_info/module.py
 msgid "Uptime"
 msgstr "Betriebszeit"
@@ -610,7 +634,7 @@ msgstr "Schreibe das Playbook in FILE, statt es auszugeben."
 msgid "a SIGHUP to the daemon does the same thing"
 msgstr "ein SIGHUP an den Daemon bewirkt dasselbe"
 
-#: cli/users.py
+#: cli/txn.py
 msgid "action"
 msgstr "Aktion"
 
@@ -621,6 +645,10 @@ msgstr "aktiv"
 #: cli/users.py
 msgid "add one with: kdx users add NAME --role operator"
 msgstr "füge einen hinzu mit: kdx users add NAME --role operator"
+
+#: cli/txn.py
+msgid "after"
+msgstr "nachher"
 
 #: cli/commands.py
 msgid "app"
@@ -665,6 +693,10 @@ msgstr "verfügbar"
 #: cli/commands.py
 msgid "bare chassis: no example modules"
 msgstr "reines Chassis: keine Beispielmodule"
+
+#: cli/txn.py
+msgid "before"
+msgstr "vorher"
 
 #: cli/commands.py
 msgid "bind the control plane here (0.0.0.0 for LAN access)"
@@ -890,6 +922,10 @@ msgstr "Exit-Code"
 msgid "failed"
 msgstr "fehlgeschlagen"
 
+#: cli/txn.py
+msgid "files"
+msgstr "Dateien"
+
 #: cli/commands.py
 msgid "files written"
 msgstr "geschriebene Dateien"
@@ -985,6 +1021,10 @@ msgstr "geprüfte Schlüssel"
 #: cli/commands.py
 msgid "known keys"
 msgstr "bekannte Schlüssel"
+
+#: cli/txn.py
+msgid "label"
+msgstr "Bezeichnung"
 
 #: cli/language.py
 msgid "language"
@@ -1162,6 +1202,10 @@ msgstr "noch keine benannten Benutzer; der gemeinsame core.ipc.token ist der Eig
 msgid "no project or module declared a contract file set"
 msgstr "kein Projekt und kein Modul hat eine Vertragsdateimenge deklariert"
 
+#: cli/txn.py
+msgid "no transactions recorded"
+msgstr "keine Transaktionen aufgezeichnet"
+
 #: cli/language.py
 msgid "no translations to check; only the source language exists"
 msgstr "keine Übersetzungen zu prüfen; es gibt nur die Quellsprache"
@@ -1169,6 +1213,10 @@ msgstr "keine Übersetzungen zu prüfen; es gibt nur die Quellsprache"
 #: modules/backup_engine/module.py
 msgid "nothing copied yet: this was a plan"
 msgstr "noch nichts kopiert: dies war ein Plan"
+
+#: cli/txn.py
+msgid "nothing to recover"
+msgstr "nichts wiederherzustellen"
 
 #: cli/reset.py
 msgid "nothing to remove"
@@ -1237,6 +1285,10 @@ msgstr "gib --token TOKEN an oder setze core.ipc.token / KDX_CORE__IPC__TOKEN"
 #: cli/commands.py
 msgid "path"
 msgstr "Pfad"
+
+#: cli/txn.py
+msgid "phase"
+msgstr "Phase"
 
 #: cli/commands.py
 msgid "pid"
@@ -1401,6 +1453,10 @@ msgstr "starte 'kdx run' erneut, damit {discovery_path} aktualisiert wird"
 #: modules/web_console/module.py
 msgid "start one with 'kdx run', then run 'kdx ui' again"
 msgstr "starte einen mit 'kdx run' und führe dann 'kdx ui' erneut aus"
+
+#: cli/txn.py
+msgid "started"
+msgstr "gestartet"
 
 #: cli/commands.py
 msgid "started {job_id}: {command}"
@@ -1646,6 +1702,10 @@ msgstr "{count} Texte nach {path} geschrieben"
 msgid "{count} translation(s) accepted for {locale}"
 msgstr "{count} Übersetzung(en) für {locale} akzeptiert"
 
+#: cli/txn.py
+msgid "{count} unfinished; run: kdx txn recover"
+msgstr "{count} unfertig; ausführen: kdx txn recover"
+
 #: cli/commands.py
 msgid "{directory} already holds a module"
 msgstr "{directory} enthält bereits ein Modul"
@@ -1657,6 +1717,10 @@ msgstr "{expired_now} Kopie(n) liegen außerhalb des Fensters; die nächste Bere
 #: cli/jobs.py
 msgid "{id}  {state}  {command}  (by {value}, {seconds}s)"
 msgstr "{id}  {state}  {command}  (von {value}, {seconds}s)"
+
+#: cli/txn.py
+msgid "{id} undone"
+msgstr "{id} rückgängig gemacht"
 
 #: cli/jobs.py
 msgid "{job_id} is already {state}; nothing to stop"

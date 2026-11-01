@@ -226,6 +226,10 @@ msgstr "Selže, pokud kopie překročí VELIKOST, např. 500MB."
 msgid "Filesystem path to inspect."
 msgstr "Cesta v souborovém systému ke kontrole."
 
+#: cli/txn.py
+msgid "Finish or roll back every transaction a crash left in flight."
+msgstr "Dokončí nebo vrátí zpět každou transakci, kterou pád nechal rozpracovanou."
+
 #: cli/jobs.py
 msgid "Follow the daemon's live events (Ctrl+C to stop)."
 msgstr "Sleduje události démona živě (zastavíš je Ctrl+C)."
@@ -306,6 +310,10 @@ msgstr "Vypíše jazyky, které mají katalog, podle domény zpráv."
 msgid "List the strings a language still needs, for a translator or an agent."
 msgstr "Vypíše texty, které jazyku ještě chybí, pro překladatele nebo agenta."
 
+#: cli/txn.py
+msgid "List transactions, newest first; unfinished ones are marked."
+msgstr "Vypíše transakce od nejnovější; nedokončené jsou označeny."
+
 #: cli/users.py
 msgid "List users and their roles."
 msgstr "Vypíše uživatele a jejich role."
@@ -313,6 +321,10 @@ msgstr "Vypíše uživatele a jejich role."
 #: cli/jobs.py
 msgid "List, follow, or cancel commands running in the background on the daemon."
 msgstr "Vypíše, sleduje nebo zruší příkazy běžící na pozadí v démonovi."
+
+#: cli/txn.py
+msgid "List, recover, and undo file transactions."
+msgstr "Vypíše, obnoví a vrátí zpět souborové transakce."
 
 #: cli/reset.py
 msgid "List, then with --apply delete, the disposable development data."
@@ -526,6 +538,10 @@ msgstr "Zobrazí stav a výstup jedné úlohy."
 msgid "Show one module in detail (initializes modules)."
 msgstr "Zobrazí jeden modul podrobně (inicializuje moduly)."
 
+#: cli/txn.py
+msgid "Show one transaction and what each file hashed to."
+msgstr "Ukáže jednu transakci a hash každého souboru."
+
 #: cli/service.py
 msgid "Show the definition and commands; change nothing."
 msgstr "Zobrazí definici a příkazy; nic nemění."
@@ -586,6 +602,14 @@ msgstr "Čistě zastaví démona a odstraní registraci při přihlášení."
 msgid "Stop the running daemon cleanly (needs the admin role)."
 msgstr "Čistě zastaví běžícího démona (vyžaduje roli admin)."
 
+#: cli/txn.py
+msgid "Take back a finished transaction (refused if its files changed since)."
+msgstr "Vrátí zpět dokončenou transakci (odmítne, pokud se její soubory mezitím změnily)."
+
+#: cli/txn.py
+msgid "Transaction id (see 'kdx txn list')."
+msgstr "ID transakce (viz 'kdx txn list')."
+
 #: modules/system_info/module.py
 msgid "Uptime"
 msgstr "Doba běhu"
@@ -610,7 +634,7 @@ msgstr "Zapiš příručku do FILE místo vypsání."
 msgid "a SIGHUP to the daemon does the same thing"
 msgstr "totéž udělá SIGHUP poslaný démonovi"
 
-#: cli/users.py
+#: cli/txn.py
 msgid "action"
 msgstr "akce"
 
@@ -621,6 +645,10 @@ msgstr "aktivní"
 #: cli/users.py
 msgid "add one with: kdx users add NAME --role operator"
 msgstr "přidej ho přes: kdx users add JMÉNO --role operator"
+
+#: cli/txn.py
+msgid "after"
+msgstr "po"
 
 #: cli/commands.py
 msgid "app"
@@ -665,6 +693,10 @@ msgstr "dostupné"
 #: cli/commands.py
 msgid "bare chassis: no example modules"
 msgstr "holé šasi: bez ukázkových modulů"
+
+#: cli/txn.py
+msgid "before"
+msgstr "před"
 
 #: cli/commands.py
 msgid "bind the control plane here (0.0.0.0 for LAN access)"
@@ -890,6 +922,10 @@ msgstr "kód ukončení"
 msgid "failed"
 msgstr "selhalo"
 
+#: cli/txn.py
+msgid "files"
+msgstr "soubory"
+
 #: cli/commands.py
 msgid "files written"
 msgstr "zapsané soubory"
@@ -985,6 +1021,10 @@ msgstr "zkontrolované klíče"
 #: cli/commands.py
 msgid "known keys"
 msgstr "známé klíče"
+
+#: cli/txn.py
+msgid "label"
+msgstr "štítek"
 
 #: cli/language.py
 msgid "language"
@@ -1162,6 +1202,10 @@ msgstr "zatím žádní pojmenovaní uživatelé; vlastníkem je sdílený core.
 msgid "no project or module declared a contract file set"
 msgstr "žádný projekt ani modul nedeklaroval sadu souborů kontraktu"
 
+#: cli/txn.py
+msgid "no transactions recorded"
+msgstr "nejsou zaznamenány žádné transakce"
+
 #: cli/language.py
 msgid "no translations to check; only the source language exists"
 msgstr "není co kontrolovat; existuje jen zdrojový jazyk"
@@ -1169,6 +1213,10 @@ msgstr "není co kontrolovat; existuje jen zdrojový jazyk"
 #: modules/backup_engine/module.py
 msgid "nothing copied yet: this was a plan"
 msgstr "zatím se nic nezkopírovalo: šlo o plán"
+
+#: cli/txn.py
+msgid "nothing to recover"
+msgstr "není co obnovovat"
 
 #: cli/reset.py
 msgid "nothing to remove"
@@ -1237,6 +1285,10 @@ msgstr "zadej --token TOKEN nebo nastav core.ipc.token / KDX_CORE__IPC__TOKEN"
 #: cli/commands.py
 msgid "path"
 msgstr "cesta"
+
+#: cli/txn.py
+msgid "phase"
+msgstr "fáze"
 
 #: cli/commands.py
 msgid "pid"
@@ -1401,6 +1453,10 @@ msgstr "spusť 'kdx run' znovu, aby se {discovery_path} obnovil"
 #: modules/web_console/module.py
 msgid "start one with 'kdx run', then run 'kdx ui' again"
 msgstr "spusť ho přes 'kdx run' a potom znovu 'kdx ui'"
+
+#: cli/txn.py
+msgid "started"
+msgstr "začátek"
 
 #: cli/commands.py
 msgid "started {job_id}: {command}"
@@ -1646,6 +1702,10 @@ msgstr "{count} textů zapsáno do {path}"
 msgid "{count} translation(s) accepted for {locale}"
 msgstr "pro {locale} bylo přijato překladů: {count}"
 
+#: cli/txn.py
+msgid "{count} unfinished; run: kdx txn recover"
+msgstr "{count} nedokončených; spusťte: kdx txn recover"
+
 #: cli/commands.py
 msgid "{directory} already holds a module"
 msgstr "{directory} už obsahuje modul"
@@ -1657,6 +1717,10 @@ msgstr "{expired_now} kopií přesahuje okno; další čištění je odstraní"
 #: cli/jobs.py
 msgid "{id}  {state}  {command}  (by {value}, {seconds}s)"
 msgstr "{id}  {state}  {command}  (spustil {value}, {seconds}s)"
+
+#: cli/txn.py
+msgid "{id} undone"
+msgstr "{id} vrácena zpět"
 
 #: cli/jobs.py
 msgid "{job_id} is already {state}; nothing to stop"

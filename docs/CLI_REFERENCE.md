@@ -223,6 +223,26 @@ with exit code 3 instead of being trimmed. Files named in `core.reset.keep` (def
 `.gitkeep`) stay, and so do the directories that hold them. Symbolic links and Windows
 junctions are removed as links and never followed. `--apply` refuses while the daemon runs.
 
+## `kdx txn`
+
+```bash
+kdx txn list [--json]         # transactions, newest first; unfinished ones are counted
+kdx txn show ID [--json]      # phase, and what each file hashed to before and after
+kdx txn recover [--json]      # finish or roll back whatever a crash left in flight
+kdx txn undo ID [--json]      # take back a finished transaction
+```
+
+A module that changes several files at once builds a `TransactionManager`
+(`korodexios_core.kernel.txn`) and calls `run([TxnOp.write(path, text), TxnOp.delete(path)])`.
+The transaction is journalled phase by phase (`prepared`, `backed_up`, `applied`,
+`committed`, `finalized`) under `data/txn`, which `kdx reset` never touches. A failure rolls
+the files back before it is raised; a crash is settled by `recover()` (call it from the
+owner's start-up) or `kdx txn recover`: before `committed` the files are restored from their
+backups, after it the transaction is finished. `undo` refuses with `result-changed` when any
+file no longer hashes to what the transaction left, so a later change is never overwritten.
+The project supplies an `allow(path)` callback (which relative paths may be touched) and a
+`reason(code, fields)` callback (how a failure code reads); codes are stable.
+
 ## `kdx modules`
 
 ```bash
