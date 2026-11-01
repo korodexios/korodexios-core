@@ -12,6 +12,13 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ### Added
 
+- **`contributor` role and `IpcRoute(role=...)`**: a role between `viewer` and `operator` that
+  may call exactly the module routes declaring `role="contributor"` (a drop-box for sensors,
+  CI uploads, webhooks, bots) and runs no command, job, reload or stop. An empty `role` keeps
+  the old rule (viewer reads, operator writes); an unknown role is refused at registration.
+  `IpcRoute.as_dict()` lists it. A `users.json` holding a `contributor` is rejected by an
+  older core (unknown role); there is no migration. A refused write to a module route (and any
+  refused call to a route naming a role) is now one line in the audit log.
 - **`korodexios_core.kernel.txn`** and **`kdx txn list|show|recover|undo`**: a reusable
   phase-checkpointed file transaction (`prepared` -> `backed_up` -> `applied` -> `committed` ->
   `finalized`) with a crash-safe journal, backups, recovery that finishes or compensates, and

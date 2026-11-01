@@ -39,7 +39,7 @@ from ..version import CORE_API_VERSION
 from .audit import AuditLog
 from .instance_lock import pid_alive
 from .jobs import JobLimitError
-from .users import OWNER_NAME, Caller, UserStore, acting_as
+from .users import OWNER_NAME, ROLES, Caller, UserStore, acting_as
 
 DISCOVERY_NAME = "chassis.ipc"
 TOKEN_HEADER = "X-Kdx-Token"
@@ -219,8 +219,16 @@ class IpcRoute:
     module: str = ""
     summary: str = ""
     content_type: str = CONTENT_JSON
+    role: str = ""
+    """The least role allowed to call the route; empty: viewer for reads, operator for writes."""
 
     def __post_init__(self) -> None:
+        if self.role and self.role not in ROLES:
+            raise IpcError(
+                f"route {self.path!r} names role {self.role!r}, which is not one of "
+                f"{', '.join(ROLES)}",
+                hint="Leave role empty or name an existing role.",
+            )
         raw = str(self.path)
         illegal = ROUTE_PATH_UNSAFE.search(raw)
         if illegal is not None:
@@ -265,6 +273,7 @@ class IpcRoute:
             "module": self.module,
             "summary": self.summary,
             "content_type": self.content_type,
+            "role": self.role,
         }
 
     def declared_content_type(self) -> str:
@@ -953,10 +962,11 @@ class _ControlHandler(BaseHTTPRequestHandler):
             self._route_as(ipc, method, caller)
 
     def _refuse(
-        self, ipc: IpcServer, path: str, caller: Caller | None, required: str
+        self, ipc: IpcServer, path: str, caller: Caller | None, required: str,
+        *, acting: bool = False,
     ) -> None:
         """Answer 401 (who are you?) or 403 (not allowed), and audit an attempt to act."""
-        acting = path in ACTING_ROUTES
+        acting = acting or path in ACTING_ROUTES
         if caller is None:
             if acting:
                 ipc.audit_event(path, None, "unauthenticated", address=self._address())
@@ -1099,10 +1109,14 @@ class _ControlHandler(BaseHTTPRequestHandler):
             )
             return
         if route.auth:
-            # A read needs a viewer; a module route that accepts a write needs an operator.
-            required = "viewer" if method in ("GET", "HEAD") else "operator"
+            # A read needs a viewer; a write needs an operator unless the route names a role.
+            required = route.role or ("viewer" if method in ("GET", "HEAD") else "operator")
             if caller is None or not caller.allows(required):
-                self._refuse(ipc, route.path, caller, required)
+                # A refused write, or a call to a named-role route, is an attempt to act.
+                self._refuse(
+                    ipc, route.path, caller, required,
+                    acting=bool(route.role) or method not in ("GET", "HEAD"),
+                )
                 return
         request = IpcRequest(
             method=method,

@@ -523,6 +523,7 @@ kdx audit --user jana --action rpc --json
 | Role | May |
 | --- | --- |
 | `viewer` | status, logs, configuration, events, jobs - read only |
+| `contributor` | also call module routes that declare `role="contributor"` (a drop-box); runs no command |
 | `operator` | also run module commands, in the foreground or as jobs |
 | `admin` | also commands marked `danger`, reload, stop, the audit log in the GUI |
 

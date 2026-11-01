@@ -578,8 +578,11 @@ dependency order -> lifecycle loop -> `stop()` in reverse -> close logging.
 | `/api/v1/whoami` | GET | never (answers `anonymous` without a token) |
 
 - Tokens: the shared `core.ipc.token` is the admin `owner`; `kdx users add NAME --role R`
-  issues personal tokens. Roles `viewer` < `operator` < `admin`: reads need viewer, `rpc` and
-  jobs need operator, reload and shutdown need admin. A command needs operator, admin when
+  issues personal tokens. Roles `viewer` < `contributor` < `operator` < `admin`: reads need
+  viewer, module routes that accept a write need operator unless they declare
+  `IpcRoute(..., role="contributor")` (a drop-box: the client hands something in and
+  operates nothing; `role` is checked at registration and applies to every verb of the
+  route), `rpc` and jobs need operator, reload and shutdown need admin. A command needs operator, admin when
   `danger=True`, or what `CliCommand(role=...)` names; a group's role covers its children.
   A weak role gets `403`, a missing or wrong token `401`. Every action and refusal is
   audited in `data/audit.jsonl` (`kdx audit`). In a handler, `current_caller()` from

@@ -6,9 +6,11 @@ that store: users live in '<durable_dir>/users.json', each with a role and the S
 a token that is shown exactly once, when it is minted. The file never holds a token in
 clear, so a copy of it lets no one in; it is restricted to its owner all the same.
 
-Roles are ordered - ``viewer`` < ``operator`` < ``admin``:
+Roles are ordered - ``viewer`` < ``contributor`` < ``operator`` < ``admin``:
 
 - viewer: status, logs, configuration, events, jobs - reading only;
+- contributor: also calls the module routes that declare ``role="contributor"`` (a
+  drop-box: hand something in, operate nothing); runs no command;
 - operator: also runs module commands, in the foreground or as jobs;
 - admin: also runs commands marked 'danger', reloads, stops the daemon.
 
@@ -38,7 +40,7 @@ from typing import Any, Final
 from .. import jsonio
 from ..fsio import atomic_write_text
 
-ROLES: Final[tuple[str, ...]] = ("viewer", "operator", "admin")
+ROLES: Final[tuple[str, ...]] = ("viewer", "contributor", "operator", "admin")
 """Every role, weakest first; a role holds every right of the roles before it."""
 
 OWNER_NAME: Final[str] = "owner"

@@ -15,7 +15,14 @@ from korodexios_core.constants import ExitCode
 from korodexios_core.kernel.audit import AuditLog, read_audit
 from korodexios_core.kernel.chassis import Chassis
 from korodexios_core.kernel.cli_contract import CliCommand
-from korodexios_core.kernel.ipc import RELOAD_PATH, RPC_PATH, SHUTDOWN_PATH, STATUS_PATH
+from korodexios_core.kernel.ipc import (
+    RELOAD_PATH,
+    RPC_PATH,
+    SHUTDOWN_PATH,
+    STATUS_PATH,
+    IpcError,
+    IpcRoute,
+)
 from korodexios_core.kernel.users import (
     OWNER_NAME,
     Caller,
@@ -191,6 +198,55 @@ def test_roles_over_the_control_plane(project_root) -> None:
                for entry in entries)
 
 
+def test_a_route_role_must_be_known() -> None:
+    with pytest.raises(IpcError, match="role"):
+        IpcRoute(path="/api/v1/box", handler=lambda request: {}, role="root")
+    route = IpcRoute(path="/api/v1/box", handler=lambda request: {}, role="contributor")
+    assert route.as_dict()["role"] == "contributor"
+    assert IpcRoute(path="/api/v1/plain", handler=lambda request: {}).as_dict()["role"] == ""
+
+
+def test_contributor_drop_box_over_the_control_plane(project_root) -> None:
+    chassis = ipc_chassis(project_root)
+    chassis.initialize()
+    assert chassis.users is not None
+    tokens = {
+        role: chassis.users.add(f"{role}-user", role)
+        for role in ("viewer", "contributor", "operator")
+    }
+    chassis.start()
+    for path, role in (("/api/v1/box", "contributor"), ("/api/v1/plain", "")):
+        assert chassis.register_ipc_route(
+            IpcRoute(path=path, handler=lambda request: {"ok": True}, methods=("POST",),
+                     module="probe", role=role)
+        )
+    base = chassis.ipc.discovery.base_url()  # type: ignore[union-attr]
+    try:
+        post = lambda path, token: http_call(base, path, method="POST", token=token, payload={})  # noqa: E731
+        assert post("/api/v1/box", tokens["viewer"])[0] == 403
+        assert post("/api/v1/box", tokens["contributor"])[0] == 200
+        assert post("/api/v1/box", tokens["operator"])[0] == 200
+        assert post("/api/v1/plain", tokens["contributor"])[0] == 403  # the old rule stands
+        assert post("/api/v1/plain", tokens["operator"])[0] == 200
+        # A contributor reads like a viewer but operates nothing. There is no HTTP route that
+        # edits users ('kdx users' edits the file in a terminal), so it cannot raise its role.
+        contributor = tokens["contributor"]
+        assert rpc(base, contributor, "heartbeat status")[0] == 403
+        assert http_call(base, STATUS_PATH, token=contributor)[0] == 200
+        assert http_call(base, RELOAD_PATH, method="POST", token=contributor)[0] == 403
+        assert http_call(base, SHUTDOWN_PATH, method="POST", token=contributor)[0] == 403
+        assert http_call(base, "/api/v1/whoami", token=contributor)[1]["role"] == "contributor"
+    finally:
+        chassis.shutdown()
+    entries = read_audit(chassis.audit.path, limit=100)  # type: ignore[union-attr]
+    outcomes = {(entry["user"], entry["action"], entry["outcome"]) for entry in entries}
+    assert ("contributor-user", "rpc", "denied: needs operator") in outcomes
+    assert any(entry["user"] == "contributor-user" and entry["outcome"] == "denied: needs operator"
+               for entry in entries)
+    assert any(entry["user"] == "viewer-user" and entry["outcome"] == "denied: needs contributor"
+               for entry in entries)
+
+
 def test_a_command_can_ask_for_a_stronger_role(project_root) -> None:
     chassis = ipc_chassis(project_root)
     chassis.initialize()
@@ -244,6 +300,13 @@ def test_users_and_audit_in_the_terminal(project_root, capsys) -> None:
     listed = json.loads(capsys.readouterr().out)["users"]
     assert listed[0]["name"] == "jana"
     assert "token" not in json.dumps(listed)
+    assert main([*args, "users", "add", "dropbox", "--role", "contributor"]) == 0
+    assert main([*args, "users", "role", "jana", "contributor"]) == 0
+    capsys.readouterr()
+    assert main([*args, "users", "list", "--json"]) == 0
+    roles = {row["name"]: row["role"] for row in json.loads(capsys.readouterr().out)["users"]}
+    assert roles == {"dropbox": "contributor", "jana": "contributor"}
+    assert main([*args, "users", "remove", "dropbox"]) == 0
     assert main([*args, "users", "remove", "jana"]) == 0
     assert main([*args, "users", "remove", "jana"]) == int(ExitCode.ERROR)
     capsys.readouterr()
