@@ -5,6 +5,8 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-01
+
 ### Changed
 
 - **One name**: every link, install line, and seeded dependency now points at the repository
