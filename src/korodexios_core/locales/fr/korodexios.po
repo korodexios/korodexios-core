@@ -42,6 +42,10 @@ msgstr "--print n'a rien modifié"
 msgid "--rotate and --clear are mutually exclusive"
 msgstr "--rotate et --clear s'excluent mutuellement"
 
+#: cli/reset.py
+msgid "... and {count} more"
+msgstr "... et {count} de plus"
+
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
 msgstr "Demande à une tâche de s'arrêter (sa commande décide quand elle le peut)."
@@ -134,6 +138,10 @@ msgstr "Crée le certificat pour un plan de contrôle en https."
 msgid "Delete a user; their token stops working at once."
 msgstr "Supprime un utilisateur ; son jeton cesse de fonctionner aussitôt."
 
+#: cli/reset.py
+msgid "Delete {count} item(s) ({size} bytes)?"
+msgstr "Supprimer {count} élément(s) ({size} octets) ?"
+
 #: modules/backup_engine/module.py
 msgid "Destination directory for copies."
 msgstr "Répertoire de destination des copies."
@@ -182,6 +190,10 @@ msgstr "Émet le rapport en direct en JSON."
 msgid "Emit the mapping as JSON."
 msgstr "Émet la correspondance en JSON."
 
+#: cli/reset.py
+msgid "Emit the plan and result as JSON."
+msgstr "Affiche le plan et le résultat en JSON."
+
 #: cli/commands.py
 msgid "Emit the reload summary as JSON."
 msgstr "Émet le résumé du rechargement en JSON."
@@ -213,6 +225,10 @@ msgstr "Échoue si la copie dépasse TAILLE, p. ex. 500MB."
 #: modules/system_info/module.py
 msgid "Filesystem path to inspect."
 msgstr "Chemin du système de fichiers à inspecter."
+
+#: cli/txn.py
+msgid "Finish or roll back every transaction a crash left in flight."
+msgstr "Termine ou annule chaque transaction qu'un plantage a laissée en cours."
 
 #: cli/jobs.py
 msgid "Follow the daemon's live events (Ctrl+C to stop)."
@@ -294,6 +310,10 @@ msgstr "Liste les langues qui ont un catalogue, par domaine de messages."
 msgid "List the strings a language still needs, for a translator or an agent."
 msgstr "Liste les textes qu'il reste à traiter pour une langue, pour un traducteur ou un agent."
 
+#: cli/txn.py
+msgid "List transactions, newest first; unfinished ones are marked."
+msgstr "Liste les transactions, la plus récente d'abord ; les inachevées sont signalées."
+
 #: cli/users.py
 msgid "List users and their roles."
 msgstr "Liste les utilisateurs et leurs rôles."
@@ -301,6 +321,14 @@ msgstr "Liste les utilisateurs et leurs rôles."
 #: cli/jobs.py
 msgid "List, follow, or cancel commands running in the background on the daemon."
 msgstr "Liste, suit ou annule les commandes exécutées en arrière-plan sur le démon."
+
+#: cli/txn.py
+msgid "List, recover, and undo file transactions."
+msgstr "Liste, récupère et annule les transactions de fichiers."
+
+#: cli/reset.py
+msgid "List, then with --apply delete, the disposable development data."
+msgstr "Liste, et avec --apply supprime, les données de développement jetables."
 
 #: cli/commands.py
 msgid "Logging"
@@ -510,6 +538,10 @@ msgstr "Affiche l'état et la sortie d'une tâche."
 msgid "Show one module in detail (initializes modules)."
 msgstr "Affiche un module en détail (initialise les modules)."
 
+#: cli/txn.py
+msgid "Show one transaction and what each file hashed to."
+msgstr "Affiche une transaction et le hash de chaque fichier."
+
 #: cli/service.py
 msgid "Show the definition and commands; change nothing."
 msgstr "Affiche la définition et les commandes ; ne change rien."
@@ -570,6 +602,14 @@ msgstr "Arrête proprement le démon et retire l'enregistrement d'ouverture de s
 msgid "Stop the running daemon cleanly (needs the admin role)."
 msgstr "Arrête proprement le démon en cours (nécessite le rôle admin)."
 
+#: cli/txn.py
+msgid "Take back a finished transaction (refused if its files changed since)."
+msgstr "Annule une transaction terminée (refusé si ses fichiers ont changé depuis)."
+
+#: cli/txn.py
+msgid "Transaction id (see 'kdx txn list')."
+msgstr "ID de la transaction (voir 'kdx txn list')."
+
 #: modules/system_info/module.py
 msgid "Uptime"
 msgstr "Durée de fonctionnement"
@@ -594,7 +634,7 @@ msgstr "Écrit le guide dans FILE au lieu de l'afficher."
 msgid "a SIGHUP to the daemon does the same thing"
 msgstr "un SIGHUP envoyé au démon fait la même chose"
 
-#: cli/users.py
+#: cli/txn.py
 msgid "action"
 msgstr "action"
 
@@ -605,6 +645,10 @@ msgstr "actif"
 #: cli/users.py
 msgid "add one with: kdx users add NAME --role operator"
 msgstr "ajoutez-en un avec : kdx users add NOM --role operator"
+
+#: cli/txn.py
+msgid "after"
+msgstr "après"
 
 #: cli/commands.py
 msgid "app"
@@ -649,6 +693,10 @@ msgstr "disponible"
 #: cli/commands.py
 msgid "bare chassis: no example modules"
 msgstr "châssis nu : sans modules d'exemple"
+
+#: cli/txn.py
+msgid "before"
+msgstr "avant"
 
 #: cli/commands.py
 msgid "bind the control plane here (0.0.0.0 for LAN access)"
@@ -802,6 +850,10 @@ msgstr "fichier de découverte"
 msgid "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir"
 msgstr "la découverte a besoin de {parent} dans core.modules.extra_paths ou passé via --modules-dir"
 
+#: cli/reset.py
+msgid "disposable root: {root}"
+msgstr "racine jetable : {root}"
+
 #: cli/language.py
 msgid "domain"
 msgstr "domaine"
@@ -813,6 +865,10 @@ msgstr "terminé"
 #: cli/commands.py
 msgid "drifted"
 msgstr "écarté"
+
+#: cli/reset.py
+msgid "durable, never touched: {root}"
+msgstr "durable, jamais touché : {root}"
 
 #: cli/commands.py
 msgid "ecosystem"
@@ -865,6 +921,10 @@ msgstr "code de sortie"
 #: cli/commands.py
 msgid "failed"
 msgstr "échoué"
+
+#: cli/txn.py
+msgid "files"
+msgstr "fichiers"
 
 #: cli/commands.py
 msgid "files written"
@@ -961,6 +1021,10 @@ msgstr "clés vérifiées"
 #: cli/commands.py
 msgid "known keys"
 msgstr "clés connues"
+
+#: cli/txn.py
+msgid "label"
+msgstr "libellé"
 
 #: cli/language.py
 msgid "language"
@@ -1138,6 +1202,10 @@ msgstr "pas encore d'utilisateurs nommés ; le core.ipc.token partagé est le pr
 msgid "no project or module declared a contract file set"
 msgstr "aucun projet ni module n'a déclaré d'ensemble de fichiers de contrat"
 
+#: cli/txn.py
+msgid "no transactions recorded"
+msgstr "aucune transaction enregistrée"
+
 #: cli/language.py
 msgid "no translations to check; only the source language exists"
 msgstr "aucune traduction à vérifier ; seule la langue source existe"
@@ -1145,6 +1213,18 @@ msgstr "aucune traduction à vérifier ; seule la langue source existe"
 #: modules/backup_engine/module.py
 msgid "nothing copied yet: this was a plan"
 msgstr "rien n'a encore été copié : c'était un plan"
+
+#: cli/txn.py
+msgid "nothing to recover"
+msgstr "rien à récupérer"
+
+#: cli/reset.py
+msgid "nothing to remove"
+msgstr "rien à supprimer"
+
+#: cli/reset.py
+msgid "nothing was deleted"
+msgstr "rien n'a été supprimé"
 
 #: cli/commands.py
 msgid "nothing written"
@@ -1205,6 +1285,10 @@ msgstr "passez --token JETON ou définissez core.ipc.token / KDX_CORE__IPC__TOKE
 #: cli/commands.py
 msgid "path"
 msgstr "chemin"
+
+#: cli/txn.py
+msgid "phase"
+msgstr "phase"
 
 #: cli/commands.py
 msgid "pid"
@@ -1282,6 +1366,10 @@ msgstr "interroge directement http://host:port, sans le fichier de découverte l
 msgid "query this host (with --port) instead of the local endpoint"
 msgstr "interroge cet hôte (avec --port) au lieu du point d'accès local"
 
+#: cli/reset.py
+msgid "really delete (without it the command only lists what it would remove)"
+msgstr "supprimer pour de bon (sans cela la commande liste seulement ce qu'elle supprimerait)"
+
 #: cli/service.py
 msgid "register it with: kdx service install"
 msgstr "enregistrez-le avec : kdx service install"
@@ -1297,6 +1385,10 @@ msgstr "échec du rechargement : {payload}"
 #: cli/commands.py
 msgid "reloads"
 msgstr "rechargements"
+
+#: cli/reset.py
+msgid "removed {count} item(s), freed {size} bytes"
+msgstr "{count} élément(s) supprimé(s), {size} octets libérés"
 
 #: cli/commands.py
 msgid "requests served"
@@ -1361,6 +1453,10 @@ msgstr "relancez 'kdx run' pour que {discovery_path} soit actualisé"
 #: modules/web_console/module.py
 msgid "start one with 'kdx run', then run 'kdx ui' again"
 msgstr "lancez-en un avec 'kdx run', puis relancez 'kdx ui'"
+
+#: cli/txn.py
+msgid "started"
+msgstr "début"
 
 #: cli/commands.py
 msgid "started {job_id}: {command}"
@@ -1445,6 +1541,10 @@ msgstr "le démon sur {base_url} s'arrête"
 #: cli/jobs.py
 msgid "the daemon closed the feed (it is stopping)"
 msgstr "le démon a fermé le flux (il s'arrête)"
+
+#: cli/reset.py
+msgid "the daemon is running; stop it first: kdx stop"
+msgstr "le démon est en cours d'exécution ; arrêtez-le d'abord : kdx stop"
 
 #: cli/jobs.py
 msgid "the daemon refused the event feed (HTTP {code})"
@@ -1586,6 +1686,10 @@ msgstr "{count} catalogue(s) demandent de l'attention"
 msgid "{count} configuration findings need attention"
 msgstr "{count} constats de configuration demandent de l'attention"
 
+#: cli/reset.py
+msgid "{count} item(s), {size} bytes; run kdx reset --apply to delete them"
+msgstr "{count} élément(s), {size} octets ; supprimez-les avec kdx reset --apply"
+
 #: cli/language.py
 msgid "{count} string(s) left for {locale}"
 msgstr "il reste {count} textes pour {locale}"
@@ -1598,6 +1702,10 @@ msgstr "{count} textes écrits dans {path}"
 msgid "{count} translation(s) accepted for {locale}"
 msgstr "{count} traduction(s) acceptée(s) pour {locale}"
 
+#: cli/txn.py
+msgid "{count} unfinished; run: kdx txn recover"
+msgstr "{count} inachevée(s) ; exécutez : kdx txn recover"
+
 #: cli/commands.py
 msgid "{directory} already holds a module"
 msgstr "{directory} contient déjà un module"
@@ -1609,6 +1717,10 @@ msgstr "{expired_now} copie(s) dépassent la fenêtre ; le prochain nettoyage le
 #: cli/jobs.py
 msgid "{id}  {state}  {command}  (by {value}, {seconds}s)"
 msgstr "{id}  {state}  {command}  (par {value}, {seconds}s)"
+
+#: cli/txn.py
+msgid "{id} undone"
+msgstr "{id} annulée"
 
 #: cli/jobs.py
 msgid "{job_id} is already {state}; nothing to stop"
@@ -1693,6 +1805,10 @@ msgstr "{path} : déclaré {declared}..., lu {actual}..."
 #: cli/service.py
 msgid "{program} could not run: {exc}"
 msgstr "{program} n'a pas pu s'exécuter : {exc}"
+
+#: cli/reset.py
+msgid "{root} does not exist; nothing to clear there"
+msgstr "{root} n'existe pas ; rien à nettoyer là"
 
 #: cli/service.py
 msgid "{shown} failed: {value}"

@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import json
 import re
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
+from .. import jsonio
 from ..constants import (
     ENCODING,
     ENV_LIST_SEPARATOR,
@@ -91,8 +91,8 @@ def load_config_file(path: Path) -> dict[str, Any]:
             ) from exc
     elif suffix == ".json":
         try:
-            data = json.loads(text)
-        except json.JSONDecodeError as exc:
+            data = jsonio.loads(text)
+        except ValueError as exc:
             raise ConfigFileError(
                 f"{path.name} is not valid JSON: {exc}",
                 hint="Check commas, quotes, and trailing brackets.",

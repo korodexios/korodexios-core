@@ -24,9 +24,11 @@ from .jobs import events_command, jobs_command, stop_command
 from .language import locale_command
 from .playbook import playbook_command
 from .render import set_translator, write_line
+from .reset import reset_command
 from .service import service_command
 from .surface import HANDLER_ATTR, ArgparseSurface
 from .tls import tls_command
+from .txn import txn_command
 from .users import audit_command, users_command
 
 LOG_LEVEL_CHOICES = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
@@ -642,6 +644,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         surface.add_command(service_command())
         surface.add_command(locale_command())
         surface.add_command(playbook_command())
+        surface.add_command(reset_command())
+        surface.add_command(txn_command())
         chassis.collect_cli(surface)
 
         try:

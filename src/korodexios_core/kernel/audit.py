@@ -23,6 +23,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Final
 
+from .. import jsonio
 from ..paths import restrict_to_owner
 from .users import Caller
 
@@ -70,7 +71,7 @@ class AuditLog:
                 self._rotate_if_full(len(line))
                 fresh = not self.path.exists()
                 self.path.parent.mkdir(parents=True, exist_ok=True)
-                with self.path.open("a", encoding="utf-8") as handle:
+                with self.path.open("a", encoding="utf-8", newline="\n") as handle:
                     handle.write(line)
                 if fresh:
                     restrict_to_owner(self.path)
@@ -118,7 +119,7 @@ def _entries(path: Path) -> Iterable[dict[str, Any]]:
     with handle:
         for line in handle:
             try:
-                entry = json.loads(line)
+                entry = jsonio.loads(line)
             except ValueError:
                 continue
             if isinstance(entry, dict):

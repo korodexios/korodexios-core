@@ -23,6 +23,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from .. import jsonio
 from ..constants import (
     DEFAULT_LOCK_TIMEOUT,
     ENCODING,
@@ -230,7 +231,7 @@ class NamedLock:
         except (OSError, UnicodeDecodeError):
             return None
         try:
-            data = json.loads(raw) if raw.strip() else None
+            data = jsonio.loads(raw) if raw.strip() else None
         except ValueError:
             return None
         if not isinstance(data, dict):
@@ -302,7 +303,7 @@ class NamedLock:
         except (OSError, UnicodeDecodeError):
             return None
         try:
-            data = json.loads(raw) if raw.strip() else None
+            data = jsonio.loads(raw) if raw.strip() else None
         except ValueError:
             return None
         if not isinstance(data, dict):
@@ -552,7 +553,7 @@ def _stale_file(path: Path) -> bool:
     """Return True when *path* names a lock whose owner process is gone."""
     try:
         raw = path.read_text(encoding=ENCODING)
-        data = json.loads(raw) if raw.strip() else None
+        data = jsonio.loads(raw) if raw.strip() else None
     except (OSError, ValueError, UnicodeDecodeError):
         return False
     if not isinstance(data, dict):

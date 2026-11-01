@@ -12,6 +12,32 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ### Added
 
+- **`korodexios_core.kernel.txn`** and **`kdx txn list|show|recover|undo`**: a reusable
+  phase-checkpointed file transaction (`prepared` -> `backed_up` -> `applied` -> `committed` ->
+  `finalized`) with a crash-safe journal, backups, recovery that finishes or compensates, and
+  an `undo` that refuses when the result hashes moved. Pluggable `allow` and `reason`
+  callbacks; journals live in `data/txn`.
+- **`kdx reset`**- **`kdx reset`**: lists the disposable development data (`core.reset.disposable`, default
+  `var/lib`) and, with `--apply`, deletes it. Durable roots (`data/` plus
+  `core.reset.durable`) are never touched, unsafe roots are refused, `.gitkeep` markers stay,
+  links are never followed, and it will not run while the daemon is up.
+- **`korodexios_core.fsio`** (`atomic_write_text`, `atomic_write_bytes`): atomic, fsynced,
+  LF-only writes; the user store and the discovery file use them, and the audit log appends
+  with `newline="
+"`, so the same record has the same bytes on Windows and Linux.
+- **`korodexios_core.text`** (`normalize_eol`, `sha256_text_file`) and
+  `sha256_file(path, text=True)` / `verify_contracts(rows, root, text=True)`: opt-in hashing
+  that reads CRLF as LF, so a line-ending-only change is not drift (`sha256-lf`). Binary files
+  always hash raw.
+- **`paths.id_path` / `is_safe_id` / `existing_id_path`**: the one join for per-id records
+  (`<folder>/<id>.json`). An id is one ASCII label (letters, digits, `_ - .`, at most 128
+  characters): no separators, `..`, colon, leading or trailing dot, or Windows device name
+  (CON, NUL, COM1...). `id_path` raises `ValueError` for anything else, so a write or delete
+  cannot leave the folder; `existing_id_path` returns None for hostile or missing ids.
+- **`korodexios_core.jsonio`** (`loads`, `load_path`, `JsonLimitError`): untrusted JSON never
+  raises `RecursionError`; deep nesting and (optionally) oversized input arrive as
+  `ValueError`. Every JSON read in the core uses it, including the control-plane request
+  body, so a deeply nested POST gets a clean 4xx instead of a traceback.
 - **Language service (phase 36)**: `kdx locale show|list|set|check|extract|add|todo|apply`,
   `--locale`, config key `core.locale`, `.po` catalogues read directly (no compile step).
   Help text, tables, labels and messages are translated; command names, flags, `--json`,

@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import json
 import sys
 from collections.abc import Mapping
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
+from .. import jsonio
 from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
 from ..exceptions import ConfigurationError
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
@@ -1466,7 +1466,7 @@ def _rpc_command(request: CliRequest) -> int:
     args: dict[str, Any]
     if raw_args:
         try:
-            decoded = json.loads(str(raw_args))
+            decoded = jsonio.loads(str(raw_args))
         except ValueError as exc:
             write_line(f"{TAG_ERROR} " + tr("--args is not valid JSON: {exc}", exc=exc))
             return int(ExitCode.USAGE_ERROR)

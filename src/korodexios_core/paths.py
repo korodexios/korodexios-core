@@ -83,6 +83,70 @@ def is_lock_file_name(name: str) -> bool:
     return True
 
 
+_MAX_ID = 128
+_ID_CHARACTERS = frozenset(
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-."
+)
+_WINDOWS_DEVICE_NAMES = frozenset(
+    {"CON", "PRN", "AUX", "NUL", "CONIN$", "CONOUT$"}
+    | {f"COM{number}" for number in range(1, 10)}
+    | {f"LPT{number}" for number in range(1, 10)}
+)
+
+
+def is_safe_id(value: object) -> bool:
+    """Return whether *value* is a plain name that can never become a path.
+
+    A safe id is one label of ASCII letters, digits, '_', '-', and '.', at most 128
+    characters. It has no separators, no drive or stream colon, no '..', no leading or
+    trailing dot, and is not a Windows device name (CON, NUL, COM1, ...), with or without
+    an extension, so the same id is safe on every platform the chassis runs on. Ids that
+    differ only by case are different ids here but one file on a case-insensitive disk;
+    a module that must tell them apart lower-cases before storing.
+    """
+    if not isinstance(value, str) or not value or len(value) > _MAX_ID:
+        return False
+    if not _ID_CHARACTERS.issuperset(value):
+        return False
+    if value.startswith(".") or value.endswith(".") or ".." in value:
+        return False
+    return value.split(".", 1)[0].upper() not in _WINDOWS_DEVICE_NAMES
+
+
+def id_path(folder: str | os.PathLike[str], ident: str, suffix: str = ".json") -> Path:
+    """Return ``folder / (ident + suffix)``, or raise ValueError when *ident* is not safe.
+
+    Every module that stores one record per id takes the id from a command line, a request
+    body, or a file. Joining it unchecked lets '../../x' walk out of *folder*, so a write,
+    delete, or existence probe reaches an unrelated file. This is the one join: the result
+    is always a direct child of *folder*. *suffix* is a developer constant and is checked
+    the same way (empty, or a dot followed by a safe label). Use :func:`existing_id_path`
+    for a lookup that should find nothing rather than raise.
+    """
+    if not is_safe_id(ident):
+        raise ValueError(
+            f"{ident!r} is not a valid id: use letters, digits, '_', '-', and '.' "
+            f"(at most {_MAX_ID} characters), not a path"
+        )
+    if suffix and not (suffix.startswith(".") and is_safe_id(suffix[1:])):
+        raise ValueError(f"{suffix!r} is not a valid file suffix")
+    return Path(folder) / f"{ident}{suffix}"
+
+
+def existing_id_path(
+    folder: str | os.PathLike[str], ident: str, suffix: str = ".json"
+) -> Path | None:
+    """Return the file for *ident* in *folder*, or None when it is unsafe or absent.
+
+    A lookup by an id somebody else typed finds nothing for a hostile id, the same answer
+    as for an id that was never stored; it neither raises nor probes outside *folder*.
+    """
+    if not is_safe_id(ident):
+        return None
+    candidate = id_path(folder, ident, suffix)
+    return candidate if candidate.is_file() else None
+
+
 def _is_chassis_project_file(candidate: Path) -> bool:
     if candidate.name in ROOT_MARKER_FILES:
         return True

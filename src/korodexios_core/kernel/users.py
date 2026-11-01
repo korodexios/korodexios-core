@@ -25,7 +25,6 @@ import contextlib
 import hashlib
 import hmac
 import json
-import os
 import re
 import secrets
 import threading
@@ -36,7 +35,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final
 
-from ..paths import restrict_to_owner
+from .. import jsonio
+from ..fsio import atomic_write_text
 
 ROLES: Final[tuple[str, ...]] = ("viewer", "operator", "admin")
 """Every role, weakest first; a role holds every right of the roles before it."""
@@ -226,7 +226,7 @@ class UserStore:
         if stamp == self._stamp:
             return
         try:
-            raw = json.loads(self.path.read_text(encoding="utf-8"))
+            raw = jsonio.load_path(self.path)
         except (OSError, ValueError) as exc:
             raise UserError(f"cannot read {self.path}: {exc}") from exc
         users: dict[str, UserRecord] = {}
@@ -249,13 +249,9 @@ class UserStore:
             "schema": 1,
             "users": [user.as_dict(secret=True) for user in self._users.values()],
         }
-        temporary = self.path.parent / f"{self.path.name}.tmp.{os.getpid()}"
-        descriptor = os.open(str(temporary), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
-            json.dump(payload, handle, indent=2, sort_keys=True)
-            handle.write("\n")
-        restrict_to_owner(temporary)
-        os.replace(str(temporary), str(self.path))
+        atomic_write_text(
+            self.path, json.dumps(payload, indent=2, sort_keys=True) + "\n", private=True
+        )
         stat = self.path.stat()
         self._stamp = (stat.st_mtime_ns, stat.st_size)
 

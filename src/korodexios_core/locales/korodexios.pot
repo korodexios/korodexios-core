@@ -40,6 +40,10 @@ msgstr ""
 msgid "--rotate and --clear are mutually exclusive"
 msgstr ""
 
+#: cli/reset.py
+msgid "... and {count} more"
+msgstr ""
+
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
 msgstr ""
@@ -132,6 +136,10 @@ msgstr ""
 msgid "Delete a user; their token stops working at once."
 msgstr ""
 
+#: cli/reset.py
+msgid "Delete {count} item(s) ({size} bytes)?"
+msgstr ""
+
 #: modules/backup_engine/module.py
 msgid "Destination directory for copies."
 msgstr ""
@@ -180,6 +188,10 @@ msgstr ""
 msgid "Emit the mapping as JSON."
 msgstr ""
 
+#: cli/reset.py
+msgid "Emit the plan and result as JSON."
+msgstr ""
+
 #: cli/commands.py
 msgid "Emit the reload summary as JSON."
 msgstr ""
@@ -210,6 +222,10 @@ msgstr ""
 
 #: modules/system_info/module.py
 msgid "Filesystem path to inspect."
+msgstr ""
+
+#: cli/txn.py
+msgid "Finish or roll back every transaction a crash left in flight."
 msgstr ""
 
 #: cli/jobs.py
@@ -292,12 +308,24 @@ msgstr ""
 msgid "List the strings a language still needs, for a translator or an agent."
 msgstr ""
 
+#: cli/txn.py
+msgid "List transactions, newest first; unfinished ones are marked."
+msgstr ""
+
 #: cli/users.py
 msgid "List users and their roles."
 msgstr ""
 
 #: cli/jobs.py
 msgid "List, follow, or cancel commands running in the background on the daemon."
+msgstr ""
+
+#: cli/txn.py
+msgid "List, recover, and undo file transactions."
+msgstr ""
+
+#: cli/reset.py
+msgid "List, then with --apply delete, the disposable development data."
 msgstr ""
 
 #: cli/commands.py
@@ -508,6 +536,10 @@ msgstr ""
 msgid "Show one module in detail (initializes modules)."
 msgstr ""
 
+#: cli/txn.py
+msgid "Show one transaction and what each file hashed to."
+msgstr ""
+
 #: cli/service.py
 msgid "Show the definition and commands; change nothing."
 msgstr ""
@@ -568,6 +600,14 @@ msgstr ""
 msgid "Stop the running daemon cleanly (needs the admin role)."
 msgstr ""
 
+#: cli/txn.py
+msgid "Take back a finished transaction (refused if its files changed since)."
+msgstr ""
+
+#: cli/txn.py
+msgid "Transaction id (see 'kdx txn list')."
+msgstr ""
+
 #: modules/system_info/module.py
 msgid "Uptime"
 msgstr ""
@@ -592,7 +632,7 @@ msgstr ""
 msgid "a SIGHUP to the daemon does the same thing"
 msgstr ""
 
-#: cli/users.py
+#: cli/txn.py
 msgid "action"
 msgstr ""
 
@@ -602,6 +642,10 @@ msgstr ""
 
 #: cli/users.py
 msgid "add one with: kdx users add NAME --role operator"
+msgstr ""
+
+#: cli/txn.py
+msgid "after"
 msgstr ""
 
 #: cli/commands.py
@@ -646,6 +690,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "bare chassis: no example modules"
+msgstr ""
+
+#: cli/txn.py
+msgid "before"
 msgstr ""
 
 #: cli/commands.py
@@ -800,6 +848,10 @@ msgstr ""
 msgid "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir"
 msgstr ""
 
+#: cli/reset.py
+msgid "disposable root: {root}"
+msgstr ""
+
 #: cli/language.py
 msgid "domain"
 msgstr ""
@@ -810,6 +862,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "drifted"
+msgstr ""
+
+#: cli/reset.py
+msgid "durable, never touched: {root}"
 msgstr ""
 
 #: cli/commands.py
@@ -862,6 +918,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "failed"
+msgstr ""
+
+#: cli/txn.py
+msgid "files"
 msgstr ""
 
 #: cli/commands.py
@@ -958,6 +1018,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "known keys"
+msgstr ""
+
+#: cli/txn.py
+msgid "label"
 msgstr ""
 
 #: cli/language.py
@@ -1136,12 +1200,28 @@ msgstr ""
 msgid "no project or module declared a contract file set"
 msgstr ""
 
+#: cli/txn.py
+msgid "no transactions recorded"
+msgstr ""
+
 #: cli/language.py
 msgid "no translations to check; only the source language exists"
 msgstr ""
 
 #: modules/backup_engine/module.py
 msgid "nothing copied yet: this was a plan"
+msgstr ""
+
+#: cli/txn.py
+msgid "nothing to recover"
+msgstr ""
+
+#: cli/reset.py
+msgid "nothing to remove"
+msgstr ""
+
+#: cli/reset.py
+msgid "nothing was deleted"
 msgstr ""
 
 #: cli/commands.py
@@ -1202,6 +1282,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "path"
+msgstr ""
+
+#: cli/txn.py
+msgid "phase"
 msgstr ""
 
 #: cli/commands.py
@@ -1280,6 +1364,10 @@ msgstr ""
 msgid "query this host (with --port) instead of the local endpoint"
 msgstr ""
 
+#: cli/reset.py
+msgid "really delete (without it the command only lists what it would remove)"
+msgstr ""
+
 #: cli/service.py
 msgid "register it with: kdx service install"
 msgstr ""
@@ -1294,6 +1382,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "reloads"
+msgstr ""
+
+#: cli/reset.py
+msgid "removed {count} item(s), freed {size} bytes"
 msgstr ""
 
 #: cli/commands.py
@@ -1358,6 +1450,10 @@ msgstr ""
 
 #: modules/web_console/module.py
 msgid "start one with 'kdx run', then run 'kdx ui' again"
+msgstr ""
+
+#: cli/txn.py
+msgid "started"
 msgstr ""
 
 #: cli/commands.py
@@ -1442,6 +1538,10 @@ msgstr ""
 
 #: cli/jobs.py
 msgid "the daemon closed the feed (it is stopping)"
+msgstr ""
+
+#: cli/reset.py
+msgid "the daemon is running; stop it first: kdx stop"
 msgstr ""
 
 #: cli/jobs.py
@@ -1584,6 +1684,10 @@ msgstr ""
 msgid "{count} configuration findings need attention"
 msgstr ""
 
+#: cli/reset.py
+msgid "{count} item(s), {size} bytes; run kdx reset --apply to delete them"
+msgstr ""
+
 #: cli/language.py
 msgid "{count} string(s) left for {locale}"
 msgstr ""
@@ -1596,6 +1700,10 @@ msgstr ""
 msgid "{count} translation(s) accepted for {locale}"
 msgstr ""
 
+#: cli/txn.py
+msgid "{count} unfinished; run: kdx txn recover"
+msgstr ""
+
 #: cli/commands.py
 msgid "{directory} already holds a module"
 msgstr ""
@@ -1606,6 +1714,10 @@ msgstr ""
 
 #: cli/jobs.py
 msgid "{id}  {state}  {command}  (by {value}, {seconds}s)"
+msgstr ""
+
+#: cli/txn.py
+msgid "{id} undone"
 msgstr ""
 
 #: cli/jobs.py
@@ -1690,6 +1802,10 @@ msgstr ""
 
 #: cli/service.py
 msgid "{program} could not run: {exc}"
+msgstr ""
+
+#: cli/reset.py
+msgid "{root} does not exist; nothing to clear there"
 msgstr ""
 
 #: cli/service.py
