@@ -12,6 +12,15 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ### Added
 
+- **`paths.id_path` / `is_safe_id` / `existing_id_path`**: the one join for per-id records
+  (`<folder>/<id>.json`). An id is one ASCII label (letters, digits, `_ - .`, at most 128
+  characters): no separators, `..`, colon, leading or trailing dot, or Windows device name
+  (CON, NUL, COM1...). `id_path` raises `ValueError` for anything else, so a write or delete
+  cannot leave the folder; `existing_id_path` returns None for hostile or missing ids.
+- **`korodexios_core.jsonio`** (`loads`, `load_path`, `JsonLimitError`): untrusted JSON never
+  raises `RecursionError`; deep nesting and (optionally) oversized input arrive as
+  `ValueError`. Every JSON read in the core uses it, including the control-plane request
+  body, so a deeply nested POST gets a clean 4xx instead of a traceback.
 - **Language service (phase 36)**: `kdx locale show|list|set|check|extract|add|todo|apply`,
   `--locale`, config key `core.locale`, `.po` catalogues read directly (no compile step).
   Help text, tables, labels and messages are translated; command names, flags, `--json`,

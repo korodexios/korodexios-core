@@ -31,6 +31,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path, PurePosixPath
 from typing import Any, Final, cast
 
+from .. import jsonio
 from ..constants import IPC_SCHEMA_VERSION
 from ..paths import restrict_to_owner
 from ..units import page_size
@@ -765,7 +766,7 @@ class IpcDiscovery:
                 if line or not data:
                     continue
                 try:
-                    decoded = json.loads("\n".join(data))
+                    decoded = jsonio.loads("\n".join(data))
                 except ValueError:
                     decoded = None
                 data = []
@@ -792,7 +793,7 @@ class IpcDiscovery:
     def load(cls, path: Path) -> IpcDiscovery | None:
         """Read a discovery file; return None when it is missing or unreadable."""
         try:
-            raw = json.loads(Path(path).read_text(encoding="utf-8"))
+            raw = jsonio.load_path(path)
         except (OSError, ValueError):
             return None
         if not isinstance(raw, dict):
@@ -825,7 +826,7 @@ def _decode(raw: bytes) -> Any:
     if not raw:
         return None
     try:
-        return json.loads(raw.decode("utf-8"))
+        return jsonio.loads(raw.decode("utf-8"))
     except (ValueError, UnicodeDecodeError):
         return raw.decode("utf-8", "replace")
 

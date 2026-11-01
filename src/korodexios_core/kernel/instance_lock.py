@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .. import jsonio
 from ..constants import ENCODING, INSTANCE_LOCK_NAME
 from ..exceptions import InstanceLockError
 
@@ -291,7 +292,7 @@ class InstanceLock:
         except (OSError, UnicodeDecodeError):
             return None
         try:
-            data = json.loads(raw) if raw.strip() else None
+            data = jsonio.loads(raw) if raw.strip() else None
         except ValueError:
             return None
         if not isinstance(data, dict):
@@ -367,7 +368,7 @@ class InstanceLock:
         except (OSError, UnicodeDecodeError):
             return None
         try:
-            data = json.loads(raw) if raw.strip() else None
+            data = jsonio.loads(raw) if raw.strip() else None
         except ValueError:
             return None
         if not isinstance(data, dict):

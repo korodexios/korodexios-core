@@ -23,6 +23,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Final
 
+from .. import jsonio
 from ..paths import restrict_to_owner
 from .users import Caller
 
@@ -118,7 +119,7 @@ def _entries(path: Path) -> Iterable[dict[str, Any]]:
     with handle:
         for line in handle:
             try:
-                entry = json.loads(line)
+                entry = jsonio.loads(line)
             except ValueError:
                 continue
             if isinstance(entry, dict):

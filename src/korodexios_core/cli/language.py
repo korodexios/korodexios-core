@@ -8,12 +8,12 @@ follows the usual precedence: ``--locale sk``, ``KDX_CORE__LOCALE``, ``kdx.local
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
 import yaml
 
+from .. import jsonio
 from ..config.layered import ConfigSource
 from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
@@ -459,7 +459,7 @@ def _apply(request: CliRequest) -> int:
         return int(ExitCode.CONFIG_ERROR)
     source = Path(str(request.option("file", "")))
     try:
-        raw = json.loads(source.read_text(encoding="utf-8"))
+        raw = jsonio.load_path(source)
     except (OSError, UnicodeDecodeError, ValueError) as exc:
         write_line(f"{TAG_ERROR} " + _t(request, "{path} cannot be read as JSON: {reason}",
                                         path=source, reason=exc))

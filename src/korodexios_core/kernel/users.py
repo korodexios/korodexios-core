@@ -36,6 +36,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final
 
+from .. import jsonio
 from ..paths import restrict_to_owner
 
 ROLES: Final[tuple[str, ...]] = ("viewer", "operator", "admin")
@@ -226,7 +227,7 @@ class UserStore:
         if stamp == self._stamp:
             return
         try:
-            raw = json.loads(self.path.read_text(encoding="utf-8"))
+            raw = jsonio.load_path(self.path)
         except (OSError, ValueError) as exc:
             raise UserError(f"cannot read {self.path}: {exc}") from exc
         users: dict[str, UserRecord] = {}
