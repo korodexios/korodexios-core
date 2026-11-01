@@ -12,6 +12,18 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ### Added
 
+- **`kdx reset`**: lists the disposable development data (`core.reset.disposable`, default
+  `var/lib`) and, with `--apply`, deletes it. Durable roots (`data/` plus
+  `core.reset.durable`) are never touched, unsafe roots are refused, `.gitkeep` markers stay,
+  links are never followed, and it will not run while the daemon is up.
+- **`korodexios_core.fsio`** (`atomic_write_text`, `atomic_write_bytes`): atomic, fsynced,
+  LF-only writes; the user store and the discovery file use them, and the audit log appends
+  with `newline="
+"`, so the same record has the same bytes on Windows and Linux.
+- **`korodexios_core.text`** (`normalize_eol`, `sha256_text_file`) and
+  `sha256_file(path, text=True)` / `verify_contracts(rows, root, text=True)`: opt-in hashing
+  that reads CRLF as LF, so a line-ending-only change is not drift (`sha256-lf`). Binary files
+  always hash raw.
 - **`paths.id_path` / `is_safe_id` / `existing_id_path`**: the one join for per-id records
   (`<folder>/<id>.json`). An id is one ASCII label (letters, digits, `_ - .`, at most 128
   characters): no separators, `..`, colon, leading or trailing dot, or Windows device name

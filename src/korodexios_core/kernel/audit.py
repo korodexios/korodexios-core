@@ -71,7 +71,7 @@ class AuditLog:
                 self._rotate_if_full(len(line))
                 fresh = not self.path.exists()
                 self.path.parent.mkdir(parents=True, exist_ok=True)
-                with self.path.open("a", encoding="utf-8") as handle:
+                with self.path.open("a", encoding="utf-8", newline="\n") as handle:
                     handle.write(line)
                 if fresh:
                     restrict_to_owner(self.path)

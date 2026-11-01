@@ -8,12 +8,23 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final
 
+from ..text import sha256_text_file
+
 CONTRACT_CHUNK: Final[int] = 65_536
 CONTRACT_NAMED_ROWS: Final[int] = 8
 
 
-def sha256_file(path: Path) -> str:
-    """Return the hex SHA-256 of *path*, read in blocks so a large file stays cheap."""
+def sha256_file(path: Path, *, text: bool = False) -> str:
+    """Return the hex SHA-256 of *path*, read in blocks so a large file stays cheap.
+
+    With ``text=True`` a text file is hashed with CRLF read as LF, so "only the line
+    endings changed" is not drift; the result is a ``sha256-lf`` hash and a record should
+    say so. A binary file (one holding a NUL byte) always hashes its raw bytes.
+    """
+    if text:
+        normalized = sha256_text_file(path)
+        if normalized is not None:
+            return normalized
     digest = hashlib.sha256()
     with path.open("rb") as handle:
         block = handle.read(CONTRACT_CHUNK)
@@ -140,13 +151,16 @@ def dedupe_rows(rows: Sequence[ContractRow]) -> tuple[ContractRow, ...]:
     return tuple(seen.values())
 
 
-def verify_contracts(rows: Sequence[ContractRow], root: Path | None = None) -> ContractReport:
+def verify_contracts(
+    rows: Sequence[ContractRow], root: Path | None = None, *, text: bool = False
+) -> ContractReport:
     """Hash each declared file and compare it, without touching a single one of them.
 
     A relative 'path' resolves under *root* - the project's contract directory - and an
     absolute one is read as it stands. A declared file that cannot be read is reported as
     missing: the chassis has no business guessing the bytes of a file it cannot open, and
-    it certainly does not rewrite the file it was only asked to verify.
+    it certainly does not rewrite the file it was only asked to verify. With ``text=True``
+    the declared hashes are ``sha256-lf`` hashes and a line-ending-only change verifies.
     """
     ordered = dedupe_rows(rows)
     verified: list[str] = []
@@ -157,7 +171,7 @@ def verify_contracts(rows: Sequence[ContractRow], root: Path | None = None) -> C
         candidate = Path(row.path)
         resolved = candidate if candidate.is_absolute() or root is None else root / candidate
         try:
-            actual = sha256_file(resolved) if resolved.is_file() else ""
+            actual = sha256_file(resolved, text=text) if resolved.is_file() else ""
         except OSError:
             actual = ""
         if not actual:

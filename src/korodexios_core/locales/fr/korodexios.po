@@ -42,6 +42,10 @@ msgstr "--print n'a rien modifié"
 msgid "--rotate and --clear are mutually exclusive"
 msgstr "--rotate et --clear s'excluent mutuellement"
 
+#: cli/reset.py
+msgid "... and {count} more"
+msgstr "... et {count} de plus"
+
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
 msgstr "Demande à une tâche de s'arrêter (sa commande décide quand elle le peut)."
@@ -134,6 +138,10 @@ msgstr "Crée le certificat pour un plan de contrôle en https."
 msgid "Delete a user; their token stops working at once."
 msgstr "Supprime un utilisateur ; son jeton cesse de fonctionner aussitôt."
 
+#: cli/reset.py
+msgid "Delete {count} item(s) ({size} bytes)?"
+msgstr "Supprimer {count} élément(s) ({size} octets) ?"
+
 #: modules/backup_engine/module.py
 msgid "Destination directory for copies."
 msgstr "Répertoire de destination des copies."
@@ -181,6 +189,10 @@ msgstr "Émet le rapport en direct en JSON."
 #: cli/commands.py
 msgid "Emit the mapping as JSON."
 msgstr "Émet la correspondance en JSON."
+
+#: cli/reset.py
+msgid "Emit the plan and result as JSON."
+msgstr "Affiche le plan et le résultat en JSON."
 
 #: cli/commands.py
 msgid "Emit the reload summary as JSON."
@@ -301,6 +313,10 @@ msgstr "Liste les utilisateurs et leurs rôles."
 #: cli/jobs.py
 msgid "List, follow, or cancel commands running in the background on the daemon."
 msgstr "Liste, suit ou annule les commandes exécutées en arrière-plan sur le démon."
+
+#: cli/reset.py
+msgid "List, then with --apply delete, the disposable development data."
+msgstr "Liste, et avec --apply supprime, les données de développement jetables."
 
 #: cli/commands.py
 msgid "Logging"
@@ -802,6 +818,10 @@ msgstr "fichier de découverte"
 msgid "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir"
 msgstr "la découverte a besoin de {parent} dans core.modules.extra_paths ou passé via --modules-dir"
 
+#: cli/reset.py
+msgid "disposable root: {root}"
+msgstr "racine jetable : {root}"
+
 #: cli/language.py
 msgid "domain"
 msgstr "domaine"
@@ -813,6 +833,10 @@ msgstr "terminé"
 #: cli/commands.py
 msgid "drifted"
 msgstr "écarté"
+
+#: cli/reset.py
+msgid "durable, never touched: {root}"
+msgstr "durable, jamais touché : {root}"
 
 #: cli/commands.py
 msgid "ecosystem"
@@ -1146,6 +1170,14 @@ msgstr "aucune traduction à vérifier ; seule la langue source existe"
 msgid "nothing copied yet: this was a plan"
 msgstr "rien n'a encore été copié : c'était un plan"
 
+#: cli/reset.py
+msgid "nothing to remove"
+msgstr "rien à supprimer"
+
+#: cli/reset.py
+msgid "nothing was deleted"
+msgstr "rien n'a été supprimé"
+
 #: cli/commands.py
 msgid "nothing written"
 msgstr "rien d'écrit"
@@ -1282,6 +1314,10 @@ msgstr "interroge directement http://host:port, sans le fichier de découverte l
 msgid "query this host (with --port) instead of the local endpoint"
 msgstr "interroge cet hôte (avec --port) au lieu du point d'accès local"
 
+#: cli/reset.py
+msgid "really delete (without it the command only lists what it would remove)"
+msgstr "supprimer pour de bon (sans cela la commande liste seulement ce qu'elle supprimerait)"
+
 #: cli/service.py
 msgid "register it with: kdx service install"
 msgstr "enregistrez-le avec : kdx service install"
@@ -1297,6 +1333,10 @@ msgstr "échec du rechargement : {payload}"
 #: cli/commands.py
 msgid "reloads"
 msgstr "rechargements"
+
+#: cli/reset.py
+msgid "removed {count} item(s), freed {size} bytes"
+msgstr "{count} élément(s) supprimé(s), {size} octets libérés"
 
 #: cli/commands.py
 msgid "requests served"
@@ -1446,6 +1486,10 @@ msgstr "le démon sur {base_url} s'arrête"
 msgid "the daemon closed the feed (it is stopping)"
 msgstr "le démon a fermé le flux (il s'arrête)"
 
+#: cli/reset.py
+msgid "the daemon is running; stop it first: kdx stop"
+msgstr "le démon est en cours d'exécution ; arrêtez-le d'abord : kdx stop"
+
 #: cli/jobs.py
 msgid "the daemon refused the event feed (HTTP {code})"
 msgstr "le démon a refusé le flux d'événements (HTTP {code})"
@@ -1586,6 +1630,10 @@ msgstr "{count} catalogue(s) demandent de l'attention"
 msgid "{count} configuration findings need attention"
 msgstr "{count} constats de configuration demandent de l'attention"
 
+#: cli/reset.py
+msgid "{count} item(s), {size} bytes; run kdx reset --apply to delete them"
+msgstr "{count} élément(s), {size} octets ; supprimez-les avec kdx reset --apply"
+
 #: cli/language.py
 msgid "{count} string(s) left for {locale}"
 msgstr "il reste {count} textes pour {locale}"
@@ -1693,6 +1741,10 @@ msgstr "{path} : déclaré {declared}..., lu {actual}..."
 #: cli/service.py
 msgid "{program} could not run: {exc}"
 msgstr "{program} n'a pas pu s'exécuter : {exc}"
+
+#: cli/reset.py
+msgid "{root} does not exist; nothing to clear there"
+msgstr "{root} n'existe pas ; rien à nettoyer là"
 
 #: cli/service.py
 msgid "{shown} failed: {value}"

@@ -40,6 +40,10 @@ msgstr ""
 msgid "--rotate and --clear are mutually exclusive"
 msgstr ""
 
+#: cli/reset.py
+msgid "... and {count} more"
+msgstr ""
+
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
 msgstr ""
@@ -132,6 +136,10 @@ msgstr ""
 msgid "Delete a user; their token stops working at once."
 msgstr ""
 
+#: cli/reset.py
+msgid "Delete {count} item(s) ({size} bytes)?"
+msgstr ""
+
 #: modules/backup_engine/module.py
 msgid "Destination directory for copies."
 msgstr ""
@@ -178,6 +186,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "Emit the mapping as JSON."
+msgstr ""
+
+#: cli/reset.py
+msgid "Emit the plan and result as JSON."
 msgstr ""
 
 #: cli/commands.py
@@ -298,6 +310,10 @@ msgstr ""
 
 #: cli/jobs.py
 msgid "List, follow, or cancel commands running in the background on the daemon."
+msgstr ""
+
+#: cli/reset.py
+msgid "List, then with --apply delete, the disposable development data."
 msgstr ""
 
 #: cli/commands.py
@@ -800,6 +816,10 @@ msgstr ""
 msgid "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir"
 msgstr ""
 
+#: cli/reset.py
+msgid "disposable root: {root}"
+msgstr ""
+
 #: cli/language.py
 msgid "domain"
 msgstr ""
@@ -810,6 +830,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "drifted"
+msgstr ""
+
+#: cli/reset.py
+msgid "durable, never touched: {root}"
 msgstr ""
 
 #: cli/commands.py
@@ -1144,6 +1168,14 @@ msgstr ""
 msgid "nothing copied yet: this was a plan"
 msgstr ""
 
+#: cli/reset.py
+msgid "nothing to remove"
+msgstr ""
+
+#: cli/reset.py
+msgid "nothing was deleted"
+msgstr ""
+
 #: cli/commands.py
 msgid "nothing written"
 msgstr ""
@@ -1280,6 +1312,10 @@ msgstr ""
 msgid "query this host (with --port) instead of the local endpoint"
 msgstr ""
 
+#: cli/reset.py
+msgid "really delete (without it the command only lists what it would remove)"
+msgstr ""
+
 #: cli/service.py
 msgid "register it with: kdx service install"
 msgstr ""
@@ -1294,6 +1330,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "reloads"
+msgstr ""
+
+#: cli/reset.py
+msgid "removed {count} item(s), freed {size} bytes"
 msgstr ""
 
 #: cli/commands.py
@@ -1444,6 +1484,10 @@ msgstr ""
 msgid "the daemon closed the feed (it is stopping)"
 msgstr ""
 
+#: cli/reset.py
+msgid "the daemon is running; stop it first: kdx stop"
+msgstr ""
+
 #: cli/jobs.py
 msgid "the daemon refused the event feed (HTTP {code})"
 msgstr ""
@@ -1584,6 +1628,10 @@ msgstr ""
 msgid "{count} configuration findings need attention"
 msgstr ""
 
+#: cli/reset.py
+msgid "{count} item(s), {size} bytes; run kdx reset --apply to delete them"
+msgstr ""
+
 #: cli/language.py
 msgid "{count} string(s) left for {locale}"
 msgstr ""
@@ -1690,6 +1738,10 @@ msgstr ""
 
 #: cli/service.py
 msgid "{program} could not run: {exc}"
+msgstr ""
+
+#: cli/reset.py
+msgid "{root} does not exist; nothing to clear there"
 msgstr ""
 
 #: cli/service.py

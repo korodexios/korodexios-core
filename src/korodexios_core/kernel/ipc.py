@@ -33,7 +33,7 @@ from typing import Any, Final, cast
 
 from .. import jsonio
 from ..constants import IPC_SCHEMA_VERSION
-from ..paths import restrict_to_owner
+from ..fsio import atomic_write_text
 from ..units import page_size
 from ..version import CORE_API_VERSION
 from .audit import AuditLog
@@ -1918,20 +1918,9 @@ class IpcServer:
             return
         target.parent.mkdir(parents=True, exist_ok=True)
         payload = json.dumps(self._discovery.as_dict(), sort_keys=True) + "\n"
-        temporary = target.parent / f"{target.name}.tmp.{os.getpid()}"
-        descriptor = os.open(str(temporary), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
-            handle.write(payload)
-            handle.flush()
         # Owner-only before the rename, so the token is never readable at the final path
-        # by anyone else - on Windows, too, where the 0600 mode above means nothing.
-        restrict_to_owner(temporary)
-        try:
-            os.replace(str(temporary), str(target))
-        except OSError:
-            with contextlib.suppress(OSError):
-                temporary.unlink()
-            raise
+        # by anyone else - on Windows, too, where a 0600 mode means nothing.
+        atomic_write_text(target, payload, private=True, fsync=False)
 
     def _remove_discovery(self) -> None:
         target = self._options.discovery_path

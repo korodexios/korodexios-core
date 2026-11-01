@@ -206,6 +206,23 @@ resolved from configuration, not a hardcoded path. Rotation names the archive
 cooperative: the running chassis notices the renamed file on its next write and
 reopens the path, so it never keeps appending into the archive.
 
+## `kdx reset`
+
+```bash
+kdx reset                     # list what would be removed (dry run, the default)
+kdx reset --json              # the same plan as JSON
+kdx reset --apply             # delete it (asks first on a TTY; non-TTY and --yes proceed)
+```
+
+Clears the disposable development data and nothing else. The disposable roots are
+`core.reset.disposable` (default: the data directory, `var/lib`). The durable directory
+(`data/`, which holds the control-plane users and the audit log) and every root in
+`core.reset.durable` are never touched, and a disposable root that overlaps a durable root,
+equals the project root, or contains the runtime state, log, or configuration paths is refused
+with exit code 3 instead of being trimmed. Files named in `core.reset.keep` (default
+`.gitkeep`) stay, and so do the directories that hold them. Symbolic links and Windows
+junctions are removed as links and never followed. `--apply` refuses while the daemon runs.
+
 ## `kdx modules`
 
 ```bash

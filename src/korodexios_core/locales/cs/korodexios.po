@@ -42,6 +42,10 @@ msgstr "--print nic nezměnil"
 msgid "--rotate and --clear are mutually exclusive"
 msgstr "--rotate a --clear se navzájem vylučují"
 
+#: cli/reset.py
+msgid "... and {count} more"
+msgstr "... a dalších {count}"
+
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
 msgstr "Požádá úlohu o zastavení (kdy se zastaví, určuje její příkaz)."
@@ -134,6 +138,10 @@ msgstr "Vytvoří certifikát pro řídicí rovinu přes https."
 msgid "Delete a user; their token stops working at once."
 msgstr "Smaže uživatele; jeho token okamžitě přestane platit."
 
+#: cli/reset.py
+msgid "Delete {count} item(s) ({size} bytes)?"
+msgstr "Smazat {count} položek ({size} bajtů)?"
+
 #: modules/backup_engine/module.py
 msgid "Destination directory for copies."
 msgstr "Cílový adresář pro kopie."
@@ -181,6 +189,10 @@ msgstr "Vypíše živý report jako JSON."
 #: cli/commands.py
 msgid "Emit the mapping as JSON."
 msgstr "Vypíše mapování jako JSON."
+
+#: cli/reset.py
+msgid "Emit the plan and result as JSON."
+msgstr "Vypíše plán a výsledek jako JSON."
 
 #: cli/commands.py
 msgid "Emit the reload summary as JSON."
@@ -301,6 +313,10 @@ msgstr "Vypíše uživatele a jejich role."
 #: cli/jobs.py
 msgid "List, follow, or cancel commands running in the background on the daemon."
 msgstr "Vypíše, sleduje nebo zruší příkazy běžící na pozadí v démonovi."
+
+#: cli/reset.py
+msgid "List, then with --apply delete, the disposable development data."
+msgstr "Vypíše a s --apply smaže jednorázová vývojová data."
 
 #: cli/commands.py
 msgid "Logging"
@@ -802,6 +818,10 @@ msgstr "soubor objevování"
 msgid "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir"
 msgstr "objevování potřebuje {parent} v core.modules.extra_paths nebo zadané přes --modules-dir"
 
+#: cli/reset.py
+msgid "disposable root: {root}"
+msgstr "jednorázový kořen: {root}"
+
 #: cli/language.py
 msgid "domain"
 msgstr "doména"
@@ -813,6 +833,10 @@ msgstr "hotovo"
 #: cli/commands.py
 msgid "drifted"
 msgstr "odchýleno"
+
+#: cli/reset.py
+msgid "durable, never touched: {root}"
+msgstr "trvalé, nikdy se jich nedotkne: {root}"
 
 #: cli/commands.py
 msgid "ecosystem"
@@ -1146,6 +1170,14 @@ msgstr "není co kontrolovat; existuje jen zdrojový jazyk"
 msgid "nothing copied yet: this was a plan"
 msgstr "zatím se nic nezkopírovalo: šlo o plán"
 
+#: cli/reset.py
+msgid "nothing to remove"
+msgstr "není co odstranit"
+
+#: cli/reset.py
+msgid "nothing was deleted"
+msgstr "nic se nesmazalo"
+
 #: cli/commands.py
 msgid "nothing written"
 msgstr "nic se nezapsalo"
@@ -1282,6 +1314,10 @@ msgstr "zeptá se přímo na http://host:port bez lokálního souboru objevován
 msgid "query this host (with --port) instead of the local endpoint"
 msgstr "zeptá se tohoto hostitele (s --port) místo lokálního koncového bodu"
 
+#: cli/reset.py
+msgid "really delete (without it the command only lists what it would remove)"
+msgstr "opravdu smazat (bez toho příkaz jen vypíše, co by odstranil)"
+
 #: cli/service.py
 msgid "register it with: kdx service install"
 msgstr "zaregistruj ji přes: kdx service install"
@@ -1297,6 +1333,10 @@ msgstr "načtení selhalo: {payload}"
 #: cli/commands.py
 msgid "reloads"
 msgstr "načtení"
+
+#: cli/reset.py
+msgid "removed {count} item(s), freed {size} bytes"
+msgstr "odstraněno {count} položek, uvolněno {size} bajtů"
 
 #: cli/commands.py
 msgid "requests served"
@@ -1446,6 +1486,10 @@ msgstr "démon na {base_url} se zastavuje"
 msgid "the daemon closed the feed (it is stopping)"
 msgstr "démon ukončil přenos (zastavuje se)"
 
+#: cli/reset.py
+msgid "the daemon is running; stop it first: kdx stop"
+msgstr "daemon běží; nejprve ho zastavte: kdx stop"
+
 #: cli/jobs.py
 msgid "the daemon refused the event feed (HTTP {code})"
 msgstr "démon odmítl přenos událostí (HTTP {code})"
@@ -1586,6 +1630,10 @@ msgstr "{count} katalog(ů) vyžaduje pozornost"
 msgid "{count} configuration findings need attention"
 msgstr "{count} nálezů v konfiguraci vyžaduje pozornost"
 
+#: cli/reset.py
+msgid "{count} item(s), {size} bytes; run kdx reset --apply to delete them"
+msgstr "{count} položek, {size} bajtů; smažete je příkazem kdx reset --apply"
+
 #: cli/language.py
 msgid "{count} string(s) left for {locale}"
 msgstr "pro {locale} zbývá {count} textů"
@@ -1693,6 +1741,10 @@ msgstr "{path}: deklarováno {declared}..., načteno {actual}..."
 #: cli/service.py
 msgid "{program} could not run: {exc}"
 msgstr "{program} se nepodařilo spustit: {exc}"
+
+#: cli/reset.py
+msgid "{root} does not exist; nothing to clear there"
+msgstr "{root} neexistuje; není tam co čistit"
 
 #: cli/service.py
 msgid "{shown} failed: {value}"
