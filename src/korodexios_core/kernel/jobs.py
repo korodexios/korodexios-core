@@ -17,6 +17,7 @@ end; the job then reports that the cancel came too late.
 
 from __future__ import annotations
 
+import builtins
 import io
 import itertools
 import threading
@@ -84,6 +85,7 @@ class JobRegistry:
         self._jobs: dict[str, Job] = {}
         self._lock = threading.Lock()
         self._ids = itertools.count(1)
+        self._threads: dict[str, threading.Thread] = {}
 
     def submit(
         self,
@@ -115,6 +117,14 @@ class JobRegistry:
         thread = threading.Thread(
             target=self._run, args=(job, call), name=f"kdx-{job.id}", daemon=True
         )
+        with self._lock:
+            # A finished job's thread is no longer worth waiting for at shutdown.
+            self._threads = {
+                key: value
+                for key, value in self._threads.items()
+                if key in self._jobs and self._jobs[key].state in ACTIVE_STATES
+            }
+            self._threads[job.id] = thread
         thread.start()
         return job
 
@@ -139,6 +149,25 @@ class JobRegistry:
                 job.cancel.set()
                 job.state = "cancelling"
             return job
+
+    def cancel_all(self) -> builtins.list[Job]:
+        """Ask every running job to stop; return the jobs asked."""
+        with self._lock:
+            asked = [job for job in self._jobs.values() if job.state == "running"]
+            for job in asked:
+                job.cancel.set()
+                job.state = "cancelling"
+        return asked
+
+    def wait(self, timeout: float) -> builtins.list[Job]:
+        """Wait up to *timeout* seconds for every job thread; return the jobs still active."""
+        deadline = time.monotonic() + max(0.0, float(timeout))
+        with self._lock:
+            threads = list(self._threads.items())
+        for _job_id, thread in threads:
+            thread.join(timeout=max(0.0, deadline - time.monotonic()))
+        with self._lock:
+            return [job for job in self._jobs.values() if job.state in ACTIVE_STATES]
 
     def running(self) -> int:
         """Return how many jobs are running now."""

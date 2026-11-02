@@ -41,6 +41,7 @@ from .engine import (
     describe_plan,
     describe_result,
     execute_plan,
+    parse_stamp,
 )
 
 DEFAULT_EXCLUDES = (".git", ".venv", "__pycache__", "var", "node_modules", "*.pyc", "*.log")
@@ -774,12 +775,11 @@ class BackupEngineModule(Module):
 
     @staticmethod
     def _stamp_time(label: str) -> float | None:
-        """Return the moment *label* names, when it is a stamp this chassis would write."""
-        try:
-            parsed = datetime.strptime(label, STAMP_FORMAT)
-        except ValueError:
-            return None
-        return parsed.timestamp()
+        """Return the moment *label* names, when it is a stamp this chassis would write.
+
+        A same-second sibling ('<stamp>-1') counts as well: the run that made it wrote it.
+        """
+        return parse_stamp(label)
 
     def _prune_dest(self, dest: Path, *, keep: Path | None = None) -> PruneReport:
         """Remove stamped copies older than 'auto_prune_days' under *dest* and report it.

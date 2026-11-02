@@ -39,6 +39,7 @@ from typing import Any, Final
 
 from .. import jsonio
 from ..fsio import atomic_write_text
+from .locks import NamedLock
 
 ROLES: Final[tuple[str, ...]] = ("viewer", "contributor", "operator", "admin")
 """Every role, weakest first; a role holds every right of the roles before it."""
@@ -47,6 +48,8 @@ OWNER_NAME: Final[str] = "owner"
 """The name the shared core.ipc.token answers to; it always holds the admin role."""
 
 USERS_FILE_NAME: Final[str] = "users.json"
+WRITE_LOCK_TIMEOUT: Final[float] = 10.0
+"""Seconds a writer waits for another process editing the same users file."""
 TOKEN_BYTES: Final[int] = 32
 NAME_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[a-z0-9][a-z0-9_.-]{0,31}$")
 
@@ -136,15 +139,17 @@ class UserStore:
     """Reads and writes '<durable_dir>/users.json'; safe across threads and processes.
 
     Writes go to a sibling file restricted to its owner and are renamed into place, so a
-    daemon reading the file never sees half of it. Reads are cached on the file's
-    modification stamp, so a 'kdx users add' in another terminal reaches a running daemon
-    on its next request without a reload.
+    daemon reading the file never sees half of it. Every change is a read-modify-write
+    under an advisory lock on '<file>.lock', so two terminals editing users at once
+    cannot lose each other's change. Reads are cached on the file's identity and
+    modification stamp, so a 'kdx users add' in another terminal reaches a running
+    daemon on its next request without a reload.
     """
 
     def __init__(self, path: Path) -> None:
         self.path = Path(path)
         self._lock = threading.Lock()
-        self._stamp: tuple[int, int] | None = None
+        self._stamp: tuple[int, int, int] | None = None
         self._users: dict[str, UserRecord] = {}
 
     def users(self) -> list[UserRecord]:
@@ -162,8 +167,7 @@ class UserStore:
         """Create *name* with *role*; return the new token, which is never stored in clear."""
         clean = validate_name(name)
         validate_role(role)
-        with self._lock:
-            self._refresh()
+        with self._editing():
             if clean in self._users:
                 raise UserError(
                     f"user {clean!r} already exists; 'kdx users rotate {clean}' issues a new token"
@@ -174,16 +178,14 @@ class UserStore:
         return token
 
     def remove(self, name: str) -> None:
-        with self._lock:
-            self._refresh()
+        with self._editing():
             if self._users.pop(str(name), None) is None:
                 raise UserError(f"no user named {name!r}")
             self._write()
 
     def rotate(self, name: str) -> str:
         """Replace the token of *name*; the old one stops working at once."""
-        with self._lock:
-            self._refresh()
+        with self._editing():
             user = self._users.get(str(name))
             if user is None:
                 raise UserError(f"no user named {name!r}")
@@ -196,8 +198,7 @@ class UserStore:
 
     def set_role(self, name: str, role: str) -> UserRecord:
         validate_role(role)
-        with self._lock:
-            self._refresh()
+        with self._editing():
             user = self._users.get(str(name))
             if user is None:
                 raise UserError(f"no user named {name!r}")
@@ -218,13 +219,29 @@ class UserStore:
                 found = user
         return found
 
+    @contextlib.contextmanager
+    def _editing(self) -> Iterator[None]:
+        """Hold the thread lock and the cross-process file lock, on a fresh read."""
+        with self._lock:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            guard = NamedLock(self.path.with_name(self.path.name + ".lock"), name="users")
+            guard.acquire(timeout=WRITE_LOCK_TIMEOUT)
+            try:
+                # Another process may have written since the last read; the stamp says so.
+                self._refresh()
+                yield
+            finally:
+                guard.release()
+
     def _refresh(self) -> None:
         try:
             stat = self.path.stat()
         except OSError:
             self._stamp, self._users = None, {}
             return
-        stamp = (stat.st_mtime_ns, stat.st_size)
+        # A rename-into-place write is a new file: its inode changes even when a rotated
+        # token leaves the size alone and a coarse clock leaves the time alone.
+        stamp = (stat.st_ino, stat.st_mtime_ns, stat.st_size)
         if stamp == self._stamp:
             return
         try:
@@ -255,7 +272,7 @@ class UserStore:
             self.path, json.dumps(payload, indent=2, sort_keys=True) + "\n", private=True
         )
         stat = self.path.stat()
-        self._stamp = (stat.st_mtime_ns, stat.st_size)
+        self._stamp = (stat.st_ino, stat.st_mtime_ns, stat.st_size)
 
 
 def validate_name(name: Any) -> str:
