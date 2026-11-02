@@ -5,6 +5,8 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-11-02
+
 ### Added
 
 - **The authenticated caller is public API**: `Caller`, `current_caller` and `acting_as` are

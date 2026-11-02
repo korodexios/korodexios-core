@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.4.1.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.4.2.
 
 ## Working preferences
 
@@ -44,7 +44,7 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 
 ## Ask first (outward-facing / hard to reverse)
 
-- No `git push`, no tag (e.g. `v0.4.1`), no merge to `main`: the owner decides.
+- No `git push`, no tag (e.g. `v0.4.2`), no merge to `main`: the owner decides.
 - Never run `kdx service install` (registers a logon task on the owner's machine);
   offer it, do not do it unasked.
 - Never commit control-plane users or the audit log (see commit f78f747); keep
@@ -52,9 +52,10 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 
 ## Current state (2026-11-02)
 
-- `main` is at v0.4.1 (tagged); every earlier feature/review branch is merged into it.
-- Branch `fix/review-2026-11` (local, not pushed) fixes the findings of
-  `docs/REVIEW-2026-11.sk.md`; the changes sit under `[Unreleased]` in `CHANGELOG.md`.
+- `main` is at v0.4.2 (tagged); every earlier feature/review branch is merged into it.
+- v0.4.2 holds the fixes of `docs/REVIEW-2026-11.sk.md` and the public caller API
+  (`Caller`, `current_caller`, `IpcRequest.caller`, `CliRequest.caller`, jobs keep the caller).
+  Local only: not pushed.
 - Review documents: `docs/REVIEW-2026-10.sk.md`, `docs/REVIEW-2026-11.sk.md` (both
   Slovak, the only exceptions to the English-only rule). Other docs: `docs/ARCHITECTURE.md`,
   `CLI_REFERENCE.md`, `ROADMAP.md`, `TUTORIAL.md`, `AGENTS_GUIDE.md`.
