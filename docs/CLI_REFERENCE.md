@@ -435,9 +435,13 @@ kdx status --target http://HOST:8123 --token my-static-lan-key
 | Read auth | `core.ipc.auth` | `KDX_CORE__IPC__AUTH` | `--auth` / `--no-auth` |
 | Shared secret | `core.ipc.token` | `KDX_CORE__IPC__TOKEN` | `--ipc-token` |
 | Anonymous stop | `core.ipc.allow_anonymous_shutdown` | `KDX_CORE__IPC__ALLOW_ANONYMOUS_SHUTDOWN` | - |
+| LAN host names | `core.ipc.allowed_hosts` | `KDX_CORE__IPC__ALLOWED_HOSTS` | - |
 
 A wildcard bind (`0.0.0.0`, `::`) is announced as `127.0.0.1` in `var/chassis.ipc`, so
-local clients need no change; remote clients pass `--target`.
+local clients need no change; remote clients pass `--target`. On a LAN bind, list the
+names and addresses clients dial in `core.ipc.allowed_hosts` (for example
+`[nas.lan, 192.168.1.20]`): a request with any other `Host` is refused with `403`, which
+closes DNS rebinding. Loopback names are always accepted.
 
 ### https in three commands
 

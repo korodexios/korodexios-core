@@ -98,6 +98,56 @@ def _required_role(command: CliCommand) -> str:
     return "admin" if command.danger else "operator"
 
 
+def _checked_rpc_value(command: str, action: argparse.Action, value: Any) -> Any:
+    """Return *value* as argparse would have produced it for *action*, or raise TypeError.
+
+    None keeps the declared default's meaning. A flag wants a bool (a counter an int); a
+    list-valued argument takes a list (or one scalar); every element is converted with
+    the argument's own type and checked against its choices.
+    """
+    name = f"{command} {action.dest}"
+    if value is None:
+        return None
+    if action.nargs == 0:
+        if isinstance(action, argparse._CountAction):
+            if isinstance(value, bool) or not isinstance(value, int):
+                raise TypeError(f"{name} counts; send an integer, not {value!r}")
+            return value
+        if not isinstance(value, bool):
+            raise TypeError(f"{name} is a flag; send true or false, not {value!r}")
+        return value
+    many = (
+        isinstance(action, argparse._AppendAction)
+        or action.nargs in ("*", "+", argparse.REMAINDER)
+        or (isinstance(action.nargs, int) and action.nargs > 1)
+    )
+    if many:
+        items = list(value) if isinstance(value, list | tuple) else [value]
+        return [_checked_rpc_element(name, action, item) for item in items]
+    return _checked_rpc_element(name, action, value)
+
+
+def _checked_rpc_element(name: str, action: argparse.Action, value: Any) -> Any:
+    if isinstance(value, Mapping | list | tuple | set):
+        raise TypeError(f"{name} takes a single value, not {type(value).__name__}")
+    convert = action.type if callable(action.type) else str
+    if isinstance(value, bool) and convert is not bool:
+        raise TypeError(f"{name} takes a value, not {value!r}")
+    if not (convert in (int, float) and isinstance(value, int | float)):
+        try:
+            value = convert(str(value))
+        except (TypeError, ValueError, argparse.ArgumentTypeError) as exc:
+            raise TypeError(f"{name}: invalid value {value!r} ({exc})") from exc
+    elif convert is int and isinstance(value, float):
+        if not value.is_integer():
+            raise TypeError(f"{name} takes an integer, not {value!r}")
+        value = int(value)
+    if action.choices is not None and value not in action.choices:
+        options = ", ".join(repr(choice) for choice in action.choices)
+        raise TypeError(f"{name}: invalid choice {value!r} (choose from {options})")
+    return value
+
+
 class _RpcArgumentError(Exception):
     """argparse's complaint about delegated tokens, raised instead of exiting."""
 
@@ -193,6 +243,8 @@ class Chassis:
     """Named users and roles, '<durable_dir>/users.json'; managed with 'kdx users'."""
     audit: AuditLog | None = None
     """Who acted over the control plane, '<durable_dir>/audit.jsonl'."""
+    environ: Mapping[str, str] | None = None
+    """The environment the chassis booted from; a reload reads the same one."""
 
     @classmethod
     def create(cls, options: ChassisOptions | None = None) -> Chassis:
@@ -341,6 +393,7 @@ class Chassis:
             project_contracts=project_rows,
             users=UserStore(Path(paths.durable_dir) / USERS_FILE_NAME),
             audit=AuditLog(Path(paths.durable_dir) / AUDIT_FILE_NAME),
+            environ=environ,
         )
         context.chassis = chassis
         return chassis
@@ -445,6 +498,11 @@ class Chassis:
             allow_anonymous_shutdown=self.config.get_bool(
                 "core.ipc.allow_anonymous_shutdown", False
             ),
+            allowed_hosts=tuple(
+                str(item).strip()
+                for item in self.config.get_list("core.ipc.allowed_hosts", []) or []
+                if str(item).strip()
+            ),
             tls_cert=self.tls_files()[0],
             tls_key=self.tls_files()[1],
         )
@@ -485,6 +543,12 @@ class Chassis:
                 auth=options.auth,
                 token_source=options.token_source,
             )
+            if not options.allowed_hosts:
+                self.logger.warning(
+                    f"{TAG_NOTE} core.ipc.allowed_hosts is empty: a LAN control plane "
+                    "answers any Host name, which leaves DNS rebinding to the token alone",
+                    hint="list the names and addresses clients dial, e.g. [nas.lan, 192.168.1.20]",
+                )
         self.bus.publish(
             "core.ipc.started",
             {
@@ -781,7 +845,7 @@ class Chassis:
             config_file=self.paths.config_file,
             local_config_file=self.paths.local_config_file,
             env_file=self.paths.env_file,
-            environ=os.environ,
+            environ=self.environ if self.environ is not None else os.environ,
             cli_overrides=dict(self.cli_overrides),
             runtime_defaults={"core.home": str(self.paths.root)},
         )
@@ -945,10 +1009,20 @@ class Chassis:
         return None if cancelled is None else cancelled.as_dict(output=False)
 
     def job_report(self, job_id: str = "") -> Any:
-        """Return one job with its output so far, every job without it, or None."""
+        """Return one job with its output so far, every job without it, or None.
+
+        The output is its owner's and an admin's to read: a viewer sees that a job ran,
+        not what an admin's command printed. Another caller's job answers like an unknown
+        one, so its id reveals nothing either.
+        """
         if job_id:
             job = self.jobs.get(job_id)
-            return None if job is None else job.as_dict()
+            if job is None:
+                return None
+            caller = current_caller()
+            if caller is not None and not caller.allows("admin") and caller.name != job.user:
+                return None
+            return job.as_dict()
         return {
             "running": self.jobs.running(),
             "jobs": [job.as_dict(output=False) for job in self.jobs.list()],
@@ -1083,8 +1157,22 @@ class Chassis:
             raise LookupError(
                 f"the delegated arguments for {target.name!r} did not parse: {exc}"
             ) from exc
+        # A mapping value gets the same checks a token would: a declared argument only,
+        # its type, and its choices. Otherwise '--remote' and the web console could hand a
+        # handler what the terminal would have refused.
+        declared = {
+            action.dest: action
+            for action in parser._actions
+            if action.dest not in (argparse.SUPPRESS, "help")
+        }
         for key, value in payload.items():
-            setattr(namespace, str(key), value)
+            action = declared.get(str(key))
+            if action is None:
+                known = ", ".join(sorted(declared)) or "none"
+                raise TypeError(
+                    f"{target.name!r} declares no argument {key!r} (it accepts: {known})"
+                )
+            setattr(namespace, action.dest, _checked_rpc_value(target.name, action, value))
         return namespace
 
     def declared_contracts(self) -> tuple[tuple[str, ContractRow], ...]:
@@ -1254,6 +1342,7 @@ class Chassis:
         )
         timeout = self.config.get_float("core.lifecycle.stop_timeout", 5.0)
         self.stop_ipc(timeout=timeout)
+        self._stop_jobs(timeout=timeout)
         self.stop_scheduler(timeout=timeout)
         self.registry.stop_all(timeout=timeout)
         runtime = self.async_runtime
@@ -1267,6 +1356,28 @@ class Chassis:
         self.signals.uninstall()
         close_logger(self.context.logs.root_logger)
         return code
+
+    def _stop_jobs(self, timeout: float) -> None:
+        """Cancel every running job and wait for it, before the modules it uses stop.
+
+        A job runs a module's handler; stopping the module under it, or letting the
+        interpreter cut its daemon thread mid-write, is exactly the unclean ending the
+        shutdown contract forbids. A job that ignores its cancel past *timeout* is
+        recorded as abandoned, so the audit says what the daemon left behind.
+        """
+        cancelled = self.jobs.cancel_all()
+        if not cancelled:
+            return
+        self.logger.info(f"{TAG_NOTE} cancelling {len(cancelled)} running job(s)")
+        for job in self.jobs.wait(timeout=timeout):
+            self.logger.warning(
+                f"{TAG_NOTE} job still running at shutdown", job=job.id, command=job.command
+            )
+            if self.audit is not None:
+                self.audit.record(
+                    "job", caller=None, outcome="abandoned at shutdown", command=job.command,
+                    detail={"id": job.id, "user": job.user or None},
+                )
 
     def collect_cli(self, surface: CliSurface) -> list[CliCommand]:
         """Let modules inject their commands into *surface* (argparse, menus, docs)."""

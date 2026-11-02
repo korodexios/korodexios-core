@@ -141,6 +141,18 @@ string. The chassis still owns the socket; a module only decides what its body
 means, and these names are the vocabulary it may choose from.
 """
 
+SECURITY_HEADERS: Final[tuple[tuple[str, str], ...]] = (
+    ("X-Content-Type-Options", "nosniff"),
+    ("X-Frame-Options", "DENY"),
+    ("Content-Security-Policy", "frame-ancestors 'none'"),
+    ("Referrer-Policy", "no-referrer"),
+)
+"""Headers every control-plane response carries unless the handler set its own.
+
+'frame-ancestors' only works as a header - a <meta> CSP ignores it - so the chassis sends
+it: no foreign page may frame the console and steer a click onto 'Stop daemon'. A
+module that answers with its own Content-Security-Policy keeps it unchanged."""
+
 _EXTRA_CONTENT_TYPES: dict[str, str] = {
     ".css": "text/css",
     ".csv": "text/csv",
@@ -851,6 +863,8 @@ class IpcOptions:
     token_source: str = "ephemeral"
     auth: bool = True
     allow_anonymous_shutdown: bool = False
+    allowed_hosts: tuple[str, ...] = ()
+    """Host names a LAN-bound control plane answers to; empty accepts any name."""
     fallback_attempts: int = 5
     tls_cert: Path | None = None
     tls_key: Path | None = None
@@ -946,6 +960,7 @@ class _ControlHandler(BaseHTTPRequestHandler):
 
     def _route(self, method: str) -> None:
         ipc = cast("_ControlServer", self.server).kdx_ipc
+        ipc.count_request()
         refusal = ipc.cross_origin_refusal(self.headers.get("Host"), self.headers.get("Origin"))
         if refusal is not None:
             self._reply(
@@ -1072,9 +1087,12 @@ class _ControlHandler(BaseHTTPRequestHandler):
         if path == JOBS_PATH:
             if method == "POST":
                 if caller is not None and not caller.allows("operator"):
-                    self._refuse(ipc, path, caller, "operator")
+                    self._refuse(ipc, path, caller, "operator", acting=True)
                     return
                 payload = self._read_payload()
+                if payload is PAYLOAD_TOO_LARGE:
+                    self._reply(PAYLOAD_TOO_LARGE, {"error": "request body too large"})
+                    return
                 job_id = payload.get("cancel") if isinstance(payload, Mapping) else None
                 if not job_id:
                     self._reply(400, {"error": "POST /api/v1/jobs expects {\"cancel\": \"job-N\"}"})
@@ -1118,11 +1136,15 @@ class _ControlHandler(BaseHTTPRequestHandler):
                     acting=bool(route.role) or method not in ("GET", "HEAD"),
                 )
                 return
+        body = self._read_payload()
+        if body is PAYLOAD_TOO_LARGE:
+            self._reply(PAYLOAD_TOO_LARGE, {"error": "request body too large", "route": route.path})
+            return
         request = IpcRequest(
             method=method,
             path=route.path,
             query=urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query),
-            payload=self._read_payload(),
+            payload=body,
             headers=dict(self.headers.items()),
         )
         try:
@@ -1234,7 +1256,7 @@ class _ControlHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", stream.content_type)
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Accel-Buffering", "no")
-            for key, value in stream.headers:
+            for key, value in _with_security_headers(stream.headers):
                 self.send_header(str(key), str(value))
             self.send_header("Connection", "close")
             self.close_connection = True
@@ -1294,7 +1316,7 @@ class _ControlHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", content_type)
             if code != 304:
                 self.send_header("Content-Length", str(len(raw)))
-            for key, value in headers:
+            for key, value in _with_security_headers(headers):
                 self.send_header(str(key), str(value))
             self.send_header("Connection", "close")
             # The header alone does not end the dispatch loop. A client that asked for
@@ -1333,6 +1355,16 @@ class _ControlHandler(BaseHTTPRequestHandler):
             ipc.logger.debug("ipc " + (format % args), path=self.path)
 
 
+def _with_security_headers(
+    headers: Iterable[tuple[str, str]],
+) -> list[tuple[str, str]]:
+    """Return *headers* plus every SECURITY_HEADERS entry the handler did not set."""
+    merged = [(str(key), str(value)) for key, value in headers]
+    present = {key.lower() for key, _ in merged}
+    merged.extend(item for item in SECURITY_HEADERS if item[0].lower() not in present)
+    return merged
+
+
 class IpcServer:
     """Loopback HTTP server exposing health, status, and remote shutdown."""
 
@@ -1364,6 +1396,7 @@ class IpcServer:
         self._discovery: IpcDiscovery | None = None
         self._requests = 0
         self._errors = 0
+        self._counter_lock = threading.Lock()
         self._started_at = 0.0
         self._bound_host = self._options.host
         self._lan_accessible = not is_loopback_host(self._options.host)
@@ -1549,6 +1582,13 @@ class IpcServer:
             name = _host_name(host_text)
             if not is_loopback_host(name):
                 return f"Host {host_text!r} is not a loopback name for a loopback control plane"
+        elif host_text and self._options.allowed_hosts:
+            # On a LAN bind a rebinding page sends its own name as Host and Origin alike;
+            # only the names this machine really answers to tell the two apart.
+            name = _host_name(host_text)
+            allowed = {str(item).strip().lower() for item in self._options.allowed_hosts}
+            if not is_loopback_host(name) and name not in allowed:
+                return f"Host {host_text!r} is not in core.ipc.allowed_hosts"
         origin_text = str(origin or "").strip()
         if not origin_text:
             return None
@@ -1561,18 +1601,22 @@ class IpcServer:
 
     def count_error(self) -> None:
         """Record that a module route handler raised."""
-        self._errors += 1
+        with self._counter_lock:
+            self._errors += 1
+
+    def count_request(self) -> None:
+        """Record one HTTP request; handler threads run in parallel, so under a lock."""
+        with self._counter_lock:
+            self._requests += 1
 
     def request_reload(self) -> dict[str, Any]:
         """Ask the chassis to re-read its configuration; 501 when unsupported."""
-        self._requests += 1
         if self._reload_fn is None:
             return {"reloaded": False, "reason": "this control plane has no reload hook"}
         return {"reloaded": True, **dict(self._reload_fn())}
 
     def handle_rpc(self, payload: Any) -> tuple[int, dict[str, Any]]:
         """Delegate one command to the running chassis; return (status, body)."""
-        self._requests += 1
         if self._rpc_fn is None:
             return 501, {"ok": False, "error": "this control plane accepts no rpc calls"}
         if not isinstance(payload, Mapping):
@@ -1599,7 +1643,7 @@ class IpcServer:
         except JobLimitError as exc:
             return 429, {"ok": False, "command": command, "error": str(exc)}
         except Exception as exc:
-            self._errors += 1
+            self.count_error()
             return 500, {
                 "ok": False,
                 "command": command,
@@ -1609,7 +1653,6 @@ class IpcServer:
 
     def handle_cancel(self, job_id: str) -> tuple[int, Any]:
         """Ask one job to stop; 404 when unknown, 403 when it is someone else's."""
-        self._requests += 1
         if self._cancel_fn is None:
             return 501, {"error": "this control plane runs no background jobs"}
         try:
@@ -1622,7 +1665,6 @@ class IpcServer:
 
     def handle_jobs(self, job_id: str) -> tuple[int, Any]:
         """Answer one job (with its output so far) or the list of jobs (without)."""
-        self._requests += 1
         if self._jobs_fn is None:
             return 501, {"error": "this control plane runs no background jobs"}
         found = self._jobs_fn(job_id.strip())
@@ -1895,7 +1937,6 @@ class IpcServer:
 
     def request_shutdown(self) -> None:
         """Ask the chassis to shut down (the caller owns the lifecycle)."""
-        self._requests += 1
         self._shutdown_fn()
 
     def as_dict(self) -> dict[str, Any]:

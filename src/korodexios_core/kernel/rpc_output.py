@@ -18,6 +18,7 @@ import contextlib
 import io
 import sys
 import threading
+import weakref
 from collections.abc import Iterator
 from contextvars import ContextVar
 from typing import Any, Final
@@ -27,6 +28,9 @@ MAX_CAPTURED_CHARS: Final[int] = 1024 * 1024
 
 _BUFFER: ContextVar[io.StringIO | None] = ContextVar("kdx_rpc_output", default=None)
 _INSTALL_LOCK = threading.Lock()
+_DROPPED: weakref.WeakKeyDictionary[io.StringIO, int] = weakref.WeakKeyDictionary()
+"""Characters a full buffer refused, so the note can say how much was cut."""
+_DROPPED_LOCK = threading.Lock()
 
 
 class _RoutedStream:
@@ -44,7 +48,16 @@ class _RoutedStream:
         buffer = _BUFFER.get()
         if buffer is None:
             return int(self._inner.write(text))
-        return buffer.write(text)
+        # The cap holds while writing, not only when read: a job that prints for hours
+        # must not grow the daemon's memory without bound.
+        room = MAX_CAPTURED_CHARS - buffer.tell()
+        if len(text) <= room:
+            return buffer.write(text)
+        if room > 0:
+            buffer.write(text[:room])
+        with _DROPPED_LOCK:
+            _DROPPED[buffer] = _DROPPED.get(buffer, 0) + len(text) - max(room, 0)
+        return len(text)
 
     def flush(self) -> None:
         if _BUFFER.get() is None:
@@ -93,7 +106,9 @@ def capture_output(buffer: io.StringIO | None = None) -> Iterator[io.StringIO]:
 def captured_text(buffer: io.StringIO) -> str:
     """Return the buffer's text, cut to MAX_CAPTURED_CHARS with a note when longer."""
     text = buffer.getvalue()
-    if len(text) <= MAX_CAPTURED_CHARS:
+    with _DROPPED_LOCK:
+        refused = _DROPPED.get(buffer, 0)
+    if len(text) <= MAX_CAPTURED_CHARS and not refused:
         return text
-    dropped = len(text) - MAX_CAPTURED_CHARS
+    dropped = max(0, len(text) - MAX_CAPTURED_CHARS) + refused
     return text[:MAX_CAPTURED_CHARS] + f"\n[!] output cut: {dropped} more characters\n"

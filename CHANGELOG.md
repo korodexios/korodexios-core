@@ -5,6 +5,44 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Retention sees same-second copies**: a folder named `<stamp>-1` (two runs in one second)
+  is a backup stamp too, so `auto_prune` removes it and `kdx backup retention` counts it.
+- **Destination guard is a path**: a destination inside the source is skipped by its path
+  only; a folder elsewhere in the tree that merely shares its name is copied again. The
+  guard also holds for a destination that does not exist yet.
+- **`413` on module routes**: an oversized body is refused before a module handler runs
+  (it used to reach the handler as the integer `413`), and on `POST /api/v1/jobs`.
+- **RPC arguments are validated**: a mapping value (`{"mode": "x"}`) must name a declared
+  argument and pass its type and choices, exactly like a token; otherwise `400`.
+- **Clean shutdown with jobs**: running jobs are cancelled and awaited before the modules
+  stop; one that ignores the cancel is audited as `abandoned at shutdown`.
+- **`kdx users` across processes**: edits take an advisory lock on `data/users.json.lock`,
+  so two terminals cannot lose each other's change; a rotated token is noticed even when
+  the file keeps its size and time stamp.
+- **Reload uses the boot environment**: `reload_config()` reads the environment the chassis
+  was created with, not always `os.environ`.
+- **`kdx reset` accounting**: a file that vanished before deletion is not counted as freed.
+- **Seeded `i18n.py` follows `core.locale`**: projects from `kdx init` call `use_locale()`
+  from the app module, so `--locale`, `kdx.local.yml` and `kdx.yml` apply.
+
+### Security
+
+- Every control-plane response sends `X-Frame-Options: DENY`,
+  `Content-Security-Policy: frame-ancestors 'none'`, `X-Content-Type-Options: nosniff` and
+  `Referrer-Policy: no-referrer` (a module's own header wins); the `<meta>` CSP could not
+  stop framing.
+- New `core.ipc.allowed_hosts`: on a LAN bind, a request whose `Host` is not listed (or a
+  loopback name) is refused with `403`; an empty list logs a warning at boot.
+- Audit records mask secret-looking arguments; a job's output is visible only to its owner
+  and admins; captured command output is capped at 1 MiB while written, not only on read.
+
+### Changed
+
+- `requests` in the control-plane status counts every HTTP request, under a lock.
+- The Windows coverage floor in `windows-check.ps1` is 88, the same as everywhere else.
+
 ## [0.4.1] - 2026-11-01
 
 ### Changed

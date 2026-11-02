@@ -38,6 +38,7 @@ CORE_DEFAULTS: Final[dict[str, Any]] = {
     "core.ipc.token": "",
     "core.ipc.auth": True,
     "core.ipc.allow_anonymous_shutdown": False,
+    "core.ipc.allowed_hosts": [],
     "core.ipc.tls": False,
     "core.ipc.tls_cert": "",
     "core.ipc.tls_key": "",

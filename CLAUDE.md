@@ -20,8 +20,8 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 - **No TUI.** A Textual/TUI front end is explicitly not wanted.
 - **Language (this project only).** The owner writes in Slovak; reply in Slovak. The
   chassis itself is English-only (diagnostics, machine payloads, CLI text, docs), except
-  `docs/REVIEW-2026-10.sk.md`. Do not copy this to other projects.
-- **i18n (phase 36, branch `feature/i18n-service`, committed locally, not pushed).** The core has a
+  `docs/REVIEW-2026-*.sk.md`. Do not copy this to other projects.
+- **i18n (phase 36, merged into `main`).** The core has a
   language service: `kernel/i18n.py` (stdlib only, reads `.po` directly, no compile step),
   config key `core.locale` (`--locale`, `KDX_CORE__LOCALE`, `kdx.local.yml`), catalogues in
   `src/korodexios_core/locales/` (`korodexios.pot`; sk, cs, de, es, fr, pl - the non-Slovak
@@ -50,11 +50,13 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 - Never commit control-plane users or the audit log (see commit f78f747); keep
   `var/` and runtime state out of git.
 
-## Current state (2026-10-31)
+## Current state (2026-11-02)
 
-- Branch `review/security-web-console`; steps done: users/roles + audit (phase 33),
-  terminal jobs/events/stop/cancel (34), `kdx service` (35), release commit v0.4.0.
-- Review document: `docs/REVIEW-2026-10.sk.md`. Other docs: `docs/ARCHITECTURE.md`,
+- `main` is at v0.4.1 (tagged); every earlier feature/review branch is merged into it.
+- Branch `fix/review-2026-11` (local, not pushed) fixes the findings of
+  `docs/REVIEW-2026-11.sk.md`; the changes sit under `[Unreleased]` in `CHANGELOG.md`.
+- Review documents: `docs/REVIEW-2026-10.sk.md`, `docs/REVIEW-2026-11.sk.md` (both
+  Slovak, the only exceptions to the English-only rule). Other docs: `docs/ARCHITECTURE.md`,
   `CLI_REFERENCE.md`, `ROADMAP.md`, `TUTORIAL.md`, `AGENTS_GUIDE.md`.
 
 ## Environment notes

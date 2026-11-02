@@ -24,6 +24,7 @@ __all__ = [
     "describe_plan",
     "describe_result",
     "execute_plan",
+    "parse_stamp",
 ]
 
 STAMP_FORMAT = "%Y-%m-%dT%H-%M-%S"
@@ -128,6 +129,25 @@ def default_stamp(now: float | None = None) -> str:
     return datetime.fromtimestamp(now if now is not None else time.time()).strftime(STAMP_FORMAT)
 
 
+def parse_stamp(label: str) -> float | None:
+    """Return the moment a backup folder name stands for, or None when it is no stamp.
+
+    '_unique_target' names a second copy of the same second '<stamp>-1', '<stamp>-2', ...;
+    that suffix is part of the stamp too, or retention would never see those copies.
+    """
+    text = str(label)
+    head, separator, tail = text.rpartition("-")
+    candidates = [text]
+    if separator and tail.isdigit() and tail == str(int(tail)) and int(tail) > 0:
+        candidates.append(head)
+    for candidate in candidates:
+        try:
+            return datetime.strptime(candidate, STAMP_FORMAT).timestamp()
+        except ValueError:
+            continue
+    return None
+
+
 def _unique_target(dest: Path, label: str) -> Path:
     """Return a destination folder under *dest* that no earlier backup has taken.
 
@@ -163,9 +183,10 @@ def build_plan(settings: BackupSettings, *, stamp: str | None = None) -> BackupP
     target = _unique_target(dest, label)
     plan = BackupPlan(settings=settings, target=target)
     patterns = list(settings.exclude)
+    # The destination guard is a path, not a pattern: matched against every segment it
+    # would also drop an unrelated folder that merely shares the destination's name.
     guard = _destination_guard(source, dest)
     if guard is not None:
-        patterns.append(guard)
         plan.auto_excluded.append(guard)
     visited: set[tuple[int, int]] = set()
     source_stat = source.stat()
@@ -176,7 +197,7 @@ def build_plan(settings: BackupSettings, *, stamp: str | None = None) -> BackupP
         for name in sorted(dirs):
             child = root_path / name
             relative = _relative(source, child)
-            if _excluded(relative, patterns):
+            if _excluded(relative, patterns) or _under(relative, guard):
                 continue
             marker = _directory_marker(child) if settings.follow_symlinks else None
             if marker is not None:
@@ -292,8 +313,6 @@ def _destination_guard(source: Path, dest: Path) -> str | None:
     Backing up "." into "./var/lib/backups" would otherwise walk into the very
     folder the engine is writing to, so the planner prunes that subtree itself.
     """
-    if not dest.exists() and not dest.parent.exists():
-        return None
     try:
         source_root = source.resolve()
         dest_root = dest.resolve()
@@ -320,6 +339,13 @@ def _relative(source: Path, candidate: Path) -> str:
         return candidate.relative_to(source).as_posix()
     except ValueError:
         return candidate.as_posix()
+
+
+def _under(relative: str, prefix: str | None) -> bool:
+    """Return True when *relative* is *prefix* itself or lies below it."""
+    if not prefix:
+        return False
+    return relative == prefix or relative.startswith(prefix + "/")
 
 
 def _excluded(relative: str, patterns: Sequence[str]) -> bool:

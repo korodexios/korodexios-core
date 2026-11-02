@@ -616,10 +616,21 @@ dependency order -> lifecycle loop -> `stop()` in reverse -> close logging.
 - Browsers cannot drive the daemon: a request whose `Origin` is not the daemon's own, or
   (on a loopback bind) whose `Host` is not a loopback name, is refused with `403`. This
   stops cross-site POSTs and DNS rebinding; the CLI, curl, and a page the daemon serves
-  itself are unaffected. An empty token matches nothing.
+  itself are unaffected. An empty token matches nothing. On a LAN bind, list the names
+  clients dial in `core.ipc.allowed_hosts` and any other `Host` is refused as well; every
+  response carries `X-Frame-Options: DENY`, `frame-ancestors 'none'`, `nosniff` and
+  `Referrer-Policy: no-referrer` unless the handler set its own.
+- A body over the payload limit is `413` on every route, module routes included; the
+  handler never sees it. Arguments sent as a mapping (`{"count": 5}`) pass the same
+  declared checks as tokens - known argument, type, choices - or the call is `400`.
+- A job's output is for the user who started it and for admins; shutdown cancels running
+  jobs and waits `core.lifecycle.stop_timeout` before the modules stop. Audit records
+  mask secret-looking arguments (`--token`, `password`, ...).
 - `POST /api/v1/rpc` returns what the command wrote to stdout as `result.output`, and a
   delegated command never prompts (its `UserExperience` is non-interactive), so
   `kdx --remote` prints the real answer and never hangs on the daemon's keyboard.
+  The capture follows the request's context, so a thread the handler starts itself
+  writes to the daemon's own stdout; write the answer from the handler thread.
 - `kdx status --target http://host:port [--token SECRET]` queries any reachable
   daemon; `--json` is the machine contract.
 - Every answer ends the connection: the handler sends `Connection: close` and sets its own

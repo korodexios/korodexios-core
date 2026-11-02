@@ -238,7 +238,8 @@ def apply_reset(project_root: Path, plan: ResetPlan) -> ResetResult:
             else:
                 _unlink(target)
         except FileNotFoundError:
-            pass
+            # Gone before we got to it: nothing was removed here and nothing freed.
+            continue
         except OSError as exc:
             result.failures.append(f"{entry.path}: {exc.strerror or exc}")
             continue

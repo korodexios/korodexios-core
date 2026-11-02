@@ -19,11 +19,12 @@ import os
 import threading
 import time
 from collections import deque
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any, Final
 
 from .. import jsonio
+from ..config.layered import is_secret_key, redact_value
 from ..paths import restrict_to_owner
 from .users import Caller
 
@@ -62,7 +63,7 @@ class AuditLog:
         if command:
             entry["command"] = command
         if detail is not None:
-            entry["detail"] = detail
+            entry["detail"] = redact_detail(detail)
         if address:
             entry["address"] = address
         line = json.dumps(entry, default=str, sort_keys=True) + "\n"
@@ -90,6 +91,39 @@ class AuditLog:
 
     def as_dict(self) -> dict[str, Any]:
         return {"path": str(self.path), "records": self.records, "failures": self.failures}
+
+
+def redact_detail(detail: Any) -> Any:
+    """Return *detail* with every value under a secret-looking key masked.
+
+    The audit records the arguments a command was sent with; a '--password' or
+    'api_token' among them must not land in a log any admin can read. Keys are judged by
+    the same rule that masks the configuration ('password', 'token', 'secret', ...), and
+    argv tokens after a secret-looking flag ('--token VALUE', '--token=VALUE') too.
+    """
+    if isinstance(detail, Mapping):
+        return {
+            key: redact_value(value) if is_secret_key(str(key)) else redact_detail(value)
+            for key, value in detail.items()
+        }
+    if isinstance(detail, list | tuple):
+        masked: list[Any] = []
+        hide_next = False
+        for item in detail:
+            if hide_next:
+                masked.append(redact_value(item))
+                hide_next = False
+                continue
+            text = item if isinstance(item, str) else ""
+            flag, equals, _value = text.partition("=")
+            if text.startswith("-") and is_secret_key(flag.lstrip("-").replace("-", "_")):
+                if equals:
+                    masked.append(f"{flag}={redact_value(_value)}")
+                    continue
+                hide_next = True
+            masked.append(redact_detail(item))
+        return masked
+    return detail
 
 
 def read_audit(

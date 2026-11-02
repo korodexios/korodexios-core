@@ -182,7 +182,8 @@ cannot order.
   slashed form; later words and `args.argv` are walked as subcommands while they match,
   and everything after is passed to the handler verbatim.
   `core.ipc.allow_anonymous_shutdown` (default `false`) decides whether an
-  unauthenticated client may stop the daemon.
+  unauthenticated client may stop the daemon. `core.ipc.allowed_hosts` lists the `Host`
+  names a LAN-bound plane answers to (DNS rebinding guard; loopback names always pass).
 - **Token** - `core.ipc.token` is the shared secret. Empty means the chassis mints an
   ephemeral token at boot; a static value survives restarts and is what a remote
   `kdx status --target` should present. The header is `X-Kdx-Token`.

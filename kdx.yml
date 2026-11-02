@@ -30,6 +30,7 @@ core:
     token: ""                  # static shared secret; empty means a fresh one per boot
     auth: true                 # false lets anyone on the network read /api/v1/status
     allow_anonymous_shutdown: false  # keep POST /api/v1/shutdown authenticated
+    allowed_hosts: []          # LAN bind: Host names clients may dial (DNS rebinding guard)
     static: true               # serve module static_dirs() on this port too
   logs:
     poll_interval: 0.5         # seconds between reads for 'kdx logs --follow'
