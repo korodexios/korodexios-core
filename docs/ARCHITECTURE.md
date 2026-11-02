@@ -230,6 +230,7 @@ cannot order.
   be mid-request. A broken pipe, a reset peer, or a descriptor that vanished is the expected
   ending: the handler records one line and keeps serving, at debug level while the chassis
   stops and at warning while it runs. A fault that is not a socket is never swallowed (`v0.2.5`).
+  `Caller`, `current_caller` and `acting_as` are exported from the package root, so a module may rely on them; a job started over rpc runs with the caller that submitted it, and `IpcRequest.caller` / `CliRequest.caller` carry it explicitly.
 
 ## 6. Signal handling and exit codes
 

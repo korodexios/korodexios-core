@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
-from .users import ROLES
+from .users import ROLES, Caller
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from .context import CoreContext
@@ -208,6 +208,8 @@ class CliRequest:
     command: str
     namespace: Any = None
     options: Mapping[str, Any] = field(default_factory=dict)
+    caller: Caller | None = None
+    """The authenticated control-plane identity of an rpc call; None on a local terminal."""
 
     def option(self, name: str, default: Any = None) -> Any:
         """Return a parsed option value from the namespace, then from *options*."""

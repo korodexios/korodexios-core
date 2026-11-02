@@ -1114,6 +1114,7 @@ class Chassis:
             command=cleaned,
             namespace=namespace,
             options={"chassis": self, "rpc": True, "cancel": cancel},
+            caller=caller,
         )
 
         def run() -> dict[str, Any]:

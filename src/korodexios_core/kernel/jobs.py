@@ -18,6 +18,7 @@ end; the job then reports that the cancel came too late.
 from __future__ import annotations
 
 import builtins
+import contextvars
 import io
 import itertools
 import threading
@@ -114,8 +115,11 @@ class JobRegistry:
             self._forget_old()
         if on_start is not None:
             on_start(job)
+        # A new thread does not inherit context variables; run inside a copy taken on the
+        # submitting thread so the job sees the caller that started it.
+        context = contextvars.copy_context()
         thread = threading.Thread(
-            target=self._run, args=(job, call), name=f"kdx-{job.id}", daemon=True
+            target=context.run, args=(self._run, job, call), name=f"kdx-{job.id}", daemon=True
         )
         with self._lock:
             # A finished job's thread is no longer worth waiting for at shutdown.
