@@ -79,6 +79,7 @@ from .kernel.project import ProjectIdentity, project_identity
 from .kernel.registry import ModuleRegistry
 from .kernel.scheduler import ScheduledTask, TaskScheduler
 from .kernel.supervision import WorkerRecord, WorkerSupervisor
+from .kernel.users import Caller, acting_as, current_caller
 from .logging import KorodexiosLogger, LoggerFactory, build_logger
 from .paths import AppPaths
 from .version import CORE_API_VERSION, __version__
@@ -93,6 +94,7 @@ __all__ = [
     "TAG_OK",
     "AppPaths",
     "AsyncRuntime",
+    "Caller",
     "Chassis",
     "ChassisError",
     "ChassisOptions",
@@ -154,11 +156,13 @@ __all__ = [
     "WorkerRecord",
     "WorkerSupervisor",
     "__version__",
+    "acting_as",
     "as_module",
     "build_logger",
     "check_contract",
     "command_path",
     "contract_rows",
+    "current_caller",
     "guess_content_type",
     "is_secret_key",
     "project_identity",

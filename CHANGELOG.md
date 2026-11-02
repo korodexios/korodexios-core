@@ -5,6 +5,16 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Added
+
+- **The authenticated caller is public API**: `Caller`, `current_caller` and `acting_as` are
+  exported from `korodexios_core`; a module may rely on them. `IpcRequest.caller` and
+  `CliRequest.caller` carry the identity explicitly (`None` on an `auth=False` route and on a
+  local terminal, where the OS user is the identity).
+- **Background jobs keep the caller**: a job runs in a copy of the submitting thread's
+  context, so `current_caller()` inside a job started over `POST /api/v1/rpc` is the user who
+  started it, not `None`.
+
 ### Fixed
 
 - **Retention sees same-second copies**: a folder named `<stamp>-1` (two runs in one second)

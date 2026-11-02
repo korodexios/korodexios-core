@@ -199,6 +199,8 @@ class IpcRequest:
     query: Mapping[str, list[str]]
     payload: Any = None
     headers: Mapping[str, str] | None = None
+    caller: Caller | None = None
+    """The authenticated identity, as 'identify' returned it; None on an 'auth=False' route."""
 
     def argument(self, name: str, default: Any = None) -> Any:
         """Return one query argument, then a body field, then *default*."""
@@ -1146,6 +1148,7 @@ class _ControlHandler(BaseHTTPRequestHandler):
             query=urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query),
             payload=body,
             headers=dict(self.headers.items()),
+            caller=caller,
         )
         try:
             result = route.handler(request)
