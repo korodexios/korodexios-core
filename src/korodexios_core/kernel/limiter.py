@@ -38,6 +38,16 @@ LOCK_TIMEOUT: Final[float] = 10.0
 LIMITER_COOLDOWN_EVENT: Final[str] = "core.limiter.cooldown"
 
 
+class _Unset:
+    """Marks a limit the caller did not pass, so "no budget" and "unchanged" differ."""
+
+    def __repr__(self) -> str:
+        return "UNSET"
+
+
+UNSET: Final[_Unset] = _Unset()
+
+
 class LimiterBlocked(KorodexiosError):
     """A call may not be made now: the daily budget is spent or a cooldown is running."""
 
@@ -107,6 +117,21 @@ class RateLimiter:
         self.jitter = float(jitter)
         self.daily_budget = None if daily_budget is None else int(daily_budget)
 
+    def declare(
+        self,
+        *,
+        min_interval: float | None = None,
+        jitter: float | None = None,
+        daily_budget: int | _Unset | None = UNSET,
+    ) -> None:
+        """Store new limits from now on; a limit left out keeps its current value."""
+        self._declared = True
+        self.configure(
+            min_interval=self.min_interval if min_interval is None else min_interval,
+            jitter=self.jitter if jitter is None else jitter,
+            daily_budget=self.daily_budget if isinstance(daily_budget, _Unset) else daily_budget,
+        )
+
     def try_acquire(self, cost: int = 1) -> float:
         """Take *cost* units now and return 0.0, or return the seconds to wait first.
 
@@ -140,10 +165,41 @@ class RateLimiter:
             state["used"] = int(state["used"]) + units
             state["calls"] = int(state.get("calls", 0)) + 1
             state["last_call"] = now
-            gap = self.min_interval * (1.0 + self._rng.uniform(0.0, self.jitter))
-            state["next_allowed"] = now + gap
+            state["next_allowed"] = now + self._gap()
             self._save(state)
             return 0.0
+
+    def _gap(self) -> float:
+        return self.min_interval * (1.0 + self._rng.uniform(0.0, self.jitter))
+
+    def finish(self) -> None:
+        """Count the minimum gap from now, the end of the call, instead of from its start.
+
+        ``acquire()`` starts the gap when the call begins; for a long call ("at least
+        4 s *after* the last run finished") call ``finish()`` when it ends. The gap is
+        only ever extended, never shortened.
+        """
+        with self._exclusive():
+            now = float(self._clock())
+            state = self._load(now)
+            state["next_allowed"] = max(float(state.get("next_allowed") or 0.0), now + self._gap())
+            self._save(state)
+
+    def refund(self, cost: int = 1) -> None:
+        """Give back *cost* units and the gap of a call that never reached the service.
+
+        Use it when the call failed before doing anything (a connection refused, a local
+        error) so that a failure does not eat the daily budget or hold up the retry. A
+        429 is not a refund: the service counted it, so cool down instead.
+        """
+        units = max(0, int(cost))
+        with self._exclusive():
+            now = float(self._clock())
+            state = self._load(now)
+            state["used"] = max(0, int(state["used"]) - units)
+            state["calls"] = max(0, int(state.get("calls", 0)) - 1)
+            state["next_allowed"] = now
+            self._save(state)
 
     def acquire(self, cost: int = 1, *, timeout: float | None = None) -> None:
         """Wait out the minimum gap, then take *cost* units; raise LimiterBlocked if refused.
@@ -234,7 +290,14 @@ class RateLimiter:
         state.setdefault("used", 0)
         if self._declared:
             state["min_interval"] = self.min_interval
+            state["jitter"] = self.jitter
             state["daily_budget"] = self.daily_budget
+        else:
+            # A handle that declared nothing enforces what the declaring process stored.
+            self.min_interval = float(state.get("min_interval") or 0.0)
+            self.jitter = float(state.get("jitter") or 0.0)
+            stored = state.get("daily_budget")
+            self.daily_budget = None if stored is None else int(stored)
         return state
 
     def _save(self, state: dict[str, Any]) -> None:
@@ -327,18 +390,22 @@ class LimiterRegistry:
         self,
         name: str,
         *,
-        min_interval: float = 0.0,
-        jitter: float = 0.0,
-        daily_budget: int | None = None,
-        declared: bool = True,
+        min_interval: float | None = None,
+        jitter: float | None = None,
+        daily_budget: int | _Unset | None = UNSET,
+        declared: bool | None = None,
     ) -> RateLimiter:
-        """Return limiter *name*, creating it on first use; later limits replace earlier.
+        """Return limiter *name*, creating it on first use.
 
-        ``declared=False`` opens a handle that leaves the stored limits alone: it is for
-        reading, ``cooldown()`` and ``clear_cooldown()`` from a process that does not
-        know the limits (the ``kdx limiter`` command).
+        Passing any limit *declares* the limiter: those limits are stored and replace
+        earlier ones (a limit left out stays as it was). Passing none returns a handle
+        that never rewrites the stored limits - it enforces what the declaring process
+        stored and is safe for status, ``cooldown()`` and ``clear_cooldown()``.
+        ``declared`` forces either behaviour.
         """
         key = lock_name(name)
+        given = min_interval is not None or jitter is not None or daily_budget is not UNSET
+        is_declared = given if declared is None else declared
         with self._guard:
             limiter = self._limiters.get(key)
             if limiter is None:
@@ -346,16 +413,16 @@ class LimiterRegistry:
                     key,
                     state_file=self._directory / f"{key}{STATE_SUFFIX}",
                     lock_file=self._directory / f"{key}.lock",
-                    min_interval=min_interval,
-                    jitter=jitter,
-                    daily_budget=daily_budget,
+                    min_interval=0.0 if min_interval is None else min_interval,
+                    jitter=0.0 if jitter is None else jitter,
+                    daily_budget=None if isinstance(daily_budget, _Unset) else daily_budget,
                     logger=self._logger,
                     bus=self._bus,
-                    declared=declared,
+                    declared=is_declared,
                 )
                 self._limiters[key] = limiter
-            elif declared:
-                limiter.configure(
+            elif is_declared:
+                limiter.declare(
                     min_interval=min_interval, jitter=jitter, daily_budget=daily_budget
                 )
             return limiter

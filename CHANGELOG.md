@@ -5,6 +5,18 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-11-03
+
+### Added
+
+- The limiter, process and queue types are exported from the package root.
+- `limiter.finish()` (gap counted from the end of a call) and `limiter.refund()`.
+
+### Changed
+
+- `context.limiter(name)` without limits is a read-only handle: it no longer resets stored limits
+  and enforces them; a partial call changes only the limits it names.
+
 ## [0.5.0] - 2026-11-03
 
 All additions are additive inside core API v2.

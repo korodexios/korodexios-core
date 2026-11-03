@@ -40,7 +40,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 try { [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new() } catch { }  # so ✓ and diacritics display
-$ReleaseSource = "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.0"
+$ReleaseSource = "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.1"
 
 if (-not $Language) {
     $Language = if ((Get-UICulture).TwoLetterISOLanguageName -eq "sk") { "sk" } else { "en" }

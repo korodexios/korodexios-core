@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.5.0.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.5.1.
 
 ## Working preferences
 
@@ -44,7 +44,7 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 
 ## Ask first (outward-facing / hard to reverse)
 
-- No `git push`, no tag (e.g. `v0.5.0`), no merge to `main`: the owner decides.
+- No `git push`, no tag (e.g. `v0.5.1`), no merge to `main`: the owner decides.
 - Never run `kdx service install` (registers a logon task on the owner's machine);
   offer it, do not do it unasked.
 - Never commit control-plane users or the audit log (see commit f78f747); keep
@@ -52,7 +52,7 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 
 ## Current state (2026-11-03)
 
-- `main` is at v0.5.0 (tagged); every earlier feature/review branch is merged into it.
+- `main` is at v0.5.1 (tagged); every earlier feature/review branch is merged into it.
 - v0.5.0 adds, inside core API v2: scheduler `jitter`/`window`/`days` and `schedule_at`,
   `context.limiter` + `kdx limiter`, `context.run_process`, the durable queue
   (`context.job_queue`, module `job_queue`, `kdx queue`, `/api/v1/queue`), and the `kdx init`

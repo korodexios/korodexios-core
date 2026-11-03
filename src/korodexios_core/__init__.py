@@ -74,8 +74,11 @@ from .kernel.ipc import (
     IpcStaticMount,
     guess_content_type,
 )
+from .kernel.limiter import LimiterBlocked, LimiterRegistry, RateLimiter
 from .kernel.locks import NamedLock, NamedLockRegistry
+from .kernel.process import ProcessError, ProcessResult, ProcessSupervisor
 from .kernel.project import ProjectIdentity, project_identity
+from .kernel.queue import JobQueue, PermanentJobError, QueueTask
 from .kernel.registry import ModuleRegistry
 from .kernel.scheduler import ScheduledTask, TaskScheduler
 from .kernel.supervision import WorkerRecord, WorkerSupervisor
@@ -131,9 +134,12 @@ __all__ = [
     "IpcRoute",
     "IpcServer",
     "IpcStaticMount",
+    "JobQueue",
     "KorodexiosError",
     "KorodexiosLogger",
     "LayeredConfig",
+    "LimiterBlocked",
+    "LimiterRegistry",
     "LockHolder",
     "LockTimeoutError",
     "LoggerFactory",
@@ -148,7 +154,13 @@ __all__ = [
     "NamedLock",
     "NamedLockRegistry",
     "PathDiscoveryError",
+    "PermanentJobError",
+    "ProcessError",
+    "ProcessResult",
+    "ProcessSupervisor",
     "ProjectIdentity",
+    "QueueTask",
+    "RateLimiter",
     "ScheduledTask",
     "ScopedConfig",
     "Subscription",

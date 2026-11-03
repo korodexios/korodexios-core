@@ -487,3 +487,69 @@ def test_kdx_queue_cli_round_trip(tmp_path: Path, capsys: pytest.CaptureFixture[
     assert main([*base, "queue", "retry", "1"]) == 0
     assert main([*base, "queue", "list", "--state", "queued", "--json"]) == 0
     assert main([*base, "queue", "purge", "--days", "0"]) == 0
+
+
+# ---------------------------------------------------------------------------- v0.5.1 follow-ups
+
+
+def test_new_primitives_are_importable_from_the_package_root() -> None:
+    import korodexios_core
+
+    for name in (
+        "LimiterBlocked",
+        "RateLimiter",
+        "LimiterRegistry",
+        "ProcessResult",
+        "ProcessError",
+        "ProcessSupervisor",
+        "JobQueue",
+        "QueueTask",
+        "PermanentJobError",
+    ):
+        assert name in korodexios_core.__all__ and hasattr(korodexios_core, name)
+
+
+def test_a_bare_limiter_handle_keeps_the_stored_limits_and_enforces_them(tmp_path: Path) -> None:
+    clock = Clock()
+    registry = LimiterRegistry(tmp_path / "limiters")
+    declared = registry.get("api", min_interval=5.0, jitter=0.2, daily_budget=3)
+    declared._clock = clock
+    declared.acquire()
+    other = LimiterRegistry(tmp_path / "limiters").get("api")  # no limits: read-only
+    other._clock = clock
+    assert other.status()["daily_budget"] == 3 and other.status()["min_interval"] == 5.0
+    assert other.try_acquire() > 0  # the stored 5 s gap applies to the bare handle too
+    same = registry.get("api")  # a bare call on the declaring registry changes nothing
+    assert same is declared and same.min_interval == 5.0 and same.daily_budget == 3
+    registry.get("api", min_interval=1.0)  # a partial redeclaration keeps the rest
+    assert declared.daily_budget == 3 and declared.min_interval == 1.0
+    registry.get("api", daily_budget=None)  # an explicit None means "no budget"
+    assert declared.daily_budget is None
+
+
+def test_context_limiter_without_limits_does_not_reset_them(tmp_path: Path) -> None:
+    chassis = Chassis.create(ChassisOptions(home=tmp_path))
+    chassis.context.limiter("api", daily_budget=7)
+    chassis.context.limiter("api")
+    assert chassis.context.limiter("api").status()["daily_budget"] == 7
+
+
+def test_finish_counts_the_gap_from_the_end_of_the_call(tmp_path: Path) -> None:
+    clock = Clock()
+    limiter = make_limiter(tmp_path, clock, min_interval=10.0)
+    limiter.acquire()
+    clock.now += 30  # the call ran for 30 s: the gap from its start is long gone
+    assert limiter.try_acquire() == 0.0
+    clock.now += 30
+    limiter.finish()
+    assert limiter.try_acquire() == pytest.approx(10.0)
+
+
+def test_refund_returns_the_budget_and_the_gap(tmp_path: Path) -> None:
+    clock = Clock()
+    limiter = make_limiter(tmp_path, clock, min_interval=60.0, daily_budget=1)
+    limiter.acquire()
+    limiter.refund()
+    assert limiter.status()["remaining_today"] == 1
+    limiter.acquire()  # no wait: the failed call did not count
+    assert not clock.slept

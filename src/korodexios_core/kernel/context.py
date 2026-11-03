@@ -19,7 +19,7 @@ from ..paths import AppPaths
 from ..version import CORE_API_VERSION, __version__
 from .async_runtime import AsyncRuntime
 from .i18n import CORE_DOMAIN, I18n
-from .limiter import LimiterRegistry, RateLimiter
+from .limiter import UNSET, LimiterRegistry, RateLimiter, _Unset
 from .process import ProcessResult, ProcessSupervisor
 from .queue import JobQueue
 from .scheduler import TaskScheduler
@@ -124,15 +124,20 @@ class CoreContext:
         self,
         name: str,
         *,
-        min_interval: float = 0.0,
-        jitter: float = 0.0,
-        daily_budget: int | None = None,
+        min_interval: float | None = None,
+        jitter: float | None = None,
+        daily_budget: int | _Unset | None = UNSET,
+        declared: bool | None = None,
     ) -> RateLimiter:
         """Return the rate limiter *name* (a minimum gap, a daily budget, a cooldown).
 
         Call ``limiter.acquire()`` before each outbound call and
         ``limiter.cooldown(hours=24)`` after a 429. The state lives in the durable
         directory and is shared between processes; ``kdx limiter list`` shows it.
+
+        Passing a limit declares it and stores it; ``context.limiter("name")`` with no
+        limit is a handle that leaves the stored limits alone (use it in status and
+        maintenance commands) while still enforcing them.
         """
         registry = self.limiters
         if registry is None:
@@ -140,7 +145,11 @@ class CoreContext:
                 self.paths.durable_dir / "limiters", logger=self.logger_for("limiter"), bus=self.bus
             )
         return registry.get(
-            name, min_interval=min_interval, jitter=jitter, daily_budget=daily_budget
+            name,
+            min_interval=min_interval,
+            jitter=jitter,
+            daily_budget=daily_budget,
+            declared=declared,
         )
 
     def run_process(

@@ -13,7 +13,7 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 | Distribution | `korodexios-core` |
 | Import root | `korodexios_core` |
 | Console scripts | `kdx` (primary short alias), `korodexios` (canonical) |
-| Version | `0.5.0` (production), core API frozen at `v2` (additive changes only inside v2) |
+| Version | `0.5.1` (production), core API frozen at `v2` (additive changes only inside v2) |
 | Runtime | CPython 3.11+, stdlib first (PyYAML for config, rich for the CLI surface) |
 | Config file | `kdx.yml` / `kdx.yaml` / `kdx.json` (then `korodexios.*`) |
 | Env prefix | `KDX_` primary; `KORODEXIOS_` is the canonical long prefix |
@@ -886,7 +886,7 @@ happen at all still shed archives - and what the sweep took back is reported by 
 (`prune_reclaimed_bytes`, `prune_reclaimed`) and by the `retention` diagnostic row. At the
 default `0.0` there is no extra task and a copy prunes inline, exactly as before.
 
-Spreading and calendar slots (`v0.5.0`, additive):
+Spreading and calendar slots (`v0.5.1`, additive):
 
 ```python
 context.schedule(60.0, self.poll, jitter=0.4)                 # every 36-84 s, never in lockstep
@@ -914,7 +914,7 @@ passed while the daemon was down is not replayed. `ScheduledTask.as_dict()` and
 | `core.scheduler.threaded` | `false` | run the scheduler on its own thread instead |
 | `core.ipc.static` | `true` | publish module `static_dirs()` mounts on the control plane |
 
-### 16.5 Outbound limits, child processes, durable queue (`v0.5.0`)
+### 16.5 Outbound limits, child processes, durable queue (`v0.5.1`)
 
 ```python
 api = context.limiter("external-api", min_interval=4.0, jitter=0.5, daily_budget=6000)
@@ -938,6 +938,13 @@ task = queue.submit("render", {"id": 7}, max_attempts=3)
   `cooldown()` never shortens a running cooldown. `acquire()` raises `LimiterBlocked`
   (`reason`: `budget`, `cooldown`, `timeout`; `retry_after` in seconds). `kdx doctor` warns
   about a cooling or spent limiter; `kdx limiter list|cooldown|clear` is the terminal view.
+- **Limits are declared once.** `context.limiter("api", daily_budget=6000)` stores the limits;
+  a later `context.limiter("api")` with no limit is a read-only handle that never rewrites them
+  and still enforces the stored ones (use it in status commands); a partial call changes only
+  what it names, and `daily_budget=None` means no budget. `limiter.finish()` counts the gap from
+  the end of a long call, `limiter.refund()` returns the budget of a call that never reached the
+  service (not for a 429: cool down instead). `LimiterBlocked`, `RateLimiter`, `ProcessResult`,
+  `ProcessError`, `JobQueue`, `QueueTask` and `PermanentJobError` import from `korodexios_core`.
 - **Processes.** `run_process` takes an argument list (never a shell string), runs the child in
   its own process group, sends every output line to the logger (`process=` and `stream=`
   fields, never stdout), kills the whole group on timeout or at chassis stop, and publishes
