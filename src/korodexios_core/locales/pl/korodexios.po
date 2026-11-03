@@ -502,6 +502,10 @@ msgstr "Wypisz wersję szkieletu i API rdzenia."
 msgid "Print the console URL instead of opening a browser."
 msgstr "Wypisz adres URL konsoli zamiast otwierać przeglądarkę."
 
+#: cli/conventions.py
+msgid "Print the conventions every Korodexios project follows."
+msgstr "Wypisuje konwencje, których przestrzega każdy projekt Korodexios."
+
 #: cli/commands.py
 msgid "Print the discovered config and env file paths."
 msgstr "Wypisz wykryte ścieżki plików konfiguracji i env."
@@ -721,6 +725,10 @@ msgstr "Zweryfikuj zadeklarowany zestaw plików projektu bez jego przepisywania.
 #: cli/limiter.py
 msgid "Why, shown in doctor."
 msgstr "Powód, widoczny w doctor."
+
+#: cli/conventions.py
+msgid "Write the conventions to FILE instead of printing them (overwrites)."
+msgstr "Zapisuje konwencje do FILE zamiast je wypisać (nadpisuje plik)."
 
 #: cli/playbook.py
 msgid "Write the playbook to FILE instead of printing it."
@@ -1534,6 +1542,10 @@ msgstr "wymaga rdzenia"
 msgid "resident"
 msgstr "rezydentna"
 
+#: cli/conventions.py
+msgid "resource missing: {path}"
+msgstr "brak zasobu: {path}"
+
 #: cli/users.py
 msgid "role"
 msgstr "rola"
@@ -1938,11 +1950,11 @@ msgstr "{path} nie da się odczytać jako JSON: {reason}"
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr "{path} nie da się odczytać, więc go nie ruszono: {reason}"
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} could not be written: {reason}"
 msgstr "{path} nie udało się zapisać: {reason}"
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} created"
 msgstr "{path} utworzono"
 

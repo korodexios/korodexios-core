@@ -502,6 +502,10 @@ msgstr "Vypíše verziu šasi a core API."
 msgid "Print the console URL instead of opening a browser."
 msgstr "Vypíše adresu konzoly namiesto otvorenia prehliadača."
 
+#: cli/conventions.py
+msgid "Print the conventions every Korodexios project follows."
+msgstr "Vypíše konvencie, ktoré dodržiava každý projekt Korodexios."
+
 #: cli/commands.py
 msgid "Print the discovered config and env file paths."
 msgstr "Vypíše cesty nájdených konfiguračných súborov a súboru env."
@@ -721,6 +725,10 @@ msgstr "Overí deklarovanú sadu súborov projektu bez jej prepísania."
 #: cli/limiter.py
 msgid "Why, shown in doctor."
 msgstr "Dôvod, zobrazí sa v doctor."
+
+#: cli/conventions.py
+msgid "Write the conventions to FILE instead of printing them (overwrites)."
+msgstr "Zapíše konvencie do FILE namiesto vypísania (prepíše súbor)."
 
 #: cli/playbook.py
 msgid "Write the playbook to FILE instead of printing it."
@@ -1534,6 +1542,10 @@ msgstr "vyžaduje core"
 msgid "resident"
 msgstr "rezidentná"
 
+#: cli/conventions.py
+msgid "resource missing: {path}"
+msgstr "chýba zdroj: {path}"
+
 #: cli/users.py
 msgid "role"
 msgstr "rola"
@@ -1938,11 +1950,11 @@ msgstr "{path} sa nedá prečítať ako JSON: {reason}"
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr "{path} sa nedá prečítať, preto som ho nechal bez zmeny: {reason}"
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} could not be written: {reason}"
 msgstr "{path} sa nepodarilo zapísať: {reason}"
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} created"
 msgstr "{path} bol vytvorený"
 

@@ -13,7 +13,7 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 | Distribution | `korodexios-core` |
 | Import root | `korodexios_core` |
 | Console scripts | `kdx` (primary short alias), `korodexios` (canonical) |
-| Version | `0.5.1` (production), core API frozen at `v2` (additive changes only inside v2) |
+| Version | `0.5.2` (production), core API frozen at `v2` (additive changes only inside v2) |
 | Runtime | CPython 3.11+, stdlib first (PyYAML for config, rich for the CLI surface) |
 | Config file | `kdx.yml` / `kdx.yaml` / `kdx.json` (then `korodexios.*`) |
 | Env prefix | `KDX_` primary; `KORODEXIOS_` is the canonical long prefix |
@@ -707,6 +707,9 @@ uv run kdx status       # live report from a running daemon over the control pla
   `make check PYTHON=<venv>/bin/python`. `make` resolves itself: with `uv` on `PATH` it runs
   under `uv run`, otherwise under `.venv/bin/`.
 - A new capability is not done until it has a test that fails without it.
+- `kdx playbook` prints the agent playbook and `kdx conventions` the project rules (both take
+  `--write FILE`); `kdx init` seeds them as `AGENT_PLAYBOOK.md`, `docs/CONVENTIONS.md` and
+  `docs/specs/TEMPLATE.md`.
 
 ## 13. Agent Do / Don't
 

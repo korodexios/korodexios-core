@@ -5,6 +5,21 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-11-03
+
+### Added
+
+- `resources/conventions.md`: the rules every Korodexios project follows, and
+  `resources/spec-template.md`: the feature spec template.
+- `kdx conventions` prints the conventions; `--write FILE` drops them into a project.
+- `kdx init` scaffolds `docs/CONVENTIONS.md` and `docs/specs/TEMPLATE.md` and points the
+  generated `AGENTS.md` at the conventions.
+
+### Changed
+
+- The agent playbook points to `docs/CONVENTIONS.md` and the spec template, and gains rules on
+  cross-platform code, re-runnable setup, exit codes and recording out-of-scope findings.
+
 ## [0.5.1] - 2026-11-03
 
 ### Added

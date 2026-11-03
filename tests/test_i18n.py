@@ -525,4 +525,4 @@ def test_playbook_is_printed_written_and_seeded(
     assert files["AGENT_PLAYBOOK.md"].startswith("# AGENT PLAYBOOK")
     assert "AGENT_PLAYBOOK.md" in files["AGENTS.md"]
     assert "uv run mypy" in files[".github/workflows/ci.yml"]
-    assert not any("CONVENTIONS" in name for name in files)
+    assert "docs/CONVENTIONS.md" in files

@@ -500,6 +500,10 @@ msgstr ""
 msgid "Print the console URL instead of opening a browser."
 msgstr ""
 
+#: cli/conventions.py
+msgid "Print the conventions every Korodexios project follows."
+msgstr ""
+
 #: cli/commands.py
 msgid "Print the discovered config and env file paths."
 msgstr ""
@@ -718,6 +722,10 @@ msgstr ""
 
 #: cli/limiter.py
 msgid "Why, shown in doctor."
+msgstr ""
+
+#: cli/conventions.py
+msgid "Write the conventions to FILE instead of printing them (overwrites)."
 msgstr ""
 
 #: cli/playbook.py
@@ -1532,6 +1540,10 @@ msgstr ""
 msgid "resident"
 msgstr ""
 
+#: cli/conventions.py
+msgid "resource missing: {path}"
+msgstr ""
+
 #: cli/users.py
 msgid "role"
 msgstr ""
@@ -1936,11 +1948,11 @@ msgstr ""
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr ""
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} could not be written: {reason}"
 msgstr ""
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} created"
 msgstr ""
 

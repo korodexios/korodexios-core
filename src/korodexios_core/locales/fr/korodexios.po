@@ -502,6 +502,10 @@ msgstr "Affiche la version du châssis et de l'API du cœur."
 msgid "Print the console URL instead of opening a browser."
 msgstr "Affiche l'URL de la console au lieu d'ouvrir un navigateur."
 
+#: cli/conventions.py
+msgid "Print the conventions every Korodexios project follows."
+msgstr "Affiche les conventions que suit chaque projet Korodexios."
+
 #: cli/commands.py
 msgid "Print the discovered config and env file paths."
 msgstr "Affiche les chemins des fichiers de configuration et env découverts."
@@ -721,6 +725,10 @@ msgstr "Vérifie l'ensemble de fichiers déclaré du projet sans le réécrire."
 #: cli/limiter.py
 msgid "Why, shown in doctor."
 msgstr "Motif, affiché dans doctor."
+
+#: cli/conventions.py
+msgid "Write the conventions to FILE instead of printing them (overwrites)."
+msgstr "Écrit les conventions dans FILE au lieu de les afficher (écrase)."
 
 #: cli/playbook.py
 msgid "Write the playbook to FILE instead of printing it."
@@ -1534,6 +1542,10 @@ msgstr "nécessite le cœur"
 msgid "resident"
 msgstr "résident"
 
+#: cli/conventions.py
+msgid "resource missing: {path}"
+msgstr "ressource manquante : {path}"
+
 #: cli/users.py
 msgid "role"
 msgstr "rôle"
@@ -1938,11 +1950,11 @@ msgstr "{path} n'est pas lisible comme JSON : {reason}"
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr "{path} n'est pas lisible, il a donc été laissé intact : {reason}"
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} could not be written: {reason}"
 msgstr "{path} n'a pas pu être écrit : {reason}"
 
-#: cli/language.py
+#: cli/conventions.py
 msgid "{path} created"
 msgstr "{path} créé"
 

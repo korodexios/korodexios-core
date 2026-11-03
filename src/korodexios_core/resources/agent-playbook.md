@@ -39,7 +39,7 @@ language they write in. Keep explanations plain; show commands and results, not 
 ## 2. The loop for every change (do not skip steps)
 
 1. **Spec**: if the change is a feature, write or update `docs/specs/NNN-name.md`
-   (goal, non-goals, behaviour, acceptance criteria as given/when/then, "what could go
+   from `docs/specs/TEMPLATE.md` (goal, non-goals, behaviour, acceptance criteria as given/when/then, "what could go
    wrong / who could abuse it").
 2. **Red**: write the test first; run it; show that it fails *for the right reason*.
 3. **Green**: write the smallest code that passes. No extra features.
@@ -65,6 +65,9 @@ language they write in. Keep explanations plain; show commands and results, not 
 - Time, randomness, network, and the filesystem are injected or isolated so tests are
   fast and deterministic. Tests: no network, no sleeps longer than one tick, `tmp_path`
   for files, one behaviour per test, names that read as sentences.
+- Cross-platform: CI runs on Linux and Windows. Paths via `pathlib`, subprocess
+  arguments as lists, explicit UTF-8; never assume bash, symlinks or case-sensitive
+  filenames.
 - Concurrency: recurring work goes on `self.scheduler` (no thread needed). A thread you
   must start is reported by `workers()` and joined in `stop()`. Long commands check
   `request.cancelled()` between units of work.
@@ -76,6 +79,8 @@ language they write in. Keep explanations plain; show commands and results, not 
 - Runtime state goes in `var/` (logs, locks, ipc), durable data in `data/`. Never write
   elsewhere without asking. Never commit `var/`, `.env`, tokens, or user data.
 - A new key needs: a default, a description in the schema, a doc line, a test.
+- Setup steps, migrations and file edits must be safe to re-run: re-running detects the
+  valid state and changes nothing.
 
 ## 5. Security (non-negotiable)
 
@@ -109,6 +114,7 @@ spending money, rewriting history. One approval covers only that one action.
 - Command and flag names stay English. Everything a person reads goes through the
   language service (`context.translate(...)` / `tr(...)`; labels in tables via the
   render helpers). Do not translate JSON keys, logs, exit codes, or config keys.
+- Exit codes: 0 ok, 1 failure, 2 usage error, 3 config error, 130 cancelled.
 
 ## 8. Anti-patterns - do not do these
 
@@ -116,6 +122,7 @@ spending money, rewriting history. One approval covers only that one action.
 - Fixing a failing test by weakening it. Mocking the thing under test.
 - "Improving" unrelated code in the same change. Reformatting files you did not need to
   touch. Renaming public things without a deprecation note.
+- Fixing what you found on the way but the task did not ask for: record it, move on.
 - Guessing an API: read the code or `docs/AGENTS_GUIDE.md`; if still unknown, ask.
 - Claiming "done" or "should work" without having run the gate. Hiding a failure.
 - Long sessions that carry decisions only in chat: write decisions to `docs/decisions/`.
@@ -133,3 +140,5 @@ in plain words. If something is risky or surprising, say it first, not last.
 `kdx modules create` -> tests first -> branch protection and CI on the repository ->
 languages with `kdx locale add`. Keep `AGENTS.md` and `CHANGELOG.md` current from the
 first commit.
+The longer human-oriented rules are in `docs/CONVENTIONS.md`
+(`kdx conventions`).
