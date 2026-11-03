@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import threading
 import time
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
@@ -18,6 +19,9 @@ from ..paths import AppPaths
 from ..version import CORE_API_VERSION, __version__
 from .async_runtime import AsyncRuntime
 from .i18n import CORE_DOMAIN, I18n
+from .limiter import LimiterRegistry, RateLimiter
+from .process import ProcessResult, ProcessSupervisor
+from .queue import JobQueue
 from .scheduler import TaskScheduler
 from .supervision import WorkerRecord, WorkerSupervisor
 
@@ -45,6 +49,9 @@ class CoreContext:
     async_runtime: AsyncRuntime | None = None
     supervisor: WorkerSupervisor | None = None
     scheduler: TaskScheduler | None = None
+    limiters: LimiterRegistry | None = None
+    processes: ProcessSupervisor | None = None
+    queue: JobQueue | None = None
     i18n: I18n = field(default_factory=I18n)
 
     def translate(self, message: str, /, *, domain: str = CORE_DOMAIN, **fields: Any) -> str:
@@ -88,6 +95,79 @@ class CoreContext:
             return None
         kwargs.setdefault("module", self.app_name)
         return scheduler.schedule(interval_seconds, callback, **kwargs)
+
+    def schedule_at(
+        self,
+        spec: str,
+        callback: Callable[[], Any],
+        **kwargs: Any,
+    ) -> ScheduledTask | None:
+        """Declare a calendar task ('mon 03:00', 'mon 02:00-05:00'); None without a scheduler."""
+        scheduler = self.scheduler
+        if scheduler is None:
+            return None
+        kwargs.setdefault("module", self.app_name)
+        return scheduler.schedule_at(spec, callback, **kwargs)
+
+    def job_queue(self) -> JobQueue:
+        """Return the durable work queue (``data/jobs/queue.sqlite3``), created on first use.
+
+        ``queue.handle("render", fn)`` registers a handler; ``queue.submit("render",
+        {...})`` queues work that survives a restart. The ``job_queue`` module runs the
+        workers and serves ``/api/v1/queue`` and ``kdx queue``.
+        """
+        if self.queue is None:
+            self.queue = JobQueue(self.paths.durable_dir / "jobs" / "queue.sqlite3")
+        return self.queue
+
+    def limiter(
+        self,
+        name: str,
+        *,
+        min_interval: float = 0.0,
+        jitter: float = 0.0,
+        daily_budget: int | None = None,
+    ) -> RateLimiter:
+        """Return the rate limiter *name* (a minimum gap, a daily budget, a cooldown).
+
+        Call ``limiter.acquire()`` before each outbound call and
+        ``limiter.cooldown(hours=24)`` after a 429. The state lives in the durable
+        directory and is shared between processes; ``kdx limiter list`` shows it.
+        """
+        registry = self.limiters
+        if registry is None:
+            registry = self.limiters = LimiterRegistry(
+                self.paths.durable_dir / "limiters", logger=self.logger_for("limiter"), bus=self.bus
+            )
+        return registry.get(
+            name, min_interval=min_interval, jitter=jitter, daily_budget=daily_budget
+        )
+
+    def run_process(
+        self,
+        command: Sequence[str | os.PathLike[str]],
+        *,
+        timeout: float | None = None,
+        cwd: str | os.PathLike[str] | None = None,
+        env: Mapping[str, str] | None = None,
+        name: str = "",
+        check: bool = False,
+        stdin: str | None = None,
+    ) -> ProcessResult:
+        """Run a child process under the chassis: time limit, logged output, clean stop.
+
+        The command is an argument list (never a shell string). Output goes to the log,
+        a timeout or a chassis stop kills the whole process group, and the outcome is
+        published as ``core.process.finished``.
+        """
+        supervisor = self.processes
+        if supervisor is None:
+            supervisor = self.processes = ProcessSupervisor(
+                logger=self.logger_for("process"), bus=self.bus
+            )
+        return supervisor.run(
+            command, timeout=timeout, cwd=cwd, env=env, name=name, check=check, stdin=stdin
+        )
 
     def acquire_lock(
         self,
@@ -218,6 +298,8 @@ class CoreContext:
             "async": self.async_runtime.as_dict() if self.async_runtime else {"running": False},
             "workers": self.supervisor.stats() if self.supervisor else {"watched": 0},
             "scheduler": self.scheduler.stats() if self.scheduler else {"scheduled": 0},
+            "limiters": self.limiters.states() if self.limiters else [],
+            "processes": self.processes.active() if self.processes else [],
             "locale": self.i18n.locale,
             "locks": {"names": list(self.paths.named_lock_files())},
         }

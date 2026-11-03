@@ -1,0 +1,13 @@
+# Built-in module manifest, read by korodexios_core.kernel.discovery.
+[module]
+name = "job_queue"
+description = "Runs the durable work queue: workers, retries, /api/v1/queue and kdx queue."
+version = "0.1.0"
+entrypoint = "MODULE"
+enabled = true
+priority = 45
+requires_core = ">=0.1"
+
+[metadata]
+tags = ["jobs", "queue"]
+owner = "korodexios"

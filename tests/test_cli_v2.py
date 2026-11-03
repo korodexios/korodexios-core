@@ -115,12 +115,13 @@ def test_config_check_reports_module_schemas(capsys, project_root) -> None:
     assert main([*base_args(project_root), "config", "check", "--json"]) == int(ExitCode.SUCCESS)
     payload = json.loads(capsys.readouterr().out)
     # v0.2.2: the built-in proof modules declare their own scoped schemas
-    assert payload["schemas"]["modules"] == 4
+    assert payload["schemas"]["modules"] == 5
     assert payload["schemas"]["issues"] == []
     # v0.2.4 added the load watcher keys, v0.2.5 the sweep keys, v0.2.7 the retention keys.
     for declared in (
         "backup_engine: 10 keys",
         "heartbeat: 1 keys",
+        "job_queue: 4 keys",
         "system_info: 4 keys",
         "web_console: 1 keys",
     ):
@@ -174,7 +175,7 @@ def test_config_check_fails_on_a_schema_violation(capsys, project_root) -> None:
 
     assert main([*args, "config", "check", "--json"]) == int(ExitCode.SUCCESS)
     payload = json.loads(capsys.readouterr().out)
-    assert payload["schemas"]["modules"] == 5  # probe plus the four built-in schemas
+    assert payload["schemas"]["modules"] == 6  # probe plus the five built-in schemas
     assert payload["schemas"]["issues"] == []
 
 

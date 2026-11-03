@@ -170,6 +170,7 @@ directory ignores dot files, swap files, and names `lock_name()` refuses | **del
 | 35 | the daemon starts itself: `kdx service install|status|uninstall` through each host's own
   manager (Task Scheduler XML via pythonw, systemd user unit, launchd agent), `--print` to
   preview, `python -m korodexios_core`, and console-less processes kept alive | **delivered** |
+| 37 | outbound discipline and long work: scheduler `jitter`, `window`, `days` and `schedule_at`; `context.limiter` (gap, daily budget, cooldown) with `kdx limiter`; `context.run_process` (timeout, logged output, group kill); the durable `job_queue` (`kdx queue`, `/api/v1/queue`); `kdx init` pyproject builds with a direct reference | **delivered** |
 
 ## Next
 

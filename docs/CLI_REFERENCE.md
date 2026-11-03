@@ -20,8 +20,8 @@ docs. `kdx --help` lists every command, including the ones modules contributed.
 | uv, in the chassis repository | `uv venv --python 3.13 && uv sync --extra dev && uv run kdx doctor` | uv (Astral) owns the environment; `make` resolves to `uv run` when uv is on `PATH` |
 | guided installer | `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) | four coloured steps - check, install, verify, first project; asks before installing uv; `--lang sk`, `--yes`, `--dry-run` (`-Language`, `-Yes`, `-DryRun` on Windows) |
 | uv tool | `uv tool install korodexios-core` | a global `kdx` on PATH, no project involved |
-| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.4.2"` | the documented pin before an index publish; needs network |
-| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.4.2"` | what `kdx init --chassis-source git` writes into the seed |
+| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.0"` | the documented pin before an index publish; needs network |
+| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.5.0"` | what `kdx init --chassis-source git` writes into the seed |
 | pipx, or venv + pip | `pipx install korodexios-core`; `python3 -m venv .venv && pip install -e ".[dev]"` | the fallback when uv is absent - and it fails as written on a PEP 668 `EXTERNALLY-MANAGED` interpreter with no `pip` and no `ensurepip` |
 | from an index | `uv pip install korodexios-core`, or `pip install korodexios-core` | once published; a consumer pins it with `uv lock` |
 
@@ -337,7 +337,7 @@ The seed ships `kdx.yml`, `.env.example`, `Makefile`, `README.md`, `AGENTS.md`,
 smoke tests. It passes `make check` on arrival.
 
 The chassis dependency is pinned to the repository by default
-(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.4.2`), so a fresh
+(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.0`), so a fresh
 venv can `pip install -e .` the seeded project before any index publish. Pass
 `--chassis-source index` once the package is on an index; an unknown choice is refused
 with a hint. A git pin needs network and uv at install time - `uv venv`,
@@ -509,6 +509,36 @@ command that never checks runs to its end. Only the job's owner or an admin may 
 
 Arguments after `--` reach the command exactly as typed - a path with dots, slashes, or
 spaces arrives whole.
+
+## Rate limiters (`kdx limiter`)
+
+```bash
+kdx limiter list [--json]                          # used today, left today, cooldown
+kdx limiter cooldown external-api --hours 24 --reason "HTTP 429"
+kdx limiter clear external-api                     # end a cooldown early
+```
+
+The state is `data/limiters/<name>.json`, shared with the running daemon through a named lock.
+A cooldown set here stops every `limiter.acquire()` of that name in every process. `kdx doctor`
+reports a cooling limiter and a spent daily budget.
+
+## Durable queue (`kdx queue`)
+
+```bash
+kdx queue submit render --payload '{"id": 7}' [--max-attempts 3] [--delay 60] [--json]
+kdx queue list [--state queued|running|done|failed|cancelled] [-n 50] [--json]
+kdx queue show 7 [--json]
+kdx queue cancel 7                                 # only a queued task can be recalled
+kdx queue retry 7                                  # failed or cancelled -> queued, attempts reset
+kdx queue purge --days 30
+```
+
+The queue file is `data/jobs/queue.sqlite3`; the daemon runs a task when a module registered a
+handler for its kind (`context.job_queue().handle(kind, fn)`). Over the control plane:
+`GET /api/v1/queue[?state=&limit=&id=]` (viewer), `POST /api/v1/queue` with
+`{"kind", "payload", "max_attempts", "delay"}`, `POST /api/v1/queue/cancel` and
+`/retry` with `{"id"}` (operator). `kdx jobs` is a different thing: background RPC commands
+that end with the daemon.
 
 ## Users, roles, and the audit log
 

@@ -349,6 +349,9 @@ def _pyproject(project: ProjectTemplate) -> str:
             "[project.optional-dependencies]",
             'dev = ["hatchling>=1.24", "mypy>=1.10", "pytest>=8.0", "ruff>=0.6"]',
             "",
+            "[tool.hatch.metadata]",
+            "allow-direct-references = true",
+            "",
             "[tool.hatch.build.targets.wheel]",
             f'packages = ["src/{project.package}"]',
             "",
@@ -1033,6 +1036,8 @@ def _gitignore() -> str:
             "data/users.json.lock",
             "data/audit.jsonl",
             "data/audit.jsonl.1",
+            "data/jobs/",
+            "data/limiters/",
             "node_modules/",
             "web/dist/",
             "*.mo",
@@ -1049,6 +1054,9 @@ def _env_example(project: ProjectTemplate) -> str:
             "KDX_CORE__LOG__LEVEL=INFO",
             "KDX_CORE__IPC__PORT=0",
             f"# KDX_MODULES__APP__GREETING=Hello from {project.title}",
+            "# Secrets: keep the real file outside the repository and point at it with",
+            "#   KDX_ENV_FILE=/home/me/secrets/app.env   (or: kdx --env-file ...)",
+            "# KDX_MODULES__APP__API_KEY=...   -> modules.app.api_key, masked in kdx config show",
             "",
         ]
     )

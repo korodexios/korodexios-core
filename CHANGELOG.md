@@ -5,6 +5,34 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-03
+
+All additions are additive inside core API v2.
+
+### Added
+
+- **Scheduler spread and slots**: `schedule(..., jitter=0.3, window=("02:00", "05:00"),
+  days=("mon",))` and the new `schedule_at("mon 02:00-05:00" | "1st 04:30" | "weekdays 06:00")`
+  (also `context.schedule_at`). Slots follow the wall clock and survive restarts.
+- **Rate limiter**: `context.limiter(name, min_interval, jitter, daily_budget)` with
+  `acquire()`, `try_acquire()`, `cooldown()` and `clear_cooldown()`; state in
+  `data/limiters/`, shared between processes, shown by `kdx doctor`; `kdx limiter
+  list|cooldown|clear`; `LimiterBlocked`; event `core.limiter.cooldown`.
+- **Supervised child processes**: `context.run_process(cmd, timeout, cwd, env, name, check)`
+  logs output, kills the whole process group on timeout or shutdown, publishes
+  `core.process.finished`; `ProcessError`, `ProcessResult`.
+- **Durable queue**: `context.job_queue()` (SQLite, states, attempts, exponential backoff,
+  restart recovery), the built-in `job_queue` module, `/api/v1/queue` routes and
+  `kdx queue list|show|submit|cancel|retry|purge`.
+- **Secrets outside the repository** are documented (`KDX_ENV_FILE`, `--env-file`) and the
+  seeded `.env.example` shows the recipe.
+
+### Fixed
+
+- `kdx init` wrote a `pyproject.toml` that `uv sync` refused (a direct `git+` reference needs
+  `[tool.hatch.metadata] allow-direct-references = true`); the table is now generated, and a
+  test checks the generated file.
+
 ## [0.4.2] - 2026-11-02
 
 ### Added

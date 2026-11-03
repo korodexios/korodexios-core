@@ -34,6 +34,10 @@ msgstr "--args musí být objekt JSON"
 msgid "--lines must be at least 1, got {count}"
 msgstr "--lines musí být alespoň 1, zadáno {count}"
 
+#: modules/job_queue/module.py
+msgid "--payload is not valid JSON: {error}"
+msgstr "--payload není platný JSON: {error}"
+
 #: cli/service.py
 msgid "--print changed nothing"
 msgstr "--print nic nezměnil"
@@ -45,6 +49,10 @@ msgstr "--rotate a --clear se navzájem vylučují"
 #: cli/reset.py
 msgid "... and {count} more"
 msgstr "... a dalších {count}"
+
+#: modules/job_queue/module.py
+msgid "Age in days."
+msgstr "Stáří ve dnech."
 
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
@@ -73,6 +81,10 @@ msgstr "Uchovávání záloh"
 #: modules/system_info/module.py
 msgid "CPU"
 msgstr "CPU"
+
+#: modules/job_queue/module.py
+msgid "Cancel a queued task (a running one cannot be recalled)."
+msgstr "Zruší úlohu ve frontě (běžící nelze odvolat)."
 
 #: cli/users.py
 msgid "Change a user's role."
@@ -138,6 +150,10 @@ msgstr "Vytvoří certifikát pro řídicí rovinu přes https."
 msgid "Delete a user; their token stops working at once."
 msgstr "Smaže uživatele; jeho token okamžitě přestane platit."
 
+#: modules/job_queue/module.py
+msgid "Delete finished tasks older than --days."
+msgstr "Smaže dokončené úlohy starší než --days."
+
 #: cli/reset.py
 msgid "Delete {count} item(s) ({size} bytes)?"
 msgstr "Smazat {count} položek ({size} bajtů)?"
@@ -157,6 +173,10 @@ msgstr "Adresář, ve kterém se modul vytvoří."
 #: modules/system_info/module.py
 msgid "Disk"
 msgstr "Disk"
+
+#: modules/job_queue/module.py
+msgid "Durable work queue: list, submit, cancel, retry."
+msgstr "Trvalá fronta úloh: seznam, zadání, zrušení, opakování."
 
 #: cli/jobs.py
 msgid "Emit JSON."
@@ -206,6 +226,10 @@ msgstr "Vypíše report jako JSON."
 msgid "Emit the snapshot as JSON."
 msgstr "Vypíše snímek jako JSON."
 
+#: cli/limiter.py
+msgid "End a cooldown early."
+msgstr "Ukončí cooldown předčasně."
+
 #: cli/commands.py
 msgid "Event bus"
 msgstr "Sběrnice událostí"
@@ -234,6 +258,10 @@ msgstr "Dokončí nebo vrátí zpět každou transakci, kterou pád nechal rozpr
 msgid "Follow the daemon's live events (Ctrl+C to stop)."
 msgstr "Sleduje události démona živě (zastavíš je Ctrl+C)."
 
+#: modules/job_queue/module.py
+msgid "Handler kind."
+msgstr "Druh handleru."
+
 #: cli/commands.py
 msgid "Hash every declared file and report drift; exit 3 on drift."
 msgstr "Spočítá hash každého deklarovaného souboru a ohlásí odchylky; při odchylce skončí kódem 3."
@@ -246,9 +274,17 @@ msgstr "Nástroje modulu heartbeat."
 msgid "Host diagnostics (OS, CPU, memory, disk)."
 msgstr "Diagnostika hostitele (OS, CPU, paměť, disk)."
 
+#: cli/limiter.py
+msgid "Hours to cool down."
+msgstr "Hodiny cooldownu."
+
 #: cli/users.py
 msgid "How many records to show [50]."
 msgstr "Kolik záznamů zobrazit [50]."
+
+#: modules/job_queue/module.py
+msgid "How many to show."
+msgstr "Kolik zobrazit."
 
 #: cli/jobs.py
 msgid "Include routine ticks, heartbeats, and scheduler runs."
@@ -282,6 +318,10 @@ msgstr "Vydá uživateli nový token; starý přestane platit."
 msgid "JSON object mapping each source string to its translation."
 msgstr "Objekt JSON, který přiřadí každému zdrojovému textu jeho překlad."
 
+#: modules/job_queue/module.py
+msgid "JSON payload, e.g. '{\"id\": 7}'."
+msgstr "Data úlohy jako JSON, např. '{\"id\": 7}'."
+
 #: cli/jobs.py
 msgid "Job id, for example job-3."
 msgstr "Id úlohy, například job-3."
@@ -294,6 +334,10 @@ msgstr "Jazyk"
 msgid "Language code, such as de or pt_BR."
 msgstr "Kód jazyka, například de nebo pt_BR."
 
+#: cli/limiter.py
+msgid "Limiter name (see 'kdx limiter list')."
+msgstr "Název limiteru (viz 'kdx limiter list')."
+
 #: cli/jobs.py
 msgid "List background jobs, newest first."
 msgstr "Vypíše úlohy na pozadí, nejnovější první."
@@ -301,6 +345,14 @@ msgstr "Vypíše úlohy na pozadí, nejnovější první."
 #: cli/commands.py
 msgid "List discovered modules and their state."
 msgstr "Vypíše nalezené moduly a jejich stav."
+
+#: cli/limiter.py
+msgid "List limiters: calls today, budget left, cooldown."
+msgstr "Seznam limiterů: dnešní volání, zbývající rozpočet, cooldown."
+
+#: modules/job_queue/module.py
+msgid "List tasks, newest first."
+msgstr "Seznam úloh, nejnovější první."
 
 #: cli/language.py
 msgid "List the languages that have a catalogue, per message domain."
@@ -346,6 +398,10 @@ msgstr "Paměť"
 msgid "Merge translations from a JSON file {source: translation}, checked."
 msgstr "Sloučí překlady ze souboru JSON {zdroj: překlad} po kontrole."
 
+#: cli/limiter.py
+msgid "Minutes to cool down."
+msgstr "Minuty cooldownu."
+
 #: cli/commands.py
 msgid "Module configuration schemas"
 msgstr "Schémata konfigurace modulů"
@@ -377,6 +433,10 @@ msgstr "Zkopíruje pouze cesty odpovídající VZORU (opakovatelné)."
 #: cli/commands.py
 msgid "Only show keys starting with KEY."
 msgstr "Zobrazí pouze klíče začínající na KLÍČ."
+
+#: modules/job_queue/module.py
+msgid "Only tasks in this state."
+msgstr "Pouze úlohy v tomto stavu."
 
 #: cli/language.py
 msgid "Only the first N strings [all]."
@@ -466,6 +526,18 @@ msgstr "Zdrojový kód v Pythonu k prohledání [balíček šasi]."
 msgid "Query a running chassis over its control plane (local or remote)."
 msgstr "Zeptá se běžícího šasi přes řídicí rovinu (lokálně nebo vzdáleně)."
 
+#: modules/job_queue/module.py
+msgid "Queue a failed or cancelled task again."
+msgstr "Znovu zařadí selhanou nebo zrušenou úlohu do fronty."
+
+#: modules/job_queue/module.py
+msgid "Queue a task for the running daemon's handler of that kind."
+msgstr "Zařadí úlohu pro handler daemona tohoto druhu."
+
+#: cli/limiter.py
+msgid "Refuse every call of a limiter for a while (after a 429 or 503)."
+msgstr "Na chvíli odmítne každé volání limiteru (po chybě 429 nebo 503)."
+
 #: cli/service.py
 msgid "Register the daemon to start at logon, and start it now."
 msgstr "Zaregistruje démona ke spuštění při přihlášení a hned ho spustí."
@@ -522,6 +594,10 @@ msgstr "Vytvoří kostru nového modulu (bez názvu se na něj zeptá)."
 msgid "Scaffold a new project from the chassis template."
 msgstr "Vytvoří kostru nového projektu ze šablony šasi."
 
+#: modules/job_queue/module.py
+msgid "Seconds to wait."
+msgstr "Sekundy čekání."
+
 #: modules/system_info/module.py
 msgid "Section to display without prompting."
 msgstr "Sekce k zobrazení bez ptaní."
@@ -538,9 +614,17 @@ msgstr "Zobrazí stav a výstup jedné úlohy."
 msgid "Show one module in detail (initializes modules)."
 msgstr "Zobrazí jeden modul podrobně (inicializuje moduly)."
 
+#: modules/job_queue/module.py
+msgid "Show one task with its payload, result and error."
+msgstr "Zobrazí jednu úlohu s daty, výsledkem a chybou."
+
 #: cli/txn.py
 msgid "Show one transaction and what each file hashed to."
 msgstr "Ukáže jednu transakci a hash každého souboru."
+
+#: cli/limiter.py
+msgid "Show rate limiters; start or end a cooldown."
+msgstr "Zobrazí limitery; spustí nebo ukončí cooldown."
 
 #: cli/service.py
 msgid "Show the definition and commands; change nothing."
@@ -606,9 +690,17 @@ msgstr "Čistě zastaví běžícího démona (vyžaduje roli admin)."
 msgid "Take back a finished transaction (refused if its files changed since)."
 msgstr "Vrátí zpět dokončenou transakci (odmítne, pokud se její soubory mezitím změnily)."
 
+#: modules/job_queue/module.py
+msgid "Task id (see 'kdx queue list')."
+msgstr "ID úlohy (viz 'kdx queue list')."
+
 #: cli/txn.py
 msgid "Transaction id (see 'kdx txn list')."
 msgstr "ID transakce (viz 'kdx txn list')."
+
+#: modules/job_queue/module.py
+msgid "Tries before the task is marked failed."
+msgstr "Počet pokusů, než se úloha označí za selhanou."
 
 #: modules/system_info/module.py
 msgid "Uptime"
@@ -625,6 +717,10 @@ msgstr "Ověří vstupy a ukáže, co by záloha zkopírovala."
 #: cli/commands.py
 msgid "Verify the project's declared file set without rewriting it."
 msgstr "Ověří deklarovanou sadu souborů projektu bez jejího přepsání."
+
+#: cli/limiter.py
+msgid "Why, shown in doctor."
+msgstr "Důvod, zobrazí se v doctor."
 
 #: cli/playbook.py
 msgid "Write the playbook to FILE instead of printing it."
@@ -677,6 +773,10 @@ msgstr "asynchronní úlohy"
 #: cli/commands.py
 msgid "asyncio loop"
 msgstr "smyčka asyncio"
+
+#: modules/job_queue/module.py
+msgid "attempts"
+msgstr "pokusy"
 
 #: cli/commands.py
 msgid "auth"
@@ -793,6 +893,10 @@ msgstr "kontrakty: {summary}"
 #: cli/commands.py
 msgid "control-plane port (0 for an ephemeral port)"
 msgstr "port řídicí roviny (0 pro dočasný port)"
+
+#: cli/limiter.py
+msgid "cooldown"
+msgstr "cooldown"
 
 #: cli/commands.py
 msgid "core api"
@@ -950,6 +1054,10 @@ msgstr "od"
 msgid "fuzzy"
 msgstr "nepřesné"
 
+#: cli/limiter.py
+msgid "give --hours or --minutes"
+msgstr "zadejte --hours nebo --minutes"
+
 #: cli/commands.py
 msgid "handler errors"
 msgstr "chyby obslužných funkcí"
@@ -1018,6 +1126,10 @@ msgstr "změněné klíče"
 msgid "keys checked"
 msgstr "zkontrolované klíče"
 
+#: modules/job_queue/module.py
+msgid "kind"
+msgstr "druh"
+
 #: cli/commands.py
 msgid "known keys"
 msgstr "známé klíče"
@@ -1033,6 +1145,10 @@ msgstr "jazyk"
 #: cli/language.py
 msgid "languages"
 msgstr "jazyky"
+
+#: cli/limiter.py
+msgid "left today"
+msgstr "zbývá dnes"
 
 #: cli/commands.py
 msgid "lock held"
@@ -1174,6 +1290,10 @@ msgstr "neběží žádný démon a tento příkaz nemá šasi"
 msgid "no diagnostics findings"
 msgstr "žádné nálezy diagnostiky"
 
+#: cli/limiter.py
+msgid "no limiters recorded"
+msgstr "nejsou zaznamenány žádné limitery"
+
 #: cli/commands.py
 msgid "no log file found at {log_path}"
 msgstr "v {log_path} se nenašel logový soubor"
@@ -1201,6 +1321,10 @@ msgstr "zatím žádní pojmenovaní uživatelé; vlastníkem je sdílený core.
 #: cli/commands.py
 msgid "no project or module declared a contract file set"
 msgstr "žádný projekt ani modul nedeklaroval sadu souborů kontraktu"
+
+#: modules/job_queue/module.py
+msgid "no such task"
+msgstr "taková úloha neexistuje"
 
 #: cli/txn.py
 msgid "no transactions recorded"
@@ -1366,9 +1490,17 @@ msgstr "zeptá se přímo na http://host:port bez lokálního souboru objevován
 msgid "query this host (with --port) instead of the local endpoint"
 msgstr "zeptá se tohoto hostitele (s --port) místo lokálního koncového bodu"
 
+#: modules/job_queue/module.py
+msgid "queued task {id} ({kind})"
+msgstr "úloha {id} ({kind}) zařazena do fronty"
+
 #: cli/reset.py
 msgid "really delete (without it the command only lists what it would remove)"
 msgstr "opravdu smazat (bez toho příkaz jen vypíše, co by odstranil)"
+
+#: cli/limiter.py
+msgid "reason"
+msgstr "důvod"
 
 #: cli/service.py
 msgid "register it with: kdx service install"
@@ -1518,6 +1650,22 @@ msgstr "cílový adresář (výchozí: ./<název>)"
 msgid "task names"
 msgstr "názvy úloh"
 
+#: modules/job_queue/module.py
+msgid "task {id} cancelled"
+msgstr "úloha {id} zrušena"
+
+#: modules/job_queue/module.py
+msgid "task {id} is not failed or cancelled"
+msgstr "úloha {id} není selhaná ani zrušená"
+
+#: modules/job_queue/module.py
+msgid "task {id} is not queued"
+msgstr "úloha {id} není ve frontě"
+
+#: modules/job_queue/module.py
+msgid "task {id} queued again"
+msgstr "úloha {id} znovu zařazena do fronty"
+
 #: cli/users.py
 msgid "terminal: kdx status --target http://HOST:8123 --token TOKEN"
 msgstr "terminál: kdx status --target http://HOST:8123 --token TOKEN"
@@ -1569,6 +1717,10 @@ msgstr "přenos událostí skončil: {exc}"
 #: cli/commands.py
 msgid "the live state of a running daemon: 'kdx status' or 'kdx ui'"
 msgstr "živý stav běžícího démona: 'kdx status' nebo 'kdx ui'"
+
+#: modules/job_queue/module.py
+msgid "the queue is empty"
+msgstr "fronta je prázdná"
 
 #: cli/users.py
 msgid "the shared core.ipc.token is the built-in admin 'owner'"
@@ -1625,6 +1777,10 @@ msgstr "doba běhu"
 #: modules/system_info/module.py
 msgid "used"
 msgstr "využito"
+
+#: cli/limiter.py
+msgid "used today"
+msgstr "použito dnes"
 
 #: cli/jobs.py
 msgid "user"
@@ -1686,6 +1842,10 @@ msgstr "{count} katalog(ů) vyžaduje pozornost"
 msgid "{count} configuration findings need attention"
 msgstr "{count} nálezů v konfiguraci vyžaduje pozornost"
 
+#: modules/job_queue/module.py
+msgid "{count} finished task(s) removed"
+msgstr "odstraněno dokončených úloh: {count}"
+
 #: cli/reset.py
 msgid "{count} item(s), {size} bytes; run kdx reset --apply to delete them"
 msgstr "{count} položek, {size} bajtů; smažete je příkazem kdx reset --apply"
@@ -1734,6 +1894,14 @@ msgstr "{job_id} se spustila; Ctrl+C zastaví sledování, ne úlohu"
 msgid "{locale}: {added} new, {stale} obsolete"
 msgstr "{locale}: {added} nových, {stale} zastaralých"
 
+#: cli/limiter.py
+msgid "{name} cooldown ended"
+msgstr "cooldown {name} skončil"
+
+#: cli/limiter.py
+msgid "{name} cooling down until {when}"
+msgstr "{name} je v cooldownu do {when}"
+
 #: cli/users.py
 msgid "{name} is now {role}"
 msgstr "{name} má nyní roli {role}"
@@ -1741,6 +1909,10 @@ msgstr "{name} má nyní roli {role}"
 #: cli/service.py
 msgid "{name} removed; the daemon no longer starts at logon"
 msgstr "{name} byla odstraněna; démon se už nespouští při přihlášení"
+
+#: cli/limiter.py
+msgid "{name} was not cooling down"
+msgstr "{name} nebyl v cooldownu"
 
 #: cli/service.py
 msgid "{name} was not registered; nothing to remove"

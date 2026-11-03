@@ -32,6 +32,10 @@ msgstr ""
 msgid "--lines must be at least 1, got {count}"
 msgstr ""
 
+#: modules/job_queue/module.py
+msgid "--payload is not valid JSON: {error}"
+msgstr ""
+
 #: cli/service.py
 msgid "--print changed nothing"
 msgstr ""
@@ -42,6 +46,10 @@ msgstr ""
 
 #: cli/reset.py
 msgid "... and {count} more"
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "Age in days."
 msgstr ""
 
 #: cli/jobs.py
@@ -70,6 +78,10 @@ msgstr ""
 
 #: modules/system_info/module.py
 msgid "CPU"
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "Cancel a queued task (a running one cannot be recalled)."
 msgstr ""
 
 #: cli/users.py
@@ -136,6 +148,10 @@ msgstr ""
 msgid "Delete a user; their token stops working at once."
 msgstr ""
 
+#: modules/job_queue/module.py
+msgid "Delete finished tasks older than --days."
+msgstr ""
+
 #: cli/reset.py
 msgid "Delete {count} item(s) ({size} bytes)?"
 msgstr ""
@@ -154,6 +170,10 @@ msgstr ""
 
 #: modules/system_info/module.py
 msgid "Disk"
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "Durable work queue: list, submit, cancel, retry."
 msgstr ""
 
 #: cli/jobs.py
@@ -204,6 +224,10 @@ msgstr ""
 msgid "Emit the snapshot as JSON."
 msgstr ""
 
+#: cli/limiter.py
+msgid "End a cooldown early."
+msgstr ""
+
 #: cli/commands.py
 msgid "Event bus"
 msgstr ""
@@ -232,6 +256,10 @@ msgstr ""
 msgid "Follow the daemon's live events (Ctrl+C to stop)."
 msgstr ""
 
+#: modules/job_queue/module.py
+msgid "Handler kind."
+msgstr ""
+
 #: cli/commands.py
 msgid "Hash every declared file and report drift; exit 3 on drift."
 msgstr ""
@@ -244,8 +272,16 @@ msgstr ""
 msgid "Host diagnostics (OS, CPU, memory, disk)."
 msgstr ""
 
+#: cli/limiter.py
+msgid "Hours to cool down."
+msgstr ""
+
 #: cli/users.py
 msgid "How many records to show [50]."
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "How many to show."
 msgstr ""
 
 #: cli/jobs.py
@@ -280,6 +316,10 @@ msgstr ""
 msgid "JSON object mapping each source string to its translation."
 msgstr ""
 
+#: modules/job_queue/module.py
+msgid "JSON payload, e.g. '{\"id\": 7}'."
+msgstr ""
+
 #: cli/jobs.py
 msgid "Job id, for example job-3."
 msgstr ""
@@ -292,12 +332,24 @@ msgstr ""
 msgid "Language code, such as de or pt_BR."
 msgstr ""
 
+#: cli/limiter.py
+msgid "Limiter name (see 'kdx limiter list')."
+msgstr ""
+
 #: cli/jobs.py
 msgid "List background jobs, newest first."
 msgstr ""
 
 #: cli/commands.py
 msgid "List discovered modules and their state."
+msgstr ""
+
+#: cli/limiter.py
+msgid "List limiters: calls today, budget left, cooldown."
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "List tasks, newest first."
 msgstr ""
 
 #: cli/language.py
@@ -344,6 +396,10 @@ msgstr ""
 msgid "Merge translations from a JSON file {source: translation}, checked."
 msgstr ""
 
+#: cli/limiter.py
+msgid "Minutes to cool down."
+msgstr ""
+
 #: cli/commands.py
 msgid "Module configuration schemas"
 msgstr ""
@@ -374,6 +430,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "Only show keys starting with KEY."
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "Only tasks in this state."
 msgstr ""
 
 #: cli/language.py
@@ -464,6 +524,18 @@ msgstr ""
 msgid "Query a running chassis over its control plane (local or remote)."
 msgstr ""
 
+#: modules/job_queue/module.py
+msgid "Queue a failed or cancelled task again."
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "Queue a task for the running daemon's handler of that kind."
+msgstr ""
+
+#: cli/limiter.py
+msgid "Refuse every call of a limiter for a while (after a 429 or 503)."
+msgstr ""
+
 #: cli/service.py
 msgid "Register the daemon to start at logon, and start it now."
 msgstr ""
@@ -520,6 +592,10 @@ msgstr ""
 msgid "Scaffold a new project from the chassis template."
 msgstr ""
 
+#: modules/job_queue/module.py
+msgid "Seconds to wait."
+msgstr ""
+
 #: modules/system_info/module.py
 msgid "Section to display without prompting."
 msgstr ""
@@ -536,8 +612,16 @@ msgstr ""
 msgid "Show one module in detail (initializes modules)."
 msgstr ""
 
+#: modules/job_queue/module.py
+msgid "Show one task with its payload, result and error."
+msgstr ""
+
 #: cli/txn.py
 msgid "Show one transaction and what each file hashed to."
+msgstr ""
+
+#: cli/limiter.py
+msgid "Show rate limiters; start or end a cooldown."
 msgstr ""
 
 #: cli/service.py
@@ -604,8 +688,16 @@ msgstr ""
 msgid "Take back a finished transaction (refused if its files changed since)."
 msgstr ""
 
+#: modules/job_queue/module.py
+msgid "Task id (see 'kdx queue list')."
+msgstr ""
+
 #: cli/txn.py
 msgid "Transaction id (see 'kdx txn list')."
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "Tries before the task is marked failed."
 msgstr ""
 
 #: modules/system_info/module.py
@@ -622,6 +714,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "Verify the project's declared file set without rewriting it."
+msgstr ""
+
+#: cli/limiter.py
+msgid "Why, shown in doctor."
 msgstr ""
 
 #: cli/playbook.py
@@ -674,6 +770,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "asyncio loop"
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "attempts"
 msgstr ""
 
 #: cli/commands.py
@@ -790,6 +890,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "control-plane port (0 for an ephemeral port)"
+msgstr ""
+
+#: cli/limiter.py
+msgid "cooldown"
 msgstr ""
 
 #: cli/commands.py
@@ -948,6 +1052,10 @@ msgstr ""
 msgid "fuzzy"
 msgstr ""
 
+#: cli/limiter.py
+msgid "give --hours or --minutes"
+msgstr ""
+
 #: cli/commands.py
 msgid "handler errors"
 msgstr ""
@@ -1016,6 +1124,10 @@ msgstr ""
 msgid "keys checked"
 msgstr ""
 
+#: modules/job_queue/module.py
+msgid "kind"
+msgstr ""
+
 #: cli/commands.py
 msgid "known keys"
 msgstr ""
@@ -1030,6 +1142,10 @@ msgstr ""
 
 #: cli/language.py
 msgid "languages"
+msgstr ""
+
+#: cli/limiter.py
+msgid "left today"
 msgstr ""
 
 #: cli/commands.py
@@ -1172,6 +1288,10 @@ msgstr ""
 msgid "no diagnostics findings"
 msgstr ""
 
+#: cli/limiter.py
+msgid "no limiters recorded"
+msgstr ""
+
 #: cli/commands.py
 msgid "no log file found at {log_path}"
 msgstr ""
@@ -1198,6 +1318,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "no project or module declared a contract file set"
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "no such task"
 msgstr ""
 
 #: cli/txn.py
@@ -1364,8 +1488,16 @@ msgstr ""
 msgid "query this host (with --port) instead of the local endpoint"
 msgstr ""
 
+#: modules/job_queue/module.py
+msgid "queued task {id} ({kind})"
+msgstr ""
+
 #: cli/reset.py
 msgid "really delete (without it the command only lists what it would remove)"
+msgstr ""
+
+#: cli/limiter.py
+msgid "reason"
 msgstr ""
 
 #: cli/service.py
@@ -1516,6 +1648,22 @@ msgstr ""
 msgid "task names"
 msgstr ""
 
+#: modules/job_queue/module.py
+msgid "task {id} cancelled"
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "task {id} is not failed or cancelled"
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "task {id} is not queued"
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "task {id} queued again"
+msgstr ""
+
 #: cli/users.py
 msgid "terminal: kdx status --target http://HOST:8123 --token TOKEN"
 msgstr ""
@@ -1566,6 +1714,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "the live state of a running daemon: 'kdx status' or 'kdx ui'"
+msgstr ""
+
+#: modules/job_queue/module.py
+msgid "the queue is empty"
 msgstr ""
 
 #: cli/users.py
@@ -1622,6 +1774,10 @@ msgstr ""
 
 #: modules/system_info/module.py
 msgid "used"
+msgstr ""
+
+#: cli/limiter.py
+msgid "used today"
 msgstr ""
 
 #: cli/jobs.py
@@ -1684,6 +1840,10 @@ msgstr ""
 msgid "{count} configuration findings need attention"
 msgstr ""
 
+#: modules/job_queue/module.py
+msgid "{count} finished task(s) removed"
+msgstr ""
+
 #: cli/reset.py
 msgid "{count} item(s), {size} bytes; run kdx reset --apply to delete them"
 msgstr ""
@@ -1732,12 +1892,24 @@ msgstr ""
 msgid "{locale}: {added} new, {stale} obsolete"
 msgstr ""
 
+#: cli/limiter.py
+msgid "{name} cooldown ended"
+msgstr ""
+
+#: cli/limiter.py
+msgid "{name} cooling down until {when}"
+msgstr ""
+
 #: cli/users.py
 msgid "{name} is now {role}"
 msgstr ""
 
 #: cli/service.py
 msgid "{name} removed; the daemon no longer starts at logon"
+msgstr ""
+
+#: cli/limiter.py
+msgid "{name} was not cooling down"
 msgstr ""
 
 #: cli/service.py

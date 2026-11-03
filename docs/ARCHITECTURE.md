@@ -397,6 +397,20 @@ any name `lock_name()` refuses are not locks and never look stale (`v0.2.5`).
   keeps is truncated (`MAX_ERROR_LENGTH`), and `unschedule()` purges the task, its order entry, and
   its numeric-suffix bookkeeping, so a withdrawn name leaves nothing behind and an issued
   number is not recycled while its base still has a live task.
+- **Spread and calendar slots** (`v0.5.0`). `schedule(..., jitter=, window=, days=)` and
+  `schedule_at("mon 02:00-05:00", ...)` add random spread and wall-clock slots to the same
+  scheduler. Interval waits stay on the monotonic clock; a slot is computed from the wall
+  clock once per run (`kernel/calendar.py`), so a restart never shifts a weekly job.
+- **Rate limiter** (`kernel/limiter.py`). Minimum gap, daily budget, cooldown; state in
+  `data/limiters/<name>.json` under a named lock, so processes share it and restarts keep it.
+  The limiter owns the decision "may I call now"; the caller owns the call.
+- **Supervised processes** (`kernel/process.py`). Children run in their own process group;
+  output goes to the log, a timeout or `shutdown()` kills the group, and shutdown ends them
+  before the scheduler and modules stop so no thread is stuck waiting on a child.
+- **Durable queue** (`kernel/queue.py`, module `job_queue`). Tasks as rows in a SQLite file
+  with state, attempts and backoff; claiming is one `BEGIN IMMEDIATE`, so two workers or two
+  processes never take the same task. Unlike `kernel/jobs.py` (in-memory RPC jobs), it
+  survives a restart.
 - **Static content.** The chassis owns the one socket; a module owns its files. A mount is a
   prefix plus a directory, and the media type comes from the file, so a dashboard costs no
   second server and no proxy.

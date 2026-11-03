@@ -13,7 +13,7 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 | Distribution | `korodexios-core` |
 | Import root | `korodexios_core` |
 | Console scripts | `kdx` (primary short alias), `korodexios` (canonical) |
-| Version | `0.4.2` (production), core API frozen at `v2` (additive changes only inside v2) |
+| Version | `0.5.0` (production), core API frozen at `v2` (additive changes only inside v2) |
 | Runtime | CPython 3.11+, stdlib first (PyYAML for config, rich for the CLI surface) |
 | Config file | `kdx.yml` / `kdx.yaml` / `kdx.json` (then `korodexios.*`) |
 | Env prefix | `KDX_` primary; `KORODEXIOS_` is the canonical long prefix |
@@ -487,6 +487,15 @@ environment (`.env` then process env) -> CLI overrides**.
   (and the `KORODEXIOS_` spelling).
 - Secrets: never read `os.environ` in a module; a value that came from the
   environment must be visible in `kdx config show` provenance.
+- Secrets outside the repository: keep keys in a `.env` file that is not versioned and
+  point the chassis at it with `kdx --env-file /path/to/.env ...` or
+  `KDX_ENV_FILE=/path/to/.env` (an absolute path may live anywhere, e.g. in the
+  operator's home directory; a relative one is anchored at the project root). A line
+  `KDX_MODULES__RESEARCH__API_KEY=...` becomes `modules.research.api_key`, so the module
+  reads it with `self.config.get_str("api_key")`; `kdx config show` masks any key
+  named like `token`, `secret`, `password` or `api_key` and names the file it came
+  from. Nothing reaches `kdx.local.yml`, and `kdx init` seeds `.env.example` with the
+  same recipe.
 - Environment aliases: `core.env.aliases` maps a legacy variable name to the canonical
   key it feeds, and both shapes are read at load - the mapping a project writes in
   `kdx.yml` (which the loader flattens to `core.env.aliases.NAME` leaves) and the
@@ -877,6 +886,25 @@ happen at all still shed archives - and what the sweep took back is reported by 
 (`prune_reclaimed_bytes`, `prune_reclaimed`) and by the `retention` diagnostic row. At the
 default `0.0` there is no extra task and a copy prunes inline, exactly as before.
 
+Spreading and calendar slots (`v0.5.0`, additive):
+
+```python
+context.schedule(60.0, self.poll, jitter=0.4)                 # every 36-84 s, never in lockstep
+context.schedule(86400.0, self.sweep, window=("02:00", "05:00"), days=("mon",))
+context.schedule_at("mon 02:00-05:00", self.weekly)           # a random instant in the window
+context.schedule_at("1st 04:30", self.monthly)                # day of month, exact time
+context.schedule_at("weekdays 06:00", self.morning)
+```
+
+`jitter` (0..1) stretches or shortens every wait by up to that share of the interval, so a
+fleet of instances does not call a shared service in the same second. `window` and `days`
+confine an interval task to local-time slots: a due moment outside them moves to a random
+instant of the next slot. `schedule_at(spec, ...)` is purely calendar-driven - days
+(`mon`..`sun`, `daily`, `weekdays`, `weekends`, `1st`, `15th`) plus a time or a window
+`HH:MM-HH:MM` - and is computed from the wall clock, so a restart never shifts it; a slot that
+passed while the daemon was down is not replayed. `ScheduledTask.as_dict()` and
+`kdx doctor` show `jitter`, `calendar` and `constraint`.
+
 ### 16.4 Configuration and public surface
 
 | Key | Default | Meaning |
@@ -885,6 +913,43 @@ default `0.0` there is no extra task and a copy prunes inline, exactly as before
 | `core.scheduler.enabled` | `true` | the tick loop runs declared tasks |
 | `core.scheduler.threaded` | `false` | run the scheduler on its own thread instead |
 | `core.ipc.static` | `true` | publish module `static_dirs()` mounts on the control plane |
+
+### 16.5 Outbound limits, child processes, durable queue (`v0.5.0`)
+
+```python
+api = context.limiter("external-api", min_interval=4.0, jitter=0.5, daily_budget=6000)
+api.acquire()                          # waits out the gap; raises LimiterBlocked past the budget
+try:
+    response = call_the_api()
+except TooManyRequests:
+    api.cooldown(hours=24, reason="HTTP 429")   # every acquire() now refuses, in every process
+
+result = context.run_process(["ffmpeg", "-i", src, dst], timeout=3600, cwd=work, name="encode")
+result.ok, result.returncode, result.stdout, result.stderr   # the last 200 lines of each
+
+queue = context.job_queue()
+queue.handle("render", handler)        # handler(task) -> JSON-able result; raise to retry
+task = queue.submit("render", {"id": 7}, max_attempts=3)
+```
+
+- **Limiter.** One JSON state file per name under `data/limiters/`, guarded by a named lock, so
+  a daemon and a one-shot `kdx` command share it and a restart keeps it. `min_interval` is the
+  gap between calls (`jitter` only lengthens it), `daily_budget` resets at local midnight,
+  `cooldown()` never shortens a running cooldown. `acquire()` raises `LimiterBlocked`
+  (`reason`: `budget`, `cooldown`, `timeout`; `retry_after` in seconds). `kdx doctor` warns
+  about a cooling or spent limiter; `kdx limiter list|cooldown|clear` is the terminal view.
+- **Processes.** `run_process` takes an argument list (never a shell string), runs the child in
+  its own process group, sends every output line to the logger (`process=` and `stream=`
+  fields, never stdout), kills the whole group on timeout or at chassis stop, and publishes
+  `core.process.finished`. `check=True` raises `ProcessError` carrying the result.
+- **Queue.** `data/jobs/queue.sqlite3` (stdlib `sqlite3`) holds tasks in the states `queued`,
+  `running`, `done`, `failed`, `cancelled` with attempts and exponential backoff (30 s doubling,
+  capped at an hour). A restart requeues what it interrupted. The `job_queue` module runs
+  due tasks (`modules.job_queue.workers` at once) and serves `GET|POST /api/v1/queue`,
+  `POST /api/v1/queue/cancel|retry` (viewer reads, operator writes); `kdx queue
+  list|show|submit|cancel|retry|purge` works against the same file. A process runs only the
+  kinds it registered a handler for. This is separate from `kdx jobs`, which are in-memory
+  background RPC commands that end with the daemon.
 
 Exported from `korodexios_core` and `korodexios_core.kernel`: `NamedLock`,
 `NamedLockRegistry`, `TaskScheduler`, `ScheduledTask`, `IpcResponse`, `IpcStaticMount`,

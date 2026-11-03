@@ -67,7 +67,9 @@ from .ipc import (
     process_memory,
 )
 from .jobs import Job, JobRegistry
+from .limiter import LimiterRegistry
 from .locks import NamedLock, NamedLockRegistry
+from .process import ProcessSupervisor
 from .project import ProjectIdentity, project_identity
 from .registry import ModuleRegistry
 from .rpc_output import capture_output, captured_text
@@ -325,6 +327,10 @@ class Chassis:
             async_runtime=async_runtime,
             supervisor=supervisor,
             scheduler=scheduler,
+            limiters=LimiterRegistry(
+                paths.durable_dir / "limiters", logger=log.child("limiter"), bus=bus
+            ),
+            processes=ProcessSupervisor(logger=log.child("process"), bus=bus),
             i18n=build_i18n(config.get_str("core.locale", "en")),
         )
         registry = ModuleRegistry(log.child("registry"), bus=bus)
@@ -1289,6 +1295,31 @@ class Chassis:
                         module=task.module or "chassis",
                     )
                 )
+        limiters = self.context.limiters
+        for row in limiters.states() if limiters is not None else ():
+            if row["cooling_down"]:
+                checks.append(
+                    diagnostic_check(
+                        name="limiter",
+                        message=(
+                            f"limiter {row['name']} is cooling down for "
+                            f"{row['cooldown_seconds']:.0f}s {row['cooldown_reason']}".rstrip()
+                        ),
+                        severity=DiagnosticSeverity.WARNING,
+                        hint=f"'kdx limiter clear {row['name']}' ends the cooldown early",
+                        module="chassis",
+                    )
+                )
+            elif row["remaining_today"] == 0:
+                checks.append(
+                    diagnostic_check(
+                        name="limiter",
+                        message=f"limiter {row['name']} spent its daily budget",
+                        severity=DiagnosticSeverity.WARNING,
+                        hint="the budget resets at local midnight",
+                        module="chassis",
+                    )
+                )
         locks = self.locks
         if locks is not None:
             for stale in locks.stale_names():
@@ -1344,6 +1375,7 @@ class Chassis:
         timeout = self.config.get_float("core.lifecycle.stop_timeout", 5.0)
         self.stop_ipc(timeout=timeout)
         self._stop_jobs(timeout=timeout)
+        self._stop_children(timeout=timeout)
         self.stop_scheduler(timeout=timeout)
         self.registry.stop_all(timeout=timeout)
         runtime = self.async_runtime
@@ -1357,6 +1389,18 @@ class Chassis:
         self.signals.uninstall()
         close_logger(self.context.logs.root_logger)
         return code
+
+    def _stop_children(self, timeout: float) -> None:
+        """End limiter waits and kill supervised child processes before modules stop.
+
+        A module blocked in run_process() or limiter.acquire() holds a thread the
+        shutdown must join; releasing it first is what keeps the stop inside its budget.
+        """
+        context = self.context
+        if context.limiters is not None:
+            context.limiters.stop()
+        if context.processes is not None:
+            context.processes.terminate_all(timeout=timeout)
 
     def _stop_jobs(self, timeout: float) -> None:
         """Cancel every running job and wait for it, before the modules it uses stop.

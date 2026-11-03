@@ -35,3 +35,7 @@ data/users.json.tmp.*
 data/users.json.lock
 data/audit.jsonl
 data/audit.jsonl.1
+
+# Queue and limiter state: per-host runtime state, not source
+data/jobs/
+data/limiters/

@@ -34,6 +34,10 @@ msgstr "--args muss ein JSON-Objekt sein"
 msgid "--lines must be at least 1, got {count}"
 msgstr "--lines muss mindestens 1 sein, angegeben: {count}"
 
+#: modules/job_queue/module.py
+msgid "--payload is not valid JSON: {error}"
+msgstr "--payload ist kein gültiges JSON: {error}"
+
 #: cli/service.py
 msgid "--print changed nothing"
 msgstr "--print hat nichts verändert"
@@ -45,6 +49,10 @@ msgstr "--rotate und --clear schließen sich gegenseitig aus"
 #: cli/reset.py
 msgid "... and {count} more"
 msgstr "... und {count} weitere"
+
+#: modules/job_queue/module.py
+msgid "Age in days."
+msgstr "Alter in Tagen."
 
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
@@ -73,6 +81,10 @@ msgstr "Backup-Aufbewahrung"
 #: modules/system_info/module.py
 msgid "CPU"
 msgstr "CPU"
+
+#: modules/job_queue/module.py
+msgid "Cancel a queued task (a running one cannot be recalled)."
+msgstr "Bricht eine wartende Aufgabe ab (eine laufende lässt sich nicht zurückrufen)."
 
 #: cli/users.py
 msgid "Change a user's role."
@@ -138,6 +150,10 @@ msgstr "Erstellt das Zertifikat für eine https-Kontrollebene."
 msgid "Delete a user; their token stops working at once."
 msgstr "Löscht einen Benutzer; sein Token funktioniert sofort nicht mehr."
 
+#: modules/job_queue/module.py
+msgid "Delete finished tasks older than --days."
+msgstr "Löscht abgeschlossene Aufgaben, die älter als --days sind."
+
 #: cli/reset.py
 msgid "Delete {count} item(s) ({size} bytes)?"
 msgstr "{count} Element(e) löschen ({size} Bytes)?"
@@ -157,6 +173,10 @@ msgstr "Verzeichnis, in dem das Modul angelegt wird."
 #: modules/system_info/module.py
 msgid "Disk"
 msgstr "Datenträger"
+
+#: modules/job_queue/module.py
+msgid "Durable work queue: list, submit, cancel, retry."
+msgstr "Dauerhafte Aufgabenwarteschlange: auflisten, einreihen, abbrechen, wiederholen."
 
 #: cli/jobs.py
 msgid "Emit JSON."
@@ -206,6 +226,10 @@ msgstr "Gibt den Bericht als JSON aus."
 msgid "Emit the snapshot as JSON."
 msgstr "Gibt den Schnappschuss als JSON aus."
 
+#: cli/limiter.py
+msgid "End a cooldown early."
+msgstr "Beendet eine Abkühlphase vorzeitig."
+
 #: cli/commands.py
 msgid "Event bus"
 msgstr "Ereignisbus"
@@ -234,6 +258,10 @@ msgstr "Schließt jede nach einem Absturz unterbrochene Transaktion ab oder mach
 msgid "Follow the daemon's live events (Ctrl+C to stop)."
 msgstr "Verfolgt die Live-Ereignisse des Daemons (Strg+C beendet)."
 
+#: modules/job_queue/module.py
+msgid "Handler kind."
+msgstr "Art des Handlers."
+
 #: cli/commands.py
 msgid "Hash every declared file and report drift; exit 3 on drift."
 msgstr "Bildet den Hash jeder deklarierten Datei und meldet Abweichungen; bei Abweichung Code 3."
@@ -246,9 +274,17 @@ msgstr "Hilfsprogramme des Heartbeat-Moduls."
 msgid "Host diagnostics (OS, CPU, memory, disk)."
 msgstr "Host-Diagnose (Betriebssystem, CPU, Speicher, Datenträger)."
 
+#: cli/limiter.py
+msgid "Hours to cool down."
+msgstr "Stunden der Abkühlphase."
+
 #: cli/users.py
 msgid "How many records to show [50]."
 msgstr "Wie viele Einträge angezeigt werden [50]."
+
+#: modules/job_queue/module.py
+msgid "How many to show."
+msgstr "Wie viele angezeigt werden."
 
 #: cli/jobs.py
 msgid "Include routine ticks, heartbeats, and scheduler runs."
@@ -282,6 +318,10 @@ msgstr "Stellt einem Benutzer einen neuen Token aus; der alte funktioniert nicht
 msgid "JSON object mapping each source string to its translation."
 msgstr "JSON-Objekt, das jeden Quelltext seiner Übersetzung zuordnet."
 
+#: modules/job_queue/module.py
+msgid "JSON payload, e.g. '{\"id\": 7}'."
+msgstr "Nutzdaten als JSON, z. B. '{\"id\": 7}'."
+
 #: cli/jobs.py
 msgid "Job id, for example job-3."
 msgstr "Job-ID, zum Beispiel job-3."
@@ -294,6 +334,10 @@ msgstr "Sprache"
 msgid "Language code, such as de or pt_BR."
 msgstr "Sprachcode, z. B. de oder pt_BR."
 
+#: cli/limiter.py
+msgid "Limiter name (see 'kdx limiter list')."
+msgstr "Name des Limiters (siehe 'kdx limiter list')."
+
 #: cli/jobs.py
 msgid "List background jobs, newest first."
 msgstr "Listet Hintergrund-Jobs auf, die neuesten zuerst."
@@ -301,6 +345,14 @@ msgstr "Listet Hintergrund-Jobs auf, die neuesten zuerst."
 #: cli/commands.py
 msgid "List discovered modules and their state."
 msgstr "Listet gefundene Module und ihren Zustand auf."
+
+#: cli/limiter.py
+msgid "List limiters: calls today, budget left, cooldown."
+msgstr "Listet Limiter: heutige Aufrufe, verbleibendes Budget, Abkühlphase."
+
+#: modules/job_queue/module.py
+msgid "List tasks, newest first."
+msgstr "Listet Aufgaben, neueste zuerst."
 
 #: cli/language.py
 msgid "List the languages that have a catalogue, per message domain."
@@ -346,6 +398,10 @@ msgstr "Speicher"
 msgid "Merge translations from a JSON file {source: translation}, checked."
 msgstr "Führt Übersetzungen aus einer JSON-Datei {Quelle: Übersetzung} nach Prüfung zusammen."
 
+#: cli/limiter.py
+msgid "Minutes to cool down."
+msgstr "Minuten der Abkühlphase."
+
 #: cli/commands.py
 msgid "Module configuration schemas"
 msgstr "Konfigurationsschemata der Module"
@@ -377,6 +433,10 @@ msgstr "Kopiert nur Pfade, die MUSTER entsprechen (wiederholbar)."
 #: cli/commands.py
 msgid "Only show keys starting with KEY."
 msgstr "Zeigt nur Schlüssel, die mit SCHLÜSSEL beginnen."
+
+#: modules/job_queue/module.py
+msgid "Only tasks in this state."
+msgstr "Nur Aufgaben in diesem Zustand."
 
 #: cli/language.py
 msgid "Only the first N strings [all]."
@@ -466,6 +526,18 @@ msgstr "Zu durchsuchender Python-Quellcode [das Chassis-Paket]."
 msgid "Query a running chassis over its control plane (local or remote)."
 msgstr "Fragt ein laufendes Chassis über seine Kontrollebene ab (lokal oder entfernt)."
 
+#: modules/job_queue/module.py
+msgid "Queue a failed or cancelled task again."
+msgstr "Reiht eine fehlgeschlagene oder abgebrochene Aufgabe erneut ein."
+
+#: modules/job_queue/module.py
+msgid "Queue a task for the running daemon's handler of that kind."
+msgstr "Reiht eine Aufgabe für den Handler dieser Art im laufenden Daemon ein."
+
+#: cli/limiter.py
+msgid "Refuse every call of a limiter for a while (after a 429 or 503)."
+msgstr "Lehnt jeden Aufruf eines Limiters eine Weile ab (nach einem 429 oder 503)."
+
 #: cli/service.py
 msgid "Register the daemon to start at logon, and start it now."
 msgstr "Registriert den Daemon für den Start bei der Anmeldung und startet ihn sofort."
@@ -522,6 +594,10 @@ msgstr "Erzeugt ein neues Modulpaket (fragt nach dem Namen, falls keiner angegeb
 msgid "Scaffold a new project from the chassis template."
 msgstr "Erzeugt ein neues Projekt aus der Chassis-Vorlage."
 
+#: modules/job_queue/module.py
+msgid "Seconds to wait."
+msgstr "Wartezeit in Sekunden."
+
 #: modules/system_info/module.py
 msgid "Section to display without prompting."
 msgstr "Anzuzeigender Abschnitt ohne Nachfrage."
@@ -538,9 +614,17 @@ msgstr "Zeigt Zustand und Ausgabe eines Jobs."
 msgid "Show one module in detail (initializes modules)."
 msgstr "Zeigt ein Modul im Detail (initialisiert die Module)."
 
+#: modules/job_queue/module.py
+msgid "Show one task with its payload, result and error."
+msgstr "Zeigt eine Aufgabe mit Nutzdaten, Ergebnis und Fehler."
+
 #: cli/txn.py
 msgid "Show one transaction and what each file hashed to."
 msgstr "Zeigt eine Transaktion und den Hash jeder Datei."
+
+#: cli/limiter.py
+msgid "Show rate limiters; start or end a cooldown."
+msgstr "Zeigt Limiter; startet oder beendet eine Abkühlphase."
 
 #: cli/service.py
 msgid "Show the definition and commands; change nothing."
@@ -606,9 +690,17 @@ msgstr "Beendet den laufenden Daemon sauber (erfordert die Rolle admin)."
 msgid "Take back a finished transaction (refused if its files changed since)."
 msgstr "Macht eine abgeschlossene Transaktion rückgängig (abgelehnt, wenn sich ihre Dateien seither geändert haben)."
 
+#: modules/job_queue/module.py
+msgid "Task id (see 'kdx queue list')."
+msgstr "Aufgaben-ID (siehe 'kdx queue list')."
+
 #: cli/txn.py
 msgid "Transaction id (see 'kdx txn list')."
 msgstr "Transaktions-ID (siehe 'kdx txn list')."
+
+#: modules/job_queue/module.py
+msgid "Tries before the task is marked failed."
+msgstr "Versuche, bevor die Aufgabe als fehlgeschlagen gilt."
 
 #: modules/system_info/module.py
 msgid "Uptime"
@@ -625,6 +717,10 @@ msgstr "Prüft die Eingaben und zeigt, was ein Backup kopieren würde."
 #: cli/commands.py
 msgid "Verify the project's declared file set without rewriting it."
 msgstr "Prüft die deklarierte Dateimenge des Projekts, ohne sie neu zu schreiben."
+
+#: cli/limiter.py
+msgid "Why, shown in doctor."
+msgstr "Grund, wird in doctor angezeigt."
 
 #: cli/playbook.py
 msgid "Write the playbook to FILE instead of printing it."
@@ -677,6 +773,10 @@ msgstr "asynchrone Aufgaben"
 #: cli/commands.py
 msgid "asyncio loop"
 msgstr "asyncio-Schleife"
+
+#: modules/job_queue/module.py
+msgid "attempts"
+msgstr "Versuche"
 
 #: cli/commands.py
 msgid "auth"
@@ -793,6 +893,10 @@ msgstr "Verträge: {summary}"
 #: cli/commands.py
 msgid "control-plane port (0 for an ephemeral port)"
 msgstr "Port der Kontrollebene (0 für einen kurzlebigen Port)"
+
+#: cli/limiter.py
+msgid "cooldown"
+msgstr "Abkühlphase"
 
 #: cli/commands.py
 msgid "core api"
@@ -950,6 +1054,10 @@ msgstr "von"
 msgid "fuzzy"
 msgstr "unscharf"
 
+#: cli/limiter.py
+msgid "give --hours or --minutes"
+msgstr "--hours oder --minutes angeben"
+
 #: cli/commands.py
 msgid "handler errors"
 msgstr "Handler-Fehler"
@@ -1018,6 +1126,10 @@ msgstr "geänderte Schlüssel"
 msgid "keys checked"
 msgstr "geprüfte Schlüssel"
 
+#: modules/job_queue/module.py
+msgid "kind"
+msgstr "Art"
+
 #: cli/commands.py
 msgid "known keys"
 msgstr "bekannte Schlüssel"
@@ -1033,6 +1145,10 @@ msgstr "Sprache"
 #: cli/language.py
 msgid "languages"
 msgstr "Sprachen"
+
+#: cli/limiter.py
+msgid "left today"
+msgstr "heute übrig"
 
 #: cli/commands.py
 msgid "lock held"
@@ -1174,6 +1290,10 @@ msgstr "es läuft kein Daemon und dieser Befehl hat kein Chassis"
 msgid "no diagnostics findings"
 msgstr "keine Diagnosebefunde"
 
+#: cli/limiter.py
+msgid "no limiters recorded"
+msgstr "keine Limiter aufgezeichnet"
+
 #: cli/commands.py
 msgid "no log file found at {log_path}"
 msgstr "keine Protokolldatei unter {log_path} gefunden"
@@ -1201,6 +1321,10 @@ msgstr "noch keine benannten Benutzer; der gemeinsame core.ipc.token ist der Eig
 #: cli/commands.py
 msgid "no project or module declared a contract file set"
 msgstr "kein Projekt und kein Modul hat eine Vertragsdateimenge deklariert"
+
+#: modules/job_queue/module.py
+msgid "no such task"
+msgstr "keine solche Aufgabe"
 
 #: cli/txn.py
 msgid "no transactions recorded"
@@ -1366,9 +1490,17 @@ msgstr "fragt direkt http://host:port ab und überspringt die lokale Discovery-D
 msgid "query this host (with --port) instead of the local endpoint"
 msgstr "fragt diesen Host (mit --port) statt des lokalen Endpunkts ab"
 
+#: modules/job_queue/module.py
+msgid "queued task {id} ({kind})"
+msgstr "Aufgabe {id} ({kind}) eingereiht"
+
 #: cli/reset.py
 msgid "really delete (without it the command only lists what it would remove)"
 msgstr "wirklich löschen (ohne dies listet der Befehl nur auf, was er entfernen würde)"
+
+#: cli/limiter.py
+msgid "reason"
+msgstr "Grund"
 
 #: cli/service.py
 msgid "register it with: kdx service install"
@@ -1518,6 +1650,22 @@ msgstr "Zielverzeichnis (Standard: ./<Name>)"
 msgid "task names"
 msgstr "Aufgabennamen"
 
+#: modules/job_queue/module.py
+msgid "task {id} cancelled"
+msgstr "Aufgabe {id} abgebrochen"
+
+#: modules/job_queue/module.py
+msgid "task {id} is not failed or cancelled"
+msgstr "Aufgabe {id} ist weder fehlgeschlagen noch abgebrochen"
+
+#: modules/job_queue/module.py
+msgid "task {id} is not queued"
+msgstr "Aufgabe {id} wartet nicht in der Warteschlange"
+
+#: modules/job_queue/module.py
+msgid "task {id} queued again"
+msgstr "Aufgabe {id} erneut eingereiht"
+
 #: cli/users.py
 msgid "terminal: kdx status --target http://HOST:8123 --token TOKEN"
 msgstr "Terminal: kdx status --target http://HOST:8123 --token TOKEN"
@@ -1569,6 +1717,10 @@ msgstr "der Ereignis-Feed wurde beendet: {exc}"
 #: cli/commands.py
 msgid "the live state of a running daemon: 'kdx status' or 'kdx ui'"
 msgstr "der Live-Zustand eines laufenden Daemons: 'kdx status' oder 'kdx ui'"
+
+#: modules/job_queue/module.py
+msgid "the queue is empty"
+msgstr "die Warteschlange ist leer"
 
 #: cli/users.py
 msgid "the shared core.ipc.token is the built-in admin 'owner'"
@@ -1625,6 +1777,10 @@ msgstr "Betriebszeit"
 #: modules/system_info/module.py
 msgid "used"
 msgstr "belegt"
+
+#: cli/limiter.py
+msgid "used today"
+msgstr "heute verbraucht"
 
 #: cli/jobs.py
 msgid "user"
@@ -1686,6 +1842,10 @@ msgstr "{count} Katalog(e) brauchen Aufmerksamkeit"
 msgid "{count} configuration findings need attention"
 msgstr "{count} Konfigurationsbefunde brauchen Aufmerksamkeit"
 
+#: modules/job_queue/module.py
+msgid "{count} finished task(s) removed"
+msgstr "{count} abgeschlossene Aufgabe(n) entfernt"
+
 #: cli/reset.py
 msgid "{count} item(s), {size} bytes; run kdx reset --apply to delete them"
 msgstr "{count} Element(e), {size} Bytes; mit kdx reset --apply löschen"
@@ -1734,6 +1894,14 @@ msgstr "{job_id} gestartet; Strg+C beendet das Verfolgen, nicht den Job"
 msgid "{locale}: {added} new, {stale} obsolete"
 msgstr "{locale}: {added} neu, {stale} veraltet"
 
+#: cli/limiter.py
+msgid "{name} cooldown ended"
+msgstr "Abkühlphase von {name} beendet"
+
+#: cli/limiter.py
+msgid "{name} cooling down until {when}"
+msgstr "{name} kühlt ab bis {when}"
+
 #: cli/users.py
 msgid "{name} is now {role}"
 msgstr "{name} hat jetzt die Rolle {role}"
@@ -1741,6 +1909,10 @@ msgstr "{name} hat jetzt die Rolle {role}"
 #: cli/service.py
 msgid "{name} removed; the daemon no longer starts at logon"
 msgstr "{name} entfernt; der Daemon startet nicht mehr bei der Anmeldung"
+
+#: cli/limiter.py
+msgid "{name} was not cooling down"
+msgstr "{name} war nicht in der Abkühlphase"
 
 #: cli/service.py
 msgid "{name} was not registered; nothing to remove"

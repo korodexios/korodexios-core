@@ -15,12 +15,15 @@ due-check on one named daemon thread for a chassis whose tick is slow or absent.
 from __future__ import annotations
 
 import contextlib
+import random
 import re
 import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Final
+
+from .calendar import CalendarSpec, parse_days, parse_spec, parse_time
 
 __all__ = [
     "MAX_ERROR_LENGTH",
@@ -36,6 +39,7 @@ TASK_FAILED_EVENT = "core.task.failed"
 DEFAULT_POLL_INTERVAL: float = 0.05
 MAX_ERROR_LENGTH: Final[int] = 500
 """Longest task error the scheduler keeps: the traceback belongs in the log."""
+SECONDS_PER_DAY: Final[float] = 86400.0
 MAX_NAME_SUFFIX: Final[int] = 1000
 """How far task-name suffixes are numbered before the scheduler calls it a leak."""
 _NAME_PATTERN = re.compile(r"[^a-z0-9_.-]+")
@@ -84,6 +88,12 @@ class ScheduledTask:
     last_error: str = ""
     enabled: bool = True
     done: bool = False
+    jitter: float = 0.0
+    """Fraction of the interval each wait is randomly stretched or shortened by."""
+    calendar: CalendarSpec | None = None
+    """Set by schedule_at: the next run is a wall-clock slot, not an interval away."""
+    constraint: CalendarSpec | None = None
+    """Set by schedule(window=..., days=...): a due moment outside it moves into it."""
 
     def __post_init__(self) -> None:
         self.last_error = truncate_error(str(self.last_error))
@@ -120,6 +130,9 @@ class ScheduledTask:
             "enabled": bool(self.enabled),
             "done": bool(self.done),
             "module": self.module,
+            "jitter": round(float(self.jitter), 6),
+            "calendar": self.calendar.describe() if self.calendar else None,
+            "constraint": self.constraint.describe() if self.constraint else None,
         }
 
 
@@ -142,10 +155,14 @@ class TaskScheduler:
         enabled: bool = True,
         poll_interval: float = DEFAULT_POLL_INTERVAL,
         source: str = "scheduler",
+        wall_clock: Callable[[], float] = time.time,
+        rng: random.Random | None = None,
     ) -> None:
         self._logger = logger
         self._bus = bus
         self._clock = clock
+        self._wall = wall_clock
+        self._rng = rng or random.Random()
         self._enabled = bool(enabled)
         self._poll = max(0.01, float(poll_interval))
         self._source = source
@@ -204,6 +221,9 @@ class TaskScheduler:
         repeat: bool = True,
         module: str = "",
         run_now: bool = False,
+        jitter: float = 0.0,
+        window: tuple[str, str] | None = None,
+        days: str | tuple[str, ...] | list[str] | None = None,
     ) -> ScheduledTask:
         """Declare a task running every *interval_seconds*.
 
@@ -213,6 +233,12 @@ class TaskScheduler:
         out, so booting never opens with a burst; pass `first_delay=0.0` (or
         `run_now=True`) to run immediately, and `first_delay=30` to hold off.
         Intervals are always measured from the run that just happened.
+
+        *jitter* (0..1) spreads every wait by up to that share of the interval in either
+        direction - 0.3 turns "every 60 s" into 42-78 s - so a fleet of instances does
+        not call a shared service in lockstep. *window* (`("02:00", "05:00")`) and *days*
+        (`("mon",)`, `"weekdays"`, `"1st"`) confine runs to those local-time slots: a
+        due moment outside them moves to a random instant of the next one.
         """
         if not callable(callback):
             raise TypeError(
@@ -222,10 +248,15 @@ class TaskScheduler:
         interval = float(interval_seconds)
         if interval <= 0:
             raise ValueError(f"interval_seconds must be positive, got {interval_seconds!r}")
+        spread = float(jitter)
+        if not 0.0 <= spread <= 1.0:
+            raise ValueError(f"jitter must be between 0 and 1, got {jitter!r}")
+        constraint = _constraint(window, days)
         delay = interval if first_delay is None else max(0.0, float(first_delay))
-        if run_now:
-            delay = 0.0
+        if first_delay is None and spread:
+            delay = self._spread(interval, spread)
         now = float(self._clock())
+        due = now if run_now else self._constrain(task_constraint=constraint, due=now + delay)
         with self._guard:
             base = task_name(name or getattr(callback, "__name__", "")) or "task"
             key = base if base not in self._tasks else self._next_suffix(base)
@@ -236,7 +267,9 @@ class TaskScheduler:
                 repeat=repeat,
                 first_delay=None if first_delay is None else delay,
                 module=module,
-                next_due=now + delay,
+                next_due=due,
+                jitter=spread,
+                constraint=constraint,
             )
             self._tasks[key] = task
             self._bases[key] = base
@@ -250,6 +283,74 @@ class TaskScheduler:
                 module=module or None,
             )
         return task
+
+    def schedule_at(
+        self,
+        spec: str,
+        callback: Callable[[], Any],
+        *,
+        name: str = "",
+        repeat: bool = True,
+        module: str = "",
+    ) -> ScheduledTask:
+        """Declare a task running at a calendar slot such as 'mon 03:00'.
+
+        *spec* is days plus a time or a window - 'mon 03:00', 'mon,thu 02:00-05:00',
+        '1st 04:30', 'weekdays 06:00', or just '03:00' for every day. A window picks a
+        random instant inside it for every run, which is the jitter a weekly job wants.
+        The slot is computed from the wall clock, so a restart never shifts it; an
+        instance that was down at the slot runs the next one, not the missed one.
+        """
+        if not callable(callback):
+            raise TypeError(f"schedule_at({spec!r}, callback) needs a callable")
+        calendar = parse_spec(spec)
+        now = float(self._clock())
+        with self._guard:
+            base = task_name(name or getattr(callback, "__name__", "")) or "task"
+            key = base if base not in self._tasks else self._next_suffix(base)
+            task = ScheduledTask(
+                name=key,
+                interval_seconds=SECONDS_PER_DAY,
+                callback=callback,
+                repeat=repeat,
+                module=module,
+                next_due=now + self._until_slot(calendar),
+                calendar=calendar,
+            )
+            self._tasks[key] = task
+            self._bases[key] = base
+            self._order.append(key)
+        if self._logger is not None:
+            self._logger.debug(
+                "task scheduled at", name=key, spec=calendar.describe(), module=module or None
+            )
+        return task
+
+    def _spread(self, interval: float, jitter: float) -> float:
+        """Return *interval* stretched or shortened by up to *jitter* of itself."""
+        return max(0.0, interval * (1.0 + self._rng.uniform(-jitter, jitter)))
+
+    def _until_slot(self, calendar: CalendarSpec) -> float:
+        """Return seconds from now to the next slot of *calendar*."""
+        wall = float(self._wall())
+        return max(0.0, calendar.next_after(wall, self._rng) - wall)
+
+    def _constrain(self, *, task_constraint: CalendarSpec | None, due: float) -> float:
+        """Return *due* moved into *task_constraint*'s slots; unchanged when it fits."""
+        if task_constraint is None:
+            return due
+        now = float(self._clock())
+        wall_due = float(self._wall()) + (due - now)
+        if task_constraint.allows(wall_due):
+            return due
+        return due + (task_constraint.next_after(wall_due, self._rng) - wall_due)
+
+    def _after_run(self, task: ScheduledTask, moment: float) -> float:
+        """Return when *task* is next due after a run that happened at *moment*."""
+        if task.calendar is not None:
+            return moment + self._until_slot(task.calendar)
+        wait = self._spread(float(task.interval_seconds), task.jitter)
+        return self._constrain(task_constraint=task.constraint, due=moment + wait)
 
     def unschedule(self, name: str) -> bool:
         """Withdraw the task named *name*; return whether one existed.
@@ -386,7 +487,7 @@ class TaskScheduler:
             task.record_error(f"{type(exc).__name__}: {exc}")
             task.last_run = moment
             task.last_duration_ms = (time.monotonic() - started) * 1000.0
-            task.next_due = moment + float(task.interval_seconds)
+            task.next_due = self._after_run(task, moment)
             if not task.repeat:
                 task.done = True
                 task.enabled = False
@@ -400,7 +501,7 @@ class TaskScheduler:
         task.last_run = moment
         task.last_error = ""
         task.last_duration_ms = (time.monotonic() - started) * 1000.0
-        task.next_due = moment + float(task.interval_seconds)
+        task.next_due = self._after_run(task, moment)
         if not task.repeat:
             task.done = True
             task.enabled = False
@@ -516,7 +617,9 @@ class TaskScheduler:
         if not tasks:
             return "no scheduled tasks"
         parts = [
-            f"{task.name} every {task.interval_seconds:g}s ({task.runs} run(s))"
+            f"{task.name} at {task.calendar.describe()} ({task.runs} run(s))"
+            if task.calendar
+            else f"{task.name} every {task.interval_seconds:g}s ({task.runs} run(s))"
             for task in tasks
         ]
         return f"{len(tasks)} scheduled task(s): " + ", ".join(parts)
@@ -559,3 +662,17 @@ class TaskScheduler:
             f"TaskScheduler(tasks={list(self._tasks)}, running={self._started}, "
             f"enabled={self._enabled})"
         )
+
+
+def _constraint(
+    window: tuple[str, str] | None,
+    days: str | tuple[str, ...] | list[str] | None,
+) -> CalendarSpec | None:
+    """Return the CalendarSpec for schedule(window=..., days=...); None when unconstrained."""
+    if window is None and not days:
+        return None
+    weekdays, month_days = parse_days(days) if days else (frozenset(), frozenset())
+    if window is None:
+        return CalendarSpec(weekdays=weekdays, month_days=month_days, any_time=True)
+    start, end = parse_time(window[0]), parse_time(window[1])
+    return CalendarSpec(weekdays=weekdays, month_days=month_days, start=start, end=end)
