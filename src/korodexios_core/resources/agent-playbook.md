@@ -10,7 +10,11 @@ language they write in. Keep explanations plain; show commands and results, not 
 
 ## 0. First five minutes of every session
 
-1. Read `AGENTS.md`, this file, and the newest spec in `docs/specs/` if the task has one.
+1. Read `AGENTS.md`, this file, `docs/BRIEF.md` (the goal), and the newest spec in
+   `docs/specs/` if the task has one.
+   Run `kdx brief --check`. If the brief is incomplete, interview the owner first (`kdx brief`
+   asks the questions; you may relay them) and do not build until the goal, the non-goals
+   and the "done when" results are written down. Unclear task: ask, do not guess.
 2. `git status` and `git branch --show-current`. Never work on `main`; create
    `feature/<short-name>` (ask if unsure).
 3. Run `kdx doctor`, then `make check` (or `uv run ruff check src tests`, `uv run mypy`,
@@ -22,7 +26,7 @@ language they write in. Keep explanations plain; show commands and results, not 
 
 - The project is a **core + modules**. The core (`korodexios_core`) owns lifecycle,
   config, logging, events, discovery, shutdown. Do not reimplement it; do not edit it
-  from a project.
+  from a project; a core bug or gap becomes a proposal (`kdx proposal new`).
 - All product code is a **module**: `src/<package>/modules/<name>/module.py` +
   `kdx_module.toml` (+ `__init__.py`). Create one with `kdx modules create <name>`.
 - One module = one job in one sentence. Function <= ~40 lines, file <= ~400 lines,
@@ -123,6 +127,8 @@ spending money, rewriting history. One approval covers only that one action.
 - "Improving" unrelated code in the same change. Reformatting files you did not need to
   touch. Renaming public things without a deprecation note.
 - Fixing what you found on the way but the task did not ask for: record it, move on.
+- Editing the core from a project, or leaving a core problem unrecorded: write
+  `kdx proposal new "<title>"`, work around it with a `WORKAROUND(core-proposal NNN)` comment.
 - Guessing an API: read the code or `docs/AGENTS_GUIDE.md`; if still unknown, ask.
 - Claiming "done" or "should work" without having run the gate. Hiding a failure.
 - Long sessions that carry decisions only in chat: write decisions to `docs/decisions/`.

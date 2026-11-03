@@ -283,6 +283,7 @@ def build_files(project: ProjectTemplate) -> dict[str, str]:
         "docs/AGENTS_GUIDE.md": _docs_agents_guide(project),
         "AGENT_PLAYBOOK.md": _agent_playbook(),
         "docs/CONVENTIONS.md": _conventions(),
+        "docs/BRIEF.md": _brief(),
         "docs/specs/TEMPLATE.md": _spec_template(),
         ".github/workflows/ci.yml": _ci_workflow(project),
         "docs/ARCHITECTURE.md": _docs_architecture(project),
@@ -488,6 +489,7 @@ def _readme(project: ProjectTemplate) -> str:
         "docs/AGENTS_GUIDE.md      # the contract, for humans and AI agents",
         "docs/ARCHITECTURE.md       # how this project is wired",
         "docs/CONVENTIONS.md       # the rules every Korodexios project follows",
+        "docs/BRIEF.md             # what the project must do (fill it with: kdx brief)",
         "docs/specs/TEMPLATE.md    # start every feature spec from this",
         ".agents/skills/          # playbooks: how to extend this project safely",
     ]
@@ -897,6 +899,12 @@ def _conventions() -> str:
     return conventions_text()
 
 
+def _brief() -> str:
+    from .brief import brief_template
+
+    return brief_template()
+
+
 def _spec_template() -> str:
     from .conventions import spec_template
 
@@ -943,7 +951,8 @@ def _agents(project: ProjectTemplate) -> str:
         "",
         "Working agreement for anyone editing this repository. Read",
         "@BT@AGENT_PLAYBOOK.md@BT@ and @BT@docs/CONVENTIONS.md@BT@ first: how to proceed in",
-        "every task and the rules every project follows.",
+        "every task and the rules every project follows. @BT@docs/BRIEF.md@BT@ is the goal:",
+        "if it is incomplete (@BT@kdx brief --check@BT@), ask the owner before building.",
         "",
         "## Commands",
         "",
