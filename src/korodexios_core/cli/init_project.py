@@ -282,6 +282,8 @@ def build_files(project: ProjectTemplate) -> dict[str, str]:
         "AGENTS.md": _agents(project),
         "docs/AGENTS_GUIDE.md": _docs_agents_guide(project),
         "AGENT_PLAYBOOK.md": _agent_playbook(),
+        "docs/CONVENTIONS.md": _conventions(),
+        "docs/specs/TEMPLATE.md": _spec_template(),
         ".github/workflows/ci.yml": _ci_workflow(project),
         "docs/ARCHITECTURE.md": _docs_architecture(project),
         "Makefile": _makefile(project),
@@ -485,6 +487,8 @@ def _readme(project: ProjectTemplate) -> str:
         "AGENT_PLAYBOOK.md        # how an AI agent proceeds in this project (read first)",
         "docs/AGENTS_GUIDE.md      # the contract, for humans and AI agents",
         "docs/ARCHITECTURE.md       # how this project is wired",
+        "docs/CONVENTIONS.md       # the rules every Korodexios project follows",
+        "docs/specs/TEMPLATE.md    # start every feature spec from this",
         ".agents/skills/          # playbooks: how to extend this project safely",
     ]
     if project.fullstack:
@@ -887,6 +891,18 @@ def _agent_playbook() -> str:
     return agent_playbook()
 
 
+def _conventions() -> str:
+    from .conventions import conventions_text
+
+    return conventions_text()
+
+
+def _spec_template() -> str:
+    from .conventions import spec_template
+
+    return spec_template()
+
+
 def _ci_workflow(project: ProjectTemplate) -> str:
     return "\n".join(
         [
@@ -926,7 +942,8 @@ def _agents(project: ProjectTemplate) -> str:
         f"# AGENTS.md - {project.title}",
         "",
         "Working agreement for anyone editing this repository. Read",
-        "@BT@AGENT_PLAYBOOK.md@BT@ first: how to proceed in every task.",
+        "@BT@AGENT_PLAYBOOK.md@BT@ and @BT@docs/CONVENTIONS.md@BT@ first: how to proceed in",
+        "every task and the rules every project follows.",
         "",
         "## Commands",
         "",
