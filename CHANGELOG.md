@@ -5,6 +5,20 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.5.3] - 2026-11-03
+
+### Added
+
+- `kdx brief`: terminal interview (or flags) that writes `docs/BRIEF.md`, the project's goal;
+  `kdx brief --check` exits 1 while a required answer is missing. `kdx init` seeds an empty brief.
+- `kdx proposal new|list`: numbered notes in `docs/core-proposals/` for changes to the core, from
+  `resources/core-proposal-template.md`.
+
+### Changed
+
+- Conventions and playbook: read the brief first and ask instead of guessing; a project never edits
+  the core, it writes a proposal and marks its workaround `WORKAROUND(core-proposal NNN)`.
+
 ## [0.5.2] - 2026-11-03
 
 ### Added
