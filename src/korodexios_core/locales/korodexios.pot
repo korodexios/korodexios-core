@@ -76,6 +76,10 @@ msgstr ""
 msgid "Backup retention"
 msgstr ""
 
+#: cli/brief.py
+msgid "Brief file to use."
+msgstr ""
+
 #: modules/system_info/module.py
 msgid "CPU"
 msgstr ""
@@ -130,6 +134,10 @@ msgstr ""
 
 #: modules/backup_engine/module.py
 msgid "Copy even when the size budget is exceeded."
+msgstr ""
+
+#: cli/proposal.py
+msgid "Create a numbered proposal note from the template."
 msgstr ""
 
 #: cli/tls.py
@@ -220,6 +228,10 @@ msgstr ""
 msgid "Emit the report as JSON."
 msgstr ""
 
+#: cli/brief.py
+msgid "Emit the result as JSON."
+msgstr ""
+
 #: modules/system_info/module.py
 msgid "Emit the snapshot as JSON."
 msgstr ""
@@ -284,6 +296,10 @@ msgstr ""
 msgid "How many to show."
 msgstr ""
 
+#: cli/brief.py
+msgid "How will you know it works? Observable results, separated by ';'"
+msgstr ""
+
 #: cli/jobs.py
 msgid "Include routine ticks, heartbeats, and scheduler runs."
 msgstr ""
@@ -336,6 +352,10 @@ msgstr ""
 msgid "Limiter name (see 'kdx limiter list')."
 msgstr ""
 
+#: cli/brief.py
+msgid "Limits to respect: platforms, languages, data, security (optional)"
+msgstr ""
+
 #: cli/jobs.py
 msgid "List background jobs, newest first."
 msgstr ""
@@ -354,6 +374,10 @@ msgstr ""
 
 #: cli/language.py
 msgid "List the languages that have a catalogue, per message domain."
+msgstr ""
+
+#: cli/proposal.py
+msgid "List the proposals of this project."
 msgstr ""
 
 #: cli/language.py
@@ -426,6 +450,10 @@ msgstr ""
 
 #: modules/backup_engine/module.py
 msgid "Only copy paths matching PATTERN (repeatable)."
+msgstr ""
+
+#: cli/brief.py
+msgid "Only report whether the brief is complete (exit 1 when it is not)."
 msgstr ""
 
 #: cli/commands.py
@@ -514,6 +542,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "Project identity"
+msgstr ""
+
+#: cli/proposal.py
+msgid "Proposal title"
 msgstr ""
 
 #: cli/commands.py
@@ -608,6 +640,10 @@ msgstr ""
 msgid "Service name [korodexios-<project>]."
 msgstr ""
 
+#: cli/proposal.py
+msgid "Short title of the proposal."
+msgstr ""
+
 #: cli/jobs.py
 msgid "Show one job's state and output."
 msgstr ""
@@ -688,12 +724,20 @@ msgstr ""
 msgid "Stop the running daemon cleanly (needs the admin role)."
 msgstr ""
 
+#: cli/proposal.py
+msgid "Suggest a change to the core (projects never edit the core)."
+msgstr ""
+
 #: cli/txn.py
 msgid "Take back a finished transaction (refused if its files changed since)."
 msgstr ""
 
 #: modules/job_queue/module.py
 msgid "Task id (see 'kdx queue list')."
+msgstr ""
+
+#: cli/brief.py
+msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr ""
 
 #: cli/txn.py
@@ -720,8 +764,28 @@ msgstr ""
 msgid "Verify the project's declared file set without rewriting it."
 msgstr ""
 
+#: cli/brief.py
+msgid "What could go wrong, or who could abuse it? (optional)"
+msgstr ""
+
+#: cli/brief.py
+msgid "What it will NOT do, separated by ';'"
+msgstr ""
+
+#: cli/brief.py
+msgid "What should this application do, and why? (one sentence)"
+msgstr ""
+
+#: cli/brief.py
+msgid "Who uses it, and how (terminal, web page, other programs)?"
+msgstr ""
+
 #: cli/limiter.py
 msgid "Why, shown in doctor."
+msgstr ""
+
+#: cli/brief.py
+msgid "Write down what the project must do (interview), or check that it is complete."
 msgstr ""
 
 #: cli/conventions.py
@@ -734,6 +798,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "a SIGHUP to the daemon does the same thing"
+msgstr ""
+
+#: cli/proposal.py
+msgid "a proposal needs a title"
 msgstr ""
 
 #: cli/txn.py
@@ -806,6 +874,14 @@ msgstr ""
 
 #: cli/commands.py
 msgid "bind the control plane here (0.0.0.0 for LAN access)"
+msgstr ""
+
+#: cli/brief.py
+msgid "brief is complete: {path}"
+msgstr ""
+
+#: cli/brief.py
+msgid "brief is incomplete: {titles}"
 msgstr ""
 
 #: cli/language.py
@@ -1328,6 +1404,10 @@ msgstr ""
 msgid "no project or module declared a contract file set"
 msgstr ""
 
+#: cli/proposal.py
+msgid "no proposals yet"
+msgstr ""
+
 #: modules/job_queue/module.py
 msgid "no such task"
 msgstr ""
@@ -1550,6 +1630,14 @@ msgstr ""
 
 #: cli/commands.py
 msgid "root"
+msgstr ""
+
+#: cli/brief.py
+msgid "run 'kdx brief' to answer the questions"
+msgstr ""
+
+#: cli/brief.py
+msgid "run 'kdx brief' to create it"
 msgstr ""
 
 #: cli/commands.py
@@ -1948,12 +2036,16 @@ msgstr ""
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr ""
 
-#: cli/conventions.py
+#: cli/brief.py
 msgid "{path} could not be written: {reason}"
 msgstr ""
 
 #: cli/conventions.py
 msgid "{path} created"
+msgstr ""
+
+#: cli/brief.py
+msgid "{path} does not exist"
 msgstr ""
 
 #: cli/language.py
@@ -1974,6 +2066,10 @@ msgstr ""
 
 #: cli/language.py
 msgid "{path} must hold a JSON object"
+msgstr ""
+
+#: cli/brief.py
+msgid "{path} written"
 msgstr ""
 
 #: cli/commands.py
