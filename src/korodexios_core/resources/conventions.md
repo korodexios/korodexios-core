@@ -45,6 +45,7 @@ Module rules:
 ```bash
 kdx init my-project        # asks a few questions, creates the whole skeleton
 cd my-project
+kdx brief                  # the interview: what must it do, what must it not do
 uv sync --extra dev        # or: pip install -e ".[dev]"
 make check                 # must be green before the first change
 kdx modules create billing  # one new module (a folder with module.py and a manifest)
@@ -73,7 +74,8 @@ specs, tests, and automatic checks are enough.
 
 **The loop for every change** (one change = one small goal = one commit or pull request):
 
-1. Say the goal in one sentence. If it needs more than a few modules, split it.
+1. Say the goal in one sentence and check it against `docs/BRIEF.md`. If it needs more than
+   a few modules, split it.
 2. Write or update the spec / acceptance criteria. Write spec rules as MUST / MUST NOT /
    SHOULD, so people and agents can tell a hard rule from advice. A large feature is
    split into numbered phases; one phase is implemented at a time.
@@ -126,6 +128,8 @@ Approval for one thing is not approval for the next.
   `billing list`"), not a direction ("improve billing").
 - Always point the agent at `AGENTS.md` and this file; keep both short and current.
 - Ask for the plan first when the change touches more than one module.
+- If the goal, a behaviour or a limit is unclear, the agent asks; it never guesses.
+  `docs/BRIEF.md` (`kdx brief`) holds the answers; `kdx brief --check` says if it is complete.
 - Ask the agent to **show the failing test, then the passing run** — not "it should work".
 - Read the diff. If you cannot follow it, ask for a smaller one or a plain-language
   explanation. You may always say "explain it simply" or ask for answers in your own
@@ -156,12 +160,21 @@ Approval for one thing is not approval for the next.
 - Small commits that each pass the checks. Never commit `var/`, `.env`, or build output.
 - Versions follow semantic versioning: `MAJOR.MINOR.PATCH` (breaking, feature, fix).
 
-## 11. Day-0 checklist for a new project
+## 11. The core is never edited from a project
+
+The core is shared by every project, so a project only uses it. When the core is wrong
+or lacks something, write a proposal (`kdx proposal new "<title>"`, saved in
+`docs/core-proposals/`) and keep going with a workaround marked
+`WORKAROUND(core-proposal NNN)`, so it can be found and removed once the core is fixed.
+`kdx proposal list` shows what is open.
+
+## 12. Day-0 checklist for a new project
 
 1. `kdx init my-project` and `make check` is green.
-2. Write `docs/specs/001-<first-feature>.md` from `docs/specs/TEMPLATE.md` (goal,
+2. Run `kdx brief` and answer the questions: goal, users, core behaviour, non-goals, done-when.
+3. Write `docs/specs/001-<first-feature>.md` from `docs/specs/TEMPLATE.md` (goal,
    not-goals, behaviour, acceptance).
-3. Create a repository, protect `main` (no direct push, CI must pass).
-4. Add the CI workflow secrets only if really needed; none are needed to run `make check`.
-5. Decide the languages you want (`kdx locale add xx`).
-6. Start the first module with the test first.
+4. Create a repository, protect `main` (no direct push, CI must pass).
+5. Add the CI workflow secrets only if really needed; none are needed to run `make check`.
+6. Decide the languages you want (`kdx locale add xx`).
+7. Start the first module with the test first.

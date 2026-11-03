@@ -78,6 +78,10 @@ msgstr "Výsledek zálohy"
 msgid "Backup retention"
 msgstr "Uchovávání záloh"
 
+#: cli/brief.py
+msgid "Brief file to use."
+msgstr "Soubor zadání, který se použije."
+
 #: modules/system_info/module.py
 msgid "CPU"
 msgstr "CPU"
@@ -133,6 +137,10 @@ msgstr "Řídicí rovina"
 #: modules/backup_engine/module.py
 msgid "Copy even when the size budget is exceeded."
 msgstr "Zkopíruje i při překročení limitu velikosti."
+
+#: cli/proposal.py
+msgid "Create a numbered proposal note from the template."
+msgstr "Vytvoří číslovaný návrh ze šablony."
 
 #: cli/tls.py
 msgid "Create a self-signed certificate for 'kdx run --tls'."
@@ -222,6 +230,10 @@ msgstr "Vypíše souhrn načtení jako JSON."
 msgid "Emit the report as JSON."
 msgstr "Vypíše report jako JSON."
 
+#: cli/brief.py
+msgid "Emit the result as JSON."
+msgstr "Vypíše výsledek jako JSON."
+
 #: modules/system_info/module.py
 msgid "Emit the snapshot as JSON."
 msgstr "Vypíše snímek jako JSON."
@@ -286,6 +298,10 @@ msgstr "Kolik záznamů zobrazit [50]."
 msgid "How many to show."
 msgstr "Kolik zobrazit."
 
+#: cli/brief.py
+msgid "How will you know it works? Observable results, separated by ';'"
+msgstr "Jak poznáte, že to funguje? Pozorovatelné výsledky, oddělené „;“"
+
 #: cli/jobs.py
 msgid "Include routine ticks, heartbeats, and scheduler runs."
 msgstr "Zahrne pravidelné tiky, heartbeaty a běhy plánovače."
@@ -338,6 +354,10 @@ msgstr "Kód jazyka, například de nebo pt_BR."
 msgid "Limiter name (see 'kdx limiter list')."
 msgstr "Název limiteru (viz 'kdx limiter list')."
 
+#: cli/brief.py
+msgid "Limits to respect: platforms, languages, data, security (optional)"
+msgstr "Omezení: platformy, jazyky, data, bezpečnost (volitelné)"
+
 #: cli/jobs.py
 msgid "List background jobs, newest first."
 msgstr "Vypíše úlohy na pozadí, nejnovější první."
@@ -357,6 +377,10 @@ msgstr "Seznam úloh, nejnovější první."
 #: cli/language.py
 msgid "List the languages that have a catalogue, per message domain."
 msgstr "Vypíše jazyky, které mají katalog, podle domény zpráv."
+
+#: cli/proposal.py
+msgid "List the proposals of this project."
+msgstr "Vypíše návrhy tohoto projektu."
 
 #: cli/language.py
 msgid "List the strings a language still needs, for a translator or an agent."
@@ -429,6 +453,10 @@ msgstr "Jednořádkový popis modulu."
 #: modules/backup_engine/module.py
 msgid "Only copy paths matching PATTERN (repeatable)."
 msgstr "Zkopíruje pouze cesty odpovídající VZORU (opakovatelné)."
+
+#: cli/brief.py
+msgid "Only report whether the brief is complete (exit 1 when it is not)."
+msgstr "Jen oznámí, zda je zadání úplné (při neúplném skončí kódem 1)."
 
 #: cli/commands.py
 msgid "Only show keys starting with KEY."
@@ -517,6 +545,10 @@ msgstr "Vypiš příručku pro AI agenty (jak pracovat v projektu na jádru)."
 #: cli/commands.py
 msgid "Project identity"
 msgstr "Identita projektu"
+
+#: cli/proposal.py
+msgid "Proposal title"
+msgstr "Název návrhu"
 
 #: cli/commands.py
 msgid "Publish one tick and stop (CI and smoke tests)."
@@ -610,6 +642,10 @@ msgstr "Sekce k zobrazení bez ptaní."
 msgid "Service name [korodexios-<project>]."
 msgstr "Název služby [korodexios-<projekt>]."
 
+#: cli/proposal.py
+msgid "Short title of the proposal."
+msgstr "Krátký název návrhu."
+
 #: cli/jobs.py
 msgid "Show one job's state and output."
 msgstr "Zobrazí stav a výstup jedné úlohy."
@@ -690,6 +726,10 @@ msgstr "Čistě zastaví démona a odstraní registraci při přihlášení."
 msgid "Stop the running daemon cleanly (needs the admin role)."
 msgstr "Čistě zastaví běžícího démona (vyžaduje roli admin)."
 
+#: cli/proposal.py
+msgid "Suggest a change to the core (projects never edit the core)."
+msgstr "Navrhne změnu jádra (projekty jádro nikdy neupravují)."
+
 #: cli/txn.py
 msgid "Take back a finished transaction (refused if its files changed since)."
 msgstr "Vrátí zpět dokončenou transakci (odmítne, pokud se její soubory mezitím změnily)."
@@ -697,6 +737,10 @@ msgstr "Vrátí zpět dokončenou transakci (odmítne, pokud se její soubory me
 #: modules/job_queue/module.py
 msgid "Task id (see 'kdx queue list')."
 msgstr "ID úlohy (viz 'kdx queue list')."
+
+#: cli/brief.py
+msgid "The 3 to 5 things it must do, separated by ';'"
+msgstr "3 až 5 věcí, které musí dělat, oddělené „;“"
 
 #: cli/txn.py
 msgid "Transaction id (see 'kdx txn list')."
@@ -722,9 +766,29 @@ msgstr "Ověří vstupy a ukáže, co by záloha zkopírovala."
 msgid "Verify the project's declared file set without rewriting it."
 msgstr "Ověří deklarovanou sadu souborů projektu bez jejího přepsání."
 
+#: cli/brief.py
+msgid "What could go wrong, or who could abuse it? (optional)"
+msgstr "Co se může pokazit nebo kdo to může zneužít? (volitelné)"
+
+#: cli/brief.py
+msgid "What it will NOT do, separated by ';'"
+msgstr "Co dělat NEBUDE, oddělené „;“"
+
+#: cli/brief.py
+msgid "What should this application do, and why? (one sentence)"
+msgstr "Co má tato aplikace dělat a proč? (jedna věta)"
+
+#: cli/brief.py
+msgid "Who uses it, and how (terminal, web page, other programs)?"
+msgstr "Kdo ji používá a jak (terminál, webová stránka, jiné programy)?"
+
 #: cli/limiter.py
 msgid "Why, shown in doctor."
 msgstr "Důvod, zobrazí se v doctor."
+
+#: cli/brief.py
+msgid "Write down what the project must do (interview), or check that it is complete."
+msgstr "Zapíše, co má projekt dělat (rozhovor), nebo zkontroluje, zda je úplné."
 
 #: cli/conventions.py
 msgid "Write the conventions to FILE instead of printing them (overwrites)."
@@ -737,6 +801,10 @@ msgstr "Zapiš příručku do FILE místo vypsání."
 #: cli/commands.py
 msgid "a SIGHUP to the daemon does the same thing"
 msgstr "totéž udělá SIGHUP poslaný démonovi"
+
+#: cli/proposal.py
+msgid "a proposal needs a title"
+msgstr "návrh potřebuje název"
 
 #: cli/txn.py
 msgid "action"
@@ -809,6 +877,14 @@ msgstr "před"
 #: cli/commands.py
 msgid "bind the control plane here (0.0.0.0 for LAN access)"
 msgstr "zpřístupní řídicí rovinu zde (0.0.0.0 pro přístup z LAN)"
+
+#: cli/brief.py
+msgid "brief is complete: {path}"
+msgstr "zadání je úplné: {path}"
+
+#: cli/brief.py
+msgid "brief is incomplete: {titles}"
+msgstr "zadání je neúplné: {titles}"
 
 #: cli/language.py
 msgid "broken"
@@ -1330,6 +1406,10 @@ msgstr "zatím žádní pojmenovaní uživatelé; vlastníkem je sdílený core.
 msgid "no project or module declared a contract file set"
 msgstr "žádný projekt ani modul nedeklaroval sadu souborů kontraktu"
 
+#: cli/proposal.py
+msgid "no proposals yet"
+msgstr "zatím žádné návrhy"
+
 #: modules/job_queue/module.py
 msgid "no such task"
 msgstr "taková úloha neexistuje"
@@ -1553,6 +1633,14 @@ msgstr "role"
 #: cli/commands.py
 msgid "root"
 msgstr "kořen"
+
+#: cli/brief.py
+msgid "run 'kdx brief' to answer the questions"
+msgstr "spusťte „kdx brief“ a odpovězte na otázky"
+
+#: cli/brief.py
+msgid "run 'kdx brief' to create it"
+msgstr "spusťte „kdx brief“, aby se vytvořilo"
 
 #: cli/commands.py
 msgid "running"
@@ -1950,13 +2038,17 @@ msgstr "{path} nelze přečíst jako JSON: {reason}"
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr "{path} nelze přečíst, proto jsem ho nechal beze změny: {reason}"
 
-#: cli/conventions.py
+#: cli/brief.py
 msgid "{path} could not be written: {reason}"
 msgstr "{path} se nepodařilo zapsat: {reason}"
 
 #: cli/conventions.py
 msgid "{path} created"
 msgstr "{path} byl vytvořen"
+
+#: cli/brief.py
+msgid "{path} does not exist"
+msgstr "{path} neexistuje"
 
 #: cli/language.py
 msgid "{path} does not exist; run kdx locale extract"
@@ -1977,6 +2069,10 @@ msgstr "{path} je aktuální"
 #: cli/language.py
 msgid "{path} must hold a JSON object"
 msgstr "{path} musí obsahovat objekt JSON"
+
+#: cli/brief.py
+msgid "{path} written"
+msgstr "{path} zapsáno"
 
 #: cli/commands.py
 msgid "{path}: declared but not found"

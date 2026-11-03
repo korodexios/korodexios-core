@@ -78,6 +78,10 @@ msgstr "Backup-Ergebnis"
 msgid "Backup retention"
 msgstr "Backup-Aufbewahrung"
 
+#: cli/brief.py
+msgid "Brief file to use."
+msgstr "Zu verwendende Brief-Datei."
+
 #: modules/system_info/module.py
 msgid "CPU"
 msgstr "CPU"
@@ -133,6 +137,10 @@ msgstr "Kontrollebene"
 #: modules/backup_engine/module.py
 msgid "Copy even when the size budget is exceeded."
 msgstr "Kopiert auch, wenn das Größenlimit überschritten wird."
+
+#: cli/proposal.py
+msgid "Create a numbered proposal note from the template."
+msgstr "Erstellt einen nummerierten Vorschlag aus der Vorlage."
 
 #: cli/tls.py
 msgid "Create a self-signed certificate for 'kdx run --tls'."
@@ -222,6 +230,10 @@ msgstr "Gibt die Zusammenfassung des Neuladens als JSON aus."
 msgid "Emit the report as JSON."
 msgstr "Gibt den Bericht als JSON aus."
 
+#: cli/brief.py
+msgid "Emit the result as JSON."
+msgstr "Gibt das Ergebnis als JSON aus."
+
 #: modules/system_info/module.py
 msgid "Emit the snapshot as JSON."
 msgstr "Gibt den Schnappschuss als JSON aus."
@@ -286,6 +298,10 @@ msgstr "Wie viele Einträge angezeigt werden [50]."
 msgid "How many to show."
 msgstr "Wie viele angezeigt werden."
 
+#: cli/brief.py
+msgid "How will you know it works? Observable results, separated by ';'"
+msgstr "Woran erkennen Sie, dass es funktioniert? Beobachtbare Ergebnisse, getrennt durch „;“"
+
 #: cli/jobs.py
 msgid "Include routine ticks, heartbeats, and scheduler runs."
 msgstr "Schließt routinemäßige Ticks, Heartbeats und Läufe des Planers ein."
@@ -338,6 +354,10 @@ msgstr "Sprachcode, z. B. de oder pt_BR."
 msgid "Limiter name (see 'kdx limiter list')."
 msgstr "Name des Limiters (siehe 'kdx limiter list')."
 
+#: cli/brief.py
+msgid "Limits to respect: platforms, languages, data, security (optional)"
+msgstr "Einschränkungen: Plattformen, Sprachen, Daten, Sicherheit (optional)"
+
 #: cli/jobs.py
 msgid "List background jobs, newest first."
 msgstr "Listet Hintergrund-Jobs auf, die neuesten zuerst."
@@ -357,6 +377,10 @@ msgstr "Listet Aufgaben, neueste zuerst."
 #: cli/language.py
 msgid "List the languages that have a catalogue, per message domain."
 msgstr "Listet die Sprachen mit Katalog je Nachrichtendomäne auf."
+
+#: cli/proposal.py
+msgid "List the proposals of this project."
+msgstr "Listet die Vorschläge dieses Projekts auf."
 
 #: cli/language.py
 msgid "List the strings a language still needs, for a translator or an agent."
@@ -429,6 +453,10 @@ msgstr "Einzeilige Modulbeschreibung."
 #: modules/backup_engine/module.py
 msgid "Only copy paths matching PATTERN (repeatable)."
 msgstr "Kopiert nur Pfade, die MUSTER entsprechen (wiederholbar)."
+
+#: cli/brief.py
+msgid "Only report whether the brief is complete (exit 1 when it is not)."
+msgstr "Meldet nur, ob der Brief vollständig ist (Exit 1, wenn nicht)."
 
 #: cli/commands.py
 msgid "Only show keys starting with KEY."
@@ -517,6 +545,10 @@ msgstr "Gib das Playbook für KI-Agenten aus (wie man in einem Projekt auf dem K
 #: cli/commands.py
 msgid "Project identity"
 msgstr "Projektidentität"
+
+#: cli/proposal.py
+msgid "Proposal title"
+msgstr "Titel des Vorschlags"
 
 #: cli/commands.py
 msgid "Publish one tick and stop (CI and smoke tests)."
@@ -610,6 +642,10 @@ msgstr "Anzuzeigender Abschnitt ohne Nachfrage."
 msgid "Service name [korodexios-<project>]."
 msgstr "Dienstname [korodexios-<Projekt>]."
 
+#: cli/proposal.py
+msgid "Short title of the proposal."
+msgstr "Kurzer Titel des Vorschlags."
+
 #: cli/jobs.py
 msgid "Show one job's state and output."
 msgstr "Zeigt Zustand und Ausgabe eines Jobs."
@@ -690,6 +726,10 @@ msgstr "Beendet den Daemon sauber und entfernt die Anmeldeeinrichtung."
 msgid "Stop the running daemon cleanly (needs the admin role)."
 msgstr "Beendet den laufenden Daemon sauber (erfordert die Rolle admin)."
 
+#: cli/proposal.py
+msgid "Suggest a change to the core (projects never edit the core)."
+msgstr "Schlägt eine Änderung am Kern vor (Projekte ändern den Kern nie)."
+
 #: cli/txn.py
 msgid "Take back a finished transaction (refused if its files changed since)."
 msgstr "Macht eine abgeschlossene Transaktion rückgängig (abgelehnt, wenn sich ihre Dateien seither geändert haben)."
@@ -697,6 +737,10 @@ msgstr "Macht eine abgeschlossene Transaktion rückgängig (abgelehnt, wenn sich
 #: modules/job_queue/module.py
 msgid "Task id (see 'kdx queue list')."
 msgstr "Aufgaben-ID (siehe 'kdx queue list')."
+
+#: cli/brief.py
+msgid "The 3 to 5 things it must do, separated by ';'"
+msgstr "Die 3 bis 5 Dinge, die es tun muss, getrennt durch „;“"
 
 #: cli/txn.py
 msgid "Transaction id (see 'kdx txn list')."
@@ -722,9 +766,29 @@ msgstr "Prüft die Eingaben und zeigt, was ein Backup kopieren würde."
 msgid "Verify the project's declared file set without rewriting it."
 msgstr "Prüft die deklarierte Dateimenge des Projekts, ohne sie neu zu schreiben."
 
+#: cli/brief.py
+msgid "What could go wrong, or who could abuse it? (optional)"
+msgstr "Was könnte schiefgehen oder wer könnte es missbrauchen? (optional)"
+
+#: cli/brief.py
+msgid "What it will NOT do, separated by ';'"
+msgstr "Was es NICHT tun wird, getrennt durch „;“"
+
+#: cli/brief.py
+msgid "What should this application do, and why? (one sentence)"
+msgstr "Was soll diese Anwendung tun, und warum? (ein Satz)"
+
+#: cli/brief.py
+msgid "Who uses it, and how (terminal, web page, other programs)?"
+msgstr "Wer nutzt sie und wie (Terminal, Webseite, andere Programme)?"
+
 #: cli/limiter.py
 msgid "Why, shown in doctor."
 msgstr "Grund, wird in doctor angezeigt."
+
+#: cli/brief.py
+msgid "Write down what the project must do (interview), or check that it is complete."
+msgstr "Hält fest, was das Projekt tun muss (Interview), oder prüft, ob es vollständig ist."
 
 #: cli/conventions.py
 msgid "Write the conventions to FILE instead of printing them (overwrites)."
@@ -737,6 +801,10 @@ msgstr "Schreibe das Playbook in FILE, statt es auszugeben."
 #: cli/commands.py
 msgid "a SIGHUP to the daemon does the same thing"
 msgstr "ein SIGHUP an den Daemon bewirkt dasselbe"
+
+#: cli/proposal.py
+msgid "a proposal needs a title"
+msgstr "ein Vorschlag braucht einen Titel"
 
 #: cli/txn.py
 msgid "action"
@@ -809,6 +877,14 @@ msgstr "vorher"
 #: cli/commands.py
 msgid "bind the control plane here (0.0.0.0 for LAN access)"
 msgstr "Kontrollebene hier binden (0.0.0.0 für Zugriff im LAN)"
+
+#: cli/brief.py
+msgid "brief is complete: {path}"
+msgstr "Brief ist vollständig: {path}"
+
+#: cli/brief.py
+msgid "brief is incomplete: {titles}"
+msgstr "Brief ist unvollständig: {titles}"
 
 #: cli/language.py
 msgid "broken"
@@ -1330,6 +1406,10 @@ msgstr "noch keine benannten Benutzer; der gemeinsame core.ipc.token ist der Eig
 msgid "no project or module declared a contract file set"
 msgstr "kein Projekt und kein Modul hat eine Vertragsdateimenge deklariert"
 
+#: cli/proposal.py
+msgid "no proposals yet"
+msgstr "noch keine Vorschläge"
+
 #: modules/job_queue/module.py
 msgid "no such task"
 msgstr "keine solche Aufgabe"
@@ -1553,6 +1633,14 @@ msgstr "Rolle"
 #: cli/commands.py
 msgid "root"
 msgstr "Wurzel"
+
+#: cli/brief.py
+msgid "run 'kdx brief' to answer the questions"
+msgstr "führen Sie „kdx brief“ aus und beantworten Sie die Fragen"
+
+#: cli/brief.py
+msgid "run 'kdx brief' to create it"
+msgstr "führen Sie „kdx brief“ aus, um ihn zu erstellen"
 
 #: cli/commands.py
 msgid "running"
@@ -1950,13 +2038,17 @@ msgstr "{path} kann nicht als JSON gelesen werden: {reason}"
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr "{path} kann nicht gelesen werden und blieb unverändert: {reason}"
 
-#: cli/conventions.py
+#: cli/brief.py
 msgid "{path} could not be written: {reason}"
 msgstr "{path} konnte nicht geschrieben werden: {reason}"
 
 #: cli/conventions.py
 msgid "{path} created"
 msgstr "{path} erstellt"
+
+#: cli/brief.py
+msgid "{path} does not exist"
+msgstr "{path} existiert nicht"
 
 #: cli/language.py
 msgid "{path} does not exist; run kdx locale extract"
@@ -1977,6 +2069,10 @@ msgstr "{path} ist aktuell"
 #: cli/language.py
 msgid "{path} must hold a JSON object"
 msgstr "{path} muss ein JSON-Objekt enthalten"
+
+#: cli/brief.py
+msgid "{path} written"
+msgstr "{path} geschrieben"
 
 #: cli/commands.py
 msgid "{path}: declared but not found"

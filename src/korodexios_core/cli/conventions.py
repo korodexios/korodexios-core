@@ -18,7 +18,7 @@ from .render import tr, write_line
 RESOURCES = Path(__file__).resolve().parent.parent / "resources"
 
 
-def _resource_text(name: str) -> str:
+def resource_text(name: str) -> str:
     path = RESOURCES / name
     try:
         return path.read_text(encoding="utf-8")
@@ -30,12 +30,12 @@ def _resource_text(name: str) -> str:
 
 def conventions_text() -> str:
     """Return the project conventions (English: agents and templates read it)."""
-    return _resource_text("conventions.md")
+    return resource_text("conventions.md")
 
 
 def spec_template() -> str:
     """Return the spec template seeded as ``docs/specs/TEMPLATE.md``."""
-    return _resource_text("spec-template.md")
+    return resource_text("spec-template.md")
 
 
 def conventions_command() -> CliCommand:
