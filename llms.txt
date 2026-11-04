@@ -43,8 +43,8 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 2. **Zero stubs.** No TODO bodies, no `pass` placeholders, no mock returns. If a
    branch exists, it runs - and a test runs it.
 3. **Stdlib first.** A new dependency needs a paragraph of justification, not a line.
-4. **Precedence is sacred.** CLI > environment (`KDX_*`, then `KORODEXIOS_*`, then
-   `KORODEXIOS_*) > `kdx.local.yml` > `kdx.yml` > built-in defaults. Read
+4. **Precedence is sacred.** CLI > environment (`KDX_*`, then `KORODEXIOS_*`) >
+   `kdx.local.yml` > `kdx.yml` > built-in defaults. Read
    configuration through `LayeredConfig` / `ScopedConfig`, never `os.environ`.
 5. **Diagnostics to stderr, UI to stdout.** Modules never write to stdout; the CLI
    owns stdout. Log records, warnings, and tracebacks go to stderr.
@@ -58,6 +58,21 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
    intended way to grow the system; `kernel/` never learns a product name.
 9. **Verification before claims.** Quote the failing command before and after a fix.
    `make check` is the bar.
+10. **uv and ruff are the standard tools.** uv owns Python, the virtualenv, and
+    dependencies (`uv sync`, `uv add`, `uv run ...`; commit `uv.lock`); never bare `pip`
+    or `python -m venv` when uv is available. ruff is the only linter and formatter
+    (`uv run ruff check src tests`, `uv run ruff format src tests`); do not add black,
+    flake8, isort, or pylint. The same applies to every project seeded by `kdx init`.
+11. **Do not break what works.** Never weaken a check to make it pass (no deleted or
+    skipped tests, no blanket `noqa`/`type: ignore`); a bug fix starts with a failing
+    regression test; old code is pinned by a test before it changes. One core, many doors:
+    logic lives in a module and the CLI, GUI and `/api/v1` all reach it (see
+    `kdx conventions`, sections 13 and 14).
+12. **Park bugs, keep the goal.** A bug that does not block the task goes into
+    `docs/BACKLOG.md`, not into the current change. A blocking bug gets its own small fix
+    (failing test first, at most three attempts, then ask). Progress lives in
+    `docs/STATUS.md`, so a fresh session resumes the original task instead of the detour
+    (`kdx conventions`, section 15).
 
 ## 2. The Module Contract
 

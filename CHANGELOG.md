@@ -5,6 +5,13 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Changed
+
+- Conventions, playbook and agent guide (`llms.txt`): uv and ruff are the standard tools; new
+  rules for not breaking working code (safety nets and a tool list), for one core driven from
+  CLI, GUI and API, and for parking bugs (`docs/BACKLOG.md`, `docs/STATUS.md`) so an agent keeps
+  the project's direction. Fixed a garbled precedence rule in the agent guide.
+
 ## [0.5.3] - 2026-11-03
 
 ### Added
