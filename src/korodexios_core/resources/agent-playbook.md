@@ -10,8 +10,9 @@ language they write in. Keep explanations plain; show commands and results, not 
 
 ## 0. First five minutes of every session
 
-1. Read `AGENTS.md`, this file, `docs/BRIEF.md` (the goal), and the newest spec in
-   `docs/specs/` if the task has one.
+1. Read `AGENTS.md`, this file, `docs/BRIEF.md` (the goal), `docs/STATUS.md` (where the
+   last session stopped, if it exists), and the newest spec in `docs/specs/` if the task
+   has one.
    Run `kdx brief --check`. If the brief is incomplete, interview the owner first (`kdx brief`
    asks the questions; you may relay them) and do not build until the goal, the non-goals
    and the "done when" results are written down. Unclear task: ask, do not guess.
@@ -126,7 +127,10 @@ spending money, rewriting history. One approval covers only that one action.
 - Fixing a failing test by weakening it. Mocking the thing under test.
 - "Improving" unrelated code in the same change. Reformatting files you did not need to
   touch. Renaming public things without a deprecation note.
-- Fixing what you found on the way but the task did not ask for: record it, move on.
+- Fixing what you found on the way but the task did not ask for: record it in
+  `docs/BACKLOG.md`, move on. A bug that blocks the task gets its own small fix, at most
+  three attempts, then stop and ask; afterwards update `docs/STATUS.md` and, after a long
+  detour, start a fresh session. Never chase a side bug until the goal is forgotten.
 - Editing the core from a project, or leaving a core problem unrecorded: write
   `kdx proposal new "<title>"`, work around it with a `WORKAROUND(core-proposal NNN)` comment.
 - Guessing an API: read the code or `docs/AGENTS_GUIDE.md`; if still unknown, ask.
