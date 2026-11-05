@@ -150,6 +150,10 @@ msgstr "Erstellt ein selbstsigniertes Zertifikat für 'kdx run --tls'."
 msgid "Create a user; prints the new token once."
 msgstr "Legt einen Benutzer an; zeigt den neuen Token nur einmal."
 
+#: cli/commands.py
+msgid "Create modules (kdx module new NAME writes the module trio and a test)."
+msgstr "Erstellt Module (kdx module new NAME schreibt das Modul-Trio und einen Test)."
+
 #: cli/tls.py
 msgid "Create the certificate for an https control plane."
 msgstr "Erstellt das Zertifikat für eine https-Kontrollebene."
@@ -578,6 +582,10 @@ msgstr "Lehnt jeden Aufruf eines Limiters eine Weile ab (nach einem 429 oder 503
 msgid "Register the daemon to start at logon, and start it now."
 msgstr "Registriert den Daemon für den Start bei der Anmeldung und startet ihn sofort."
 
+#: cli/language.py
+msgid "Remove obsolete translations (strings no longer in the template)."
+msgstr "Entfernt veraltete Übersetzungen (Zeichenfolgen, die nicht mehr in der Vorlage stehen)."
+
 #: cli/tls.py
 msgid "Replace an existing certificate."
 msgstr "Ersetzt ein vorhandenes Zertifikat."
@@ -621,6 +629,10 @@ msgstr "Laufzeit"
 #: cli/service.py
 msgid "Say whether the service is registered and the daemon answers."
 msgstr "Sagt, ob der Dienst registriert ist und der Daemon antwortet."
+
+#: cli/commands.py
+msgid "Scaffold a module in the project's modules directory, with a test."
+msgstr "Legt ein Modul im Modulverzeichnis des Projekts samt Test an."
 
 #: cli/commands.py
 msgid "Scaffold a new module package (asks for a name when omitted)."
@@ -933,6 +945,14 @@ msgstr "prüfen: kdx service status   entfernen: kdx service uninstall"
 #: cli/language.py
 msgid "chosen by"
 msgstr "gewählt durch"
+
+#: cli/commands.py
+msgid "claimed by"
+msgstr "beansprucht von"
+
+#: cli/commands.py
+msgid "cli-collision: module commands shadowed by another owner:"
+msgstr "cli-collision: Modulbefehle von einem anderen Eigentümer verdeckt:"
 
 #: cli/commands.py
 msgid "command"
@@ -1419,6 +1439,10 @@ msgid "no transactions recorded"
 msgstr "keine Transaktionen aufgezeichnet"
 
 #: cli/language.py
+msgid "no translation of {domain} found under {path}"
+msgstr "keine Übersetzung der Domäne {domain} unter {path} gefunden"
+
+#: cli/language.py
 msgid "no translations to check; only the source language exists"
 msgstr "keine Übersetzungen zu prüfen; es gibt nur die Quellsprache"
 
@@ -1477,6 +1501,10 @@ msgstr "Herkunft"
 #: cli/users.py
 msgid "outcome"
 msgstr "Ergebnis"
+
+#: cli/commands.py
+msgid "owner"
+msgstr "Eigentümer"
 
 #: cli/commands.py
 msgid "package"
@@ -1951,6 +1979,10 @@ msgid "{count} item(s), {size} bytes; run kdx reset --apply to delete them"
 msgstr "{count} Element(e), {size} Bytes; mit kdx reset --apply löschen"
 
 #: cli/language.py
+msgid "{count} obsolete translation(s) removed"
+msgstr "{count} veraltete Übersetzung(en) entfernt"
+
+#: cli/language.py
 msgid "{count} string(s) left for {locale}"
 msgstr "für {locale} bleiben {count} Texte übrig"
 
@@ -1993,6 +2025,10 @@ msgstr "{job_id} gestartet; Strg+C beendet das Verfolgen, nicht den Job"
 #: cli/language.py
 msgid "{locale}: {added} new, {stale} obsolete"
 msgstr "{locale}: {added} neu, {stale} veraltet"
+
+#: cli/language.py
+msgid "{locale}: {count} obsolete removed"
+msgstr "{locale}: {count} veraltete entfernt"
 
 #: cli/limiter.py
 msgid "{name} cooldown ended"

@@ -5,6 +5,25 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.5.5] - 2026-11-05
+
+### Added
+
+- `kdx locale tidy`; `locale extract` keeps translations of removed strings as obsolete `#~`
+  entries (revived when the string returns) instead of dropping them, and says when a domain has
+  no translation to update.
+- `kdx doctor` and every other command report a `cli-collision` when a module claims a verb the
+  chassis or another module owns; the reserved names are documented in the agent guide.
+- `get_bool_opt`, `get_int_opt`, `get_float_opt`, `get_str_opt` (tri-state: `None` when unset).
+- `kdx module new NAME`: scaffold into the project's `src/<pkg>/modules/`, with a pinned
+  `requires_core`, `config_schema()` and a test; `ProcessSupervisor.run(tail_lines=)`.
+- `context.run_json(argv, timeout=)`: supervised child process, stdout parsed as a JSON object.
+
+### Fixed
+
+- `CliArgument(type="int"|"float"|"path")` now converts positionals and `append` values too (they
+  arrived as strings).
+
 ## [0.5.4] - 2026-11-05
 
 ### Changed

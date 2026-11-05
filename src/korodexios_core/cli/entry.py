@@ -13,7 +13,7 @@ from typing import Any
 from ..config.layered import LayeredConfig
 from ..config.loaders import normalize_alias_mapping
 from ..constants import TAG_ERROR, TAG_NOTE, TRACEBACK_ENV_VAR, ExitCode
-from ..exceptions import KorodexiosError
+from ..exceptions import CliError, KorodexiosError
 from ..kernel.chassis import Chassis, ChassisOptions, stdin_is_tty
 from ..kernel.cli_contract import CliRequest
 from ..kernel.ipc import DISCOVERY_NAME, IpcDiscovery
@@ -654,12 +654,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         surface.add_command(reset_command())
         surface.add_command(txn_command())
         surface.add_command(limiter_command())
+        chassis.reserved_cli = frozenset(surface.names())
         chassis.collect_cli(surface)
 
         try:
             namespace = parser.parse_args(argv)
         except SystemExit as parse_exit:
             return _system_exit_code(parse_exit)
+
+        collisions = chassis.registry.cli_collisions(chassis.reserved_cli)
+        if collisions and getattr(namespace, "command", None) != "doctor":
+            raise CliError(
+                "; ".join(
+                    f"module {row['module']} claims command {row['name']!r}, "
+                    f"already owned by {row['owner']}"
+                    for row in collisions
+                ),
+                hint="Rename the module command (see docs/AGENTS_GUIDE.md, reserved verbs); "
+                "'kdx doctor' lists every collision.",
+            )
 
         module_command_names = {command.name for command in chassis.registry.commands()}
         if getattr(namespace, "command", None) in module_command_names:

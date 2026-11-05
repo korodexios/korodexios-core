@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import threading
 import time
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, field
 from functools import partial
 from typing import Any
@@ -88,6 +88,10 @@ class RegisteredModule:
     """Keys the module declared for itself that the chassis also owns per module."""
     contracts: tuple[ContractRow, ...] = ()
     """The verified file set this module declared, carried without interpretation."""
+    cli_error: str | None = None
+    """Why `register_cli` failed, when it did; the module then contributed no commands."""
+    cli_claimed: tuple[str, ...] = ()
+    """Top-level command names the module tried to register, even when the surface refused."""
 
     def declared_keys(self) -> tuple[str, ...]:
         """Return the configuration keys this module declared."""
@@ -587,6 +591,27 @@ class ModuleRegistry:
             results.append(self._run(record, "stop", record.module.stop, timeout=timeout))
         return results
 
+    def cli_collisions(self, reserved: Iterable[str] = ()) -> list[dict[str, str]]:
+        """Return the top-level command names claimed twice, naming both owners.
+
+        *reserved* are the verbs the chassis itself owns (owner ``core``). A module that
+        claims one of them, or a name another module already claimed, is reported as
+        ``{"name", "owner", "module"}``; the module's command is shadowed, not served.
+        """
+        owners: dict[str, str] = dict.fromkeys(reserved, "core")
+        found: list[dict[str, str]] = []
+        for record in self.ordered():
+            if record.state is ModuleState.DISABLED:
+                continue
+            names = [command.name for command in record.commands] or list(record.cli_claimed)
+            for name in dict.fromkeys(names):
+                owner = owners.get(name)
+                if owner is None or owner == record.spec.name:
+                    owners[name] = record.spec.name
+                else:
+                    found.append({"name": name, "owner": owner, "module": record.spec.name})
+        return found
+
     def collect_cli(self, surface: CliSurface) -> list[CliCommand]:
         """Let every module inject its commands into *surface*; return them all.
 
@@ -612,6 +637,8 @@ class ModuleRegistry:
                     f"module {record.spec.name} contributed no commands: "
                     f"{type(exc).__name__}: {exc}"
                 )
+                record.cli_error = f"{type(exc).__name__}: {exc}"
+                record.cli_claimed = tuple(command.name for command in sink)
                 continue
             record.commands = list(sink)
             collected.extend(sink)

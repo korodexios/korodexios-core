@@ -234,6 +234,8 @@ class Chassis:
     cli_overrides: dict[str, Any] = field(default_factory=dict)
     instance_lock_enabled: bool | None = None
     reloads: int = 0
+    reserved_cli: frozenset[str] = frozenset()
+    """Top-level verbs the chassis owns; a module that claims one is a collision."""
     last_reload: dict[str, Any] | None = None
     project: ProjectIdentity | None = None
     """The one triple the chassis reports for the project it hosts."""
@@ -1477,6 +1479,7 @@ class Chassis:
             },
             "logging": self.context.logs.stats(),
             "modules": self.registry.health(),
+            "cli": {"collisions": self.registry.cli_collisions(self.reserved_cli)},
             "discovery": self.discovery.as_dict(),
             "project": self.project.as_dict() if self.project is not None else None,
             "contracts": self.contract_report().as_dict(),

@@ -7,6 +7,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from ..version import __version__
+
 MODULE_NAME_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
 PACKAGE_MODULES_DIR = "korodexios_core/modules"
 
@@ -105,6 +107,13 @@ def scaffold_module(
     return result
 
 
+def _requires_core() -> str:
+    """Return the core range the scaffold pins: this release's minor up to the next major."""
+    major, _, rest = __version__.partition(".")
+    minor = rest.partition(".")[0] or "0"
+    return f">={major}.{minor},<{int(major) + 1}.0"
+
+
 def _manifest(name: str, description: str) -> str:
     return (
         "[module]\n"
@@ -113,7 +122,7 @@ def _manifest(name: str, description: str) -> str:
         'version = "0.1.0"\n'
         'entrypoint = "module.MODULE"\n'
         "priority = 100\n"
-        'requires_core = ">=0.1,<1.0"\n'
+        f'requires_core = "{_requires_core()}"\n'
         "depends_on = []\n"
     )
 
@@ -135,6 +144,7 @@ def _module_source(name: str, class_name: str, description: str) -> str:
         "from __future__ import annotations\n\n"
         "from typing import Any\n\n"
         "from korodexios_core.cli.render import dump_json, write_status\n"
+        "from korodexios_core.config.schema import ConfigField, ConfigKind, ConfigSchema\n"
         "from korodexios_core.kernel.cli_contract import CliArgument, CliCommand\n"
         "from korodexios_core.kernel.contract import Module\n\n\n"
         f"class {class_name}Module(Module):\n"
@@ -146,6 +156,19 @@ def _module_source(name: str, class_name: str, description: str) -> str:
         "    def init(self, context: Any) -> None:\n"
         "        super().init(context)\n"
         "        self.reports = 0\n\n"
+        "    def config_schema(self) -> ConfigSchema:\n"
+        '        """Declare the keys this module reads (kdx config show lists them)."""\n'
+        "        return ConfigSchema(\n"
+        "            module=self.name,\n"
+        "            fields=(\n"
+        "                ConfigField(\n"
+        '                    "greeting",\n'
+        "                    kind=ConfigKind.STR,\n"
+        '                    default="alive",\n'
+        '                    description="Text the ping command reports.",\n'
+        "                ),\n"
+        "            ),\n"
+        "        )\n\n"
         "    def register_cli(self, surface: Any) -> None:\n"
         "        surface.add_command(\n"
         "            CliCommand(\n"
@@ -182,6 +205,7 @@ def _module_source(name: str, class_name: str, description: str) -> str:
         '            "module": self.name,\n'
         '            "reports": self.reports,\n'
         '            "alive": True,\n'
+        '            "greeting": self.config.get_str("greeting", "alive"),\n'
         "        }\n"
         '        if request.flag("as_json"):\n'
         "            dump_json(payload)\n"
@@ -190,6 +214,21 @@ def _module_source(name: str, class_name: str, description: str) -> str:
         "        return 0\n\n\n"
         f"MODULE = {class_name}Module()\n"
     )
+
+
+def _import_path(root: Path, parent: Path) -> str | None:
+    """Return the dotted package of *parent* when it is a module root of the project."""
+    try:
+        relative = parent.resolve().relative_to((root / "src").resolve())
+    except ValueError:
+        relative = None
+    if relative is not None and len(relative.parts) >= 2 and relative.parts[-1] == "modules":
+        return ".".join(relative.parts)
+    try:
+        inside = parent.resolve().relative_to((root / PACKAGE_MODULES_DIR).resolve())
+    except ValueError:
+        return None
+    return ".".join(("korodexios_core", "modules", *inside.parts))
 
 
 def _write_test(
@@ -202,20 +241,18 @@ def _write_test(
     root = Path(project_root) if project_root is not None else None
     if root is None:
         return None
-    inside = (root / PACKAGE_MODULES_DIR).resolve()
-    try:
-        parent.resolve().relative_to(inside)
-    except ValueError:
+    dotted = _import_path(root, parent)
+    if dotted is None:
         return None
     tests_dir = root / "tests"
     if not tests_dir.is_dir():
-        return None
+        tests_dir.mkdir(parents=True, exist_ok=True)
     target = tests_dir / f"test_{name}.py"
     content = (
         f'"""Smoke tests for the {name} module."""\n\n'
         "from __future__ import annotations\n\n"
         "from korodexios_core.kernel.contract import check_contract\n"
-        f"from korodexios_core.modules.{name}.module import MODULE\n\n\n"
+        f"from {dotted}.{name}.module import MODULE\n\n\n"
         "def test_module_satisfies_the_contract() -> None:\n"
         f'    assert "{name}" == MODULE.name\n'
         "    assert check_contract(MODULE) == []\n\n\n"

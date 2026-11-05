@@ -150,6 +150,10 @@ msgstr "Vytvorí samopodpísaný certifikát pre 'kdx run --tls'."
 msgid "Create a user; prints the new token once."
 msgstr "Vytvorí používateľa; nový token vypíše iba raz."
 
+#: cli/commands.py
+msgid "Create modules (kdx module new NAME writes the module trio and a test)."
+msgstr "Vytvára moduly (kdx module new NAME zapíše trojicu súborov modulu a test)."
+
 #: cli/tls.py
 msgid "Create the certificate for an https control plane."
 msgstr "Vytvorí certifikát pre riadiacu rovinu cez https."
@@ -578,6 +582,10 @@ msgstr "Na chvíľu odmietne každé volanie limitera (po chybe 429 alebo 503)."
 msgid "Register the daemon to start at logon, and start it now."
 msgstr "Zaregistruje démona na spustenie pri prihlásení a hneď ho spustí."
 
+#: cli/language.py
+msgid "Remove obsolete translations (strings no longer in the template)."
+msgstr "Odstráni zastarané preklady (reťazce, ktoré už nie sú v šablóne)."
+
 #: cli/tls.py
 msgid "Replace an existing certificate."
 msgstr "Nahradí existujúci certifikát."
@@ -621,6 +629,10 @@ msgstr "Beh"
 #: cli/service.py
 msgid "Say whether the service is registered and the daemon answers."
 msgstr "Povie, či je služba registrovaná a či démon odpovedá."
+
+#: cli/commands.py
+msgid "Scaffold a module in the project's modules directory, with a test."
+msgstr "Vytvorí modul v adresári modulov projektu spolu s testom."
 
 #: cli/commands.py
 msgid "Scaffold a new module package (asks for a name when omitted)."
@@ -933,6 +945,14 @@ msgstr "over: kdx service status   odstráň: kdx service uninstall"
 #: cli/language.py
 msgid "chosen by"
 msgstr "zvolil"
+
+#: cli/commands.py
+msgid "claimed by"
+msgstr "nárokuje si"
+
+#: cli/commands.py
+msgid "cli-collision: module commands shadowed by another owner:"
+msgstr "cli-collision: príkazy modulu zatienil iný vlastník:"
 
 #: cli/commands.py
 msgid "command"
@@ -1419,6 +1439,10 @@ msgid "no transactions recorded"
 msgstr "nie sú zaznamenané žiadne transakcie"
 
 #: cli/language.py
+msgid "no translation of {domain} found under {path}"
+msgstr "nenašiel sa žiadny preklad domény {domain} v {path}"
+
+#: cli/language.py
 msgid "no translations to check; only the source language exists"
 msgstr "niet čo kontrolovať; existuje len zdrojový jazyk"
 
@@ -1477,6 +1501,10 @@ msgstr "pôvod"
 #: cli/users.py
 msgid "outcome"
 msgstr "výsledok"
+
+#: cli/commands.py
+msgid "owner"
+msgstr "vlastník"
 
 #: cli/commands.py
 msgid "package"
@@ -1951,6 +1979,10 @@ msgid "{count} item(s), {size} bytes; run kdx reset --apply to delete them"
 msgstr "{count} položiek, {size} bajtov; zmažete ich príkazom kdx reset --apply"
 
 #: cli/language.py
+msgid "{count} obsolete translation(s) removed"
+msgstr "Odstránených zastaraných prekladov: {count}"
+
+#: cli/language.py
 msgid "{count} string(s) left for {locale}"
 msgstr "pre {locale} ostáva {count} textov"
 
@@ -1993,6 +2025,10 @@ msgstr "{job_id} sa spustila; Ctrl+C zastaví sledovanie, nie úlohu"
 #: cli/language.py
 msgid "{locale}: {added} new, {stale} obsolete"
 msgstr "{locale}: {added} nových, {stale} zastaraných"
+
+#: cli/language.py
+msgid "{locale}: {count} obsolete removed"
+msgstr "{locale}: odstránených zastaraných: {count}"
 
 #: cli/limiter.py
 msgid "{name} cooldown ended"
