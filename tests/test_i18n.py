@@ -323,7 +323,14 @@ def test_extract_check_merge_and_stale(tmp_path: Path, capsys, project_root: Pat
     assert 'msgid "new one"' in pot
     merged, applied, rejected = compose_po("demo", "sk", pot, PO, {})
     assert 'msgid "new one"' in merged and 'msgstr "ahoj"' in merged and not applied
-    assert "dovidenia" not in merged  # not in this template: dropped as obsolete
+    assert '#~ msgid "bye {name}"' in merged or "dovidenia" in merged  # kept as obsolete, not live
+    assert all(e.msgid != "bye {name}" for e in parse_po(merged))
+    from korodexios_core.kernel.i18n_extract import tidy_po
+
+    assert "dovidenia" not in tidy_po(merged)[0]
+    returned = render_pot("demo", {**messages, "bye {name}": "a.py:3"})
+    back, _, _ = compose_po("demo", "sk", returned, merged, {})
+    assert "dovidenia" in back and "#~" not in back  # returning string revives (fuzzy)
     assert rejected == {}
 
     write_root(project_root)

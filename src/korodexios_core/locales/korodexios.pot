@@ -148,6 +148,10 @@ msgstr ""
 msgid "Create a user; prints the new token once."
 msgstr ""
 
+#: cli/commands.py
+msgid "Create modules (kdx module new NAME writes the module trio and a test)."
+msgstr ""
+
 #: cli/tls.py
 msgid "Create the certificate for an https control plane."
 msgstr ""
@@ -576,6 +580,10 @@ msgstr ""
 msgid "Register the daemon to start at logon, and start it now."
 msgstr ""
 
+#: cli/language.py
+msgid "Remove obsolete translations (strings no longer in the template)."
+msgstr ""
+
 #: cli/tls.py
 msgid "Replace an existing certificate."
 msgstr ""
@@ -618,6 +626,10 @@ msgstr ""
 
 #: cli/service.py
 msgid "Say whether the service is registered and the daemon answers."
+msgstr ""
+
+#: cli/commands.py
+msgid "Scaffold a module in the project's modules directory, with a test."
 msgstr ""
 
 #: cli/commands.py
@@ -930,6 +942,14 @@ msgstr ""
 
 #: cli/language.py
 msgid "chosen by"
+msgstr ""
+
+#: cli/commands.py
+msgid "claimed by"
+msgstr ""
+
+#: cli/commands.py
+msgid "cli-collision: module commands shadowed by another owner:"
 msgstr ""
 
 #: cli/commands.py
@@ -1417,6 +1437,10 @@ msgid "no transactions recorded"
 msgstr ""
 
 #: cli/language.py
+msgid "no translation of {domain} found under {path}"
+msgstr ""
+
+#: cli/language.py
 msgid "no translations to check; only the source language exists"
 msgstr ""
 
@@ -1474,6 +1498,10 @@ msgstr ""
 
 #: cli/users.py
 msgid "outcome"
+msgstr ""
+
+#: cli/commands.py
+msgid "owner"
 msgstr ""
 
 #: cli/commands.py
@@ -1949,6 +1977,10 @@ msgid "{count} item(s), {size} bytes; run kdx reset --apply to delete them"
 msgstr ""
 
 #: cli/language.py
+msgid "{count} obsolete translation(s) removed"
+msgstr ""
+
+#: cli/language.py
 msgid "{count} string(s) left for {locale}"
 msgstr ""
 
@@ -1990,6 +2022,10 @@ msgstr ""
 
 #: cli/language.py
 msgid "{locale}: {added} new, {stale} obsolete"
+msgstr ""
+
+#: cli/language.py
+msgid "{locale}: {count} obsolete removed"
 msgstr ""
 
 #: cli/limiter.py

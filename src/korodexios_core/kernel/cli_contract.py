@@ -53,6 +53,10 @@ def add_command_arguments(
             kwargs["nargs"] = argument.nargs
         if argument.choices:
             kwargs["choices"] = list(argument.choices)
+        if argument.action not in _FLAG_ACTIONS and argument.type != "flag":
+            # The named type is applied everywhere a value is parsed: options, positionals
+            # (which used to arrive as strings), and 'append' lists of values.
+            kwargs["type"] = _TYPE_MAP.get(argument.type, str)
         if is_positional:
             # A positional is mandatory unless its nargs says otherwise, and
             # argparse refuses 'required' for one; only the default is honoured,
@@ -68,8 +72,6 @@ def add_command_arguments(
             kwargs["required"] = True
         elif argument.default is not None:
             kwargs["default"] = argument.default
-        if not argument.action and argument.type != "flag":
-            kwargs["type"] = _TYPE_MAP.get(argument.type, str)
         parser.add_argument(*argument.flags, **kwargs)
 
 

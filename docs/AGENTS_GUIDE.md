@@ -13,7 +13,7 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 | Distribution | `korodexios-core` |
 | Import root | `korodexios_core` |
 | Console scripts | `kdx` (primary short alias), `korodexios` (canonical) |
-| Version | `0.5.4` (production), core API frozen at `v2` (additive changes only inside v2) |
+| Version | `0.5.5` (production), core API frozen at `v2` (additive changes only inside v2) |
 | Runtime | CPython 3.11+, stdlib first (PyYAML for config, rich for the CLI surface) |
 | Config file | `kdx.yml` / `kdx.yaml` / `kdx.json` (then `korodexios.*`) |
 | Env prefix | `KDX_` primary; `KORODEXIOS_` is the canonical long prefix |
@@ -351,6 +351,8 @@ What the blueprint proves:
 | `get_int(key, default)` | digits, `"12"` | `int` |
 | `get_float(key, default)` | numeric strings | `float` |
 | `get_bool(key, default)` | `true/false`, `yes/no`, `on/off`, `1/0` (case-insensitive) | `bool` |
+| `get_bool_opt(key)` | as `get_bool`, but `None` when no layer sets the key | `bool \| None` |
+| `get_int_opt` / `get_float_opt` / `get_str_opt` | same tri-state for the other scalars | `T \| None` |
 | `get_path(key, default)` | string | resolved `Path` |
 | `get_list(key, default)` | list, or comma/newline separated string | `list[str]` |
 
@@ -405,6 +407,15 @@ self.bus.unsubscribe(sub)
 - Event fields: `name`, `payload`, `source`, `at`, `sequence`, and `age(now=None)`.
 
 ## 7. Declarative CLI
+
+**Reserved top-level names.** The chassis owns these verbs: `version`, `doctor`, `logs`,
+`init`, `status`, `reload`, `rpc`, `modules`, `module`, `config`, `run`, `contracts`, `wizard`,
+`tls`, `users`, `audit`, `jobs`, `events`, `stop`, `service`, `locale`, `playbook`,
+`conventions`, `brief`, `proposal`, `reset`, `txn`, `limiter`. The built-in modules own
+`system`, `queue`, `heartbeat`, `backup`, `ui`. A module that claims any of them (or a name
+another module already claimed) is a **collision**: every `kdx` command except `kdx doctor`
+fails at once, naming both owners, and `kdx doctor` lists them under `cli-collision` (the report
+key is `cli.collisions`). Pick another name; the full current list is `kdx --help`.
 
 `CliCommand` fields: `name`, `help`, `args` (tuple of `CliArgument`), `handler`
 (`CliRequest -> int`), `subcommands` (tuple), `module_name`, `group`, `show_in_wizard`,
@@ -970,6 +981,11 @@ task = queue.submit("render", {"id": 7}, max_attempts=3)
   its own process group, sends every output line to the logger (`process=` and `stream=`
   fields, never stdout), kills the whole group on timeout or at chassis stop, and publishes
   `core.process.finished`. `check=True` raises `ProcessError` carrying the result.
+- **JSON from a child.** `context.run_json(argv, timeout=60)` runs the child like `run_process`
+  (output is not cut at the 200-line tail) and returns its stdout parsed as one JSON object.
+  A non-zero exit, a timeout, output that is not JSON, or JSON that is not an object raises
+  `ProcessError`: the message names the argument list, the exit code and the last stderr line,
+  and `error.result` carries the full `ProcessResult`.
 - **Queue.** `data/jobs/queue.sqlite3` (stdlib `sqlite3`) holds tasks in the states `queued`,
   `running`, `done`, `failed`, `cancelled` with attempts and exponential backoff (30 s doubling,
   capped at an hour). A restart requeues what it interrupted. The `job_queue` module runs

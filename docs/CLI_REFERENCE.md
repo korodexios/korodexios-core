@@ -20,8 +20,8 @@ docs. `kdx --help` lists every command, including the ones modules contributed.
 | uv, in the chassis repository | `uv venv --python 3.13 && uv sync --extra dev && uv run kdx doctor` | uv (Astral) owns the environment; `make` resolves to `uv run` when uv is on `PATH` |
 | guided installer | `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) | four coloured steps - check, install, verify, first project; asks before installing uv; `--lang sk`, `--yes`, `--dry-run` (`-Language`, `-Yes`, `-DryRun` on Windows) |
 | uv tool | `uv tool install korodexios-core` | a global `kdx` on PATH, no project involved |
-| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.4"` | the documented pin before an index publish; needs network |
-| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.5.4"` | what `kdx init --chassis-source git` writes into the seed |
+| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.5"` | the documented pin before an index publish; needs network |
+| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.5.5"` | what `kdx init --chassis-source git` writes into the seed |
 | pipx, or venv + pip | `pipx install korodexios-core`; `python3 -m venv .venv && pip install -e ".[dev]"` | the fallback when uv is absent - and it fails as written on a PEP 668 `EXTERNALLY-MANAGED` interpreter with no `pip` and no `ensurepip` |
 | from an index | `uv pip install korodexios-core`, or `pip install korodexios-core` | once published; a consumer pins it with `uv lock` |
 
@@ -255,6 +255,15 @@ kdx modules create <name> --path src/<pkg>/modules [--title TEXT] [--force] [--j
 `create` scaffolds `__init__.py`, `module.py`, and `kdx_module.toml` - zero stubs,
 immediately runnable.
 
+```bash
+kdx module new <name> [--description TEXT] [--path DIR] [--force] [--json]
+```
+
+`module new` is the project-friendly spelling: with no `--path` it writes into the project's own
+`src/<pkg>/modules/` (the chassis's built-in directory only when there is no such directory),
+pins `requires_core` to the running release (`>=MAJOR.MINOR,<NEXT_MAJOR`), includes a
+`config_schema()` and the `MODULE` singleton, and writes `tests/test_<name>.py`.
+
 Since `v0.2.10` `list` also names the modules the chassis did not load, each with the reason
 that decided it - `disabled by its manifest`, `not listed in core.modules.enabled`, `listed in
 core.modules.disabled`, or `modules.<name>.enabled is false` - and the optional-dependency rows
@@ -337,7 +346,7 @@ The seed ships `kdx.yml`, `.env.example`, `Makefile`, `README.md`, `AGENTS.md`,
 smoke tests. It passes `make check` on arrival.
 
 The chassis dependency is pinned to the repository by default
-(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.4`), so a fresh
+(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.5`), so a fresh
 venv can `pip install -e .` the seeded project before any index publish. Pass
 `--chassis-source index` once the package is on an index; an unknown choice is refused
 with a hint. A git pin needs network and uv at install time - `uv venv`,
@@ -630,7 +639,8 @@ Help text and messages follow `core.locale` (`--locale sk`, `KDX_CORE__LOCALE`, 
 | `kdx locale list` | available languages per domain |
 | `kdx locale set LOCALE` | write `core.locale` into `kdx.local.yml` |
 | `kdx locale check [--language L]` | completeness of catalogues; exit 3 if incomplete |
-| `kdx locale extract [--check]` | refresh the template from the source |
+| `kdx locale extract [--check]` | refresh the template from the source; translations are kept (`msgmerge` semantics), strings that left the source become obsolete `#~` entries that `check` ignores and a returning string revives |
+| `kdx locale tidy [--domain D]` | delete the obsolete entries of every language |
 | `kdx locale add L` / `todo L [--json]` / `apply L FILE` | add a language, list what is missing, merge translations |
 
 See [TRANSLATING.md](TRANSLATING.md).

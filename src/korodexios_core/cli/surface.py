@@ -43,6 +43,10 @@ class ArgparseSurface:
         """Return the core context handed to every handler."""
         return self._context
 
+    def names(self) -> tuple[str, ...]:
+        """Return the top-level command names added so far."""
+        return tuple(command.name for command in self._added)
+
     def _say(self, text: str) -> str:
         """Translate help text; only the chassis's own domain, so a module's stays as written."""
         translate = getattr(self._context, "translate", None)

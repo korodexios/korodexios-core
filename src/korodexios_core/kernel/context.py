@@ -178,6 +178,30 @@ class CoreContext:
             command, timeout=timeout, cwd=cwd, env=env, name=name, check=check, stdin=stdin
         )
 
+    def run_json(
+        self,
+        command: Sequence[str | os.PathLike[str]],
+        *,
+        timeout: float | None = 60.0,
+        cwd: str | os.PathLike[str] | None = None,
+        env: Mapping[str, str] | None = None,
+        name: str = "",
+        stdin: str | None = None,
+    ) -> dict[str, Any]:
+        """Run a child process and return its stdout parsed as one JSON object.
+
+        Supervised like ``run_process``; a failure, a timeout, or output that is not a
+        JSON object raises ProcessError naming the argument list, exit code, and stderr.
+        """
+        supervisor = self.processes
+        if supervisor is None:
+            supervisor = self.processes = ProcessSupervisor(
+                logger=self.logger_for("process"), bus=self.bus
+            )
+        return supervisor.run_json(
+            command, timeout=timeout, cwd=cwd, env=env, name=name, stdin=stdin
+        )
+
     def acquire_lock(
         self,
         name: str,

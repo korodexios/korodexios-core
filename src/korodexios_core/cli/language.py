@@ -29,8 +29,10 @@ from ..kernel.i18n import (
 from ..kernel.i18n_extract import (
     compose_po,
     new_po,
+    parse_obsolete,
     render_pot,
     scan_tree,
+    tidy_po,
     todo_items,
 )
 from .render import dump_json, print_key_values, print_table, write_line
@@ -91,6 +93,14 @@ def locale_command() -> CliCommand:
                     CliArgument(("--check",), dest="check_only", action="store_true",
                                 help="Change nothing; exit 3 when the template is out of date."),
                 ),
+            ),
+            CliCommand(
+                name="tidy",
+                help="Remove obsolete translations (strings no longer in the template).",
+                handler=_tidy,
+                group="core",
+                remote=False,
+                args=(DOMAIN_ARG,),
             ),
             CliCommand(
                 name="add",
@@ -348,6 +358,10 @@ def _extract(request: CliRequest) -> int:
     template.write_text(wanted, encoding="utf-8")
     write_line(f"{TAG_OK} " + _t(request, "{count} strings written to {path}",
                                  count=len(messages), path=template))
+    translations = [loc for loc in service.locales(domain) if loc != DEFAULT_LOCALE]
+    if not translations:
+        write_line(f"{TAG_NOTE} " + _t(request, "no translation of {domain} found under {path}",
+                                       domain=domain, path=directory))
     for locale in service.locales(domain):
         catalog = service.catalog(domain, locale)
         if catalog is None or catalog.path is None:
@@ -364,6 +378,37 @@ def _extract(request: CliRequest) -> int:
             + _t(request, "{locale}: {added} new, {stale} obsolete", locale=locale,
                  added=added, stale=stale)
         )
+    return int(ExitCode.SUCCESS)
+
+
+def _tidy(request: CliRequest) -> int:
+    service = _service(request)
+    domain = str(request.option("domain", CORE_DOMAIN))
+    if domain not in service.domains():
+        known = ", ".join(sorted(service.domains()))
+        message = _t(request, "no message domain named {name}; known: {known}",
+                     name=repr(domain), known=known)
+        write_line(f"{TAG_ERROR} {message}")
+        return int(ExitCode.USAGE_ERROR)
+    total = 0
+    for locale in service.locales(domain):
+        catalog = service.catalog(domain, locale)
+        if catalog is None or catalog.path is None:
+            continue
+        template = service.domains()[domain] / f"{domain}.pot"
+        before = catalog.path.read_text(encoding="utf-8")
+        text = before
+        if template.is_file():
+            text, _, _ = compose_po(domain, locale, template.read_text(encoding="utf-8"),
+                                    before, {})
+        text, _ = tidy_po(text)
+        removed = max(0, len(parse_po(before)) - len(parse_po(text))) + len(parse_obsolete(before))
+        if text != before:
+            catalog.path.write_text(text, encoding="utf-8")
+        total += removed
+        write_line(f"{TAG_NOTE} " + _t(request, "{locale}: {count} obsolete removed",
+                                       locale=locale, count=removed))
+    write_line(f"{TAG_OK} " + _t(request, "{count} obsolete translation(s) removed", count=total))
     return int(ExitCode.SUCCESS)
 
 

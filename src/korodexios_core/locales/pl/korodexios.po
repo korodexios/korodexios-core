@@ -150,6 +150,10 @@ msgstr "Utwórz certyfikat z podpisem własnym dla 'kdx run --tls'."
 msgid "Create a user; prints the new token once."
 msgstr "Utwórz użytkownika; token zostanie wyświetlony tylko raz."
 
+#: cli/commands.py
+msgid "Create modules (kdx module new NAME writes the module trio and a test)."
+msgstr "Tworzy moduły (kdx module new NAME zapisuje trójkę plików modułu i test)."
+
 #: cli/tls.py
 msgid "Create the certificate for an https control plane."
 msgstr "Utwórz certyfikat dla płaszczyzny sterowania przez https."
@@ -578,6 +582,10 @@ msgstr "Na pewien czas odrzuca każde wywołanie limitera (po błędzie 429 lub 
 msgid "Register the daemon to start at logon, and start it now."
 msgstr "Zarejestruj demona do uruchamiania przy logowaniu i uruchom go teraz."
 
+#: cli/language.py
+msgid "Remove obsolete translations (strings no longer in the template)."
+msgstr "Usuwa przestarzałe tłumaczenia (ciągi, których nie ma już w szablonie)."
+
 #: cli/tls.py
 msgid "Replace an existing certificate."
 msgstr "Zastąp istniejący certyfikat."
@@ -621,6 +629,10 @@ msgstr "Środowisko uruchomieniowe"
 #: cli/service.py
 msgid "Say whether the service is registered and the daemon answers."
 msgstr "Powiedz, czy usługa jest zarejestrowana i czy demon odpowiada."
+
+#: cli/commands.py
+msgid "Scaffold a module in the project's modules directory, with a test."
+msgstr "Tworzy moduł w katalogu modułów projektu wraz z testem."
 
 #: cli/commands.py
 msgid "Scaffold a new module package (asks for a name when omitted)."
@@ -933,6 +945,14 @@ msgstr "sprawdź: kdx service status   usuń: kdx service uninstall"
 #: cli/language.py
 msgid "chosen by"
 msgstr "wybrane przez"
+
+#: cli/commands.py
+msgid "claimed by"
+msgstr "zgłasza"
+
+#: cli/commands.py
+msgid "cli-collision: module commands shadowed by another owner:"
+msgstr "cli-collision: polecenia modułu zasłonił inny właściciel:"
 
 #: cli/commands.py
 msgid "command"
@@ -1419,6 +1439,10 @@ msgid "no transactions recorded"
 msgstr "brak zapisanych transakcji"
 
 #: cli/language.py
+msgid "no translation of {domain} found under {path}"
+msgstr "nie znaleziono tłumaczenia domeny {domain} w {path}"
+
+#: cli/language.py
 msgid "no translations to check; only the source language exists"
 msgstr "brak tłumaczeń do sprawdzenia; istnieje tylko język źródłowy"
 
@@ -1477,6 +1501,10 @@ msgstr "pochodzenie"
 #: cli/users.py
 msgid "outcome"
 msgstr "wynik"
+
+#: cli/commands.py
+msgid "owner"
+msgstr "właściciel"
 
 #: cli/commands.py
 msgid "package"
@@ -1951,6 +1979,10 @@ msgid "{count} item(s), {size} bytes; run kdx reset --apply to delete them"
 msgstr "{count} element(ów), {size} bajtów; usuń je poleceniem kdx reset --apply"
 
 #: cli/language.py
+msgid "{count} obsolete translation(s) removed"
+msgstr "Usunięto przestarzałe tłumaczenia: {count}"
+
+#: cli/language.py
 msgid "{count} string(s) left for {locale}"
 msgstr "{count} tekst(ów) pozostało dla {locale}"
 
@@ -1993,6 +2025,10 @@ msgstr "{job_id} uruchomiono; Ctrl+C przerywa obserwowanie, nie zadanie"
 #: cli/language.py
 msgid "{locale}: {added} new, {stale} obsolete"
 msgstr "{locale}: {added} nowych, {stale} nieaktualnych"
+
+#: cli/language.py
+msgid "{locale}: {count} obsolete removed"
+msgstr "{locale}: usunięto przestarzałych: {count}"
 
 #: cli/limiter.py
 msgid "{name} cooldown ended"

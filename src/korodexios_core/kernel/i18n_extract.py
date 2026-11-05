@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
-from .i18n import parse_po, placeholders
+from .i18n import PoEntry, parse_po, placeholders
 
 FIXED_WORDS: Final[tuple[str, ...]] = ("yes", "no", "(empty)")
 """Words the renderer prints by itself for booleans and empty collections."""
@@ -213,12 +213,19 @@ def compose_po(
 ) -> tuple[str, dict[str, str], dict[str, str]]:
     """Return (new text, applied, rejected-with-reason) after merging *updates*.
 
-    The file is rebuilt in template order, so it never keeps an obsolete entry or a
-    stale location. An update is rejected when its string is not in the template, is
-    empty, or names different ``{fields}`` than its source.
+    The file is rebuilt in template order with ``msgmerge`` semantics: a string that is
+    still in the template keeps its translation and fuzzy flag; a translated string that
+    left the template is kept as an obsolete ``#~`` entry (``kdx locale tidy`` prunes
+    them, and the string coming back revives its translation); readers and
+    ``kdx locale check`` ignore obsolete entries. An update is rejected when its string
+    is not in the template, is empty, or names different ``{fields}`` than its source.
     """
     wanted = {entry.msgid: entry for entry in parse_po(template)}
     have = {entry.msgid: entry for entry in parse_po(translation)}
+    old = parse_obsolete(translation)
+    for gone, earlier in old.items():
+        if gone in wanted and gone not in have:
+            have[gone] = PoEntry(gone, earlier, True)  # revived: confirm it, keep it fuzzy
     applied: dict[str, str] = {}
     rejected: dict[str, str] = {}
     for msgid, msgstr in updates.items():
@@ -249,4 +256,23 @@ def compose_po(
             f"#: {entry.where}", *flag,
             f"msgid {_quote(msgid)}", f"msgstr {_quote(text)}", "",
         ]
+    kept = {**old, **{k: e.msgstr for k, e in have.items() if k not in wanted and e.msgstr}}
+    for msgid in sorted(kept):
+        if msgid not in wanted and kept[msgid]:
+            lines += [f"#~ msgid {_quote(msgid)}", f"#~ msgstr {_quote(kept[msgid])}", ""]
     return "\n".join(lines), applied, rejected
+
+
+def parse_obsolete(text: str) -> dict[str, str]:
+    """Return {msgid: msgstr} for the obsolete (``#~``) entries of gettext *text*."""
+    body = "\n".join(
+        line[2:].lstrip() for line in text.splitlines() if line.startswith("#~")
+    )
+    return {entry.msgid: entry.msgstr for entry in parse_po(body) if entry.msgstr}
+
+
+def tidy_po(text: str) -> tuple[str, int]:
+    """Return *text* without its obsolete entries, and how many were removed."""
+    removed = len(parse_obsolete(text))
+    kept = [line for line in text.splitlines() if not line.startswith("#~")]
+    return "\n".join(kept).rstrip("\n") + "\n", removed

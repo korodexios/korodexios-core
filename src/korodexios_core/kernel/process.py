@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import collections
 import contextlib
+import json
 import os
 import signal
 import subprocess
@@ -112,8 +113,12 @@ class ProcessSupervisor:
         name: str = "",
         check: bool = False,
         stdin: str | None = None,
+        tail_lines: int | None = TAIL_LINES,
     ) -> ProcessResult:
         """Run *command* (an argument list, never a shell string) and wait for it.
+
+        *tail_lines* is how many trailing lines of each stream the result keeps
+        (``None`` keeps everything, for output that must be parsed whole).
 
         *env* adds to the inherited environment. A *timeout* (seconds) or a chassis stop
         kills the child's whole process group. With ``check=True`` anything but a clean
@@ -152,8 +157,8 @@ class ProcessSupervisor:
         if self._logger is not None:
             self._logger.info(f"process {label!r} started", pid=process.pid, command=list(argv))
         tails: dict[str, collections.deque[str]] = {
-            "stdout": collections.deque(maxlen=TAIL_LINES),
-            "stderr": collections.deque(maxlen=TAIL_LINES),
+            "stdout": collections.deque(maxlen=tail_lines),
+            "stderr": collections.deque(maxlen=tail_lines),
         }
         readers = [
             threading.Thread(
@@ -209,6 +214,51 @@ class ProcessSupervisor:
             last_line = result.stderr.splitlines()[-1] if result.stderr else None
             raise ProcessError(f"process {label!r} {reason}", result=result, hint=last_line)
         return result
+
+    def run_json(
+        self,
+        command: Sequence[str | os.PathLike[str]],
+        *,
+        timeout: float | None = 60.0,
+        cwd: str | os.PathLike[str] | None = None,
+        env: Mapping[str, str] | None = None,
+        name: str = "",
+        stdin: str | None = None,
+    ) -> dict[str, Any]:
+        """Run *command*, parse its standard output as one JSON object, and return it.
+
+        Anything else raises ProcessError with the argument list, the exit code (or
+        timeout), and the last stderr line in the message, and the full result attached
+        as ``error.result`` - so a project never invents its own timeout and error text.
+        """
+        result = self.run(command, timeout=timeout, cwd=cwd, env=env, name=name,
+                          stdin=stdin, tail_lines=None)
+        argv = " ".join(result.command)
+        last = result.stderr.strip().splitlines()[-1] if result.stderr.strip() else None
+        if not result.ok:
+            reason = (
+                f"timed out after {timeout}s" if result.timed_out
+                else "was cancelled" if result.cancelled
+                else f"exited {result.returncode}"
+            )
+            raise ProcessError(
+                f"process {result.name!r} {reason}: {argv}"
+                + (f" (stderr: {last})" if last else ""),
+                result=result, hint=last,
+            )
+        try:
+            payload = json.loads(result.stdout)
+        except ValueError as exc:
+            raise ProcessError(
+                f"process {result.name!r} printed no valid JSON: {argv} ({exc})",
+                result=result, hint="the command must print one JSON object on stdout",
+            ) from exc
+        if not isinstance(payload, dict):
+            raise ProcessError(
+                f"process {result.name!r} printed JSON that is not an object: {argv}",
+                result=result,
+            )
+        return payload
 
     def active(self) -> list[dict[str, Any]]:
         """Return the processes running right now."""

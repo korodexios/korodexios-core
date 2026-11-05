@@ -369,6 +369,48 @@ def core_commands(chassis: Chassis) -> list[CliCommand]:
             ),
         ),
         CliCommand(
+            name="module",
+            help="Create modules (kdx module new NAME writes the module trio and a test).",
+            group="core",
+            subcommands=(
+                CliCommand(
+                    name="new",
+                    help="Scaffold a module in the project's modules directory, with a test.",
+                    args=(
+                        CliArgument(
+                            ("name",), nargs="?", help="Module name, for example backup_engine."
+                        ),
+                        CliArgument(
+                            ("--description", "--title"),
+                            dest="title",
+                            metavar="TEXT",
+                            help="One-line module description.",
+                        ),
+                        CliArgument(
+                            ("--path",),
+                            dest="path",
+                            metavar="DIR",
+                            help="Directory to create the module in.",
+                        ),
+                        CliArgument(
+                            ("--force",),
+                            dest="force",
+                            action="store_true",
+                            help="Replace an existing module directory.",
+                        ),
+                        CliArgument(
+                            ("--json",),
+                            dest="as_json",
+                            action="store_true",
+                            help="Emit the created files as JSON.",
+                        ),
+                    ),
+                    handler=_modules_create_command,
+                    module_name="core",
+                ),
+            ),
+        ),
+        CliCommand(
             name="config",
             help="Show, prove, and validate the resolved configuration.",
             group="core",
@@ -690,12 +732,20 @@ def _doctor_command(request: CliRequest) -> int:
             ],
             headers=("name", "version", "state", "origin", "commands", "depends"),
         )
+    collisions = list(dict(report.get("cli") or {}).get("collisions") or [])
+    if collisions:
+        write_line()
+        write_status("cli-collision: module commands shadowed by another owner:", tag=TAG_ERROR)
+        print_table(
+            [[row["name"], row["owner"], row["module"]] for row in collisions],
+            headers=("command", "owner", "claimed by"),
+        )
     if report["discovery"]["failures"]:
         write_line()
         write_status("module discovery problems:", tag=TAG_NOTE)
         for failure in report["discovery"]["failures"]:
             write_line(f"  {TAG_ERROR} {failure['name']} [{failure['stage']}] {failure['message']}")
-    if modules["failed"] or diagnostics.get("errors"):
+    if modules["failed"] or diagnostics.get("errors") or collisions:
         return int(ExitCode.ERROR)
     return int(ExitCode.SUCCESS)
 
@@ -1062,6 +1112,14 @@ def _status_command(request: CliRequest) -> int:
     return int(ExitCode.SUCCESS)
 
 
+def _default_module_root(chassis: Chassis) -> Path:
+    """Return where a new module goes: the project's own ``src/<pkg>/modules``, else the chassis."""
+    src = Path(chassis.paths.root) / "src"
+    found = sorted(src.glob("*/modules")) if src.is_dir() else []
+    found = [item for item in found if item.is_dir() and item.parent.name != "korodexios_core"]
+    return found[0] if len(found) == 1 else Path(chassis.paths.builtin_modules_dir)
+
+
 def _modules_create_command(request: CliRequest) -> int:
     """Scaffold a new module package and report what landed on disk."""
     from .scaffold import ScaffoldError, scaffold_module, validate_module_name
@@ -1080,7 +1138,7 @@ def _modules_create_command(request: CliRequest) -> int:
             write_line(f"{TAG_NOTE} {exc.hint}")
         return int(ExitCode.ERROR)
     raw_path = str(request.option("path") or "").strip()
-    parent = Path(raw_path).expanduser() if raw_path else Path(chassis.paths.builtin_modules_dir)
+    parent = Path(raw_path).expanduser() if raw_path else _default_module_root(chassis)
     if not parent.is_absolute():
         parent = Path.cwd() / parent
     title = str(request.option("title") or "").strip()

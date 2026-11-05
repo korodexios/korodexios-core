@@ -548,6 +548,29 @@ class LayeredConfig:
         """Return *key* coerced to Path."""
         return cast(Path, self._typed(key, default, coerce_path, "a filesystem path"))
 
+    def get_bool_opt(self, key: str) -> bool | None:
+        """Return *key* as bool, or None when no layer sets it (tri-state: unset/true/false)."""
+        return cast("bool | None", self._optional(key, coerce_bool))
+
+    def get_int_opt(self, key: str) -> int | None:
+        """Return *key* as int, or None when no layer sets it."""
+        return cast("int | None", self._optional(key, coerce_int))
+
+    def get_float_opt(self, key: str) -> float | None:
+        """Return *key* as float, or None when no layer sets it."""
+        return cast("float | None", self._optional(key, coerce_float))
+
+    def get_str_opt(self, key: str) -> str | None:
+        """Return *key* as str, or None when no layer sets it."""
+        return cast("str | None", self._optional(key, coerce_str))
+
+    def _optional(self, key: str, coercer: Callable[..., Any]) -> Any:
+        """Coerce the winning value; None when unset everywhere or only a sentinel is set."""
+        found, entry = self._lookup(key)
+        if not found or entry is None or entry.value is None:
+            return None
+        return coercer(entry.value, key=key, source=entry.source.label())
+
     def get_list(self, key: str, default: Any = None) -> list[Any]:
         """Return *key* coerced to a list."""
         return cast(list[Any], self._typed(key, default, coerce_list, "a list"))
@@ -815,6 +838,30 @@ class ScopedConfig:
     def get_list(self, key: str, default: Any = None) -> list[Any]:
         """Return *key* coerced to a list."""
         return cast(list[Any], self._typed(key, default, coerce_list))
+
+    def get_bool_opt(self, key: str) -> bool | None:
+        """Return *key* as bool, or None when no layer sets it."""
+        return cast("bool | None", self._optional(key, coerce_bool))
+
+    def get_int_opt(self, key: str) -> int | None:
+        """Return *key* as int, or None when no layer sets it."""
+        return cast("int | None", self._optional(key, coerce_int))
+
+    def get_float_opt(self, key: str) -> float | None:
+        """Return *key* as float, or None when no layer sets it."""
+        return cast("float | None", self._optional(key, coerce_float))
+
+    def get_str_opt(self, key: str) -> str | None:
+        """Return *key* as str, or None when no layer sets it."""
+        return cast("str | None", self._optional(key, coerce_str))
+
+    def _optional(self, key: str, coercer: Callable[..., Any]) -> Any:
+        scoped, bare = self._candidates(key)
+        for candidate in (scoped, bare):
+            found, entry = self._parent._lookup(candidate)
+            if found and entry is not None and entry.value is not None:
+                return coercer(entry.value, key=entry.key, source=entry.source.label())
+        return None
 
     def _typed(self, key: str, default: Any, coercer: Callable[..., Any]) -> Any:
         scoped, bare = self._candidates(key)
