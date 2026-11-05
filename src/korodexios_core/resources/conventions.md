@@ -314,3 +314,38 @@ Bugs found in the core are not fixed from the project: see section 11 (`kdx prop
 
 Review `docs/BACKLOG.md` between tasks, with the owner, and turn the important items into
 their own small tasks.
+
+## 16. Building a larger GUI (recommendation)
+
+Section 14 says a GUI is only another door. This section says how to build one when it
+grows past the small built-in console (`kdx ui`) into a real application.
+
+- **Extend before you add.** The core ships a web console (`modules/web_console`: plain
+  HTML, CSS and JavaScript, no build step). Read it first. If the need is a few more
+  panels, extend it rather than starting a second, parallel front end.
+- **Python stays the runtime.** The engine must never need bun or node to run. The GUI is
+  built into static files and the core serves them (`ipc_static_dirs` / `IpcStaticMount`).
+  The JavaScript toolchain exists only on the machine of whoever develops the GUI.
+- **Recommended toolchain for a complex GUI** (the front-end counterpart of uv and ruff):
+  `bun` for packages, scripts and runtime; Vite + TypeScript for dev server and build; Biome
+  for lint and formatting. The framework (React, Svelte, other) is a per-project choice
+  made when the GUI starts, not a rule of the core.
+- **Same bar as Python.** Strict TypeScript, Biome clean, a build that succeeds, and tests
+  for any non-trivial front-end logic. A GUI change is not done until those pass, in
+  addition to `make check`.
+- **Types come from the contract.** Generate or hand-write client types from
+  `GET /api/v1/schema`; never guess a payload shape. When a route changes, the GUI build
+  should fail, not the user's screen.
+- **No logic in the screen.** Validation, permissions, long jobs and state live in the
+  module. The GUI renders, sends a command, and listens to events (section 14). If a
+  button needs a rule, the rule goes into the module so CLI and API get it too.
+- **Safe rendering.** Values from the daemon are text, never HTML (no `innerHTML`, no
+  `dangerouslySetInnerHTML`). Keep the token out of URLs and logs, and respect the roles
+  the API reports.
+- **Text goes through i18n.** User-visible strings use a catalogue (domain
+  `korodexios-web`, see `kdx locale`), not literals scattered in components.
+- **Built output is not hand-edited.** Commit the sources and lockfile (`bun.lock`);
+  decide per project whether the build output is committed or produced by a build step,
+  and never edit it by hand.
+- **Terminal parity check.** Before calling a GUI feature done, run the same action from
+  `kdx ... --json` and confirm the result matches what the screen shows.

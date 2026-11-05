@@ -12,7 +12,7 @@ clients that talk to the same core and never reimplement it.
 - **Bootstrap:** uv (Astral) owns the environment - `uv venv`, `uv sync --extra dev`,
   `uv run kdx ...`, `uv tool install korodexios-core`, `uv lock` for a consumer's own pins
 - **Dependencies:** `pyyaml` (config files), `rich` (the wizard layer)
-- **Release:** `v0.5.3`, core API frozen at `v2`
+- **Release:** `v0.5.4`, core API frozen at `v2`
 
 **Install in one go:** `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) - a guided,
 coloured installer in English or Slovak (`--dry-run` shows the steps without running them).
@@ -75,7 +75,7 @@ Pin the chassis the way a consumer project does, entirely with uv:
 
 ```bash
 uv tool install korodexios-core   # a global kdx on PATH, no project involved
-uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.3"
+uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.4"
 uv lock                          # and 'uv add' for this project's own pinned dependencies
 ```
 

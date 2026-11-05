@@ -13,7 +13,7 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 | Distribution | `korodexios-core` |
 | Import root | `korodexios_core` |
 | Console scripts | `kdx` (primary short alias), `korodexios` (canonical) |
-| Version | `0.5.3` (production), core API frozen at `v2` (additive changes only inside v2) |
+| Version | `0.5.4` (production), core API frozen at `v2` (additive changes only inside v2) |
 | Runtime | CPython 3.11+, stdlib first (PyYAML for config, rich for the CLI surface) |
 | Config file | `kdx.yml` / `kdx.yaml` / `kdx.json` (then `korodexios.*`) |
 | Env prefix | `KDX_` primary; `KORODEXIOS_` is the canonical long prefix |
@@ -67,7 +67,7 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
     skipped tests, no blanket `noqa`/`type: ignore`); a bug fix starts with a failing
     regression test; old code is pinned by a test before it changes. One core, many doors:
     logic lives in a module and the CLI, GUI and `/api/v1` all reach it (see
-    `kdx conventions`, sections 13 and 14).
+    `kdx conventions`, sections 13, 14 and 16 for a larger GUI).
 12. **Park bugs, keep the goal.** A bug that does not block the task goes into
     `docs/BACKLOG.md`, not into the current change. A blocking bug gets its own small fix
     (failing test first, at most three attempts, then ask). Progress lives in

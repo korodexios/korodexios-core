@@ -5,8 +5,12 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.5.4] - 2026-11-05
+
 ### Changed
 
+- Conventions section 16: recommendation for building a larger GUI (extend the web console first,
+  Python stays the runtime, bun + Vite + TypeScript + Biome, types from `/api/v1/schema`).
 - Conventions, playbook and agent guide (`llms.txt`): uv and ruff are the standard tools; new
   rules for not breaking working code (safety nets and a tool list), for one core driven from
   CLI, GUI and API, and for parking bugs (`docs/BACKLOG.md`, `docs/STATUS.md`) so an agent keeps
