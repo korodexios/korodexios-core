@@ -903,8 +903,8 @@ msgid "broken"
 msgstr "pokazené"
 
 #: cli/users.py
-msgid "browser:  open http://HOST:8123/ui/ and paste the token"
-msgstr "prehliadač: otvor http://HOST:8123/ui/ a vlož token"
+msgid "browser:  open http://HOST:18123/ui/ and paste the token"
+msgstr "prehliadač: otvor http://HOST:18123/ui/ a vlož token"
 
 #: cli/language.py
 msgid "built-in default"
@@ -1471,8 +1471,8 @@ msgid "obsolete"
 msgstr "zastarané"
 
 #: cli/tls.py
-msgid "on another machine, trust it with: kdx --tls-ca cert.pem status --target https://HOST:8123"
-msgstr "na inom počítači mu dôveruj cez: kdx --tls-ca cert.pem status --target https://HOST:8123"
+msgid "on another machine, trust it with: kdx --tls-ca cert.pem status --target https://HOST:18123"
+msgstr "na inom počítači mu dôveruj cez: kdx --tls-ca cert.pem status --target https://HOST:18123"
 
 #: modules/web_console/module.py
 msgid "open this URL; it carries the session token:"
@@ -1795,8 +1795,8 @@ msgid "task {id} queued again"
 msgstr "úloha {id} znova zaradená do frontu"
 
 #: cli/users.py
-msgid "terminal: kdx status --target http://HOST:8123 --token TOKEN"
-msgstr "terminál: kdx status --target http://HOST:8123 --token TOKEN"
+msgid "terminal: kdx status --target http://HOST:18123 --token TOKEN"
+msgstr "terminál: kdx status --target http://HOST:18123 --token TOKEN"
 
 #: cli/commands.py
 msgid "the chassis reads these files and never rewrites one"

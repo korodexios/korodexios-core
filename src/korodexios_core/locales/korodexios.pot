@@ -901,7 +901,7 @@ msgid "broken"
 msgstr ""
 
 #: cli/users.py
-msgid "browser:  open http://HOST:8123/ui/ and paste the token"
+msgid "browser:  open http://HOST:18123/ui/ and paste the token"
 msgstr ""
 
 #: cli/language.py
@@ -1469,7 +1469,7 @@ msgid "obsolete"
 msgstr ""
 
 #: cli/tls.py
-msgid "on another machine, trust it with: kdx --tls-ca cert.pem status --target https://HOST:8123"
+msgid "on another machine, trust it with: kdx --tls-ca cert.pem status --target https://HOST:18123"
 msgstr ""
 
 #: modules/web_console/module.py
@@ -1793,7 +1793,7 @@ msgid "task {id} queued again"
 msgstr ""
 
 #: cli/users.py
-msgid "terminal: kdx status --target http://HOST:8123 --token TOKEN"
+msgid "terminal: kdx status --target http://HOST:18123 --token TOKEN"
 msgstr ""
 
 #: cli/commands.py

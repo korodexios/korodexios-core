@@ -20,8 +20,8 @@ docs. `kdx --help` lists every command, including the ones modules contributed.
 | uv, in the chassis repository | `uv venv --python 3.13 && uv sync --extra dev && uv run kdx doctor` | uv (Astral) owns the environment; `make` resolves to `uv run` when uv is on `PATH` |
 | guided installer | `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) | four coloured steps - check, install, verify, first project; asks before installing uv; `--lang sk`, `--yes`, `--dry-run` (`-Language`, `-Yes`, `-DryRun` on Windows) |
 | uv tool | `uv tool install korodexios-core` | a global `kdx` on PATH, no project involved |
-| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.5"` | the documented pin before an index publish; needs network |
-| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.5.5"` | what `kdx init --chassis-source git` writes into the seed |
+| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.6"` | the documented pin before an index publish; needs network |
+| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.5.6"` | what `kdx init --chassis-source git` writes into the seed |
 | pipx, or venv + pip | `pipx install korodexios-core`; `python3 -m venv .venv && pip install -e ".[dev]"` | the fallback when uv is absent - and it fails as written on a PEP 668 `EXTERNALLY-MANAGED` interpreter with no `pip` and no `ensurepip` |
 | from an index | `uv pip install korodexios-core`, or `pip install korodexios-core` | once published; a consumer pins it with `uv lock` |
 
@@ -47,7 +47,7 @@ manifests it needs. The sdist carries `docs/`, `README.md`, `AGENTS.md`, `llms.t
 | `--no-log-file` | skip the rotating log file | file enabled |
 | `--modules-dir PATH` | extra plugin directory (repeatable) | - |
 | `--ipc-host HOST` | control-plane bind address (`0.0.0.0` for LAN) | `127.0.0.1` |
-| `--ipc-port PORT` | control-plane port (`0` = ephemeral) | `8123` |
+| `--ipc-port PORT` | control-plane port (`0` = ephemeral) | `18123` |
 | `--auth` / `--no-auth` | require or allow anonymous control-plane reads | auth on |
 | `--ipc-token TOKEN` | static shared secret for the control plane | empty (ephemeral) |
 | `--ipc-timeout SECONDS` | client timeout for control-plane reads | `2.0` |
@@ -84,7 +84,7 @@ Two bootstrap keys stay config/env-only: `core.distribution` (packaging metadata
 kdx run                       # boot and run until interrupted or stopped remotely
 kdx run --once                # publish one tick and stop: the CI-safe smoke test
 kdx run --duration 60         # stop automatically after 60 seconds
-kdx run --host 0.0.0.0 --port 8123    # LAN-reachable control plane
+kdx run --host 0.0.0.0 --port 18123    # LAN-reachable control plane
 ```
 
 Exit codes: `0` clean or operator stop, `130` SIGINT, `143` SIGTERM.
@@ -94,8 +94,8 @@ Exit codes: `0` clean or operator stop, `130` SIGINT, `143` SIGTERM.
 ```bash
 kdx status                    # read the local discovery file, print the live report
 kdx status --json             # machine-readable report
-kdx status --target http://10.50.50.198:8123 --token SECRET   # remote daemon
-kdx status --host 127.0.0.1 --port 8123                        # explicit local endpoint
+kdx status --target http://10.50.50.198:18123 --token SECRET   # remote daemon
+kdx status --host 127.0.0.1 --port 18123                        # explicit local endpoint
 ```
 
 Reports endpoint, auth policy, shutdown policy, the source of the endpoint, chassis
@@ -346,7 +346,7 @@ The seed ships `kdx.yml`, `.env.example`, `Makefile`, `README.md`, `AGENTS.md`,
 smoke tests. It passes `make check` on arrival.
 
 The chassis dependency is pinned to the repository by default
-(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.5`), so a fresh
+(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.6`), so a fresh
 venv can `pip install -e .` the seeded project before any index publish. Pass
 `--chassis-source index` once the package is on an index; an unknown choice is refused
 with a hint. A git pin needs network and uv at install time - `uv venv`,
@@ -431,10 +431,10 @@ report inside the daemon; the control plane also carries it at `GET /api/v1/back
 ## LAN and auth options
 
 ```bash
-kdx run --host 0.0.0.0 --port 8123        # bind the control plane to all interfaces
+kdx run --host 0.0.0.0 --port 18123        # bind the control plane to all interfaces
 kdx run --no-auth                         # anonymous /health and /api/v1/status
 kdx run --ipc-token my-static-lan-key     # stable secret across restarts
-kdx status --target http://HOST:8123 --token my-static-lan-key
+kdx status --target http://HOST:18123 --token my-static-lan-key
 ```
 
 | Setting | Config key | Env | CLI |
@@ -457,7 +457,7 @@ closes DNS rebinding. Loopback names are always accepted.
 ```bash
 kdx tls init --host nas.lan          # self-signed cert in var/tls/ (needs openssl)
 kdx run --tls --host 0.0.0.0         # serve https on the LAN
-kdx --tls-ca cert.pem status --target https://nas.lan:8123 --token SECRET   # from elsewhere
+kdx --tls-ca cert.pem status --target https://nas.lan:18123 --token SECRET   # from elsewhere
 ```
 
 Local clients (`kdx status`, `kdx --remote`, `kdx ui`) need nothing extra: the discovery
@@ -469,7 +469,7 @@ for LAN access.
 the token, and shutdown needs it unless `core.ipc.allow_anonymous_shutdown` is set. The
 control plane speaks plain HTTP: on a LAN the token travels in clear, so reach a remote
 daemon over a VPN (WireGuard, Tailscale), an SSH tunnel
-(`ssh -L 8123:127.0.0.1:8123 host`), or a TLS reverse proxy rather than an open network.
+(`ssh -L 18123:127.0.0.1:18123 host`), or a TLS reverse proxy rather than an open network.
 
 ## Start at logon (`kdx service`)
 
@@ -573,7 +573,7 @@ kdx audit --user jana --action rpc --json
 Users live in `data/users.json` (only SHA-256 hashes of tokens, owner-only file), and a
 running daemon sees a change on its next request. The shared `core.ipc.token` keeps working
 as the built-in admin `owner`, so a one-person setup needs nothing new. A teammate uses
-their token exactly like the shared one: `kdx status --target http://HOST:8123 --token T`,
+their token exactly like the shared one: `kdx status --target http://HOST:18123 --token T`,
 `kdx --remote ...`, or the web console's token field. `GET /api/v1/whoami` answers who a
 token belongs to.
 
@@ -590,7 +590,7 @@ kdx ui --no-browser    # print the URL instead (headless host, SSH session)
 ```
 
 The built-in `web_console` module serves a browser GUI from the daemon itself at
-`http://127.0.0.1:8123/ui/`: an overview (modules, scheduler, memory, control plane), every
+`http://127.0.0.1:18123/ui/`: an overview (modules, scheduler, memory, control plane), every
 module command as a form generated from its declared `CliArgument`s, the log tail with
 follow mode, the resolved configuration with provenance (secrets masked), diagnostics, and
 **Reload config** / **Stop daemon** buttons. When no daemon is running, `kdx ui` boots one

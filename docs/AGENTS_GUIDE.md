@@ -13,7 +13,7 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 | Distribution | `korodexios-core` |
 | Import root | `korodexios_core` |
 | Console scripts | `kdx` (primary short alias), `korodexios` (canonical) |
-| Version | `0.5.5` (production), core API frozen at `v2` (additive changes only inside v2) |
+| Version | `0.5.6` (production), core API frozen at `v2` (additive changes only inside v2) |
 | Runtime | CPython 3.11+, stdlib first (PyYAML for config, rich for the CLI surface) |
 | Config file | `kdx.yml` / `kdx.yaml` / `kdx.json` (then `korodexios.*`) |
 | Env prefix | `KDX_` primary; `KORODEXIOS_` is the canonical long prefix |
@@ -726,6 +726,9 @@ uv run kdx run --once   # boot, one lifecycle tick, clean stop; must exit 0
 uv run kdx status       # live report from a running daemon over the control plane
 ```
 
+- After bumping the core pin or any dependency, run `uv sync --extra dev` again. A bare
+  `uv sync`, `uv lock` or `uv add` drops the dev extra, so ruff, mypy and pytest vanish and the
+  gate fails with `No module named ruff`.
 - `make check` proves style, types, and behaviour in one shot; the bar is 100% green.
 - `kdx run --once` proves the chassis boots from real config and shuts down cleanly.
 - `kdx status` proves the control plane answers and the registry reports live state.

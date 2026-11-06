@@ -5,6 +5,16 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.5.6] - 2026-11-06
+
+### Changed
+
+- Default control-plane port is now `18123` (was `8123`, which Home Assistant uses). A project that
+  sets `core.ipc.port` or `--port` is unaffected; one that relied on the default must pin `8123`.
+- The `cli-collision` hint points at the core guide (`AGENTS_GUIDE.md` section 7 / `llms.txt`).
+- Guide: rerun `uv sync --extra dev` after bumping a dependency, or the dev tools disappear.
+- Internal Slovak notes moved to the git-ignored `docs-dev/`; public docs are English only.
+- README: removed the TUI plan, the duplicated fence and the stale module list.
 ## [0.5.5] - 2026-11-05
 
 ### Added

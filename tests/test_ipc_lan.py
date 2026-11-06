@@ -129,18 +129,18 @@ def test_static_token_is_announced_in_the_discovery_file(tmp_path: Path) -> None
 
 
 def test_remote_discovery_parses_every_target_shape() -> None:
-    full = IpcDiscovery.remote("http://192.168.1.50:8123")
-    assert (full.host, full.port, full.scheme) == ("192.168.1.50", 8123, "http")
-    assert full.base_url() == "http://192.168.1.50:8123"
+    full = IpcDiscovery.remote("http://192.168.1.50:18123")
+    assert (full.host, full.port, full.scheme) == ("192.168.1.50", 18123, "http")
+    assert full.base_url() == "http://192.168.1.50:18123"
     bare = IpcDiscovery.remote("192.168.1.50", default_port=9123)
     assert (bare.host, bare.port) == ("192.168.1.50", 9123)
-    with_port = IpcDiscovery.remote("10.8.0.9:8123")
-    assert (with_port.host, with_port.port) == ("10.8.0.9", 8123)
+    with_port = IpcDiscovery.remote("10.8.0.9:18123")
+    assert (with_port.host, with_port.port) == ("10.8.0.9", 18123)
     assert bare.is_process_alive() is False  # a remote target has no local pid
     with pytest.raises(IpcError, match="no endpoint given"):
         IpcDiscovery.remote("   ")
     with pytest.raises(IpcError, match="cannot read a host"):
-        IpcDiscovery.remote("http://:8123")
+        IpcDiscovery.remote("http://:18123")
 
 
 def test_client_sends_no_token_header_when_the_token_is_empty(tmp_path: Path) -> None:
@@ -245,7 +245,7 @@ def test_status_command_explains_a_missing_remote_token(capsys, project_root) ->
 
 
 def test_status_command_rejects_a_malformed_target(capsys, project_root) -> None:
-    args = [*base_args(project_root), "status", "--target", "http://:8123"]
+    args = [*base_args(project_root), "status", "--target", "http://:18123"]
     assert main(args) == int(ExitCode.ERROR)
     captured = capsys.readouterr()
     assert "cannot read a host" in captured.out

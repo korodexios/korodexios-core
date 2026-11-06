@@ -161,6 +161,6 @@ def _init_command(request: CliRequest) -> int:
     write_line(f"{TAG_OK} certificate ready; start the daemon with 'kdx run --tls'")
     write_line(
         f"{TAG_NOTE} on another machine, trust it with: kdx --tls-ca cert.pem status "
-        "--target https://HOST:8123"
+        "--target https://HOST:18123"
     )
     return int(ExitCode.SUCCESS)

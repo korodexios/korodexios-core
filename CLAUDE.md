@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.5.5.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.5.6.
 
 ## Working preferences
 
@@ -20,7 +20,7 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 - **No TUI.** A Textual/TUI front end is explicitly not wanted.
 - **Language (this project only).** The owner writes in Slovak; reply in Slovak. The
   chassis itself is English-only (diagnostics, machine payloads, CLI text, docs), except
-  `docs/REVIEW-2026-*.sk.md`. Do not copy this to other projects.
+  the internal Slovak notes in `docs-dev/` (git-ignored, never published). Do not copy this to other projects.
 - **i18n (phase 36, merged into `main`).** The core has a
   language service: `kernel/i18n.py` (stdlib only, reads `.po` directly, no compile step),
   config key `core.locale` (`--locale`, `KDX_CORE__LOCALE`, `kdx.local.yml`), catalogues in
@@ -58,9 +58,9 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
   (`context.job_queue`, module `job_queue`, `kdx queue`, `/api/v1/queue`), and the `kdx init`
   pyproject fix (`allow-direct-references`). The owner asked for commit, tag and push of it.
 - Still open from the owner's request list: publishing to PyPI (owner's account, not done).
-- v0.4.2 held the fixes of `docs/REVIEW-2026-11.sk.md` and the public caller API
+- v0.4.2 held the fixes of `docs-dev/REVIEW-2026-11.sk.md` and the public caller API
   (`Caller`, `current_caller`, `IpcRequest.caller`, `CliRequest.caller`, jobs keep the caller).
-- Review documents: `docs/REVIEW-2026-10.sk.md`, `docs/REVIEW-2026-11.sk.md` (both
+- Review documents: `docs-dev/REVIEW-2026-10.sk.md`, `docs-dev/REVIEW-2026-11.sk.md` (both
   Slovak, the only exceptions to the English-only rule). Other docs: `docs/ARCHITECTURE.md`,
   `CLI_REFERENCE.md`, `ROADMAP.md`, `TUTORIAL.md`, `AGENTS_GUIDE.md`.
 

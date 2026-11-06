@@ -25,7 +25,7 @@ core:
   ipc:
     enabled: true              # 'kdx run' opens a control plane
     host: 127.0.0.1            # 0.0.0.0 or an interface IP exposes it to the LAN
-    port: 8123                 # 0 takes an ephemeral port; a busy port falls back
+    port: 18123                 # 0 takes an ephemeral port; a busy port falls back
     timeout: 2.0               # client timeout used by 'kdx status'
     token: ""                  # static shared secret; empty means a fresh one per boot
     auth: true                 # false lets anyone on the network read /api/v1/status

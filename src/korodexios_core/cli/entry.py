@@ -148,7 +148,7 @@ def _add_global_flags(parser: argparse.ArgumentParser) -> None:
         metavar="PORT",
         type=int,
         default=argparse.SUPPRESS,
-        help="Control-plane port (0 for ephemeral) [8123].",
+        help="Control-plane port (0 for ephemeral) [18123].",
     )
     group.add_argument(
         "--auth",
@@ -670,8 +670,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                     f"already owned by {row['owner']}"
                     for row in collisions
                 ),
-                hint="Rename the module command (see docs/AGENTS_GUIDE.md, reserved verbs); "
-                "'kdx doctor' lists every collision.",
+                hint="Rename the module command. The reserved verbs are listed in the "
+                "korodexios-core "
+                "guide (its docs/AGENTS_GUIDE.md section 7, or llms.txt), not in this project's "
+                "own guide; 'kdx --help' shows them and 'kdx doctor' lists every collision.",
             )
 
         module_command_names = {command.name for command in chassis.registry.commands()}

@@ -2,7 +2,7 @@
 
 Industrial-grade, headless **microkernel chassis** that seeds every Korodexios project.
 The core is a daemon-style engine that owns lifecycle, configuration, structured logging,
-module discovery, and signal-safe shutdown. User interfaces (CLI, TUI, REST) are thin
+module discovery, and signal-safe shutdown. User interfaces (CLI, web console, REST) are thin
 clients that talk to the same core and never reimplement it.
 
 - **Package:** `korodexios-core` (import name `korodexios_core`)
@@ -12,7 +12,7 @@ clients that talk to the same core and never reimplement it.
 - **Bootstrap:** uv (Astral) owns the environment - `uv venv`, `uv sync --extra dev`,
   `uv run kdx ...`, `uv tool install korodexios-core`, `uv lock` for a consumer's own pins
 - **Dependencies:** `pyyaml` (config files), `rich` (the wizard layer)
-- **Release:** `v0.5.5`, core API frozen at `v2`
+- **Release:** `v0.5.6`, core API frozen at `v2`
 
 **Install in one go:** `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) - a guided,
 coloured installer in English or Slovak (`--dry-run` shows the steps without running them).
@@ -28,7 +28,7 @@ coloured installer in English or Slovak (`--dry-run` shows the steps without run
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | humans, engineers | microkernel design, config flow, event bus, IPC, signals, API freeze |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | everyone | the phase history and what ships next |
 | [CHANGELOG.md](CHANGELOG.md) | humans, operators | notable changes per release, newest first |
-| [docs/REVIEW-2026-10.sk.md](docs/REVIEW-2026-10.sk.md) | owner (Slovak) | the October 2026 security and architecture review: findings, fixes, next steps |
+| [docs/TRANSLATING.md](docs/TRANSLATING.md) | translators, agents | adding a language: `kdx locale add`, `todo`, `apply` |
 | [docs/AGENTS_GUIDE.md](docs/AGENTS_GUIDE.md) | AI agents, LLMs | contract-first reference: golden rules, module blueprint, manifest spec, verification loop |
 | [llms.txt](llms.txt) | AI agents, LLMs | byte-identical mirror of the agent guide, sized for a context window |
 | [AGENTS.md](AGENTS.md) | both | the working agreement: commands, layout, rules, the verification bar |
@@ -43,7 +43,6 @@ every project it generates.
 ## Quickstart
 
 ```bash
-```bash
 uv venv --python 3.13            # uv (Astral) owns the env: no pip, no ensurepip needed
 uv sync --extra dev              # resolve and install dev tools; or: uv pip install -e ".[dev]"
 uv run kdx --version             # run any command inside that environment
@@ -57,11 +56,12 @@ kdx logs --rotate                # archive the log; the daemon reopens the path
 kdx modules list                 # what auto-discovery found
 kdx config show --key core.      # resolved values with the layer each came from
 kdx run --once                   # boot, one tick, clean stop (CI friendly)
-kdx run --host 0.0.0.0 --port 8123   # expose the control plane to the LAN
+kdx run --host 0.0.0.0 --port 18123   # expose the control plane to the LAN
 kdx heartbeat status             # a module-provided command
 kdx system diagnostics           # interactive diagnostics menu (pick a section)
 kdx backup run --dry-run         # simulate; --exclude patterns are honoured
-kdx modules create my_plugin --path ./my_plugins
+kdx module new my_plugin        # scaffold a module (manifest, config schema, test) into the project
+kdx locale check                 # are the message catalogues complete (kdx locale extract refreshes them)
 kdx init my_service --path ../my_service   # seed a whole new project from the chassis
 kdx wizard                       # interactive numbered-menu wizard (TTY only)
 kdx ui                           # browser console: status, every module command, logs, config
@@ -75,7 +75,7 @@ Pin the chassis the way a consumer project does, entirely with uv:
 
 ```bash
 uv tool install korodexios-core   # a global kdx on PATH, no project involved
-uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.5"
+uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.6"
 uv lock                          # and 'uv add' for this project's own pinned dependencies
 ```
 
@@ -112,7 +112,7 @@ non-TTY stdin and forces `core.cli.interactive=false`. Development shortcuts:
   is green on arrival, with a smoke test that boots the chassis in-process.
 - **Stdlib first.** PyYAML parses configuration, rich drives the terminal; everything
   else is the standard library. A new dependency needs a paragraph of justification.
-- **Headless first.** The CLI is a thin client of the same in-process core a TUI or a
+- **Headless first.** The CLI is a thin client of the same in-process core the web console or a
   REST client will use. Modules never write to stdout.
 - **Crash-proof CLI.** Numbered menus, `[default]` in brackets, `while True` validation
   loops, and no traceback at the operator.
@@ -132,7 +132,7 @@ src/korodexios_core/
              # chassis, signals, ipc
   cli/       # thin clients: argparse surface, rich wizard, core commands,
              # project templating (init_project.py), scaffolding (scaffold.py)
-  modules/   # built-in modules: heartbeat, system_info, backup_engine, web_console - a pure
+  modules/   # built-in modules: heartbeat, system_info, backup_engine, job_queue, web_console - a pure
              # discovery root: adding code here is the intended extension point
 docs/        # the documentation suite, including the roadmap
 .agents/skills/  # canonical playbooks, seeded into every project
@@ -141,7 +141,7 @@ tests/       # pytest; no network, no sleeps longer than one lifecycle tick
 
 ## Control plane
 
-`kdx run` binds `127.0.0.1:8123` by default and writes `var/chassis.ipc` (mode `0600`)
+`kdx run` binds `127.0.0.1:18123` by default and writes `var/chassis.ipc` (mode `0600`)
 with `pid`, `port`, `host`, and `token`. Six endpoints answer: `GET /health`,
 `GET /api/v1/schema` (the machine-readable contract), `GET /api/v1/status`,
 `POST /api/v1/shutdown`, `POST /api/v1/reload`, and `POST /api/v1/rpc`; authenticated reads
@@ -150,7 +150,8 @@ which opens reads only - reload and RPC always need the token. A request from a 
 web origin (or a DNS-rebinding `Host`) is refused, so a browser tab cannot drive the daemon.
 Modules add their own paths declaratively with `ipc_routes()`, and the contract endpoint
 lists them. Set `core.ipc.host: 0.0.0.0` to serve
-the LAN, and `kdx status --target host:port` to query a remote chassis.
+the LAN (the default port, 18123, avoids the usual 8000/8080/8123 neighbours; change it with
+`core.ipc.port`), and `kdx status --target host:port` to query a remote chassis.
 
 ## Seeding a project
 
@@ -175,21 +176,16 @@ from korodexios_core import CliArgument, CliCommand, ConfigField, IpcRoute, Modu
 ```
 
 Additive changes are allowed inside `v2`; anything that breaks an import or a signature
-moves the major version. The `0.2` line is where `v2` ships: `0.2.1` and `0.2.2` are maintenance
-patches on the `0.2.0` primitives, with no new export and no changed signature. Core API v2 added the instance lock, the async runtime, worker
-supervision, diagnostic checks, declarative IPC routes, and configuration schemas; then the
-chassis primitives - named locks (`NamedLock`, `NamedLockRegistry`), a periodic task
-scheduler (`TaskScheduler`, `context.schedule`), durable project storage
-(`core.paths.durable_dir`), control-plane content types (`IpcResponse`, `guess_content_type`),
-static directories (`IpcStaticMount`, `register_static_dir`), and arbitrary-depth command
-nesting with `CliArgument.required` - all additive, all exported, all tested. The wheel ships
-a `py.typed` marker.
+moves the major version. Everything added since `v2` shipped (instance lock, async runtime,
+supervision, IPC routes, config schemas, named locks, scheduler, limiter, child processes,
+durable queue, language service) is additive and exported; [CHANGELOG.md](CHANGELOG.md) has
+the per release list. The wheel ships a `py.typed` marker.
 
 ## Roadmap
 
-The phase history and what ships next live in [docs/ROADMAP.md](docs/ROADMAP.md). The
-next step is publishing to an index (PyPI via trusted publishing) or a documented git
-bootstrap, then a Textual/TUI front end over the same declarative `CliCommand` tree.
+The phase history and what ships next live in [docs/ROADMAP.md](docs/ROADMAP.md). Publishing
+to an index (PyPI via trusted publishing) is still open; there is no plan for a TUI, the
+terminal CLI and the web console are the two front ends.
 
 ## License
 

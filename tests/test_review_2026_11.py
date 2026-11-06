@@ -171,12 +171,13 @@ def test_every_response_carries_the_security_headers(tmp_path: Path) -> None:
 
 def test_allowed_hosts_close_dns_rebinding_on_a_lan_bind(tmp_path: Path) -> None:
     guarded, _ = _server(tmp_path, host="0.0.0.0", allowed_hosts=("nas.lan", "192.168.1.20"))
-    assert guarded.cross_origin_refusal("evil.example:8123", "http://evil.example:8123")
-    assert guarded.cross_origin_refusal("nas.lan:8123", "http://nas.lan:8123") is None
-    assert guarded.cross_origin_refusal("192.168.1.20:8123", None) is None
-    assert guarded.cross_origin_refusal("127.0.0.1:8123", None) is None
+    assert guarded.cross_origin_refusal("evil.example:18123", "http://evil.example:18123")
+    assert guarded.cross_origin_refusal("nas.lan:18123", "http://nas.lan:18123") is None
+    assert guarded.cross_origin_refusal("192.168.1.20:18123", None) is None
+    assert guarded.cross_origin_refusal("127.0.0.1:18123", None) is None
     open_plane, _ = _server(tmp_path, host="0.0.0.0")
-    assert open_plane.cross_origin_refusal("evil.example:8123", "http://evil.example:8123") is None
+    refusal = open_plane.cross_origin_refusal("evil.example:18123", "http://evil.example:18123")
+    assert refusal is None
 
 
 def test_the_chassis_reads_allowed_hosts(project_root: Path) -> None:

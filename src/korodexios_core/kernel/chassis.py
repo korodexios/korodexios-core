@@ -498,7 +498,7 @@ class Chassis:
         static_token = str(self.config.get("core.ipc.token", "") or "").strip()
         options = IpcOptions(
             host=self.config.get_str("core.ipc.host", "127.0.0.1"),
-            port=int(self.config.get_int("core.ipc.port", 8123)),
+            port=int(self.config.get_int("core.ipc.port", 18123)),
             discovery_path=self.paths.state_dir / DISCOVERY_NAME,
             token=static_token or new_token(),
             token_source="static" if static_token else "ephemeral",

@@ -903,8 +903,8 @@ msgid "broken"
 msgstr "rotas"
 
 #: cli/users.py
-msgid "browser:  open http://HOST:8123/ui/ and paste the token"
-msgstr "navegador:  abre http://HOST:8123/ui/ y pega el token"
+msgid "browser:  open http://HOST:18123/ui/ and paste the token"
+msgstr "navegador:  abre http://HOST:18123/ui/ y pega el token"
 
 #: cli/language.py
 msgid "built-in default"
@@ -1471,8 +1471,8 @@ msgid "obsolete"
 msgstr "obsoleto"
 
 #: cli/tls.py
-msgid "on another machine, trust it with: kdx --tls-ca cert.pem status --target https://HOST:8123"
-msgstr "en otro equipo, confía en él con: kdx --tls-ca cert.pem status --target https://HOST:8123"
+msgid "on another machine, trust it with: kdx --tls-ca cert.pem status --target https://HOST:18123"
+msgstr "en otro equipo, confía en él con: kdx --tls-ca cert.pem status --target https://HOST:18123"
 
 #: modules/web_console/module.py
 msgid "open this URL; it carries the session token:"
@@ -1795,8 +1795,8 @@ msgid "task {id} queued again"
 msgstr "tarea {id} puesta en cola de nuevo"
 
 #: cli/users.py
-msgid "terminal: kdx status --target http://HOST:8123 --token TOKEN"
-msgstr "terminal: kdx status --target http://HOST:8123 --token TOKEN"
+msgid "terminal: kdx status --target http://HOST:18123 --token TOKEN"
+msgstr "terminal: kdx status --target http://HOST:18123 --token TOKEN"
 
 #: cli/commands.py
 msgid "the chassis reads these files and never rewrites one"

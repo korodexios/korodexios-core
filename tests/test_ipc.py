@@ -403,7 +403,7 @@ def test_status_command_flags_a_stale_pid(capsys, project_root) -> None:
             {
                 "pid": 2_147_483_647,
                 "host": "127.0.0.1",
-                "port": 8123,
+                "port": 18123,
                 "token": "x",
                 "started_at": 0.0,
             }

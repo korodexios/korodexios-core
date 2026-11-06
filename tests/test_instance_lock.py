@@ -47,12 +47,12 @@ def test_pid_alive_routes_to_the_windows_probe_on_win32(monkeypatch: pytest.Monk
 
 
 def test_holder_shape_and_liveness() -> None:
-    holder = LockHolder(pid=os.getpid(), label="kdx", host="127.0.0.1", port=8123)
+    holder = LockHolder(pid=os.getpid(), label="kdx", host="127.0.0.1", port=18123)
     assert holder.is_alive is True
-    assert holder.describe() == f"pid {os.getpid()} (kdx) at 127.0.0.1:8123"
+    assert holder.describe() == f"pid {os.getpid()} (kdx) at 127.0.0.1:18123"
     payload = holder.as_dict()
     assert payload["pid"] == os.getpid()
-    assert payload["port"] == 8123
+    assert payload["port"] == 18123
     assert LockHolder.from_mapping(payload).host == "127.0.0.1"
     assert LockHolder.from_mapping({}).pid == 0
     assert LockHolder(pid=0).describe() == "pid 0 (chassis)"
@@ -64,7 +64,7 @@ def test_holder_shape_and_liveness() -> None:
 @pytest.mark.posix
 def test_acquire_release_cycle(tmp_path: Path) -> None:
     path = tmp_path / "chassis.lock"
-    lock = InstanceLock(path, metadata={"label": "kdx", "port": 8123})
+    lock = InstanceLock(path, metadata={"label": "kdx", "port": 18123})
     assert lock.held is False
     lock.acquire()
     assert lock.held is True

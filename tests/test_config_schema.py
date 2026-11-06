@@ -255,7 +255,7 @@ def test_dotenv_layer_reports_alias_provenance(tmp_path: Path) -> None:
 
     env_file = tmp_path / ".env"
     env_file.write_text(
-        "# comment\nLEGACY_TOKEN = 'abc'\nCORE__IPC__PORT=18123\n"
+        "# comment\nLEGACY_TOKEN = 'abc'\nCORE__IPC__PORT=118123\n"
         "KDX_CORE__IPC__PORT=19123\nBROKEN=\n",
         encoding="utf-8",
     )

@@ -71,10 +71,10 @@ def test_describe_argument_maps_every_kind() -> None:
 
 
 def test_console_url_keeps_the_token_in_the_fragment() -> None:
-    discovery = IpcDiscovery.remote("127.0.0.1:8123", token="abc")
-    assert console_url(discovery) == "http://127.0.0.1:8123/ui/#token=abc"
-    anonymous = IpcDiscovery.remote("127.0.0.1:8123", token="")
-    assert console_url(anonymous) == "http://127.0.0.1:8123/ui/"
+    discovery = IpcDiscovery.remote("127.0.0.1:18123", token="abc")
+    assert console_url(discovery) == "http://127.0.0.1:18123/ui/#token=abc"
+    anonymous = IpcDiscovery.remote("127.0.0.1:18123", token="")
+    assert console_url(anonymous) == "http://127.0.0.1:18123/ui/"
 
 
 def test_catalog_lists_module_commands_but_not_the_launcher(project_root) -> None:

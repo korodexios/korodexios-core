@@ -142,10 +142,10 @@ def test_the_daemons_own_origin_is_served(tmp_path: Path) -> None:
 def test_dns_rebinding_host_is_refused_on_loopback(tmp_path: Path) -> None:
     server, _ = start(tmp_path)
     try:
-        code, payload = raw_call(server, "/health", headers={"Host": "rebind.example:8123"})
+        code, payload = raw_call(server, "/health", headers={"Host": "rebind.example:18123"})
         assert code == 403
         assert "loopback" in str(payload["error"])
-        assert raw_call(server, "/health", headers={"Host": "[::1]:8123"})[0] == 200
+        assert raw_call(server, "/health", headers={"Host": "[::1]:18123"})[0] == 200
         assert raw_call(server, "/health", headers={"Host": "localhost"})[0] == 200
         assert raw_call(server, "/health", headers={})[0] == 200  # HTTP/1.0 style, no Host
     finally:
@@ -155,7 +155,7 @@ def test_dns_rebinding_host_is_refused_on_loopback(tmp_path: Path) -> None:
 def test_a_lan_bind_accepts_any_host_name(tmp_path: Path) -> None:
     server, _ = start(tmp_path, host="0.0.0.0")
     try:
-        assert raw_call(server, "/health", headers={"Host": "nas.lan:8123"})[0] == 200
+        assert raw_call(server, "/health", headers={"Host": "nas.lan:18123"})[0] == 200
     finally:
         server.stop()
 
@@ -163,9 +163,9 @@ def test_a_lan_bind_accepts_any_host_name(tmp_path: Path) -> None:
 @pytest.mark.parametrize(
     ("header", "name"),
     [
-        ("127.0.0.1:8123", "127.0.0.1"),
+        ("127.0.0.1:18123", "127.0.0.1"),
         ("LocalHost", "localhost"),
-        ("[::1]:8123", "::1"),
+        ("[::1]:18123", "::1"),
         ("::1", "::1"),
         ("nas.lan", "nas.lan"),
     ],

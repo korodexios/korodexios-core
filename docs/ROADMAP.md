@@ -174,9 +174,7 @@ directory ignores dot files, swap files, and names `lock_name()` refuses | **del
 
 ## Next
 
-1. **A Textual/TUI front end** over the same declarative `CliCommand` tree the wizard
-   and the web console already read - no module knows a second surface exists.
-2. **Publish to an index (parked, owner's choice).** PyPI through trusted publishing is a
+1. **Publish to an index (parked, owner's choice).** PyPI through trusted publishing is a
    ~30-minute setup whenever the owner wants it; the name `korodexios-core` was unclaimed
    on PyPI as of 2026-10-27. The git bootstrap is already live in the seed: `kdx init`
    pins the chassis to the repository, so a freshly seeded project installs today without

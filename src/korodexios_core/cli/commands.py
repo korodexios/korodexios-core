@@ -989,7 +989,7 @@ def _status_command(request: CliRequest) -> int:
     """Query a running chassis through its control plane, locally or over the LAN."""
     chassis = _chassis(request)
     timeout = float(chassis.config.get_float("core.ipc.timeout", 2.0))
-    default_port = int(chassis.config.get_int("core.ipc.port", 8123)) or DEFAULT_PORT
+    default_port = int(chassis.config.get_int("core.ipc.port", 18123)) or DEFAULT_PORT
     discovery_path = Path(chassis.paths.state_dir) / DISCOVERY_NAME
     token = str(
         request.option("target_token") or chassis.config.get_str("core.ipc.token", "") or ""

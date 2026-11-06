@@ -156,8 +156,8 @@ def _show_token(request: CliRequest, name: str, role: str, token: str, verb: str
         f"{TAG_OK} "
         + tr("{verb}; this token is shown only now - hand it over privately", verb=verb)
     )
-    write_line(f"{TAG_NOTE} terminal: kdx status --target http://HOST:8123 --token TOKEN")
-    write_line(f"{TAG_NOTE} browser:  open http://HOST:8123/ui/ and paste the token")
+    write_line(f"{TAG_NOTE} terminal: kdx status --target http://HOST:18123 --token TOKEN")
+    write_line(f"{TAG_NOTE} browser:  open http://HOST:18123/ui/ and paste the token")
 
 
 def _add(request: CliRequest) -> int:

@@ -84,11 +84,11 @@ def test_primary_prefix_wins_over_the_canonical_one() -> None:
         {
             "KORODEXIOS_CORE__IPC__HOST": "127.0.0.1",
             "KDX_CORE__IPC__HOST": "0.0.0.0",
-            "KORODEXIOS_CORE__IPC__PORT": "8123",
+            "KORODEXIOS_CORE__IPC__PORT": "18123",
         }
     )
     assert values["core.ipc.host"] == "0.0.0.0"
-    assert values["core.ipc.port"] == "8123"
+    assert values["core.ipc.port"] == "18123"
 
 
 def test_chassis_discovers_kdx_yml(tmp_path: Path) -> None:

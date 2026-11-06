@@ -44,7 +44,7 @@ from .users import OWNER_NAME, ROLES, Caller, UserStore, acting_as
 DISCOVERY_NAME = "chassis.ipc"
 TOKEN_HEADER = "X-Kdx-Token"
 DEFAULT_HOST = "127.0.0.1"
-DEFAULT_PORT = 8123
+DEFAULT_PORT = 18123
 DEFAULT_TOKEN_BYTES = 16
 WILDCARD_HOSTS = ("0.0.0.0", "::")
 LOOPBACK_HOSTS = ("127.0.0.1", "localhost", "::1")
