@@ -131,12 +131,20 @@ cannot order.
 | `POST /api/v1/shutdown` | operator stop; the process exits 0 |
 | `POST /api/v1/reload` | re-read configuration; the daemon keeps running |
 | `POST /api/v1/rpc` | run one registered module command inside the daemon |
+| `GET /metrics` | Prometheus text format (`?format=json` for JSON) - module `metrics` |
+| `POST /api/v1/mcp` | Model Context Protocol (Streamable HTTP) for AI agents - module `mcp` |
+| `GET /api/v1/ws` | WebSocket: subscribe to events, run commands, publish - module `realtime` |
+| `POST /api/v1/webhooks/inbound` | an automation publishes `inbound.<event>` - module `webhooks` |
 | `GET/POST /api/v1/<module>` | whatever the modules declare through `ipc_routes()` |
 | `GET/HEAD /<prefix>/<file>` | static files a module mounts with `static_dirs()` |
 
 - **Bind** - `core.ipc.host` defaults to `127.0.0.1`; `0.0.0.0` (or `::`) makes the
   daemon reachable from the LAN. A wildcard bind is announced as `127.0.0.1` in the
   discovery file so local clients keep working unchanged.
+- **Tokens** - a request presents `X-Kdx-Token` or `Authorization: Bearer`; a browser
+  WebSocket may offer `kdx.token.<token>` as a subprotocol. Long-lived streams (SSE,
+  WebSocket) are bounded by `MAX_STREAMS`; a WebSocket route returns `IpcWebSocket` and the
+  chassis performs the upgrade after the usual Host, Origin, token and role checks.
 - **Discovery** - `var/chassis.ipc` (mode `0600`) records `pid`, `host`, `port`,
   `token`, `started_at`. Clients read it, then talk HTTP.
 - **Auth** - `core.ipc.auth` (default `true`) requires the shared token on

@@ -14,7 +14,13 @@ from ...kernel.context import CoreContext
 from ...kernel.contract import Module, ModuleState
 from ...kernel.diagnostics import DiagnosticCheck, DiagnosticSeverity
 from ...kernel.ipc import IpcRequest, IpcRoute
-from .collector import disk_snapshot, full_snapshot, load_reading, supports_load_average
+from .collector import (
+    disk_snapshot,
+    full_snapshot,
+    host_samples,
+    load_reading,
+    supports_load_average,
+)
 
 DEFAULT_DISK_KEY = "disk_path"
 SNAPSHOT_EVENT = "system.info.collected"
@@ -107,6 +113,12 @@ class SystemInfoModule(Module):
                         f"{MIN_LOAD_INTERVAL}."
                     ),
                 ),
+                ConfigField(
+                    "metrics",
+                    kind=ConfigKind.BOOL,
+                    default=True,
+                    description="Publish host CPU, load, memory and disk as kdx_host_* metrics.",
+                ),
             ),
         )
 
@@ -192,6 +204,11 @@ class SystemInfoModule(Module):
     def start(self) -> None:
         """Take the first snapshot, announce it, and start the load watcher."""
         super().start()
+        if self.config.get_bool("metrics", True):
+            root = self._disk_path
+            self.require_context().metrics.collector(
+                "system_info.host", lambda: host_samples(root)
+            )
         snapshot = self.snapshot()
         self.bus.publish(
             SNAPSHOT_EVENT,
@@ -210,6 +227,8 @@ class SystemInfoModule(Module):
     def stop(self) -> None:
         """Join the load watcher and release the cached snapshot."""
         self._stop_watcher()
+        if self.context is not None:
+            self.context.metrics.remove_collector("system_info.host")
         super().stop()
         self.logger.info(
             f"{TAG_NOTE} system_info released",

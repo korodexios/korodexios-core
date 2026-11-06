@@ -1,0 +1,13 @@
+# Built-in module manifest, read by korodexios_core.kernel.discovery.
+[module]
+name = "mcp"
+description = "MCP server for AI agents: stdio (kdx mcp serve) and HTTP (/api/v1/mcp)."
+version = "0.1.0"
+entrypoint = "MODULE"
+enabled = true
+priority = 92
+requires_core = ">=0.6"
+
+[metadata]
+tags = ["agents", "mcp", "integration"]
+owner = "korodexios"

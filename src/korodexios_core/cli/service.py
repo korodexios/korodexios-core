@@ -159,7 +159,9 @@ def build_plan(
             platform=system,
             name=label,
             definition_path=plist,
-            definition=_launchd_plist(label, [python, *arguments], root),
+            definition=_launchd_plist(
+                label, [python, *arguments], root, Path(chassis.paths.log_dir)
+            ),
             install=(("launchctl", "bootstrap", domain, str(plist)),),
             uninstall=(("launchctl", "bootout", domain, str(plist)),),
             status=("launchctl", "print", f"{domain}/{label}"),
@@ -208,7 +210,9 @@ def _windows_account() -> str:
 
 def _task_xml(python: str, arguments: Sequence[str], root: Path, name: str) -> str:
     account = escape(_windows_account())
-    args = " ".join(f'"{part}"' if " " in part else part for part in arguments)
+    # Task Scheduler splits the line the way CommandLineToArgvW does; list2cmdline is
+    # its exact inverse, so a space, a quote, or a trailing backslash (a drive root) survives.
+    args = subprocess.list2cmdline(list(arguments))
     return f"""<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
@@ -250,7 +254,14 @@ def _task_xml(python: str, arguments: Sequence[str], root: Path, name: str) -> s
 
 
 def _systemd_quote(part: str) -> str:
-    return '"' + part.replace("\\", "\\\\").replace('"', '\\"') + '"'
+    # '%' starts a systemd specifier ('%h', '%u'); a literal one is written '%%'.
+    escaped = part.replace("\\", "\\\\").replace('"', '\\"').replace("%", "%%")
+    return '"' + escaped + '"'
+
+
+def _systemd_value(text: str) -> str:
+    """Return *text* safe for a plain systemd setting: specifiers escaped, one line."""
+    return str(text).replace("%", "%%").replace("\n", " ")
 
 
 def _systemd_unit(name: str, command: Sequence[str], root: Path) -> str:
@@ -258,12 +269,12 @@ def _systemd_unit(name: str, command: Sequence[str], root: Path) -> str:
     return "\n".join(
         [
             "[Unit]",
-            f"Description=korodexios daemon {name} ({root})",
+            f"Description={_systemd_value(f'korodexios daemon {name} ({root})')}",
             "After=network-online.target",
             "",
             "[Service]",
             "Type=simple",
-            f"WorkingDirectory={root}",
+            f"WorkingDirectory={_systemd_value(str(root))}",
             f"ExecStart={exec_start}",
             "Restart=on-failure",
             "RestartSec=5",
@@ -278,9 +289,11 @@ def _systemd_unit(name: str, command: Sequence[str], root: Path) -> str:
     )
 
 
-def _launchd_plist(label: str, command: Sequence[str], root: Path) -> str:
+def _launchd_plist(
+    label: str, command: Sequence[str], root: Path, log_dir: Path | None = None
+) -> str:
     arguments = "\n".join(f"    <string>{escape(part)}</string>" for part in command)
-    log = escape(str(root / "var" / "log" / "launchd.log"))
+    log = escape(str((log_dir or root / "var" / "log") / "launchd.log"))
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">

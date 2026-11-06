@@ -12,12 +12,15 @@ from __future__ import annotations
 
 import contextlib
 import errno
+import functools
 import hmac
+import ipaddress
 import json
 import mimetypes
 import os
 import re
 import secrets
+import socket
 import ssl
 import sys
 import threading
@@ -40,6 +43,7 @@ from .audit import AuditLog
 from .instance_lock import pid_alive
 from .jobs import JobLimitError
 from .users import OWNER_NAME, ROLES, Caller, UserStore, acting_as
+from .websocket import IpcWebSocket, WebSocket, accept_key, offered_protocols, protocol_token
 
 DISCOVERY_NAME = "chassis.ipc"
 TOKEN_HEADER = "X-Kdx-Token"
@@ -60,6 +64,12 @@ daemon memory before the handler ever ran. A body over this limit is rejected
 with HTTP 413 before a single byte is buffered, so the control plane answers
 instead of dying.
 """
+
+MAX_STREAMS: Final[int] = 64
+"""Most long-lived streams (server-sent events, WebSockets) served at once.
+
+Each one pins a handler thread for as long as its client stays connected; a bound
+keeps a burst of browsers or a misbehaving client from exhausting the daemon."""
 
 PAYLOAD_TOO_LARGE: Final[int] = 413
 """The status the control plane answers when a request body exceeds the limit."""
@@ -558,6 +568,23 @@ def _inside_directory(candidate: Path, root: Path) -> bool:
     return folded.is_relative_to(PurePosixPath(root.as_posix().casefold()))
 
 
+def presented_token(headers: Mapping[str, str] | Any) -> str:
+    """Return the token a request presents: 'X-Kdx-Token', else 'Authorization: Bearer'.
+
+    The chassis header is the documented one. The bearer form is what automation tools
+    (n8n, Zapier, Make), MCP clients, and most HTTP libraries send without configuration,
+    so it is accepted as the same secret.
+    """
+    direct = str(headers.get(TOKEN_HEADER) or "").strip()
+    if direct:
+        return direct
+    scheme, _, credential = str(headers.get("Authorization") or "").strip().partition(" ")
+    if scheme.lower() == "bearer":
+        return credential.strip()
+    # A browser WebSocket cannot set a header; it offers 'kdx.token.<TOKEN>' instead.
+    return protocol_token(headers)
+
+
 def new_token() -> str:
     """Return a fresh ephemeral shared secret."""
     return secrets.token_hex(DEFAULT_TOKEN_BYTES)
@@ -579,6 +606,30 @@ def _host_name(host_header: str) -> str:
     if text.startswith("["):
         return text[1:].split("]", 1)[0]
     return text.rsplit(":", 1)[0] if text.count(":") == 1 else text
+
+
+def _is_ip_literal(name: str) -> bool:
+    """Return True when *name* is an IPv4 or IPv6 address, not a DNS name."""
+    try:
+        ipaddress.ip_address(str(name).strip().strip("[]").split("%", 1)[0])
+    except ValueError:
+        return False
+    return True
+
+
+@functools.lru_cache(maxsize=1)
+def _own_host_names() -> frozenset[str]:
+    """Return the names this machine calls itself: hostname, FQDN, and '<host>.local'."""
+    names: set[str] = set()
+    with contextlib.suppress(OSError):
+        host = socket.gethostname().strip().lower()
+        if host:
+            names.update({host, f"{host}.local"})
+    with contextlib.suppress(OSError):
+        fqdn = socket.getfqdn().strip().lower()
+        if fqdn:
+            names.add(fqdn)
+    return frozenset(names)
 
 
 class IpcError(ValueError):
@@ -974,7 +1025,7 @@ class _ControlHandler(BaseHTTPRequestHandler):
                 },
             )
             return
-        caller = ipc.identify(self.headers.get(TOKEN_HEADER))
+        caller = ipc.identify(presented_token(self.headers))
         with acting_as(caller):
             self._route_as(ipc, method, caller)
 
@@ -1154,14 +1205,17 @@ class _ControlHandler(BaseHTTPRequestHandler):
             result = route.handler(request)
         except Exception as exc:
             ipc.count_error()
-            self._reply(
-                500,
-                {
-                    "error": f"{type(exc).__name__}: {exc}",
-                    "route": route.path,
-                    "module": route.module,
-                },
+            if ipc.logger is not None:
+                ipc.logger.error(
+                    f"route {route.path} failed: {type(exc).__name__}: {exc}",
+                    module=route.module,
+                )
+            # An anonymous caller (an 'auth=False' route) learns that it failed, not why:
+            # exception text can carry paths, hosts, and query fragments.
+            detail = f"{type(exc).__name__}: {exc}" if caller is not None else (
+                f"{type(exc).__name__}; the daemon log has the details"
             )
+            self._reply(500, {"error": detail, "route": route.path, "module": route.module})
             return
         status: int = 200
         payload: Any = result
@@ -1178,6 +1232,9 @@ class _ControlHandler(BaseHTTPRequestHandler):
         """
         if isinstance(payload, IpcStream):
             self._stream(payload)
+            return
+        if isinstance(payload, IpcWebSocket):
+            self._websocket(payload)
             return
         if isinstance(payload, IpcResponse):
             # The response owns its status and media type; the route only decided
@@ -1252,7 +1309,84 @@ class _ControlHandler(BaseHTTPRequestHandler):
         )
 
     def _stream(self, stream: IpcStream) -> None:
-        """Write a feed chunk by chunk; a vanished client ends it quietly."""
+        """Write a feed chunk by chunk; a vanished client ends it quietly.
+
+        Every open feed holds a server thread for as long as the client stays, so the
+        number of feeds is bounded (MAX_STREAMS); one over the bound is answered 503.
+        """
+        ipc = cast("_ControlServer", self.server).kdx_ipc
+        if not ipc.open_stream():
+            close = getattr(stream.chunks, "close", None)
+            if callable(close):
+                close()
+            self._reply(503, {"error": "too many open streams", "limit": MAX_STREAMS})
+            return
+        try:
+            self._write_stream(stream)
+        finally:
+            ipc.close_stream()
+
+    def _websocket(self, accept: IpcWebSocket) -> None:
+        """Upgrade this connection to a WebSocket and run the route's session on it.
+
+        The route already passed every check a request passes (Host, Origin, token,
+        role); this only verifies the handshake itself. The session owns the socket on
+        this thread until it returns, and counts against MAX_STREAMS like a feed does.
+        """
+        upgrade = str(self.headers.get("Upgrade") or "").lower()
+        connection = str(self.headers.get("Connection") or "").lower()
+        key = str(self.headers.get("Sec-WebSocket-Key") or "").strip()
+        version = str(self.headers.get("Sec-WebSocket-Version") or "").strip()
+        if upgrade != "websocket" or "upgrade" not in connection or not key:
+            self._send(
+                426,
+                json.dumps({"error": "this route speaks WebSocket; send an Upgrade request"})
+                .encode("utf-8"),
+                CONTENT_JSON,
+                (("Upgrade", "websocket"), ("Sec-WebSocket-Version", "13")),
+            )
+            return
+        if version != "13":
+            self._send(
+                426, b'{"error": "WebSocket version 13 only"}', CONTENT_JSON,
+                (("Sec-WebSocket-Version", "13"),),
+            )
+            return
+        ipc = cast("_ControlServer", self.server).kdx_ipc
+        if not ipc.open_stream():
+            self._reply(503, {"error": "too many open streams", "limit": MAX_STREAMS})
+            return
+        offered = offered_protocols(self.headers)
+        chosen = next((item for item in accept.protocols if item in offered), "")
+        try:
+            self.send_response(101, "Switching Protocols")
+            self.send_header("Upgrade", "websocket")
+            self.send_header("Connection", "Upgrade")
+            self.send_header("Sec-WebSocket-Accept", accept_key(key))
+            if chosen:
+                self.send_header("Sec-WebSocket-Protocol", chosen)
+            self.end_headers()
+            self.wfile.flush()
+            self.close_connection = True
+            # The request timeout guards a stalled HTTP request; an idle WebSocket is normal.
+            with contextlib.suppress(OSError):
+                self.connection.settimeout(None)
+            socket_ = WebSocket(
+                cast("Any", self.rfile), cast("Any", self.wfile), self.connection,
+                subprotocol=chosen,
+            )
+            try:
+                accept.session(socket_)
+            finally:
+                socket_.close()
+        except OSError as exc:
+            if not _is_teardown_error(exc):
+                raise
+            self._note_socket_gone(exc, "websocket")
+        finally:
+            ipc.close_stream()
+
+    def _write_stream(self, stream: IpcStream) -> None:
         chunks = iter(stream.chunks)
         try:
             self.send_response(200)
@@ -1399,6 +1533,7 @@ class IpcServer:
         self._discovery: IpcDiscovery | None = None
         self._requests = 0
         self._errors = 0
+        self._streams = 0
         self._counter_lock = threading.Lock()
         self._started_at = 0.0
         self._bound_host = self._options.host
@@ -1585,13 +1720,23 @@ class IpcServer:
             name = _host_name(host_text)
             if not is_loopback_host(name):
                 return f"Host {host_text!r} is not a loopback name for a loopback control plane"
-        elif host_text and self._options.allowed_hosts:
+        elif host_text:
             # On a LAN bind a rebinding page sends its own name as Host and Origin alike;
-            # only the names this machine really answers to tell the two apart.
+            # only the names this machine really answers to tell the two apart. Without an
+            # explicit list, an address literal is safe (rebinding needs a DNS name) and so
+            # are this machine's own names; any other name must be listed.
             name = _host_name(host_text)
-            allowed = {str(item).strip().lower() for item in self._options.allowed_hosts}
-            if not is_loopback_host(name) and name not in allowed:
-                return f"Host {host_text!r} is not in core.ipc.allowed_hosts"
+            if self._options.allowed_hosts:
+                allowed = {str(item).strip().lower() for item in self._options.allowed_hosts}
+                if not is_loopback_host(name) and name not in allowed:
+                    return f"Host {host_text!r} is not in core.ipc.allowed_hosts"
+            elif not (
+                is_loopback_host(name) or _is_ip_literal(name) or name in _own_host_names()
+            ):
+                return (
+                    f"Host {host_text!r} is not an address or a name of this machine; "
+                    "list it in core.ipc.allowed_hosts"
+                )
         origin_text = str(origin or "").strip()
         if not origin_text:
             return None
@@ -1601,6 +1746,25 @@ class IpcServer:
         if not host_text or parsed.netloc.lower() != host_text.lower():
             return f"Origin {origin_text!r} is not this control plane's own origin"
         return None
+
+    def open_stream(self) -> bool:
+        """Reserve one long-lived stream slot (SSE, WebSocket); False when all are taken."""
+        with self._counter_lock:
+            if self._streams >= MAX_STREAMS:
+                return False
+            self._streams += 1
+            return True
+
+    def close_stream(self) -> None:
+        """Release a slot :meth:`open_stream` reserved."""
+        with self._counter_lock:
+            self._streams = max(0, self._streams - 1)
+
+    @property
+    def open_streams(self) -> int:
+        """Return how many streams are open right now."""
+        with self._counter_lock:
+            return self._streams
 
     def count_error(self) -> None:
         """Record that a module route handler raised."""
@@ -1857,9 +2021,14 @@ class IpcServer:
             "schema": IPC_SCHEMA_VERSION,
             "core_api": CORE_API_VERSION,
             "token_header": TOKEN_HEADER,
+            "auth_schemes": [TOKEN_HEADER, "Authorization: Bearer"],
             "auth": bool(self._options.auth),
             "allow_anonymous_shutdown": bool(self._options.allow_anonymous_shutdown),
-            "static_mounts": [mount.as_dict() for mount in self.static_mounts()],
+            # The contract is anonymous: a mount's directory on disk is nobody's business.
+            "static_mounts": [
+                {key: value for key, value in mount.as_dict().items() if key != "directory"}
+                for mount in self.static_mounts()
+            ],
             "routes": [
                 {
                     "method": "GET",
@@ -1877,6 +2046,7 @@ class IpcServer:
                     "summary": "this contract; static metadata",
                     "fields": [
                         "auth",
+                        "auth_schemes",
                         "core_api",
                         "module_routes",
                         "routes",
@@ -1998,6 +2168,7 @@ __all__ = [
     "DISCOVERY_NAME",
     "HEALTH_PATH",
     "LOOPBACK_HOSTS",
+    "MAX_STREAMS",
     "RELOAD_PATH",
     "ROUTES",
     "RPC_PATH",
@@ -2020,5 +2191,6 @@ __all__ = [
     "is_wildcard_host",
     "new_token",
     "normalize_route_path",
+    "presented_token",
     "process_memory",
 ]

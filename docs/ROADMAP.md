@@ -171,6 +171,7 @@ directory ignores dot files, swap files, and names `lock_name()` refuses | **del
   manager (Task Scheduler XML via pythonw, systemd user unit, launchd agent), `--print` to
   preview, `python -m korodexios_core`, and console-less processes kept alive | **delivered** |
 | 37 | outbound discipline and long work: scheduler `jitter`, `window`, `days` and `schedule_at`; `context.limiter` (gap, daily budget, cooldown) with `kdx limiter`; `context.run_process` (timeout, logged output, group kill); the durable `job_queue` (`kdx queue`, `/api/v1/queue`); `kdx init` pyproject builds with a direct reference | **delivered** |
+| 38 | `v0.6.0` agentic and automation surface: an MCP server built from the CLI contract (`kdx mcp serve`, `POST /api/v1/mcp`), signed outbound webhooks and an inbound endpoint (`webhooks`), a stdlib WebSocket channel (`realtime`, `/api/v1/ws`), Bearer tokens, `kdx agents sync` for every coding agent's rule file, a metrics registry with Prometheus `/metrics` and host metrics, a per-language project wiki, core proposals that the owner sends as issues (`kdx proposal send`), and the fixes of the November audit (stdin timeout, TOML escaping, schema secrets, rebinding on LAN binds, local token on remote targets, queue ownership, atomic backup folders) | **delivered** |
 
 ## Next
 

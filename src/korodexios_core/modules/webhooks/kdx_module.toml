@@ -1,0 +1,13 @@
+# Built-in module manifest, read by korodexios_core.kernel.discovery.
+[module]
+name = "webhooks"
+description = "Signed outbound webhooks for bus events, and an inbound endpoint for automations."
+version = "0.1.0"
+entrypoint = "MODULE"
+enabled = true
+priority = 94
+requires_core = ">=0.6"
+
+[metadata]
+tags = ["webhooks", "n8n", "integration"]
+owner = "korodexios"

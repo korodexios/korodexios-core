@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+import urllib.parse
 from collections.abc import Mapping
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
@@ -19,6 +20,7 @@ from ..kernel.ipc import (
     STATUS_PATH,
     IpcDiscovery,
     IpcError,
+    is_loopback_host,
 )
 from ..version import format_version
 from .render import (
@@ -991,13 +993,11 @@ def _status_command(request: CliRequest) -> int:
     timeout = float(chassis.config.get_float("core.ipc.timeout", 2.0))
     default_port = int(chassis.config.get_int("core.ipc.port", 18123)) or DEFAULT_PORT
     discovery_path = Path(chassis.paths.state_dir) / DISCOVERY_NAME
-    token = str(
-        request.option("target_token") or chassis.config.get_str("core.ipc.token", "") or ""
-    ).strip()
     target = str(request.option("target") or "").strip()
     target_host = str(request.option("target_host") or "").strip()
     target_port = request.option("target_port")
     remote = bool(target or target_host)
+    token = target_token(request, chassis, target or target_host)
     try:
         discovery: IpcDiscovery | None
         if target:
@@ -1447,13 +1447,35 @@ def _config_check_command(request: CliRequest) -> int:
     return int(ExitCode.SUCCESS)
 
 
+def target_token(request: CliRequest, chassis: Chassis, target: str) -> str:
+    """Return the token a client command presents to *target*.
+
+    '--token' always wins. Without it the project's own core.ipc.token is presented only
+    to this machine: it is the built-in admin, and a typo in '--target' or a peer on the
+    LAN must never receive it - least of all over plain http.
+    """
+    explicit = str(request.option("target_token") or "").strip()
+    if explicit:
+        return explicit
+    local = str(chassis.config.get_str("core.ipc.token", "") or "").strip()
+    if not target or not local:
+        return local
+    text = target if "://" in target else "http://" + target
+    host = urllib.parse.urlsplit(text).hostname or ""
+    if is_loopback_host(host):
+        return local
+    write_line(
+        f"{TAG_NOTE} "
+        + tr("core.ipc.token is not sent to {host}; pass --token for a remote daemon", host=host)
+    )
+    return ""
+
+
 def _client_discovery(request: CliRequest, chassis: Chassis) -> tuple[IpcDiscovery | None, Path]:
     """Resolve the daemon endpoint a client-side command should talk to."""
     default_port = int(chassis.config.get_int("core.ipc.port", DEFAULT_PORT)) or DEFAULT_PORT
-    token = str(
-        request.option("target_token") or chassis.config.get_str("core.ipc.token", "") or ""
-    ).strip()
     target = str(request.option("target") or "").strip()
+    token = target_token(request, chassis, target)
     discovery_path = Path(chassis.paths.state_dir) / DISCOVERY_NAME
     try:
         if target:

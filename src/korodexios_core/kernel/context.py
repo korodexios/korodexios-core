@@ -20,6 +20,7 @@ from ..version import CORE_API_VERSION, __version__
 from .async_runtime import AsyncRuntime
 from .i18n import CORE_DOMAIN, I18n
 from .limiter import UNSET, LimiterRegistry, RateLimiter, _Unset
+from .metrics import MetricsRegistry
 from .process import ProcessResult, ProcessSupervisor
 from .queue import JobQueue
 from .scheduler import TaskScheduler
@@ -53,6 +54,8 @@ class CoreContext:
     processes: ProcessSupervisor | None = None
     queue: JobQueue | None = None
     i18n: I18n = field(default_factory=I18n)
+    metrics: MetricsRegistry = field(default_factory=MetricsRegistry)
+    """Counters, gauges, summaries and collectors; served by the 'metrics' module."""
 
     def translate(self, message: str, /, *, domain: str = CORE_DOMAIN, **fields: Any) -> str:
         """Return *message* in the active locale; the source string when untranslated."""

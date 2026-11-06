@@ -100,7 +100,7 @@ def test_scaffold_pins_core_and_writes_project_test(tmp_path: Path) -> None:
     modules = tmp_path / "src" / "acme" / "modules"
     result = scaffold_module(modules, "orders", project_root=tmp_path)
     manifest = (modules / "orders" / "kdx_module.toml").read_text(encoding="utf-8")
-    assert 'requires_core = ">=0.5,<1.0"' in manifest
+    assert 'requires_core = ">=0.6,<1.0"' in manifest
     assert "def config_schema" in (modules / "orders" / "module.py").read_text(encoding="utf-8")
     assert result.test_file is not None
     assert "from acme.modules.orders.module import MODULE" in result.test_file.read_text(

@@ -554,8 +554,8 @@ class Chassis:
             if not options.allowed_hosts:
                 self.logger.warning(
                     f"{TAG_NOTE} core.ipc.allowed_hosts is empty: a LAN control plane "
-                    "answers any Host name, which leaves DNS rebinding to the token alone",
-                    hint="list the names and addresses clients dial, e.g. [nas.lan, 192.168.1.20]",
+                    "answers IP addresses and this machine's own names only",
+                    hint="list any other DNS name clients dial, e.g. [nas.lan, box.tailnet.ts.net]",
                 )
         self.bus.publish(
             "core.ipc.started",

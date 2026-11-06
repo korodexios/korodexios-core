@@ -58,7 +58,7 @@ def test_os_and_cpu_snapshots_are_populated() -> None:
 
 def test_memory_snapshot_reports_total_bytes() -> None:
     memory = memory_snapshot()
-    assert memory["source"] in ("proc/meminfo", "sysconf", "unavailable")
+    assert memory["source"] in ("proc/meminfo", "sysconf", "GlobalMemoryStatusEx", "unavailable")
     if memory["source"] != "unavailable":
         assert memory["total_bytes"] and memory["total_bytes"] > 0
         assert memory["total"] != "-"
@@ -83,6 +83,7 @@ def test_memory_snapshot_without_meminfo_uses_sysconf(monkeypatch: pytest.Monkey
 
 def test_memory_snapshot_without_posix_reports_unavailable(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(collector, "_meminfo_values", lambda: {})
+    monkeypatch.setattr(collector, "_windows_memory", lambda: None)
     monkeypatch.delattr(os, "sysconf", raising=False)
     memory = memory_snapshot()
     assert memory["source"] == "unavailable"

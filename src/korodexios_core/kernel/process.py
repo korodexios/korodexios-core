@@ -24,7 +24,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
+from ..config.layered import mask_url_credentials
 from ..exceptions import KorodexiosError
+from .audit import redact_detail
 
 __all__ = [
     "PROCESS_FINISHED_EVENT",
@@ -74,7 +76,7 @@ class ProcessResult:
         """Return the result as JSON (the event payload)."""
         return {
             "name": self.name,
-            "command": list(self.command),
+            "command": safe_argv(self.command),
             "returncode": self.returncode,
             "seconds": round(self.seconds, 3),
             "timed_out": self.timed_out,
@@ -155,7 +157,9 @@ class ProcessSupervisor:
             running = _Running(label, argv, process)
             self._running[key] = running
         if self._logger is not None:
-            self._logger.info(f"process {label!r} started", pid=process.pid, command=list(argv))
+            self._logger.info(
+                f"process {label!r} started", pid=process.pid, command=safe_argv(argv)
+            )
         tails: dict[str, collections.deque[str]] = {
             "stdout": collections.deque(maxlen=tail_lines),
             "stderr": collections.deque(maxlen=tail_lines),
@@ -173,9 +177,17 @@ class ProcessSupervisor:
         for reader in readers:
             reader.start()
         if stdin is not None and process.stdin is not None:
-            with contextlib.suppress(OSError):
-                process.stdin.write(stdin)
-                process.stdin.close()
+            # A child that never reads its input fills the pipe and blocks the writer. On
+            # this thread that would hold the timeout, the cancel flag and the chassis stop
+            # hostage, so the input is fed from a thread of its own.
+            feeder = threading.Thread(
+                target=_feed_stdin,
+                args=(process.stdin, stdin),
+                name=f"kdx-proc-{label}-stdin",
+                daemon=True,
+            )
+            feeder.start()
+            readers.append(feeder)
         timed_out = False
         deadline = None if timeout is None else running.started + float(timeout)
         while process.poll() is None:
@@ -268,7 +280,7 @@ class ProcessSupervisor:
                     "name": item.name,
                     "pid": item.process.pid,
                     "seconds": round(time.monotonic() - item.started, 3),
-                    "command": list(item.command),
+                    "command": safe_argv(item.command),
                 }
                 for item in self._running.values()
             ]
@@ -322,6 +334,25 @@ class ProcessSupervisor:
             )
         if self._bus is not None:
             self._bus.publish(PROCESS_FINISHED_EVENT, result.as_dict(), source="process")
+
+
+def safe_argv(argv: Sequence[str]) -> list[str]:
+    """Return *argv* fit for a log line or an event: secret flags and URL passwords masked.
+
+    The log and the event feed are read by every viewer, so '--token VALUE',
+    '--password=VALUE' and 'https://user:pass@host' never reach them in clear. The child
+    itself still receives the real arguments.
+    """
+    masked = redact_detail([str(part) for part in argv])
+    return [str(mask_url_credentials(item)) for item in masked]
+
+
+def _feed_stdin(pipe: Any, text: str) -> None:
+    """Write *text* to the child's input and close it; a child that exits early ends it."""
+    with contextlib.suppress(OSError, ValueError):
+        pipe.write(text)
+    with contextlib.suppress(OSError, ValueError):
+        pipe.close()
 
 
 def _group_flags() -> dict[str, Any]:

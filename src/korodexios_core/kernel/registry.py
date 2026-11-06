@@ -10,6 +10,7 @@ from functools import partial
 from typing import Any
 
 from ..config.keys import MODULE_SETTINGS
+from ..config.layered import declare_secret_keys
 from ..config.schema import ConfigField, ConfigIssue, ConfigSchema, schema_from_mapping
 from ..constants import DEFAULT_STOP_TIMEOUT
 from ..events.bus import EventBus
@@ -252,7 +253,13 @@ def _call_hook(module: Any, name: str, logger: Any) -> Any:
 
 def collect_schema(module: Any, name: str, logger: Any) -> ConfigSchema | None:
     """Normalize whatever config_schema() returns into a ConfigSchema."""
-    declared = _call_hook(module, "config_schema", logger)
+    schema = _normalize_schema(_call_hook(module, "config_schema", logger), name, logger)
+    if schema is not None:
+        declare_secret_keys(f"modules.{name}.{key}" for key in schema.secrets())
+    return schema
+
+
+def _normalize_schema(declared: Any, name: str, logger: Any) -> ConfigSchema | None:
     if declared is None:
         return None
     if isinstance(declared, ConfigSchema):

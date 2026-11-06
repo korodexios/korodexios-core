@@ -5,6 +5,7 @@ from __future__ import annotations
 import http.client
 import importlib.util
 import io
+import socket
 import sys
 import threading
 import time
@@ -176,8 +177,12 @@ def test_allowed_hosts_close_dns_rebinding_on_a_lan_bind(tmp_path: Path) -> None
     assert guarded.cross_origin_refusal("192.168.1.20:18123", None) is None
     assert guarded.cross_origin_refusal("127.0.0.1:18123", None) is None
     open_plane, _ = _server(tmp_path, host="0.0.0.0")
-    refusal = open_plane.cross_origin_refusal("evil.example:18123", "http://evil.example:18123")
-    assert refusal is None
+    # No list: a rebinding name is refused, addresses and this machine's names still work.
+    assert open_plane.cross_origin_refusal("evil.example:18123", "http://evil.example:18123")
+    assert open_plane.cross_origin_refusal("192.168.1.20:18123", None) is None
+    assert open_plane.cross_origin_refusal("[fe80::1]:18123", None) is None
+    own = socket.gethostname().lower()
+    assert open_plane.cross_origin_refusal(f"{own}:18123", f"http://{own}:18123") is None
 
 
 def test_the_chassis_reads_allowed_hosts(project_root: Path) -> None:

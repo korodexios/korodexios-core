@@ -27,6 +27,7 @@ from korodexios_core.cli.init_project import (
 from korodexios_core.constants import ExitCode
 from korodexios_core.kernel.chassis import Chassis, ChassisOptions
 from korodexios_core.paths import AppPaths
+from korodexios_core.version import __version__
 
 
 def make_project(name: str = "demo-app", **kwargs: object) -> object:
@@ -246,9 +247,42 @@ def test_chassis_dependency_follows_the_source_choice() -> None:
     git = build_files(project_from_inputs("git_child"))  # type: ignore[arg-type]
     index = build_files(project_from_inputs("index_child", chassis_source="index"))  # type: ignore[arg-type]
     assert "git+https://github.com/korodexios/korodexios-core.git@v" in git["pyproject.toml"]
-    assert "korodexios-core>=0.1,<1.0" not in git["pyproject.toml"]
-    assert "korodexios-core>=0.1,<1.0" in index["pyproject.toml"]
+    floor = f"korodexios-core>={__version__},<1.0"
+    assert floor not in git["pyproject.toml"]
+    assert floor in index["pyproject.toml"]
     assert "git+" not in index["pyproject.toml"]
     assert project_from_inputs("dflt").chassis_source == "git"  # type: ignore[arg-type]
     with pytest.raises(ProjectError, match="unknown chassis source"):
         project_from_inputs("bad", chassis_source="svn")  # type: ignore[arg-type]
+
+
+def test_free_text_fields_never_break_the_pyproject() -> None:
+    """Quotes and backslashes in the author or description must still parse as TOML."""
+    author = 'Jan "Kleo" M\\'
+    description = 'Backs up C:\\data "nightly"'
+    project = project_from_inputs(  # type: ignore[arg-type]
+        "quoted", author=author, description=description
+    )
+    parsed = tomllib.loads(build_files(project)["pyproject.toml"])
+    assert parsed["project"]["authors"] == [{"name": author}]
+    assert parsed["project"]["description"] == description
+
+
+def test_default_author_reads_git_or_falls_back(monkeypatch) -> None:
+    from korodexios_core.cli import init_project as module
+
+    monkeypatch.setattr(module.shutil, "which", lambda name: None)
+    assert module.default_author() == DEFAULT_AUTHOR
+
+    class Done:
+        stdout = "Ada Lovelace\n"
+
+    monkeypatch.setattr(module.shutil, "which", lambda name: "git")
+    monkeypatch.setattr(module.subprocess, "run", lambda *a, **k: Done())
+    assert module.default_author() == "Ada Lovelace"
+
+    def broken(*_a: object, **_k: object) -> None:
+        raise OSError("no git")
+
+    monkeypatch.setattr(module.subprocess, "run", broken)
+    assert module.default_author() == DEFAULT_AUTHOR

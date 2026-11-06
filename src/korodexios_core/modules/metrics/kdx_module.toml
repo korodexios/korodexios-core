@@ -1,0 +1,13 @@
+# Built-in module manifest, read by korodexios_core.kernel.discovery.
+[module]
+name = "metrics"
+description = "Prometheus /metrics, JSON for Home Assistant, kdx metrics, snapshot events."
+version = "0.1.0"
+entrypoint = "MODULE"
+enabled = true
+priority = 91
+requires_core = ">=0.6"
+
+[metadata]
+tags = ["metrics", "prometheus", "monitoring"]
+owner = "korodexios"

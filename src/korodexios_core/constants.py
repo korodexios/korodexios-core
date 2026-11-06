@@ -149,6 +149,8 @@ SECRET_KEY_WORDS: Final[frozenset[str]] = frozenset(
         "credentials",
         "apikey",
         "dsn",
+        "cookie",
+        "bearer",
     }
 )
 """Single words that name a secret inside a snake_case key segment."""
@@ -164,6 +166,11 @@ SECRET_KEY_COMPOUNDS: Final[tuple[str, ...]] = (
     "refresh_token",
     "session_key",
     "client_secret",
+    "signing_key",
+    "encryption_key",
+    "master_key",
+    "license_key",
+    "connection_string",
 )
 """Two-word secret names that survive inside a longer segment such as
 'modules.backup.aws_access_key_id'."""

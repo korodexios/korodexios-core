@@ -13,7 +13,7 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 | Distribution | `korodexios-core` |
 | Import root | `korodexios_core` |
 | Console scripts | `kdx` (primary short alias), `korodexios` (canonical) |
-| Version | `0.5.6` (production), core API frozen at `v2` (additive changes only inside v2) |
+| Version | `0.6.0` (production), core API frozen at `v2` (additive changes only inside v2) |
 | Runtime | CPython 3.11+, stdlib first (PyYAML for config, rich for the CLI surface) |
 | Config file | `kdx.yml` / `kdx.yaml` / `kdx.json` (then `korodexios.*`) |
 | Env prefix | `KDX_` primary; `KORODEXIOS_` is the canonical long prefix |
@@ -411,8 +411,8 @@ self.bus.unsubscribe(sub)
 **Reserved top-level names.** The chassis owns these verbs: `version`, `doctor`, `logs`,
 `init`, `status`, `reload`, `rpc`, `modules`, `module`, `config`, `run`, `contracts`, `wizard`,
 `tls`, `users`, `audit`, `jobs`, `events`, `stop`, `service`, `locale`, `playbook`,
-`conventions`, `brief`, `proposal`, `reset`, `txn`, `limiter`. The built-in modules own
-`system`, `queue`, `heartbeat`, `backup`, `ui`. A module that claims any of them (or a name
+`conventions`, `brief`, `proposal`, `reset`, `txn`, `limiter`, `agents`. The built-in modules
+own `system`, `queue`, `heartbeat`, `backup`, `ui`, `metrics`, `mcp`, `webhooks`, `wiki`. A module that claims any of them (or a name
 another module already claimed) is a **collision**: every `kdx` command except `kdx doctor`
 fails at once, naming both owners, and `kdx doctor` lists them under `cli-collision` (the report
 key is `cli.collisions`). Pick another name; the full current list is `kdx --help`.
@@ -756,6 +756,16 @@ uv run kdx status       # live report from a running daemon over the control pla
 - **Don't** add a dependency without a paragraph of justification.
 - **Don't** rename public API names: the core API is frozen at `v2`.
 - **Don't** commit `var/`, `.env`, or `kdx.local.yml`.
+- **Do** write a module command's `help=` and argument `help=` as if for an AI agent: every
+  command is an MCP tool (`kdx mcp tools`), and that text is its description. Mark a
+  state-changing command `danger=True` and a local-only one `remote=False`.
+- **Do** edit `AGENTS.md` and run `kdx agents sync`; never hand-edit the generated
+  CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf or Cline rule files.
+- **Do** declare a secret whose key name does not say so with `ConfigField(secret=True)`.
+- **Do** record measurements through `context.metrics` (Prometheus names, bounded labels);
+  an optional `mcp_resources()` hook returning `McpResource` items offers documents to agents.
+- **Do** keep project knowledge in the wiki (`kdx wiki`), and turn a gap in the core into a
+  proposal (`kdx proposal new`, MCP `kdx_proposal_draft`); only the owner sends it.
 
 ## 14. Error Taxonomy
 
