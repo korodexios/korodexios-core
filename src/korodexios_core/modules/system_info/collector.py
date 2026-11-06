@@ -229,33 +229,41 @@ def _pretty(seconds: float) -> str:
     return " ".join(parts)
 
 
-def _windows_memory() -> tuple[int, int] | None:  # pragma: no cover - Windows only
-    """Return (total, available) physical memory on Windows through kernel32, stdlib only."""
-    import ctypes
-    from ctypes import wintypes
+if sys.platform == "win32":  # pragma: no cover - Windows only
 
-    class MemoryStatus(ctypes.Structure):
-        _fields_ = [
-            ("dwLength", wintypes.DWORD),
-            ("dwMemoryLoad", wintypes.DWORD),
-            ("ullTotalPhys", ctypes.c_ulonglong),
-            ("ullAvailPhys", ctypes.c_ulonglong),
-            ("ullTotalPageFile", ctypes.c_ulonglong),
-            ("ullAvailPageFile", ctypes.c_ulonglong),
-            ("ullTotalVirtual", ctypes.c_ulonglong),
-            ("ullAvailVirtual", ctypes.c_ulonglong),
-            ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
-        ]
+    def _windows_memory() -> tuple[int, int] | None:
+        """Return (total, available) physical memory through kernel32, stdlib only."""
+        import ctypes
+        from ctypes import wintypes
 
-    status = MemoryStatus()
-    status.dwLength = ctypes.sizeof(MemoryStatus)
-    try:
-        ok = ctypes.WinDLL("kernel32").GlobalMemoryStatusEx(ctypes.byref(status))
-    except (AttributeError, OSError):
+        class MemoryStatus(ctypes.Structure):
+            _fields_ = [
+                ("dwLength", wintypes.DWORD),
+                ("dwMemoryLoad", wintypes.DWORD),
+                ("ullTotalPhys", ctypes.c_ulonglong),
+                ("ullAvailPhys", ctypes.c_ulonglong),
+                ("ullTotalPageFile", ctypes.c_ulonglong),
+                ("ullAvailPageFile", ctypes.c_ulonglong),
+                ("ullTotalVirtual", ctypes.c_ulonglong),
+                ("ullAvailVirtual", ctypes.c_ulonglong),
+                ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+            ]
+
+        status = MemoryStatus()
+        status.dwLength = ctypes.sizeof(MemoryStatus)
+        try:
+            ok = ctypes.WinDLL("kernel32").GlobalMemoryStatusEx(ctypes.byref(status))
+        except (AttributeError, OSError):
+            return None
+        if not ok:
+            return None
+        return int(status.ullTotalPhys), int(status.ullAvailPhys)
+
+else:
+
+    def _windows_memory() -> tuple[int, int] | None:
+        """Return None: kernel32 exists only on Windows."""
         return None
-    if not ok:
-        return None
-    return int(status.ullTotalPhys), int(status.ullAvailPhys)
 
 
 def host_samples(root: str | Path = ".") -> list[Sample]:
