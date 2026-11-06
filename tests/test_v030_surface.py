@@ -28,7 +28,7 @@ from korodexios_core.version import __version__
 PROJECT_KEYS = """
 core:
   project:
-    name: agentic-librarian
+    name: sample-project
     version: 4.2.0
     contract_dir: Schema
 """
@@ -105,11 +105,11 @@ def test_project_identity_reads_the_project_triple(tmp_path: Path) -> None:
     config_file.write_text(PROJECT_KEYS.lstrip(), encoding="utf-8")
     config = LayeredConfig.load(config_file=config_file, env_file=None, environ={})
     identity = project_identity(config, home=tmp_path)
-    assert identity.name == "agentic-librarian"
+    assert identity.name == "sample-project"
     assert identity.version == "4.2.0"
     assert identity.contract_dir == str(tmp_path / "Schema")
     assert identity.as_dict() == {
-        "name": "agentic-librarian",
+        "name": "sample-project",
         "version": "4.2.0",
         "contract_dir": str(tmp_path / "Schema"),
     }
@@ -142,12 +142,12 @@ def test_doctor_reports_the_same_triple_the_chassis_holds(
     assert main([*base_args(tmp_path), "doctor"]) == int(ExitCode.SUCCESS)
     captured = capsys.readouterr()
     assert "Project identity" in captured.out
-    assert "agentic-librarian" in captured.out
+    assert "sample-project" in captured.out
     capsys.readouterr()
     assert main([*base_args(tmp_path), "doctor", "--json"]) == int(ExitCode.SUCCESS)
     report = load_json(capsys.readouterr().out)
     assert report["project"] == {
-        "name": "agentic-librarian",
+        "name": "sample-project",
         "version": "4.2.0",
         "contract_dir": str(tmp_path / "Schema"),
     }
@@ -332,7 +332,7 @@ core:
   ipc:
     enabled: false
   project:
-    name: agentic-librarian
+    name: sample-project
     version: 4.2.0
     contract_dir: contracts
 """.lstrip(),
