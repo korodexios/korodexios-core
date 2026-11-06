@@ -12,7 +12,7 @@ clients that talk to the same core and never reimplement it.
 - **Bootstrap:** uv (Astral) owns the environment - `uv venv`, `uv sync --extra dev`,
   `uv run kdx ...`, `uv tool install korodexios-core`, `uv lock` for a consumer's own pins
 - **Dependencies:** `pyyaml` (config files), `rich` (the wizard layer)
-- **Release:** `v0.5.6`, core API frozen at `v2`
+- **Release:** `v0.6.0`, core API frozen at `v2`
 
 **Install in one go:** `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) - a guided,
 coloured installer in English or Slovak (`--dry-run` shows the steps without running them).
@@ -29,6 +29,7 @@ coloured installer in English or Slovak (`--dry-run` shows the steps without run
 | [docs/ROADMAP.md](docs/ROADMAP.md) | everyone | the phase history and what ships next |
 | [CHANGELOG.md](CHANGELOG.md) | humans, operators | notable changes per release, newest first |
 | [docs/TRANSLATING.md](docs/TRANSLATING.md) | translators, agents | adding a language: `kdx locale add`, `todo`, `apply` |
+| [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md) | integrators, agents | MCP for AI agents, n8n/Zapier/Make webhooks in and out, WebSocket, tokens |
 | [docs/AGENTS_GUIDE.md](docs/AGENTS_GUIDE.md) | AI agents, LLMs | contract-first reference: golden rules, module blueprint, manifest spec, verification loop |
 | [llms.txt](llms.txt) | AI agents, LLMs | byte-identical mirror of the agent guide, sized for a context window |
 | [AGENTS.md](AGENTS.md) | both | the working agreement: commands, layout, rules, the verification bar |
@@ -75,7 +76,7 @@ Pin the chassis the way a consumer project does, entirely with uv:
 
 ```bash
 uv tool install korodexios-core   # a global kdx on PATH, no project involved
-uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.6"
+uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.0"
 uv lock                          # and 'uv add' for this project's own pinned dependencies
 ```
 
@@ -153,10 +154,34 @@ lists them. Set `core.ipc.host: 0.0.0.0` to serve
 the LAN (the default port, 18123, avoids the usual 8000/8080/8123 neighbours; change it with
 `core.ipc.port`), and `kdx status --target host:port` to query a remote chassis.
 
+## Agents and automation
+
+- **MCP server:** every module command is a tool for AI agents. `kdx mcp serve` (stdio, for
+  Claude Code, Cursor, VS Code, Windsurf) and `POST /api/v1/mcp` (Streamable HTTP, for remote
+  agents and n8n); `kdx mcp config --write` registers it, `kdx mcp tools` lists the tools.
+- **Webhooks:** bus events out to n8n, Zapier, Make, Slack or ntfy, signed with HMAC-SHA256
+  (`modules.webhooks.targets`, `kdx webhooks test`); events in through
+  `POST /api/v1/webhooks/inbound` with a contributor token.
+- **WebSocket:** `/api/v1/ws` - subscribe to events, run commands, publish, on one connection.
+- **Rules for every agent:** `kdx agents sync` writes CLAUDE.md, GEMINI.md, Cursor, Copilot,
+  Windsurf and Cline rule files from one `AGENTS.md` (`--check` in CI); `kdx playbook` is the
+  agent playbook. Tokens work as `Authorization: Bearer` too.
+
+- **Measurements:** `context.metrics` (counter, gauge, summary, collector), host CPU, memory
+  and disk built in; `GET /metrics` for Prometheus/Grafana, `?format=json` for Home Assistant,
+  `kdx metrics` in the terminal, optional `core.metrics.snapshot` events for push bridges.
+- **Project wiki:** `kdx wiki` - public `docs/wiki/`, internal git-ignored `docs-dev/wiki/`, one
+  file per language (`page.en.md`, `page.sk.md`), indexed and searchable for agents.
+- **Improving the core:** agents draft `kdx proposal` notes instead of editing the core; the
+  owner reviews and sends them (`kdx proposal send`) - see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+See [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md).
+
 ## Seeding a project
 
 `kdx init my_service` writes a chassis project: `pyproject.toml` with a console script,
-`kdx.yml`, `Makefile`, `README.md`, `AGENTS.md`, `docs/`, `.agents/skills/`,
+`kdx.yml`, `Makefile`, `README.md`, `AGENTS.md` (plus the rule files every coding agent
+reads, and `.mcp.json`), `docs/`, `.agents/skills/`,
 `src/<pkg>/cli.py`, a first module with a manifest, and smoke tests that boot the
 chassis in-process. Nothing is a placeholder: the generated tree passes `ruff`, strict
 `mypy`, and `pytest` on arrival, and its chassis dependency is pinned to the

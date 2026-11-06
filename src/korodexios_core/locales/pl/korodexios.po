@@ -42,6 +42,10 @@ msgstr "--payload nie jest poprawnym JSON-em: {error}"
 msgid "--print changed nothing"
 msgstr "--print niczego nie zmienił"
 
+#: cli/proposal.py
+msgid "--repo must be OWNER/NAME, got {repo}"
+msgstr "--repo musi mieć postać OWNER/NAME, podano {repo}"
+
 #: cli/commands.py
 msgid "--rotate and --clear are mutually exclusive"
 msgstr "--rotate i --clear wzajemnie się wykluczają"
@@ -53,6 +57,10 @@ msgstr "... i {count} więcej"
 #: modules/job_queue/module.py
 msgid "Age in days."
 msgstr "Wiek w dniach."
+
+#: cli/agents.py
+msgid "Also overwrite a rule file a person wrote."
+msgstr "Nadpisuje także plik reguł napisany przez człowieka."
 
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
@@ -94,6 +102,10 @@ msgstr "Anuluje zadanie w kolejce (uruchomionego nie można cofnąć)."
 msgid "Change a user's role."
 msgstr "Zmień rolę użytkownika."
 
+#: cli/agents.py
+msgid "Change nothing; exit 1 when a file is missing or stale (for CI)."
+msgstr "Niczego nie zmienia; kończy z kodem 1, gdy plik brakuje lub jest nieaktualny (dla CI)."
+
 #: cli/language.py
 msgid "Change nothing; exit 3 when the template is out of date."
 msgstr "Niczego nie zmieniaj; zakończ kodem 3, gdy szablon jest nieaktualny."
@@ -117,6 +129,10 @@ msgstr "Wybierz język dla tego komputera (zapisuje kdx.local.yml)."
 #: cli/language.py
 msgid "Collect translatable strings into the template and update translations."
 msgstr "Zbierz tłumaczone teksty do szablonu i zaktualizuj tłumaczenia."
+
+#: modules/wiki/module.py
+msgid "Comma-separated tags."
+msgstr "Tagi oddzielone przecinkami."
 
 #: cli/language.py
 msgid "Compare catalogues with their templates; exit 3 when one is incomplete."
@@ -142,6 +158,10 @@ msgstr "Kopiuj nawet po przekroczeniu limitu rozmiaru."
 msgid "Create a numbered proposal note from the template."
 msgstr "Tworzy numerowaną propozycję z szablonu."
 
+#: modules/wiki/module.py
+msgid "Create a page with its header (title, tags, summary)."
+msgstr "Tworzy stronę z nagłówkiem (tytuł, tagi, podsumowanie)."
+
 #: cli/tls.py
 msgid "Create a self-signed certificate for 'kdx run --tls'."
 msgstr "Utwórz certyfikat z podpisem własnym dla 'kdx run --tls'."
@@ -157,6 +177,14 @@ msgstr "Tworzy moduły (kdx module new NAME zapisuje trójkę plików modułu i 
 #: cli/tls.py
 msgid "Create the certificate for an https control plane."
 msgstr "Utwórz certyfikat dla płaszczyzny sterowania przez https."
+
+#: cli/proposal.py
+msgid "Create the issue on github.com/{repo}?"
+msgstr "Utworzyć issue na github.com/{repo}?"
+
+#: modules/wiki/module.py
+msgid "Create the wiki folders and keep the internal one out of git."
+msgstr "Tworzy foldery wiki i wyłącza wewnętrzny z gita."
 
 #: cli/users.py
 msgid "Delete a user; their token stops working at once."
@@ -190,13 +218,17 @@ msgstr "Dysk"
 msgid "Durable work queue: list, submit, cancel, retry."
 msgstr "Trwała kolejka zadań: lista, dodawanie, anulowanie, ponawianie."
 
-#: cli/jobs.py
+#: cli/agents.py
 msgid "Emit JSON."
 msgstr "Wypisz JSON."
 
 #: modules/heartbeat/module.py
 msgid "Emit machine-readable JSON."
 msgstr "Wypisz JSON czytelny dla maszyn."
+
+#: modules/metrics/module.py
+msgid "Emit the Prometheus text format."
+msgstr "Wypisuje format tekstowy Prometheus."
 
 #: cli/commands.py
 msgid "Emit the created files as JSON."
@@ -250,6 +282,10 @@ msgstr "Kończy okres schładzania przed czasem."
 msgid "Event bus"
 msgstr "Magistrala zdarzeń"
 
+#: modules/webhooks/module.py
+msgid "Event name to send [webhooks.test]."
+msgstr "Nazwa zdarzenia do wysłania [webhooks.test]."
+
 #: cli/jobs.py
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr "Wzorzec zdarzeń: 'backup.*', 'core.job.**', '*' dla wszystkich [*]."
@@ -265,6 +301,10 @@ msgstr "Zakończ błędem, jeśli kopia przekracza SIZE, np. 500MB."
 #: modules/system_info/module.py
 msgid "Filesystem path to inspect."
 msgstr "Ścieżka systemu plików do sprawdzenia."
+
+#: modules/wiki/module.py
+msgid "Find pages holding every word of the query."
+msgstr "Znajduje strony zawierające wszystkie słowa zapytania."
 
 #: cli/txn.py
 msgid "Finish or roll back every transaction a crash left in flight."
@@ -286,6 +326,10 @@ msgstr "Policz skrót każdego zadeklarowanego pliku i zgłoś odchylenia; zako�
 msgid "Heartbeat module utilities."
 msgstr "Narzędzia modułu heartbeat."
 
+#: modules/mcp_server/module.py
+msgid "Highest role the agent acts with [modules.mcp.role, operator]."
+msgstr "Najwyższa rola, z jaką działa agent [modules.mcp.role, operator]."
+
 #: modules/system_info/module.py
 msgid "Host diagnostics (OS, CPU, memory, disk)."
 msgstr "Diagnostyka hosta (system, CPU, pamięć, dysk)."
@@ -306,9 +350,17 @@ msgstr "Ile pokazać."
 msgid "How will you know it works? Observable results, separated by ';'"
 msgstr "Po czym poznasz, że działa? Obserwowalne wyniki, oddzielone „;”"
 
+#: cli/proposal.py
+msgid "I have read the text: send it without asking."
+msgstr "Przeczytałem tekst: wyślij bez pytania."
+
 #: cli/jobs.py
 msgid "Include routine ticks, heartbeats, and scheduler runs."
 msgstr "Uwzględnij rutynowe tyknięcia, heartbeaty i uruchomienia harmonogramu."
+
+#: cli/proposal.py
+msgid "Include the project's name (left out by default)."
+msgstr "Dołącza nazwę projektu (domyślnie pomijana)."
 
 #: cli/commands.py
 msgid "Inspect auto-discovered modules."
@@ -346,6 +398,10 @@ msgstr "Dane w JSON, np. '{\"id\": 7}'."
 msgid "Job id, for example job-3."
 msgstr "Identyfikator zadania, na przykład job-3."
 
+#: cli/agents.py
+msgid "Keep every AI agent's rule file in step with AGENTS.md."
+msgstr "Utrzymuje pliki reguł wszystkich agentów AI zgodne z AGENTS.md."
+
 #: cli/commands.py
 msgid "Language"
 msgstr "Język"
@@ -353,6 +409,10 @@ msgstr "Język"
 #: cli/language.py
 msgid "Language code, such as de or pt_BR."
 msgstr "Kod języka, na przykład de lub pt_BR."
+
+#: modules/wiki/module.py
+msgid "Language suffix, e.g. en, sk, de [modules.wiki.default_language]."
+msgstr "Przyrostek języka, np. en, sk, de [modules.wiki.default_language]."
 
 #: cli/limiter.py
 msgid "Limiter name (see 'kdx limiter list')."
@@ -374,9 +434,17 @@ msgstr "Wypisz wykryte moduły i ich stan."
 msgid "List limiters: calls today, budget left, cooldown."
 msgstr "Lista limiterów: dzisiejsze wywołania, pozostały budżet, schładzanie."
 
+#: modules/wiki/module.py
+msgid "List pages with their languages and tags."
+msgstr "Wypisuje strony z ich językami i tagami."
+
 #: modules/job_queue/module.py
 msgid "List tasks, newest first."
 msgstr "Lista zadań, najnowsze pierwsze."
+
+#: modules/webhooks/module.py
+msgid "List the configured targets (URLs masked)."
+msgstr "Wyświetla skonfigurowane cele (adresy URL zamaskowane)."
 
 #: cli/language.py
 msgid "List the languages that have a catalogue, per message domain."
@@ -389,6 +457,10 @@ msgstr "Wypisuje propozycje tego projektu."
 #: cli/language.py
 msgid "List the strings a language still needs, for a translator or an agent."
 msgstr "Wypisz teksty, których język jeszcze potrzebuje, dla tłumacza lub agenta."
+
+#: modules/mcp_server/module.py
+msgid "List the tools an agent would see."
+msgstr "Wyświetla narzędzia, które widziałby agent."
 
 #: cli/txn.py
 msgid "List transactions, newest first; unfinished ones are marked."
@@ -454,9 +526,17 @@ msgstr "Jeden obiekt JSON w wierszu."
 msgid "One-line module description."
 msgstr "Jednowierszowy opis modułu."
 
+#: modules/wiki/module.py
+msgid "One-line summary."
+msgstr "Jednowierszowe podsumowanie."
+
 #: modules/backup_engine/module.py
 msgid "Only copy paths matching PATTERN (repeatable)."
 msgstr "Kopiuj tylko ścieżki pasujące do PATTERN (można powtarzać)."
+
+#: modules/metrics/module.py
+msgid "Only metrics whose name contains TEXT."
+msgstr "Tylko metryki, których nazwa zawiera TEXT."
 
 #: cli/brief.py
 msgid "Only report whether the brief is complete (exit 1 when it is not)."
@@ -502,9 +582,33 @@ msgstr "Otwórz interaktywnego kreatora poleceń."
 msgid "Operating system"
 msgstr "System operacyjny"
 
+#: modules/webhooks/module.py
+msgid "Outbound webhooks for bus events (n8n, Zapier, Make, Slack, ...)."
+msgstr "Wychodzące webhooki dla zdarzeń magistrali (n8n, Zapier, Make, Slack, ...)."
+
+#: modules/wiki/module.py
+msgid "Page name, e.g. deploy or ops/deploy."
+msgstr "Nazwa strony, np. deploy lub ops/deploy."
+
+#: modules/wiki/module.py
+msgid "Page name."
+msgstr "Nazwa strony."
+
+#: modules/wiki/module.py
+msgid "Page text after the heading."
+msgstr "Tekst strony po nagłówku."
+
+#: modules/wiki/module.py
+msgid "Page title [from the slug]."
+msgstr "Tytuł strony [ze sluga]."
+
 #: cli/commands.py
 msgid "Paths"
 msgstr "Ścieżki"
+
+#: modules/mcp_server/module.py
+msgid "Print (or write) the MCP client configuration for this project."
+msgstr "Wyświetla (lub zapisuje) konfigurację klienta MCP dla tego projektu."
 
 #: modules/system_info/module.py
 msgid "Print a full system snapshot."
@@ -521,6 +625,14 @@ msgstr "Wypisz liczniki heartbeat i skonfigurowany interwał."
 #: cli/jobs.py
 msgid "Print new output as it arrives, until the job ends."
 msgstr "Wypisuj nowe dane na bieżąco, aż zadanie się zakończy."
+
+#: modules/wiki/module.py
+msgid "Print one page (the default language when LANG is missing)."
+msgstr "Wypisuje jedną stronę (w języku domyślnym, gdy brak LANG)."
+
+#: cli/proposal.py
+msgid "Print one proposal note."
+msgstr "Wypisuje jedną propozycję."
 
 #: cli/language.py
 msgid "Print the active language and where the choice came from."
@@ -546,9 +658,17 @@ msgstr "Wypisz wykryte ścieżki plików konfiguracji i env."
 msgid "Print the playbook for AI agents (how to work in a project on the core)."
 msgstr "Wypisz podręcznik dla agentów AI (jak pracować w projekcie na rdzeniu)."
 
+#: cli/proposal.py
+msgid "Print the text 'send' would submit (nothing leaves the machine)."
+msgstr "Wypisuje tekst, który wysłałoby 'send' (nic nie opuszcza komputera)."
+
 #: cli/commands.py
 msgid "Project identity"
 msgstr "Tożsamość projektu"
+
+#: cli/proposal.py
+msgid "Proposal number (see 'kdx proposal list')."
+msgstr "Numer propozycji (zob. 'kdx proposal list')."
 
 #: cli/proposal.py
 msgid "Proposal title"
@@ -594,6 +714,10 @@ msgstr "Zastąp istniejący certyfikat."
 msgid "Replace an existing module directory."
 msgstr "Zastąp istniejący katalog modułu."
 
+#: modules/wiki/module.py
+msgid "Report broken links, missing headers and translations."
+msgstr "Zgłasza zepsute linki, brakujące nagłówki i tłumaczenia."
+
 #: modules/system_info/module.py
 msgid "Report disk usage for a path."
 msgstr "Pokaż zużycie dysku dla ścieżki."
@@ -622,6 +746,10 @@ msgstr "Uruchom polecenie modułu w działającym demonie zamiast uruchamiać sz
 msgid "Run the backup (copies files unless --dry-run)."
 msgstr "Uruchom kopię zapasową (kopiuje pliki, chyba że podano --dry-run)."
 
+#: modules/mcp_server/module.py
+msgid "Run tools here even when a daemon is running."
+msgstr "Uruchamia narzędzia tutaj, nawet gdy działa demon."
+
 #: cli/commands.py
 msgid "Runtime"
 msgstr "Środowisko uruchomieniowe"
@@ -649,6 +777,18 @@ msgstr "Sekundy oczekiwania."
 #: modules/system_info/module.py
 msgid "Section to display without prompting."
 msgstr "Sekcja do wyświetlenia bez pytania."
+
+#: cli/proposal.py
+msgid "Send although the note already names an issue."
+msgstr "Wysyła, choć notatka już podaje issue."
+
+#: modules/webhooks/module.py
+msgid "Send one signed test event to every target and report the answer."
+msgstr "Wysyła do każdego celu jedno podpisane zdarzenie testowe i podaje odpowiedź."
+
+#: modules/mcp_server/module.py
+msgid "Serve this project to AI agents over the Model Context Protocol."
+msgstr "Udostępnia ten projekt agentom AI przez Model Context Protocol."
 
 #: cli/service.py
 msgid "Service name [korodexios-<project>]."
@@ -682,6 +822,10 @@ msgstr "Pokazuje limitery; rozpoczyna lub kończy schładzanie."
 msgid "Show the definition and commands; change nothing."
 msgstr "Pokaż definicję i polecenia; niczego nie zmieniaj."
 
+#: modules/metrics/module.py
+msgid "Show the measurements (from the running daemon when there is one)."
+msgstr "Pokazuje pomiary (z działającego demona, jeśli jest)."
+
 #: cli/users.py
 msgid "Show who acted over the control plane (commands, jobs, reloads, stops)."
 msgstr "Pokaż, kto działał przez płaszczyznę sterowania (polecenia, zadania, przeładowania, zatrzymania)."
@@ -709,6 +853,10 @@ msgstr "Pomiń ścieżki pasujące do PATTERN (można powtarzać)."
 #: modules/backup_engine/module.py
 msgid "Source directory to back up."
 msgstr "Katalog źródłowy do skopiowania."
+
+#: modules/mcp_server/module.py
+msgid "Speak MCP on stdin/stdout (what an agent launches)."
+msgstr "Mówi MCP przez stdin/stdout (to, co uruchamia agent)."
 
 #: cli/language.py
 msgid "Start a new language: an empty catalogue built from the template."
@@ -739,6 +887,10 @@ msgid "Stop the running daemon cleanly (needs the admin role)."
 msgstr "Zatrzymaj działającego demona w czysty sposób (wymaga roli admin)."
 
 #: cli/proposal.py
+msgid "Submit a proposal as a GitHub issue, after showing it and asking."
+msgstr "Zgłasza propozycję jako issue na GitHubie po pokazaniu i pytaniu."
+
+#: cli/proposal.py
 msgid "Suggest a change to the core (projects never edit the core)."
 msgstr "Proponuje zmianę rdzenia (projekty nigdy go nie edytują)."
 
@@ -753,6 +905,10 @@ msgstr "ID zadania (zob. 'kdx queue list')."
 #: cli/brief.py
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "3 do 5 rzeczy, które musi robić, oddzielone „;”"
+
+#: modules/wiki/module.py
+msgid "The project wiki: public and internal pages, per language."
+msgstr "Wiki projektu: strony publiczne i wewnętrzne, według języka."
 
 #: cli/txn.py
 msgid "Transaction id (see 'kdx txn list')."
@@ -790,6 +946,14 @@ msgstr "Czego NIE będzie robić, oddzielone „;”"
 msgid "What should this application do, and why? (one sentence)"
 msgstr "Co ma robić ta aplikacja i dlaczego? (jedno zdanie)"
 
+#: modules/mcp_server/module.py
+msgid "Which client to configure [all]."
+msgstr "Którego klienta skonfigurować [all]."
+
+#: modules/wiki/module.py
+msgid "Which wiki [all]."
+msgstr "Które wiki [all]."
+
 #: cli/brief.py
 msgid "Who uses it, and how (terminal, web page, other programs)?"
 msgstr "Kto jej używa i jak (terminal, strona www, inne programy)?"
@@ -797,6 +961,26 @@ msgstr "Kto jej używa i jak (terminal, strona www, inne programy)?"
 #: cli/limiter.py
 msgid "Why, shown in doctor."
 msgstr "Powód, widoczny w doctor."
+
+#: cli/proposal.py
+msgid "Without gh: open the issue form in the browser."
+msgstr "Bez gh: otwiera formularz issue w przeglądarce."
+
+#: modules/wiki/module.py
+msgid "Words to look for."
+msgstr "Szukane słowa."
+
+#: modules/mcp_server/module.py
+msgid "Write .mcp.json, .cursor/mcp.json and .vscode/mcp.json."
+msgstr "Zapisuje .mcp.json, .cursor/mcp.json i .vscode/mcp.json."
+
+#: cli/agents.py
+msgid "Write CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf and Cline rules from AGENTS.md."
+msgstr "Zapisuje reguły CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf i Cline na podstawie AGENTS.md."
+
+#: modules/wiki/module.py
+msgid "Write INDEX.md for each wiki (what an agent reads first)."
+msgstr "Zapisuje INDEX.md dla każdego wiki (to, co agent czyta najpierw)."
 
 #: cli/brief.py
 msgid "Write down what the project must do (interview), or check that it is complete."
@@ -810,9 +994,21 @@ msgstr "Zapisuje konwencje do FILE zamiast je wypisać (nadpisuje plik)."
 msgid "Write the playbook to FILE instead of printing it."
 msgstr "Zapisz podręcznik do FILE zamiast go wypisywać."
 
+#: cli/proposal.py
+msgid "Write the text to FILE."
+msgstr "Zapisuje tekst do FILE."
+
+#: modules/wiki/module.py
+msgid "Write to the internal (git-ignored) wiki."
+msgstr "Zapisuje do wewnętrznego (ignorowanego przez git) wiki."
+
 #: cli/commands.py
 msgid "a SIGHUP to the daemon does the same thing"
 msgstr "SIGHUP wysłany do demona robi to samo"
+
+#: cli/agents.py
+msgid "a file a person wrote is kept; --force replaces it"
+msgstr "plik napisany przez człowieka zostaje; --force go zastępuje"
 
 #: cli/proposal.py
 msgid "a proposal needs a title"
@@ -833,6 +1029,10 @@ msgstr "dodaj go poleceniem: kdx users add NAME --role operator"
 #: cli/txn.py
 msgid "after"
 msgstr "po"
+
+#: cli/proposal.py
+msgid "already sent: {url} (--again sends it once more)"
+msgstr "już wysłano: {url} (--again wysyła ponownie)"
 
 #: cli/commands.py
 msgid "app"
@@ -1005,6 +1205,10 @@ msgstr "schładzanie"
 #: cli/commands.py
 msgid "core api"
 msgstr "API rdzenia"
+
+#: cli/commands.py
+msgid "core.ipc.token is not sent to {host}; pass --token for a remote daemon"
+msgstr "core.ipc.token nie jest wysyłany do {host}; dla zdalnego demona podaj --token"
 
 #: cli/language.py
 msgid "core.locale = {value} saved in {path}"
@@ -1206,6 +1410,14 @@ msgstr "tryb interaktywny"
 msgid "interval seconds"
 msgstr "interwał w sekundach"
 
+#: cli/proposal.py
+msgid "issue created: {url}"
+msgstr "utworzono issue: {url}"
+
+#: cli/proposal.py
+msgid "issues with a similar title - check them first:"
+msgstr "issues o podobnym tytule - najpierw je sprawdź:"
+
 #: cli/commands.py
 msgid "kdx logs -n 200"
 msgstr "kdx logs -n 200"
@@ -1217,6 +1429,10 @@ msgstr "kdx rpc heartbeat status -- -n 5"
 #: cli/commands.py
 msgid "kdx rpc needs a command to delegate"
 msgstr "kdx rpc wymaga polecenia do przekazania"
+
+#: cli/agents.py
+msgid "kept (written by a person)"
+msgstr "zachowany (napisany przez człowieka)"
 
 #: cli/commands.py
 msgid "key"
@@ -1241,6 +1457,14 @@ msgstr "znane klucze"
 #: cli/txn.py
 msgid "label"
 msgstr "etykieta"
+
+#: modules/metrics/module.py
+msgid "labels"
+msgstr "etykiety"
+
+#: modules/wiki/module.py
+msgid "lang"
+msgstr "język"
 
 #: cli/language.py
 msgid "language"
@@ -1294,7 +1518,11 @@ msgstr "dopasowanie"
 msgid "message domains"
 msgstr "domeny komunikatów"
 
-#: cli/commands.py
+#: modules/metrics/module.py
+msgid "metric"
+msgstr "metryka"
+
+#: cli/agents.py
 msgid "missing"
 msgstr "brakujące"
 
@@ -1341,6 +1569,10 @@ msgstr "dalej: kdx locale todo {locale} --json"
 #: cli/commands.py
 msgid "next: kdx modules list"
 msgstr "dalej: kdx modules list"
+
+#: modules/wiki/module.py
+msgid "next: kdx wiki new home --title \"Start here\""
+msgstr "dalej: kdx wiki new home --title \"Start here\""
 
 #: renderer
 msgid "no"
@@ -1422,9 +1654,17 @@ msgstr "brak zarejestrowanych modułów"
 msgid "no named users yet; the shared core.ipc.token is the owner"
 msgstr "brak nazwanych użytkowników; właścicielem jest wspólny core.ipc.token"
 
+#: modules/wiki/module.py
+msgid "no page {slug}; try 'kdx wiki search'"
+msgstr "brak strony {slug}; spróbuj 'kdx wiki search'"
+
 #: cli/commands.py
 msgid "no project or module declared a contract file set"
 msgstr "żaden projekt ani moduł nie zadeklarował zestawu plików kontraktu"
+
+#: cli/proposal.py
+msgid "no proposal {number}; see 'kdx proposal list'"
+msgstr "brak propozycji {number}; zob. 'kdx proposal list'"
 
 #: cli/proposal.py
 msgid "no proposals yet"
@@ -1446,9 +1686,25 @@ msgstr "nie znaleziono tłumaczenia domeny {domain} w {path}"
 msgid "no translations to check; only the source language exists"
 msgstr "brak tłumaczeń do sprawdzenia; istnieje tylko język źródłowy"
 
+#: modules/webhooks/module.py
+msgid "no webhook targets; set modules.webhooks.targets"
+msgstr "brak celów webhooków; ustaw modules.webhooks.targets"
+
+#: modules/wiki/module.py
+msgid "no {wanted} version; showing {language}"
+msgstr "brak wersji {wanted}; pokazuję {language}"
+
+#: modules/wiki/module.py
+msgid "not a git repository: keep the internal wiki out of version control yourself"
+msgstr "to nie jest repozytorium git: sam trzymaj wewnętrzne wiki poza kontrolą wersji"
+
 #: modules/backup_engine/module.py
 msgid "nothing copied yet: this was a plan"
 msgstr "nic jeszcze nie skopiowano: to był tylko plan"
+
+#: modules/wiki/module.py
+msgid "nothing found for {query}"
+msgstr "nic nie znaleziono dla {query}"
 
 #: cli/txn.py
 msgid "nothing to recover"
@@ -1461,6 +1717,10 @@ msgstr "nie ma czego usuwać"
 #: cli/reset.py
 msgid "nothing was deleted"
 msgstr "nic nie zostało usunięte"
+
+#: cli/proposal.py
+msgid "nothing was sent; read the text, then rerun with --confirm or answer yes"
+msgstr "nic nie wysłano; przeczytaj tekst i uruchom ponownie z --confirm albo odpowiedz tak"
 
 #: cli/commands.py
 msgid "nothing written"
@@ -1477,6 +1737,10 @@ msgstr "na innym komputerze zaufaj mu poleceniem: kdx --tls-ca cert.pem status -
 #: modules/web_console/module.py
 msgid "open this URL; it carries the session token:"
 msgstr "otwórz ten adres URL; zawiera token sesji:"
+
+#: cli/proposal.py
+msgid "open {url} and paste the text of {path}"
+msgstr "otwórz {url} i wklej tekst z {path}"
 
 #: modules/web_console/module.py
 msgid "opened the web console in your browser"
@@ -1510,6 +1774,10 @@ msgstr "właściciel"
 msgid "package"
 msgstr "pakiet"
 
+#: modules/wiki/module.py
+msgid "page"
+msgstr "strona"
+
 #: modules/backup_engine/module.py
 msgid "pass --force to copy anyway"
 msgstr "użyj --force, aby mimo to skopiować"
@@ -1525,6 +1793,10 @@ msgstr "podaj --token TOKEN albo ustaw core.ipc.token / KDX_CORE__IPC__TOKEN"
 #: cli/commands.py
 msgid "path"
 msgstr "ścieżka"
+
+#: modules/webhooks/module.py
+msgid "pattern"
+msgstr "wzorzec"
 
 #: cli/txn.py
 msgid "phase"
@@ -1654,6 +1926,10 @@ msgstr "rezydentna"
 msgid "resource missing: {path}"
 msgstr "brak zasobu: {path}"
 
+#: modules/mcp_server/module.py
+msgid "restart the agent so it picks up the kdx server"
+msgstr "uruchom ponownie agenta, aby wczytał serwer kdx"
+
 #: cli/users.py
 msgid "role"
 msgstr "rola"
@@ -1678,6 +1954,10 @@ msgstr "działa"
 msgid "scheduled tasks"
 msgstr "zaplanowane zadania"
 
+#: modules/wiki/module.py
+msgid "scope"
+msgstr "zakres"
+
 #: modules/heartbeat/module.py
 msgid "seconds since last beat"
 msgstr "sekundy od ostatniego uderzenia"
@@ -1698,6 +1978,10 @@ msgstr "wspólny token dla zdalnego punktu końcowego z włączonym uwierzytelni
 msgid "shutdown"
 msgstr "zamknięcie"
 
+#: cli/proposal.py
+msgid "sign in with 'gh auth login', or send it by hand with 'kdx proposal export'"
+msgstr "zaloguj się przez 'gh auth login' albo wyślij ręcznie przez 'kdx proposal export'"
+
 #: cli/commands.py
 msgid "slow handlers"
 msgstr "wolne handlery"
@@ -1705,6 +1989,10 @@ msgstr "wolne handlery"
 #: cli/commands.py
 msgid "source"
 msgstr "źródło"
+
+#: cli/agents.py
+msgid "stale"
+msgstr "nieaktualny"
 
 #: cli/commands.py
 msgid "start 'kdx run' again so {discovery_path} is refreshed"
@@ -1766,6 +2054,10 @@ msgstr "przesyłaj nowo dopisane wiersze do Ctrl-C"
 msgid "subscriptions"
 msgstr "subskrypcje"
 
+#: modules/wiki/module.py
+msgid "tags"
+msgstr "tagi"
+
 #: cli/jobs.py
 msgid "talk to http(s)://host:port instead of the local daemon"
 msgstr "rozmawiaj z http(s)://host:port zamiast z lokalnym demonem"
@@ -1797,6 +2089,10 @@ msgstr "zadanie {id} ponownie w kolejce"
 #: cli/users.py
 msgid "terminal: kdx status --target http://HOST:18123 --token TOKEN"
 msgstr "terminal: kdx status --target http://HOST:18123 --token TOKEN"
+
+#: cli/proposal.py
+msgid "the GitHub CLI (gh) is not installed; nothing was sent"
+msgstr "GitHub CLI (gh) nie jest zainstalowane; nic nie wysłano"
 
 #: cli/commands.py
 msgid "the chassis reads these files and never rewrites one"
@@ -1850,13 +2146,37 @@ msgstr "stan działającego demona: 'kdx status' lub 'kdx ui'"
 msgid "the queue is empty"
 msgstr "kolejka jest pusta"
 
+#: modules/metrics/module.py
+msgid "the running daemon"
+msgstr "działającego demona"
+
 #: cli/users.py
 msgid "the shared core.ipc.token is the built-in admin 'owner'"
 msgstr "wspólny core.ipc.token to wbudowany administrator 'owner'"
 
+#: modules/wiki/module.py
+msgid "the wiki is empty; start with 'kdx wiki init'"
+msgstr "wiki jest puste; zacznij od 'kdx wiki init'"
+
+#: modules/wiki/module.py
+msgid "the wiki is in order"
+msgstr "wiki jest w porządku"
+
 #: modules/backup_engine/module.py
 msgid "the window is off: copies stand until the window opens or a sweep is asked for"
 msgstr "okno jest wyłączone: kopie trwają, aż okno się otworzy lub zażądano czyszczenia"
+
+#: cli/agents.py
+msgid "these read AGENTS.md directly: {names}"
+msgstr "te czytają AGENTS.md bezpośrednio: {names}"
+
+#: modules/metrics/module.py
+msgid "this process (no daemon is running; start one with 'kdx run')"
+msgstr "tego procesu (żaden demon nie działa; uruchom go przez 'kdx run')"
+
+#: cli/proposal.py
+msgid "this text would be sent to github.com/{repo}:"
+msgstr "ten tekst zostałby wysłany do github.com/{repo}:"
 
 #: modules/heartbeat/module.py
 msgid "ticker runs"
@@ -1878,9 +2198,17 @@ msgstr "czas"
 msgid "timings"
 msgstr "czasy"
 
+#: modules/wiki/module.py
+msgid "title"
+msgstr "tytuł"
+
 #: cli/users.py
 msgid "token"
 msgstr "token"
+
+#: modules/mcp_server/module.py
+msgid "tool"
+msgstr "narzędzie"
 
 #: cli/commands.py
 msgid "total"
@@ -1890,6 +2218,10 @@ msgstr "razem"
 msgid "truncate the log file (asks first)"
 msgstr "obetnij plik logu (najpierw zapyta)"
 
+#: cli/agents.py
+msgid "unknown agent: {names}"
+msgstr "nieznany agent: {names}"
+
 #: cli/commands.py
 msgid "unknown dependencies"
 msgstr "nieznane zależności"
@@ -1898,9 +2230,17 @@ msgstr "nieznane zależności"
 msgid "unknown keys"
 msgstr "nieznane klucze"
 
+#: cli/agents.py
+msgid "up to date"
+msgstr "aktualny"
+
 #: cli/commands.py
 msgid "uptime"
 msgstr "czas działania"
+
+#: modules/webhooks/module.py
+msgid "url"
+msgstr "url"
 
 #: modules/system_info/module.py
 msgid "used"
@@ -1942,9 +2282,17 @@ msgstr "martwe wątki robocze"
 msgid "workers watched"
 msgstr "obserwowane wątki robocze"
 
+#: cli/agents.py
+msgid "write AGENTS.md first ('kdx init' seeds one)"
+msgstr "najpierw napisz AGENTS.md ('kdx init' go tworzy)"
+
 #: cli/commands.py
 msgid "write into a directory that already holds files"
 msgstr "zapisz do katalogu, który już zawiera pliki"
+
+#: cli/agents.py
+msgid "written"
+msgstr "zapisany"
 
 #: renderer
 msgid "yes"
@@ -1982,6 +2330,10 @@ msgstr "{count} element(ów), {size} bajtów; usuń je poleceniem kdx reset --ap
 msgid "{count} obsolete translation(s) removed"
 msgstr "Usunięto przestarzałe tłumaczenia: {count}"
 
+#: modules/metrics/module.py
+msgid "{count} samples from {source}"
+msgstr "{count} próbek z {source}"
+
 #: cli/language.py
 msgid "{count} string(s) left for {locale}"
 msgstr "{count} tekst(ów) pozostało dla {locale}"
@@ -1989,6 +2341,10 @@ msgstr "{count} tekst(ów) pozostało dla {locale}"
 #: cli/language.py
 msgid "{count} strings written to {path}"
 msgstr "{count} tekstów zapisano w {path}"
+
+#: modules/mcp_server/module.py
+msgid "{count} tools for the {role} role"
+msgstr "{count} narzędzi dla roli {role}"
 
 #: cli/language.py
 msgid "{count} translation(s) accepted for {locale}"
@@ -2021,6 +2377,10 @@ msgstr "{job_id} jest już {state}; nie ma czego zatrzymywać"
 #: cli/commands.py
 msgid "{job_id} started; Ctrl+C stops watching, not the job"
 msgstr "{job_id} uruchomiono; Ctrl+C przerywa obserwowanie, nie zadanie"
+
+#: modules/wiki/module.py
+msgid "{line} added to .gitignore"
+msgstr "{line} dodano do .gitignore"
 
 #: cli/language.py
 msgid "{locale}: {added} new, {stale} obsolete"
@@ -2106,6 +2466,10 @@ msgstr "{path} jest aktualny"
 msgid "{path} must hold a JSON object"
 msgstr "{path} musi zawierać obiekt JSON"
 
+#: cli/agents.py
+msgid "{path} not found"
+msgstr "nie znaleziono {path}"
+
 #: cli/brief.py
 msgid "{path} written"
 msgstr "{path} zapisano"
@@ -2129,6 +2493,10 @@ msgstr "{root} nie istnieje; nie ma tam czego czyścić"
 #: cli/service.py
 msgid "{shown} failed: {value}"
 msgstr "{shown} zakończyło się błędem: {value}"
+
+#: modules/wiki/module.py
+msgid "{slug} is not a page name: lower-case letters, digits, '-', '_', up to two folders"
+msgstr "{slug} nie jest nazwą strony: małe litery, cyfry, '-', '_', najwyżej dwa foldery"
 
 #: cli/language.py
 msgid "{value} is not a language code; use a form such as sk or sk_SK, or 'auto'"

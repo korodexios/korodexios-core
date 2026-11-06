@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+import threading
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 from enum import IntEnum
@@ -82,8 +84,38 @@ class ConfigEntry:
         With *redact* on, a sensitive value is replaced by the chassis redaction
         marker, so a report can be pasted into an issue without leaking a secret.
         """
-        value = redact_value(self.value) if redact and is_secret_key(self.key) else self.value
+        value = redact_for_display(self.key, self.value) if redact else self.value
         return (self.key, _render_value(value), self.source.label())
+
+
+_DECLARED_SECRETS: set[str] = set()
+_DECLARED_LOCK = threading.Lock()
+
+URL_CREDENTIALS: re.Pattern[str] = re.compile(
+    r"(?i)\b([a-z][a-z0-9+.-]*://)([^/\s:@]*):([^/\s@]+)@"
+)
+"""'scheme://user:password@host' - the password part is what redaction hides."""
+
+
+def declare_secret_keys(keys: Iterable[str]) -> None:
+    """Mark *keys* (full dotted names) as sensitive, whatever their names look like.
+
+    A module says ``ConfigField("targets", secret=True)`` when the value is a secret its
+    name does not betray - a webhook URL, a connection string. The registry declares the
+    full key here when it collects the schema, so 'kdx config show', the web console,
+    and the audit mask it like any 'token' or 'password'. The set only grows: a key
+    once known to be secret stays masked for the life of the process.
+    """
+    cleaned = {str(key).strip().lower() for key in keys if str(key).strip()}
+    if cleaned:
+        with _DECLARED_LOCK:
+            _DECLARED_SECRETS.update(cleaned)
+
+
+def declared_secret_keys() -> frozenset[str]:
+    """Return every key a schema declared sensitive in this process."""
+    with _DECLARED_LOCK:
+        return frozenset(_DECLARED_SECRETS)
 
 
 def is_secret_key(key: str) -> bool:
@@ -93,9 +125,14 @@ def is_secret_key(key: str) -> bool:
     (token, password, api_key, ...). Matching runs on whole segments, on the
     snake_case words inside a segment, and on two-word compounds, so
     'core.ipc.auth' stays readable while 'core.ipc.token', 'modules.x.api_key'
-    and 'modules.backup.aws_access_key_id' are all masked.
+    and 'modules.backup.aws_access_key_id' are all masked. A key a module schema
+    declared ``secret=True`` is sensitive too (see :func:`declare_secret_keys`).
     """
-    segments = [part.strip().lower() for part in str(key).split(KEY_SEPARATOR) if part.strip()]
+    lowered = str(key).strip().lower()
+    with _DECLARED_LOCK:
+        if lowered in _DECLARED_SECRETS:
+            return True
+    segments = [part.strip() for part in lowered.split(KEY_SEPARATOR) if part.strip()]
     for segment in segments:
         if segment in SECRET_KEY_SEGMENTS:
             return True
@@ -109,10 +146,37 @@ def is_secret_key(key: str) -> bool:
 
 
 def redact_value(value: Any, *, marker: str = REDACTION) -> Any:
-    """Return *marker* for a non-empty string value, otherwise *value* unchanged."""
+    """Return *marker* for a non-empty string value, otherwise *value* unchanged.
+
+    A list or tuple of strings is masked item by item, so a list of webhook URLs or
+    API keys is never shown in clear either.
+    """
     if isinstance(value, str) and value.strip():
         return marker
+    if isinstance(value, list | tuple):
+        return [redact_value(item, marker=marker) for item in value]
     return value
+
+
+def mask_url_credentials(value: Any, *, marker: str = REDACTION) -> Any:
+    """Return *value* with the password of every 'scheme://user:password@' URL masked.
+
+    A connection string such as 'postgres://app:hunter2@db/app' hides its secret in a
+    key whose name ('database_url') says nothing about it; the shape of the value does.
+    Strings, and lists of strings, are rewritten; anything else is returned unchanged.
+    """
+    if isinstance(value, str):
+        return URL_CREDENTIALS.sub(lambda match: f"{match[1]}{match[2]}:{marker}@", value)
+    if isinstance(value, list | tuple):
+        return [mask_url_credentials(item, marker=marker) for item in value]
+    return value
+
+
+def redact_for_display(key: str, value: Any) -> Any:
+    """Return *value* the way a report may show it: secret keys masked, URL passwords hidden."""
+    if is_secret_key(key):
+        return redact_value(value)
+    return mask_url_credentials(value)
 
 
 def _render_value(value: Any) -> str:
@@ -632,10 +696,7 @@ class LayeredConfig:
             merged.update(layer.values)
         if not redact:
             return merged
-        return {
-            key: redact_value(value) if is_secret_key(key) else value
-            for key, value in merged.items()
-        }
+        return {key: redact_for_display(key, value) for key, value in merged.items()}
 
     def as_nested(self) -> dict[str, Any]:
         """Return the merged view expanded back into nested mappings."""

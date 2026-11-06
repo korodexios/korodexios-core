@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.5.6.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.0.
 
 ## Working preferences
 
@@ -50,7 +50,19 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 - Never commit control-plane users or the audit log (see commit f78f747); keep
   `var/` and runtime state out of git.
 
-## Current state (2026-11-03)
+## Current state (2026-11-06)
+
+- Branch `feature/agentic-integrations` (not merged, not pushed, not tagged) holds v0.6.0: the
+  November audit fixes plus the agentic surface - modules `mcp` (`kdx mcp serve|tools|config`,
+  `POST /api/v1/mcp`), `webhooks` (signed outbound, `/api/v1/webhooks/inbound`), `realtime`
+  (WebSocket `/api/v1/ws`, `kernel/websocket.py`), Bearer tokens, `kdx agents sync`, playbook
+  sections 10-12, `docs/INTEGRATIONS.md`, and modules `metrics` (`/metrics`, `kdx metrics`,
+  `context.metrics`), `wiki` (`kdx wiki`, public `docs/wiki/`, internal `docs-dev/wiki/`), plus
+  `kdx proposal show|export|send` with `CONTRIBUTING.md` and the issue form. The owner decides
+  merge, tag and push.
+- `main` carries the v0.5.6 release commit, not yet pushed (tag `v0.5.6` exists only locally).
+
+## Earlier state (2026-11-03)
 
 - `main` is at v0.5.2 (tagged); every earlier feature/review branch is merged into it.
 - v0.5.0 adds, inside core API v2: scheduler `jitter`/`window`/`days` and `schedule_at`,

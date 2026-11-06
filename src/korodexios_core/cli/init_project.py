@@ -7,7 +7,10 @@ is real, importable, lint-clean code: no placeholder bodies, no empty functions.
 
 from __future__ import annotations
 
+import json
 import re
+import shutil
+import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -38,7 +41,8 @@ CHASSIS_REPOSITORY: str = "https://github.com/korodexios/korodexios-core"
 
 CHASSIS_SOURCES: dict[str, str] = {
     "git": f"korodexios-core @ git+{CHASSIS_REPOSITORY}.git@v{CORE_VERSION}",
-    "index": "korodexios-core>=0.1,<1.0",
+    # A seed uses the API of the chassis that wrote it, so the floor is this version.
+    "index": f"korodexios-core>={CORE_VERSION},<1.0",
 }
 """How a seeded project names its chassis dependency."""
 
@@ -119,6 +123,35 @@ class ProjectResult:
             "paths": self.files,
             "project": self.project.as_dict() if self.project else None,
         }
+
+
+def toml_string(value: str) -> str:
+    """Return *value* as a TOML basic string, quotes and backslashes escaped.
+
+    JSON's string escapes are a subset of TOML's, so an author called 'Jan "Kleo" M' or
+    a description naming a Windows path still yields a pyproject.toml that parses.
+    """
+    return json.dumps(str(value), ensure_ascii=False)
+
+
+def default_author() -> str:
+    """Return the author a new project is credited to: git's user.name, else the default.
+
+    A seeded pyproject.toml names the person who ran 'kdx init', not the chassis.
+    """
+    git = shutil.which("git")
+    if git:
+        try:
+            completed = subprocess.run(
+                [git, "config", "--get", "user.name"],
+                capture_output=True, text=True, timeout=5, check=False,
+            )
+        except (OSError, subprocess.SubprocessError):
+            completed = None
+        name = completed.stdout.strip() if completed is not None else ""
+        if name:
+            return name
+    return DEFAULT_AUTHOR
 
 
 def validate_project_name(text: str) -> ValidationResult:
@@ -226,7 +259,7 @@ def prompt_project(
     package = str(validated.value)
     author_value = str(author).strip()
     if not author_value:
-        author_value = ux.ask_text("Author / owner", default=DEFAULT_AUTHOR)
+        author_value = ux.ask_text("Author / owner", default=default_author())
     ecosystem_value = ecosystem_key(ecosystem)
     if not ecosystem:
         chosen = ux.ask_choice("Target ecosystem", ECOSYSTEM_LABELS, default=ECOSYSTEM_LABELS[0])
@@ -299,7 +332,9 @@ def build_files(project: ProjectTemplate) -> dict[str, str]:
         f"src/{package}/i18n.py": _i18n_source(project),
         f"src/{package}/locales/{package}.pot": _locales_template(project),
         "tests/test_smoke.py": _smoke_test(project),
+        ".mcp.json": _mcp_json(project),
     }
+    files.update(_agent_rule_files(files["AGENTS.md"]))
     if not project.minimal:
         files.update(
             {
@@ -338,9 +373,9 @@ def _pyproject(project: ProjectTemplate) -> str:
             "[project]",
             f'name = "{project.distribution}"',
             'version = "0.1.0"',
-            f'description = "{project.description}"',
+            f"description = {toml_string(project.description)}",
             'requires-python = ">=3.11"',
-            f'authors = [{{name = "{project.author}"}}]',
+            f"authors = [{{name = {toml_string(project.author)}}}]",
             "dependencies = [",
             f"  # {comment}",
             f'  "{requirement}",',
@@ -1000,8 +1035,46 @@ def _agents(project: ProjectTemplate) -> str:
         "@BT@.agents/skills/@BT@ holds the playbooks: project-setup, cli-wizard-ux, verification"
         + (", web-ui." if project.fullstack else "."),
         "",
+        "## Agent tools",
+        "",
+        f"- MCP: @BT@{project.script} mcp serve@BT@ serves every module command as a tool;",
+        "  @BT@.mcp.json@BT@ registers it for Claude Code (@BT@kdx mcp config --write@BT@ adds",
+        "  Cursor and VS Code). Call @BT@kdx_health@BT@ first; ask before a tool whose",
+        "  description says it changes state.",
+        "- Rule files: CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf and Cline rules are",
+        "  generated from this file. Edit AGENTS.md, then run @BT@kdx agents sync@BT@",
+        "  (@BT@kdx agents sync --check@BT@ in CI).",
+        "- Integrations: webhooks out (@BT@modules.webhooks.targets@BT@), events in",
+        "  (@BT@/api/v1/webhooks/inbound@BT@), WebSocket @BT@/api/v1/ws@BT@, MCP over HTTP",
+        "  (@BT@/api/v1/mcp@BT@), metrics @BT@/metrics@BT@ (Prometheus); see @BT@kdx playbook@BT@",
+        "  sections 10-12.",
+        "- Knowledge: the wiki (@BT@docs/wiki/@BT@ public, @BT@docs-dev/wiki/@BT@ internal,",
+        "  one file per language: @BT@page.en.md@BT@); start with @BT@kdx wiki init@BT@, read",
+        "  @BT@INDEX.md@BT@, search with @BT@kdx wiki search@BT@.",
+        "- The core is never edited from here: a gap many projects share becomes",
+        "  @BT@kdx proposal new@BT@ (the owner sends it with @BT@kdx proposal send@BT@).",
+        "",
+        "## Ask the owner first",
+        "",
+        "@BT@git push@BT@, tags, merges to @BT@main@BT@, a new dependency,",
+        "@BT@service install@BT@, changing tokens or roles, deleting what you did not create.",
+        "One yes covers one action.",
+        "",
     ]
     return "\n".join(lines).replace("@BT@", chr(96))
+
+
+def _mcp_json(project: ProjectTemplate) -> str:
+    """Return .mcp.json: the project's own MCP server, launched through uv."""
+    entry = {"command": "uv", "args": ["run", project.script, "mcp", "serve"]}
+    return json.dumps({"mcpServers": {project.distribution: entry}}, indent=2) + "\n"
+
+
+def _agent_rule_files(agents_text: str) -> dict[str, str]:
+    """Return every agent's rule file rendered from the seeded AGENTS.md."""
+    from .agents import TARGETS
+
+    return {target.path: target.render(agents_text) for target in TARGETS}
 
 
 def _makefile(project: ProjectTemplate) -> str:
@@ -1067,6 +1140,8 @@ def _gitignore() -> str:
             "node_modules/",
             "web/dist/",
             "*.mo",
+            "# internal developer notes and the internal wiki (kdx wiki)",
+            "docs-dev/",
             "",
         ]
     )
@@ -1703,9 +1778,11 @@ __all__ = [
     "ProjectResult",
     "ProjectTemplate",
     "build_files",
+    "default_author",
     "ecosystem_key",
     "init_project",
     "project_from_inputs",
     "prompt_project",
+    "toml_string",
     "validate_project_name",
 ]

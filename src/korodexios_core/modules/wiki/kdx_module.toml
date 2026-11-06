@@ -1,0 +1,13 @@
+# Built-in module manifest, read by korodexios_core.kernel.discovery.
+[module]
+name = "wiki"
+description = "Project wiki: public and internal pages, per language, indexed for agents."
+version = "0.1.0"
+entrypoint = "MODULE"
+enabled = true
+priority = 95
+requires_core = ">=0.6"
+
+[metadata]
+tags = ["docs", "wiki", "agents"]
+owner = "korodexios"

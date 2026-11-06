@@ -110,12 +110,14 @@ def test_heartbeat_and_system_info_declare_their_keys() -> None:
         "include_cpu_model",
         "watch_load",
         "load_interval",
+        "metrics",
     )
     assert {field.key: field.kind for field in system_info.fields} == {
         "disk_path": ConfigKind.PATH,
         "include_cpu_model": ConfigKind.BOOL,
         "watch_load": ConfigKind.BOOL,
         "load_interval": ConfigKind.FLOAT,
+        "metrics": ConfigKind.BOOL,
     }
 
 
@@ -149,7 +151,7 @@ def test_config_check_validates_the_builtin_schemas(tmp_path: Path, capsys: Any)
     capsys.readouterr()  # the human report ran; the next run answers with JSON
     assert main([*base_args(tmp_path), "config", "check", "--json"]) == int(ExitCode.SUCCESS)
     payload = json.loads(capsys.readouterr().out)
-    assert payload["schemas"] == {"modules": 5, "issues": []}
+    assert payload["schemas"] == {"modules": 10, "issues": []}
     assert payload["unknown"] == [], payload["unknown"]
 
 

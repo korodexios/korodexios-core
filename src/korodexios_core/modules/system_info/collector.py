@@ -5,10 +5,12 @@ from __future__ import annotations
 import os
 import platform
 import shutil
+import sys
 import time
 from pathlib import Path
 from typing import Any
 
+from ...kernel.metrics import Sample
 from ...units import format_bytes as core_format_bytes
 from ...units import page_size, sysconf_value
 
@@ -17,6 +19,7 @@ __all__ = [
     "disk_snapshot",
     "format_bytes",
     "full_snapshot",
+    "host_samples",
     "load_reading",
     "memory_snapshot",
     "os_snapshot",
@@ -89,6 +92,11 @@ def memory_snapshot() -> dict[str, Any]:
         total = meminfo.get("MemTotal")
         available = meminfo.get("MemAvailable", meminfo.get("MemFree"))
         source = "proc/meminfo"
+    if total is None and sys.platform == "win32":
+        windows = _windows_memory()
+        if windows is not None:
+            total, available = windows
+            source = "GlobalMemoryStatusEx"
     if total is None:
         pages = sysconf_value("SC_PHYS_PAGES")
         if pages is not None:
@@ -147,6 +155,17 @@ def uptime_snapshot() -> dict[str, Any]:
         except (OSError, ValueError, IndexError):
             return result
         result.update(seconds=round(seconds, 1), pretty=_pretty(seconds), source="proc/uptime")
+    elif sys.platform == "win32":  # pragma: no cover - Windows only
+        import ctypes
+
+        try:
+            tick = ctypes.WinDLL("kernel32").GetTickCount64
+            tick.restype = ctypes.c_ulonglong  # the default C int would wrap after 24.8 days
+            milliseconds = int(tick())
+        except (AttributeError, OSError):
+            return result
+        seconds = milliseconds / 1000.0
+        result.update(seconds=round(seconds, 1), pretty=_pretty(seconds), source="GetTickCount64")
     return result
 
 
@@ -208,3 +227,67 @@ def _pretty(seconds: float) -> str:
         parts.append(f"{minutes}m")
     parts.append(f"{secs}s")
     return " ".join(parts)
+
+
+def _windows_memory() -> tuple[int, int] | None:  # pragma: no cover - Windows only
+    """Return (total, available) physical memory on Windows through kernel32, stdlib only."""
+    import ctypes
+    from ctypes import wintypes
+
+    class MemoryStatus(ctypes.Structure):
+        _fields_ = [
+            ("dwLength", wintypes.DWORD),
+            ("dwMemoryLoad", wintypes.DWORD),
+            ("ullTotalPhys", ctypes.c_ulonglong),
+            ("ullAvailPhys", ctypes.c_ulonglong),
+            ("ullTotalPageFile", ctypes.c_ulonglong),
+            ("ullAvailPageFile", ctypes.c_ulonglong),
+            ("ullTotalVirtual", ctypes.c_ulonglong),
+            ("ullAvailVirtual", ctypes.c_ulonglong),
+            ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+        ]
+
+    status = MemoryStatus()
+    status.dwLength = ctypes.sizeof(MemoryStatus)
+    try:
+        ok = ctypes.WinDLL("kernel32").GlobalMemoryStatusEx(ctypes.byref(status))
+    except (AttributeError, OSError):
+        return None
+    if not ok:
+        return None
+    return int(status.ullTotalPhys), int(status.ullAvailPhys)
+
+
+def host_samples(root: str | Path = ".") -> list[Sample]:
+    """Return the host as metrics: CPU, load, memory, disk under *root*, uptime.
+
+    Names start with ``kdx_host_`` (not ``node_``) so they never clash with a real
+    node_exporter scraping the same machine.
+    """
+    rows: list[Sample] = []
+    cores = os.cpu_count()
+    if cores:
+        rows.append(Sample("kdx_host_cpu_cores", float(cores), {}, "gauge", "Logical CPU cores."))
+    load = load_reading()
+    if load:
+        for window, value in zip(("1m", "5m", "15m"), load, strict=False):
+            rows.append(Sample("kdx_host_load_average", float(value), {"window": window},
+                               "gauge", "System load average."))
+    memory = memory_snapshot()
+    for key, name, help_text in (
+        ("total_bytes", "kdx_host_memory_total_bytes", "Physical memory."),
+        ("available_bytes", "kdx_host_memory_available_bytes", "Memory available to programs."),
+    ):
+        if memory.get(key) is not None:
+            rows.append(Sample(name, float(memory[key]), {}, "gauge", help_text))
+    disk = disk_snapshot(root)
+    for key, name, help_text in (
+        ("total_bytes", "kdx_host_disk_total_bytes", "Size of the filesystem holding the project."),
+        ("used_bytes", "kdx_host_disk_used_bytes", "Used space on that filesystem."),
+        ("free_bytes", "kdx_host_disk_free_bytes", "Free space on that filesystem."),
+    ):
+        rows.append(Sample(name, float(disk[key]), {"path": disk["path"]}, "gauge", help_text))
+    uptime = uptime_snapshot().get("seconds")
+    if uptime is not None:
+        rows.append(Sample("kdx_host_uptime_seconds", float(uptime), {}, "gauge", "Host uptime."))
+    return rows

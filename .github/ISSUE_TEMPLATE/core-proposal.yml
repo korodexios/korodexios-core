@@ -1,0 +1,52 @@
+name: Core proposal
+description: Something many projects on the chassis would need (kdx proposal send fills this in).
+title: "[core-proposal] "
+labels: ["core-proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search open **and closed** issues labelled `core-proposal` first: if the idea is there,
+        add your use case to it instead of opening a new one. `kdx proposal send` lists
+        similar issues before it creates one.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What fails or is missing, in one or two sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: Where it showed up
+      description: The command, module or file, and the exact output or behaviour.
+  - type: textarea
+    id: change
+    attributes:
+      label: Proposed change
+      description: What the core should do instead. Contract only, not implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it belongs in the core
+      description: Which kinds of projects need it. A need of one project belongs in its own module.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: New or changed API, config keys, exit codes; backward compatible?
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation offered
+      description: none, or a link to a branch / fork / PR with the change and its tests.
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Output of `kdx version` and the OS.

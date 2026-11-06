@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import Any
 
 from ...cli.render import print_key_values, write_line
-from ...config.layered import is_secret_key, redact_value
+from ...config.layered import is_secret_key, redact_for_display
 from ...config.schema import ConfigField, ConfigKind, ConfigSchema
 from ...constants import TAG_ERROR, TAG_NOTE, TAG_OK
 from ...events.bus import Event
@@ -254,7 +254,7 @@ class WebConsoleModule(Module):
             "entries": [
                 {
                     "key": entry.key,
-                    "value": redact_value(entry.value) if is_secret_key(entry.key) else entry.value,
+                    "value": redact_for_display(entry.key, entry.value),
                     "source": entry.source.label(),
                     "secret": is_secret_key(entry.key),
                 }

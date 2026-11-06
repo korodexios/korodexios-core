@@ -12,6 +12,7 @@ from ...constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
 from ...kernel.cli_contract import CliArgument, CliCommand, CliRequest, CliSurface
 from ...kernel.contract import Module
 from ...kernel.ipc import IpcRequest, IpcRoute
+from ...kernel.metrics import Sample
 from ...kernel.queue import STATES, JobQueue, QueueTask
 from ...kernel.scheduler import ScheduledTask
 
@@ -205,6 +206,7 @@ class JobQueueModule(Module):
         queue.on_register = self._arm_pump
         if queue.kinds():
             self._arm_pump()
+        context.metrics.collector("job_queue.tasks", lambda: _queue_samples(queue))
         self.logger.info("job queue started", limit=self._limit, path=str(queue.path))
 
     def _arm_pump(self) -> None:
@@ -234,6 +236,8 @@ class JobQueueModule(Module):
         """
         self._stop.set()
         context = self.context
+        if context is not None:
+            context.metrics.remove_collector("job_queue.tasks")
         if context is not None and context.queue is not None:
             context.queue.on_register = None
         scheduler = self.scheduler
@@ -342,6 +346,15 @@ class JobQueueModule(Module):
         task_id = _int(request.argument("id"))
         done = self.require_context().job_queue().retry(task_id)
         return {"id": task_id, "queued": done}
+
+
+def _queue_samples(queue: JobQueue) -> list[Sample]:
+    """Return the durable queue as metrics: tasks per state."""
+    return [
+        Sample("kdx_queue_tasks", float(count), {"state": state}, "gauge",
+               "Durable queue tasks by state.")
+        for state, count in queue.stats().items()
+    ]
 
 
 def _int(value: Any) -> int:

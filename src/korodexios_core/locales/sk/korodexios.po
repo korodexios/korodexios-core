@@ -42,6 +42,10 @@ msgstr "--payload nie je platný JSON: {error}"
 msgid "--print changed nothing"
 msgstr "--print nič nezmenilo"
 
+#: cli/proposal.py
+msgid "--repo must be OWNER/NAME, got {repo}"
+msgstr "--repo musí byť OWNER/NAME, zadané {repo}"
+
 #: cli/commands.py
 msgid "--rotate and --clear are mutually exclusive"
 msgstr "--rotate a --clear sa navzájom vylučujú"
@@ -53,6 +57,10 @@ msgstr "... a ďalších {count}"
 #: modules/job_queue/module.py
 msgid "Age in days."
 msgstr "Vek v dňoch."
+
+#: cli/agents.py
+msgid "Also overwrite a rule file a person wrote."
+msgstr "Prepíše aj súbor s pravidlami, ktorý napísal človek."
 
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
@@ -94,6 +102,10 @@ msgstr "Zruší úlohu vo fronte (bežiacu nemožno odvolať)."
 msgid "Change a user's role."
 msgstr "Zmení rolu používateľa."
 
+#: cli/agents.py
+msgid "Change nothing; exit 1 when a file is missing or stale (for CI)."
+msgstr "Nič nemení; skončí s kódom 1, keď súbor chýba alebo je zastaraný (pre CI)."
+
 #: cli/language.py
 msgid "Change nothing; exit 3 when the template is out of date."
 msgstr "Nič nemení; skončí kódom 3, ak je šablóna zastaraná."
@@ -117,6 +129,10 @@ msgstr "Zvolí jazyk pre tento počítač (zapíše kdx.local.yml)."
 #: cli/language.py
 msgid "Collect translatable strings into the template and update translations."
 msgstr "Zbiera preložiteľné texty do šablóny a dopĺňa preklady."
+
+#: modules/wiki/module.py
+msgid "Comma-separated tags."
+msgstr "Štítky oddelené čiarkou."
 
 #: cli/language.py
 msgid "Compare catalogues with their templates; exit 3 when one is incomplete."
@@ -142,6 +158,10 @@ msgstr "Skopíruje aj pri prekročení limitu veľkosti."
 msgid "Create a numbered proposal note from the template."
 msgstr "Vytvorí očíslovaný návrh zo šablóny."
 
+#: modules/wiki/module.py
+msgid "Create a page with its header (title, tags, summary)."
+msgstr "Vytvorí stránku s hlavičkou (názov, štítky, zhrnutie)."
+
 #: cli/tls.py
 msgid "Create a self-signed certificate for 'kdx run --tls'."
 msgstr "Vytvorí samopodpísaný certifikát pre 'kdx run --tls'."
@@ -157,6 +177,14 @@ msgstr "Vytvára moduly (kdx module new NAME zapíše trojicu súborov modulu a 
 #: cli/tls.py
 msgid "Create the certificate for an https control plane."
 msgstr "Vytvorí certifikát pre riadiacu rovinu cez https."
+
+#: cli/proposal.py
+msgid "Create the issue on github.com/{repo}?"
+msgstr "Vytvoriť issue na github.com/{repo}?"
+
+#: modules/wiki/module.py
+msgid "Create the wiki folders and keep the internal one out of git."
+msgstr "Vytvorí priečinky wiki a internú časť vylúči z gitu."
 
 #: cli/users.py
 msgid "Delete a user; their token stops working at once."
@@ -190,13 +218,17 @@ msgstr "Disk"
 msgid "Durable work queue: list, submit, cancel, retry."
 msgstr "Trvalá fronta úloh: zoznam, zadanie, zrušenie, opakovanie."
 
-#: cli/jobs.py
+#: cli/agents.py
 msgid "Emit JSON."
 msgstr "Vypíše JSON."
 
 #: modules/heartbeat/module.py
 msgid "Emit machine-readable JSON."
 msgstr "Vypíše JSON pre stroje."
+
+#: modules/metrics/module.py
+msgid "Emit the Prometheus text format."
+msgstr "Vypíše textový formát Prometheus."
 
 #: cli/commands.py
 msgid "Emit the created files as JSON."
@@ -250,6 +282,10 @@ msgstr "Ukončí cooldown predčasne."
 msgid "Event bus"
 msgstr "Zbernica udalostí"
 
+#: modules/webhooks/module.py
+msgid "Event name to send [webhooks.test]."
+msgstr "Názov udalosti na odoslanie [webhooks.test]."
+
 #: cli/jobs.py
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr "Vzor udalostí: 'backup.*', 'core.job.**', '*' pre všetky [*]."
@@ -265,6 +301,10 @@ msgstr "Zlyhá, ak kópia presiahne VEĽKOSŤ, napr. 500MB."
 #: modules/system_info/module.py
 msgid "Filesystem path to inspect."
 msgstr "Cesta v súborovom systéme na kontrolu."
+
+#: modules/wiki/module.py
+msgid "Find pages holding every word of the query."
+msgstr "Nájde stránky, ktoré obsahujú všetky slová dopytu."
 
 #: cli/txn.py
 msgid "Finish or roll back every transaction a crash left in flight."
@@ -286,6 +326,10 @@ msgstr "Spočíta hash každého deklarovaného súboru a ohlási odchýlky; pri
 msgid "Heartbeat module utilities."
 msgstr "Nástroje modulu heartbeat."
 
+#: modules/mcp_server/module.py
+msgid "Highest role the agent acts with [modules.mcp.role, operator]."
+msgstr "Najvyššia rola, s ktorou agent koná [modules.mcp.role, operator]."
+
 #: modules/system_info/module.py
 msgid "Host diagnostics (OS, CPU, memory, disk)."
 msgstr "Diagnostika hostiteľa (OS, CPU, pamäť, disk)."
@@ -306,9 +350,17 @@ msgstr "Koľko zobraziť."
 msgid "How will you know it works? Observable results, separated by ';'"
 msgstr "Ako spoznáte, že to funguje? Pozorovateľné výsledky, oddelené „;“"
 
+#: cli/proposal.py
+msgid "I have read the text: send it without asking."
+msgstr "Text som si prečítal: pošli ho bez otázky."
+
 #: cli/jobs.py
 msgid "Include routine ticks, heartbeats, and scheduler runs."
 msgstr "Zahrnie pravidelné tiky, heartbeaty a behy plánovača."
+
+#: cli/proposal.py
+msgid "Include the project's name (left out by default)."
+msgstr "Zahrnie názov projektu (predvolene sa vynecháva)."
 
 #: cli/commands.py
 msgid "Inspect auto-discovered modules."
@@ -346,6 +398,10 @@ msgstr "Dáta úlohy ako JSON, napr. '{\"id\": 7}'."
 msgid "Job id, for example job-3."
 msgstr "Id úlohy, napríklad job-3."
 
+#: cli/agents.py
+msgid "Keep every AI agent's rule file in step with AGENTS.md."
+msgstr "Udržiava súbory s pravidlami všetkých AI agentov v súlade s AGENTS.md."
+
 #: cli/commands.py
 msgid "Language"
 msgstr "Jazyk"
@@ -353,6 +409,10 @@ msgstr "Jazyk"
 #: cli/language.py
 msgid "Language code, such as de or pt_BR."
 msgstr "Kód jazyka, napríklad de alebo pt_BR."
+
+#: modules/wiki/module.py
+msgid "Language suffix, e.g. en, sk, de [modules.wiki.default_language]."
+msgstr "Jazyková prípona, napr. en, sk, de [modules.wiki.default_language]."
 
 #: cli/limiter.py
 msgid "Limiter name (see 'kdx limiter list')."
@@ -374,9 +434,17 @@ msgstr "Vypíše nájdené moduly a ich stav."
 msgid "List limiters: calls today, budget left, cooldown."
 msgstr "Zoznam limiterov: dnešné volania, zostávajúci rozpočet, cooldown."
 
+#: modules/wiki/module.py
+msgid "List pages with their languages and tags."
+msgstr "Vypíše stránky s ich jazykmi a štítkami."
+
 #: modules/job_queue/module.py
 msgid "List tasks, newest first."
 msgstr "Zoznam úloh, najnovšie prvé."
+
+#: modules/webhooks/module.py
+msgid "List the configured targets (URLs masked)."
+msgstr "Vypíše nastavené ciele (URL maskované)."
 
 #: cli/language.py
 msgid "List the languages that have a catalogue, per message domain."
@@ -389,6 +457,10 @@ msgstr "Vypíše návrhy tohto projektu."
 #: cli/language.py
 msgid "List the strings a language still needs, for a translator or an agent."
 msgstr "Vypíše texty, ktoré jazyku ešte chýbajú, pre prekladateľa alebo agenta."
+
+#: modules/mcp_server/module.py
+msgid "List the tools an agent would see."
+msgstr "Vypíše nástroje, ktoré by agent videl."
 
 #: cli/txn.py
 msgid "List transactions, newest first; unfinished ones are marked."
@@ -454,9 +526,17 @@ msgstr "Jeden objekt JSON na riadok."
 msgid "One-line module description."
 msgstr "Jednoriadkový popis modulu."
 
+#: modules/wiki/module.py
+msgid "One-line summary."
+msgstr "Zhrnutie na jeden riadok."
+
 #: modules/backup_engine/module.py
 msgid "Only copy paths matching PATTERN (repeatable)."
 msgstr "Skopíruje iba cesty zodpovedajúce VZORU (opakovateľné)."
+
+#: modules/metrics/module.py
+msgid "Only metrics whose name contains TEXT."
+msgstr "Len metriky, ktorých názov obsahuje TEXT."
 
 #: cli/brief.py
 msgid "Only report whether the brief is complete (exit 1 when it is not)."
@@ -502,9 +582,33 @@ msgstr "Otvorí interaktívneho sprievodcu príkazmi."
 msgid "Operating system"
 msgstr "Operačný systém"
 
+#: modules/webhooks/module.py
+msgid "Outbound webhooks for bus events (n8n, Zapier, Make, Slack, ...)."
+msgstr "Odchádzajúce webhooky pre udalosti zbernice (n8n, Zapier, Make, Slack, ...)."
+
+#: modules/wiki/module.py
+msgid "Page name, e.g. deploy or ops/deploy."
+msgstr "Názov stránky, napr. deploy alebo ops/deploy."
+
+#: modules/wiki/module.py
+msgid "Page name."
+msgstr "Názov stránky."
+
+#: modules/wiki/module.py
+msgid "Page text after the heading."
+msgstr "Text stránky za nadpisom."
+
+#: modules/wiki/module.py
+msgid "Page title [from the slug]."
+msgstr "Názov stránky [podľa slugu]."
+
 #: cli/commands.py
 msgid "Paths"
 msgstr "Cesty"
+
+#: modules/mcp_server/module.py
+msgid "Print (or write) the MCP client configuration for this project."
+msgstr "Vypíše (alebo zapíše) konfiguráciu MCP klienta pre tento projekt."
 
 #: modules/system_info/module.py
 msgid "Print a full system snapshot."
@@ -521,6 +625,14 @@ msgstr "Vypíše počítadlá heartbeatu a nastavený interval."
 #: cli/jobs.py
 msgid "Print new output as it arrives, until the job ends."
 msgstr "Priebežne vypisuje nový výstup, kým úloha neskončí."
+
+#: modules/wiki/module.py
+msgid "Print one page (the default language when LANG is missing)."
+msgstr "Vypíše jednu stránku (v predvolenom jazyku, keď LANG chýba)."
+
+#: cli/proposal.py
+msgid "Print one proposal note."
+msgstr "Vypíše jeden návrh."
 
 #: cli/language.py
 msgid "Print the active language and where the choice came from."
@@ -546,9 +658,17 @@ msgstr "Vypíše cesty nájdených konfiguračných súborov a súboru env."
 msgid "Print the playbook for AI agents (how to work in a project on the core)."
 msgstr "Vypíš príručku pre AI agentov (ako pracovať v projekte na jadre)."
 
+#: cli/proposal.py
+msgid "Print the text 'send' would submit (nothing leaves the machine)."
+msgstr "Vypíše text, ktorý by 'send' odoslal (nič neopustí počítač)."
+
 #: cli/commands.py
 msgid "Project identity"
 msgstr "Identita projektu"
+
+#: cli/proposal.py
+msgid "Proposal number (see 'kdx proposal list')."
+msgstr "Číslo návrhu (pozri 'kdx proposal list')."
 
 #: cli/proposal.py
 msgid "Proposal title"
@@ -594,6 +714,10 @@ msgstr "Nahradí existujúci certifikát."
 msgid "Replace an existing module directory."
 msgstr "Nahradí existujúci adresár modulu."
 
+#: modules/wiki/module.py
+msgid "Report broken links, missing headers and translations."
+msgstr "Nahlási rozbité odkazy, chýbajúce hlavičky a preklady."
+
 #: modules/system_info/module.py
 msgid "Report disk usage for a path."
 msgstr "Ohlási využitie disku pre cestu."
@@ -622,6 +746,10 @@ msgstr "Spustí príkaz modulu v bežiacom démonovi namiesto štartu šasi."
 msgid "Run the backup (copies files unless --dry-run)."
 msgstr "Spustí zálohu (kopíruje súbory, ak nie je --dry-run)."
 
+#: modules/mcp_server/module.py
+msgid "Run tools here even when a daemon is running."
+msgstr "Spúšťa nástroje tu, aj keď beží démon."
+
 #: cli/commands.py
 msgid "Runtime"
 msgstr "Beh"
@@ -649,6 +777,18 @@ msgstr "Sekundy čakania."
 #: modules/system_info/module.py
 msgid "Section to display without prompting."
 msgstr "Sekcia na zobrazenie bez otázok."
+
+#: cli/proposal.py
+msgid "Send although the note already names an issue."
+msgstr "Pošle aj vtedy, keď poznámka už uvádza issue."
+
+#: modules/webhooks/module.py
+msgid "Send one signed test event to every target and report the answer."
+msgstr "Pošle každému cieľu jednu podpísanú testovaciu udalosť a vypíše odpoveď."
+
+#: modules/mcp_server/module.py
+msgid "Serve this project to AI agents over the Model Context Protocol."
+msgstr "Sprístupní tento projekt AI agentom cez Model Context Protocol."
 
 #: cli/service.py
 msgid "Service name [korodexios-<project>]."
@@ -682,6 +822,10 @@ msgstr "Zobrazí limitery; spustí alebo ukončí cooldown."
 msgid "Show the definition and commands; change nothing."
 msgstr "Zobrazí definíciu a príkazy; nič nemení."
 
+#: modules/metrics/module.py
+msgid "Show the measurements (from the running daemon when there is one)."
+msgstr "Zobrazí merania (z bežiaceho démona, ak beží)."
+
 #: cli/users.py
 msgid "Show who acted over the control plane (commands, jobs, reloads, stops)."
 msgstr "Zobrazí, kto konal cez riadiacu rovinu (príkazy, úlohy, načítania, zastavenia)."
@@ -709,6 +853,10 @@ msgstr "Preskočí cesty zodpovedajúce VZORU (opakovateľné)."
 #: modules/backup_engine/module.py
 msgid "Source directory to back up."
 msgstr "Zdrojový adresár na zálohovanie."
+
+#: modules/mcp_server/module.py
+msgid "Speak MCP on stdin/stdout (what an agent launches)."
+msgstr "Hovorí MCP cez stdin/stdout (to, čo agent spúšťa)."
 
 #: cli/language.py
 msgid "Start a new language: an empty catalogue built from the template."
@@ -739,6 +887,10 @@ msgid "Stop the running daemon cleanly (needs the admin role)."
 msgstr "Čisto zastaví bežiaceho démona (vyžaduje rolu admin)."
 
 #: cli/proposal.py
+msgid "Submit a proposal as a GitHub issue, after showing it and asking."
+msgstr "Odošle návrh ako GitHub issue po zobrazení a otázke."
+
+#: cli/proposal.py
 msgid "Suggest a change to the core (projects never edit the core)."
 msgstr "Navrhne zmenu jadra (projekty jadro nikdy neupravujú)."
 
@@ -753,6 +905,10 @@ msgstr "ID úlohy (pozri 'kdx queue list')."
 #: cli/brief.py
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "3 až 5 vecí, ktoré musí robiť, oddelené „;“"
+
+#: modules/wiki/module.py
+msgid "The project wiki: public and internal pages, per language."
+msgstr "Wiki projektu: verejné a interné stránky, po jazykoch."
 
 #: cli/txn.py
 msgid "Transaction id (see 'kdx txn list')."
@@ -790,6 +946,14 @@ msgstr "Čo NEBUDE robiť, oddelené „;“"
 msgid "What should this application do, and why? (one sentence)"
 msgstr "Čo má táto aplikácia robiť a prečo? (jedna veta)"
 
+#: modules/mcp_server/module.py
+msgid "Which client to configure [all]."
+msgstr "Ktorého klienta nastaviť [all]."
+
+#: modules/wiki/module.py
+msgid "Which wiki [all]."
+msgstr "Ktorá wiki [all]."
+
 #: cli/brief.py
 msgid "Who uses it, and how (terminal, web page, other programs)?"
 msgstr "Kto ju používa a ako (terminál, webová stránka, iné programy)?"
@@ -797,6 +961,26 @@ msgstr "Kto ju používa a ako (terminál, webová stránka, iné programy)?"
 #: cli/limiter.py
 msgid "Why, shown in doctor."
 msgstr "Dôvod, zobrazí sa v doctor."
+
+#: cli/proposal.py
+msgid "Without gh: open the issue form in the browser."
+msgstr "Bez gh: otvorí formulár issue v prehliadači."
+
+#: modules/wiki/module.py
+msgid "Words to look for."
+msgstr "Slová, ktoré sa hľadajú."
+
+#: modules/mcp_server/module.py
+msgid "Write .mcp.json, .cursor/mcp.json and .vscode/mcp.json."
+msgstr "Zapíše .mcp.json, .cursor/mcp.json a .vscode/mcp.json."
+
+#: cli/agents.py
+msgid "Write CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf and Cline rules from AGENTS.md."
+msgstr "Zapíše pravidlá CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf a Cline z AGENTS.md."
+
+#: modules/wiki/module.py
+msgid "Write INDEX.md for each wiki (what an agent reads first)."
+msgstr "Zapíše INDEX.md pre každú wiki (to, čo agent číta ako prvé)."
 
 #: cli/brief.py
 msgid "Write down what the project must do (interview), or check that it is complete."
@@ -810,9 +994,21 @@ msgstr "Zapíše konvencie do FILE namiesto vypísania (prepíše súbor)."
 msgid "Write the playbook to FILE instead of printing it."
 msgstr "Zapíš príručku do FILE namiesto vypísania."
 
+#: cli/proposal.py
+msgid "Write the text to FILE."
+msgstr "Zapíše text do FILE."
+
+#: modules/wiki/module.py
+msgid "Write to the internal (git-ignored) wiki."
+msgstr "Zapíše do internej (git-ignorovanej) wiki."
+
 #: cli/commands.py
 msgid "a SIGHUP to the daemon does the same thing"
 msgstr "to isté urobí SIGHUP poslaný démonovi"
+
+#: cli/agents.py
+msgid "a file a person wrote is kept; --force replaces it"
+msgstr "súbor, ktorý napísal človek, zostáva; --force ho nahradí"
 
 #: cli/proposal.py
 msgid "a proposal needs a title"
@@ -833,6 +1029,10 @@ msgstr "pridaj ho cez: kdx users add MENO --role operator"
 #: cli/txn.py
 msgid "after"
 msgstr "po"
+
+#: cli/proposal.py
+msgid "already sent: {url} (--again sends it once more)"
+msgstr "už odoslané: {url} (--again ho pošle znova)"
 
 #: cli/commands.py
 msgid "app"
@@ -1005,6 +1205,10 @@ msgstr "cooldown"
 #: cli/commands.py
 msgid "core api"
 msgstr "core api"
+
+#: cli/commands.py
+msgid "core.ipc.token is not sent to {host}; pass --token for a remote daemon"
+msgstr "core.ipc.token sa na {host} neposiela; pre vzdialeného démona zadajte --token"
 
 #: cli/language.py
 msgid "core.locale = {value} saved in {path}"
@@ -1206,6 +1410,14 @@ msgstr "interaktívny režim"
 msgid "interval seconds"
 msgstr "interval v sekundách"
 
+#: cli/proposal.py
+msgid "issue created: {url}"
+msgstr "issue vytvorené: {url}"
+
+#: cli/proposal.py
+msgid "issues with a similar title - check them first:"
+msgstr "issues s podobným názvom - najprv ich skontrolujte:"
+
 #: cli/commands.py
 msgid "kdx logs -n 200"
 msgstr "kdx logs -n 200"
@@ -1217,6 +1429,10 @@ msgstr "kdx rpc heartbeat status -- -n 5"
 #: cli/commands.py
 msgid "kdx rpc needs a command to delegate"
 msgstr "kdx rpc potrebuje príkaz na delegovanie"
+
+#: cli/agents.py
+msgid "kept (written by a person)"
+msgstr "ponechaný (napísal ho človek)"
 
 #: cli/commands.py
 msgid "key"
@@ -1241,6 +1457,14 @@ msgstr "známe kľúče"
 #: cli/txn.py
 msgid "label"
 msgstr "štítok"
+
+#: modules/metrics/module.py
+msgid "labels"
+msgstr "štítky"
+
+#: modules/wiki/module.py
+msgid "lang"
+msgstr "jazyk"
 
 #: cli/language.py
 msgid "language"
@@ -1294,7 +1518,11 @@ msgstr "zhoda"
 msgid "message domains"
 msgstr "domény správ"
 
-#: cli/commands.py
+#: modules/metrics/module.py
+msgid "metric"
+msgstr "metrika"
+
+#: cli/agents.py
 msgid "missing"
 msgstr "chýba"
 
@@ -1341,6 +1569,10 @@ msgstr "ďalej: kdx locale todo {locale} --json"
 #: cli/commands.py
 msgid "next: kdx modules list"
 msgstr "ďalej: kdx modules list"
+
+#: modules/wiki/module.py
+msgid "next: kdx wiki new home --title \"Start here\""
+msgstr "ďalej: kdx wiki new home --title \"Start here\""
 
 #: renderer
 msgid "no"
@@ -1422,9 +1654,17 @@ msgstr "žiadne registrované moduly"
 msgid "no named users yet; the shared core.ipc.token is the owner"
 msgstr "zatiaľ žiadni pomenovaní používatelia; vlastníkom je zdieľaný core.ipc.token"
 
+#: modules/wiki/module.py
+msgid "no page {slug}; try 'kdx wiki search'"
+msgstr "stránka {slug} neexistuje; skúste 'kdx wiki search'"
+
 #: cli/commands.py
 msgid "no project or module declared a contract file set"
 msgstr "žiadny projekt ani modul nedeklaroval sadu súborov kontraktu"
+
+#: cli/proposal.py
+msgid "no proposal {number}; see 'kdx proposal list'"
+msgstr "návrh {number} neexistuje; pozri 'kdx proposal list'"
 
 #: cli/proposal.py
 msgid "no proposals yet"
@@ -1446,9 +1686,25 @@ msgstr "nenašiel sa žiadny preklad domény {domain} v {path}"
 msgid "no translations to check; only the source language exists"
 msgstr "niet čo kontrolovať; existuje len zdrojový jazyk"
 
+#: modules/webhooks/module.py
+msgid "no webhook targets; set modules.webhooks.targets"
+msgstr "žiadne ciele webhookov; nastavte modules.webhooks.targets"
+
+#: modules/wiki/module.py
+msgid "no {wanted} version; showing {language}"
+msgstr "verzia {wanted} neexistuje; zobrazuje sa {language}"
+
+#: modules/wiki/module.py
+msgid "not a git repository: keep the internal wiki out of version control yourself"
+msgstr "nie je to git repozitár: internú wiki držte mimo správy verzií sami"
+
 #: modules/backup_engine/module.py
 msgid "nothing copied yet: this was a plan"
 msgstr "zatiaľ sa nič neskopírovalo: išlo o plán"
+
+#: modules/wiki/module.py
+msgid "nothing found for {query}"
+msgstr "pre {query} sa nič nenašlo"
 
 #: cli/txn.py
 msgid "nothing to recover"
@@ -1461,6 +1717,10 @@ msgstr "nie je čo odstrániť"
 #: cli/reset.py
 msgid "nothing was deleted"
 msgstr "nič sa nezmazalo"
+
+#: cli/proposal.py
+msgid "nothing was sent; read the text, then rerun with --confirm or answer yes"
+msgstr "nič sa neodoslalo; prečítajte si text a spustite znova s --confirm alebo odpovedzte áno"
 
 #: cli/commands.py
 msgid "nothing written"
@@ -1477,6 +1737,10 @@ msgstr "na inom počítači mu dôveruj cez: kdx --tls-ca cert.pem status --targ
 #: modules/web_console/module.py
 msgid "open this URL; it carries the session token:"
 msgstr "otvor túto adresu; obsahuje token relácie:"
+
+#: cli/proposal.py
+msgid "open {url} and paste the text of {path}"
+msgstr "otvorte {url} a vložte text zo {path}"
 
 #: modules/web_console/module.py
 msgid "opened the web console in your browser"
@@ -1510,6 +1774,10 @@ msgstr "vlastník"
 msgid "package"
 msgstr "balík"
 
+#: modules/wiki/module.py
+msgid "page"
+msgstr "stránka"
+
 #: modules/backup_engine/module.py
 msgid "pass --force to copy anyway"
 msgstr "ak chceš aj tak kopírovať, pridaj --force"
@@ -1525,6 +1793,10 @@ msgstr "zadaj --token TOKEN alebo nastav core.ipc.token / KDX_CORE__IPC__TOKEN"
 #: cli/commands.py
 msgid "path"
 msgstr "cesta"
+
+#: modules/webhooks/module.py
+msgid "pattern"
+msgstr "vzor"
 
 #: cli/txn.py
 msgid "phase"
@@ -1654,6 +1926,10 @@ msgstr "rezidentná"
 msgid "resource missing: {path}"
 msgstr "chýba zdroj: {path}"
 
+#: modules/mcp_server/module.py
+msgid "restart the agent so it picks up the kdx server"
+msgstr "reštartujte agenta, aby načítal server kdx"
+
 #: cli/users.py
 msgid "role"
 msgstr "rola"
@@ -1678,6 +1954,10 @@ msgstr "beží"
 msgid "scheduled tasks"
 msgstr "naplánované úlohy"
 
+#: modules/wiki/module.py
+msgid "scope"
+msgstr "rozsah"
+
 #: modules/heartbeat/module.py
 msgid "seconds since last beat"
 msgstr "sekúnd od posledného úderu"
@@ -1698,6 +1978,10 @@ msgstr "zdieľaný token pre vzdialený koncový bod so zapnutým overením"
 msgid "shutdown"
 msgstr "vypnutie"
 
+#: cli/proposal.py
+msgid "sign in with 'gh auth login', or send it by hand with 'kdx proposal export'"
+msgstr "prihláste sa cez 'gh auth login' alebo ho pošlite ručne cez 'kdx proposal export'"
+
 #: cli/commands.py
 msgid "slow handlers"
 msgstr "pomalé obslužné funkcie"
@@ -1705,6 +1989,10 @@ msgstr "pomalé obslužné funkcie"
 #: cli/commands.py
 msgid "source"
 msgstr "zdroj"
+
+#: cli/agents.py
+msgid "stale"
+msgstr "zastaraný"
 
 #: cli/commands.py
 msgid "start 'kdx run' again so {discovery_path} is refreshed"
@@ -1766,6 +2054,10 @@ msgstr "priebežne vypisuje nové riadky, kým nestlačíš Ctrl-C"
 msgid "subscriptions"
 msgstr "odbery"
 
+#: modules/wiki/module.py
+msgid "tags"
+msgstr "štítky"
+
 #: cli/jobs.py
 msgid "talk to http(s)://host:port instead of the local daemon"
 msgstr "komunikuje s http(s)://host:port namiesto lokálneho démona"
@@ -1797,6 +2089,10 @@ msgstr "úloha {id} znova zaradená do frontu"
 #: cli/users.py
 msgid "terminal: kdx status --target http://HOST:18123 --token TOKEN"
 msgstr "terminál: kdx status --target http://HOST:18123 --token TOKEN"
+
+#: cli/proposal.py
+msgid "the GitHub CLI (gh) is not installed; nothing was sent"
+msgstr "GitHub CLI (gh) nie je nainštalované; nič sa neodoslalo"
 
 #: cli/commands.py
 msgid "the chassis reads these files and never rewrites one"
@@ -1850,13 +2146,37 @@ msgstr "živý stav bežiaceho démona: 'kdx status' alebo 'kdx ui'"
 msgid "the queue is empty"
 msgstr "fronta je prázdna"
 
+#: modules/metrics/module.py
+msgid "the running daemon"
+msgstr "bežiaceho démona"
+
 #: cli/users.py
 msgid "the shared core.ipc.token is the built-in admin 'owner'"
 msgstr "zdieľaný core.ipc.token je vstavaný admin 'owner'"
 
+#: modules/wiki/module.py
+msgid "the wiki is empty; start with 'kdx wiki init'"
+msgstr "wiki je prázdna; začnite s 'kdx wiki init'"
+
+#: modules/wiki/module.py
+msgid "the wiki is in order"
+msgstr "wiki je v poriadku"
+
 #: modules/backup_engine/module.py
 msgid "the window is off: copies stand until the window opens or a sweep is asked for"
 msgstr "okno je vypnuté: kópie ostávajú, kým sa okno neotvorí alebo sa nepožiada o čistenie"
+
+#: cli/agents.py
+msgid "these read AGENTS.md directly: {names}"
+msgstr "tieto čítajú AGENTS.md priamo: {names}"
+
+#: modules/metrics/module.py
+msgid "this process (no daemon is running; start one with 'kdx run')"
+msgstr "tohto procesu (nebeží žiadny démon; spustite ho cez 'kdx run')"
+
+#: cli/proposal.py
+msgid "this text would be sent to github.com/{repo}:"
+msgstr "tento text by sa odoslal na github.com/{repo}:"
 
 #: modules/heartbeat/module.py
 msgid "ticker runs"
@@ -1878,9 +2198,17 @@ msgstr "čas"
 msgid "timings"
 msgstr "časovanie"
 
+#: modules/wiki/module.py
+msgid "title"
+msgstr "názov"
+
 #: cli/users.py
 msgid "token"
 msgstr "token"
+
+#: modules/mcp_server/module.py
+msgid "tool"
+msgstr "nástroj"
 
 #: cli/commands.py
 msgid "total"
@@ -1890,6 +2218,10 @@ msgstr "spolu"
 msgid "truncate the log file (asks first)"
 msgstr "vyprázdni logový súbor (najprv sa opýta)"
 
+#: cli/agents.py
+msgid "unknown agent: {names}"
+msgstr "neznámy agent: {names}"
+
 #: cli/commands.py
 msgid "unknown dependencies"
 msgstr "neznáme závislosti"
@@ -1898,9 +2230,17 @@ msgstr "neznáme závislosti"
 msgid "unknown keys"
 msgstr "neznáme kľúče"
 
+#: cli/agents.py
+msgid "up to date"
+msgstr "aktuálny"
+
 #: cli/commands.py
 msgid "uptime"
 msgstr "doba behu"
+
+#: modules/webhooks/module.py
+msgid "url"
+msgstr "url"
 
 #: modules/system_info/module.py
 msgid "used"
@@ -1942,9 +2282,17 @@ msgstr "mŕtve vlákna"
 msgid "workers watched"
 msgstr "sledované vlákna"
 
+#: cli/agents.py
+msgid "write AGENTS.md first ('kdx init' seeds one)"
+msgstr "najprv napíšte AGENTS.md ('kdx init' ho vytvorí)"
+
 #: cli/commands.py
 msgid "write into a directory that already holds files"
 msgstr "zapíše do adresára, ktorý už obsahuje súbory"
+
+#: cli/agents.py
+msgid "written"
+msgstr "zapísaný"
 
 #: renderer
 msgid "yes"
@@ -1982,6 +2330,10 @@ msgstr "{count} položiek, {size} bajtov; zmažete ich príkazom kdx reset --app
 msgid "{count} obsolete translation(s) removed"
 msgstr "Odstránených zastaraných prekladov: {count}"
 
+#: modules/metrics/module.py
+msgid "{count} samples from {source}"
+msgstr "{count} vzoriek z {source}"
+
 #: cli/language.py
 msgid "{count} string(s) left for {locale}"
 msgstr "pre {locale} ostáva {count} textov"
@@ -1989,6 +2341,10 @@ msgstr "pre {locale} ostáva {count} textov"
 #: cli/language.py
 msgid "{count} strings written to {path}"
 msgstr "{count} textov zapísaných do {path}"
+
+#: modules/mcp_server/module.py
+msgid "{count} tools for the {role} role"
+msgstr "{count} nástrojov pre rolu {role}"
 
 #: cli/language.py
 msgid "{count} translation(s) accepted for {locale}"
@@ -2021,6 +2377,10 @@ msgstr "{job_id} je už {state}; nie je čo zastaviť"
 #: cli/commands.py
 msgid "{job_id} started; Ctrl+C stops watching, not the job"
 msgstr "{job_id} sa spustila; Ctrl+C zastaví sledovanie, nie úlohu"
+
+#: modules/wiki/module.py
+msgid "{line} added to .gitignore"
+msgstr "{line} pridané do .gitignore"
 
 #: cli/language.py
 msgid "{locale}: {added} new, {stale} obsolete"
@@ -2106,6 +2466,10 @@ msgstr "{path} je aktuálny"
 msgid "{path} must hold a JSON object"
 msgstr "{path} musí obsahovať objekt JSON"
 
+#: cli/agents.py
+msgid "{path} not found"
+msgstr "{path} sa nenašiel"
+
 #: cli/brief.py
 msgid "{path} written"
 msgstr "{path} zapísané"
@@ -2129,6 +2493,10 @@ msgstr "{root} neexistuje; nie je tam čo čistiť"
 #: cli/service.py
 msgid "{shown} failed: {value}"
 msgstr "{shown} zlyhalo: {value}"
+
+#: modules/wiki/module.py
+msgid "{slug} is not a page name: lower-case letters, digits, '-', '_', up to two folders"
+msgstr "{slug} nie je názov stránky: malé písmená, číslice, '-', '_', najviac dva priečinky"
 
 #: cli/language.py
 msgid "{value} is not a language code; use a form such as sk or sk_SK, or 'auto'"

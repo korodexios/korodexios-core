@@ -20,8 +20,8 @@ docs. `kdx --help` lists every command, including the ones modules contributed.
 | uv, in the chassis repository | `uv venv --python 3.13 && uv sync --extra dev && uv run kdx doctor` | uv (Astral) owns the environment; `make` resolves to `uv run` when uv is on `PATH` |
 | guided installer | `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) | four coloured steps - check, install, verify, first project; asks before installing uv; `--lang sk`, `--yes`, `--dry-run` (`-Language`, `-Yes`, `-DryRun` on Windows) |
 | uv tool | `uv tool install korodexios-core` | a global `kdx` on PATH, no project involved |
-| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.6"` | the documented pin before an index publish; needs network |
-| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.5.6"` | what `kdx init --chassis-source git` writes into the seed |
+| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.0"` | the documented pin before an index publish; needs network |
+| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.6.0"` | what `kdx init --chassis-source git` writes into the seed |
 | pipx, or venv + pip | `pipx install korodexios-core`; `python3 -m venv .venv && pip install -e ".[dev]"` | the fallback when uv is absent - and it fails as written on a PEP 668 `EXTERNALLY-MANAGED` interpreter with no `pip` and no `ensurepip` |
 | from an index | `uv pip install korodexios-core`, or `pip install korodexios-core` | once published; a consumer pins it with `uv lock` |
 
@@ -346,7 +346,7 @@ The seed ships `kdx.yml`, `.env.example`, `Makefile`, `README.md`, `AGENTS.md`,
 smoke tests. It passes `make check` on arrival.
 
 The chassis dependency is pinned to the repository by default
-(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.6`), so a fresh
+(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.0`), so a fresh
 venv can `pip install -e .` the seeded project before any index publish. Pass
 `--chassis-source index` once the package is on an index; an unknown choice is refused
 with a hint. A git pin needs network and uv at install time - `uv venv`,
@@ -408,6 +408,10 @@ releases every name the chassis took. Files that must outlive a moved `var/` bel
 kdx system info | diagnostics | disk      # host OS, CPU, memory, disk
 kdx heartbeat status [--json]             # counters and the configured interval
 kdx backup plan | run | retention | configure   # dry-run, execute, ask what retention did, or reconfigure
+kdx mcp serve | tools | config            # MCP server for AI agents (see below)
+kdx webhooks list | test                  # outbound webhook targets (see below)
+kdx metrics [--json | --prometheus]       # measurements (see below)
+kdx wiki new | list | show | search | index | check   # the project wiki (see below)
 ```
 
 Each is registered by its module through `register_cli`, so argparse and the wizard
@@ -626,6 +630,30 @@ two commands bring them into a project created earlier.
 
 `kdx init` also seeds an empty `docs/BRIEF.md`. Exit 1 if a packaged resource is missing
 or the target cannot be written.
+
+## AI agents and integrations (`kdx mcp`, `kdx webhooks`, `kdx agents`)
+
+| Command | Effect |
+| --- | --- |
+| `kdx mcp serve [--role ROLE] [--in-process]` | speak MCP on stdin/stdout; delegates each call to a live daemon unless `--in-process` |
+| `kdx mcp tools [--role ROLE] [--json]` | the tools an agent with that role would see |
+| `kdx mcp config [--client claude\|cursor\|vscode\|windsurf\|n8n\|all] [--write]` | client configuration; `--write` merges `.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json` |
+| `kdx webhooks list [--json]` | targets with their URL masked; exit 3 while one is invalid |
+| `kdx webhooks test [--event NAME] [--json]` | one signed test delivery to every target; exit 1 if one fails |
+| `kdx metrics [--json] [--prometheus] [--filter TEXT]` | the measurements, from the running daemon when there is one |
+| `kdx wiki init\|new\|list\|show\|search\|index\|check` | the project wiki: public `docs/wiki/`, internal `docs-dev/wiki/`, one file per language (`page.sk.md`) |
+| `kdx proposal new\|list\|show\|export\|send` | core-change notes; `send` shows the text, lists similar issues, asks, and creates the issue with `gh` (`--confirm`, `--repo`, `--with-project`) |
+| `kdx agents sync [--check] [--force] [--only a,b] [--json]` | CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf, Cline rules from AGENTS.md; `--check` exits 1 when one is missing or stale |
+
+Control-plane routes: `POST /api/v1/mcp` (MCP Streamable HTTP, viewer and up; tools follow the
+role), `GET /api/v1/ws` (WebSocket: subscribe, rpc, publish), `POST
+/api/v1/webhooks/inbound?event=NAME` (contributor; publishes `inbound.NAME`). Every route accepts
+`Authorization: Bearer TOKEN` as well as `X-Kdx-Token`. Keys: `modules.mcp.http|role|timeout`,
+`modules.webhooks.targets|secret|timeout|retries|inbound`, `modules.realtime.publish`,
+`modules.metrics.auth|snapshot_interval`, `modules.system_info.metrics`,
+`modules.wiki.public_dir|internal_dir|languages|default_language`. `GET /metrics` serves the
+Prometheus text format (`?format=json` for JSON). The walk
+through with n8n, Zapier and the signature check is [INTEGRATIONS.md](INTEGRATIONS.md).
 
 ## Languages (`kdx locale`)
 

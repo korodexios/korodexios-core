@@ -1,0 +1,13 @@
+# Built-in module manifest, read by korodexios_core.kernel.discovery.
+[module]
+name = "realtime"
+description = "WebSocket channel on /api/v1/ws: live events, commands, and publishing."
+version = "0.1.0"
+entrypoint = "MODULE"
+enabled = true
+priority = 93
+requires_core = ">=0.6"
+
+[metadata]
+tags = ["websocket", "events", "integration"]
+owner = "korodexios"

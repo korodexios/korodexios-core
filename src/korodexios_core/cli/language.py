@@ -355,7 +355,7 @@ def _extract(request: CliRequest) -> int:
                                         path=template))
         return int(ExitCode.CONFIG_ERROR)
     directory.mkdir(parents=True, exist_ok=True)
-    template.write_text(wanted, encoding="utf-8")
+    template.write_text(wanted, encoding="utf-8", newline="\n")
     write_line(f"{TAG_OK} " + _t(request, "{count} strings written to {path}",
                                  count=len(messages), path=template))
     translations = [loc for loc in service.locales(domain) if loc != DEFAULT_LOCALE]
@@ -369,7 +369,7 @@ def _extract(request: CliRequest) -> int:
         before = catalog.path.read_text(encoding="utf-8")
         text, _, _ = compose_po(domain, locale, wanted, before, {})
         if text != before:
-            catalog.path.write_text(text, encoding="utf-8")
+            catalog.path.write_text(text, encoding="utf-8", newline="\n")
         had = {entry.msgid for entry in parse_po(before)}
         added = len(messages.keys() - had)
         stale = len(had - messages.keys())
@@ -404,7 +404,7 @@ def _tidy(request: CliRequest) -> int:
         text, _ = tidy_po(text)
         removed = max(0, len(parse_po(before)) - len(parse_po(text))) + len(parse_obsolete(before))
         if text != before:
-            catalog.path.write_text(text, encoding="utf-8")
+            catalog.path.write_text(text, encoding="utf-8", newline="\n")
         total += removed
         write_line(f"{TAG_NOTE} " + _t(request, "{locale}: {count} obsolete removed",
                                        locale=locale, count=removed))
@@ -452,7 +452,7 @@ def _add(request: CliRequest) -> int:
     if template is None:
         return int(ExitCode.CONFIG_ERROR)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(new_po(domain, locale, template), encoding="utf-8")
+    path.write_text(new_po(domain, locale, template), encoding="utf-8", newline="\n")
     write_line(f"{TAG_OK} " + _t(request, "{path} created", path=path))
     write_line(f"{TAG_NOTE} " + _t(request, "next: kdx locale todo {locale} --json", locale=locale))
     return int(ExitCode.SUCCESS)
@@ -518,7 +518,7 @@ def _apply(request: CliRequest) -> int:
     )
     if not request.flag("dry_run") and applied:
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(text, encoding="utf-8")
+        path.write_text(text, encoding="utf-8", newline="\n")
     write_line(f"{TAG_OK} " + _t(request, "{count} translation(s) accepted for {locale}",
                                  count=len(applied), locale=locale))
     for msgid, reason in rejected.items():

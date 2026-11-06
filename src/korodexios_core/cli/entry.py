@@ -19,6 +19,7 @@ from ..kernel.cli_contract import CliRequest
 from ..kernel.ipc import DISCOVERY_NAME, IpcDiscovery
 from ..paths import AppPaths
 from ..version import format_version
+from .agents import agents_command
 from .brief import brief_command
 from .commands import core_commands, render_rpc_reply, wizard_command
 from .conventions import conventions_command
@@ -648,6 +649,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         surface.add_command(service_command())
         surface.add_command(locale_command())
         surface.add_command(playbook_command())
+        surface.add_command(agents_command())
         surface.add_command(conventions_command())
         surface.add_command(brief_command())
         surface.add_command(proposal_command())

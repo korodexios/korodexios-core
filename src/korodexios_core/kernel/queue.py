@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import contextlib
 import json
+import os
+import socket
 import sqlite3
 import threading
 import time
@@ -22,6 +24,8 @@ from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final
+
+from .instance_lock import pid_alive
 
 __all__ = [
     "ACTIVE_STATES",
@@ -55,10 +59,37 @@ CREATE TABLE IF NOT EXISTS tasks (
     finished_at REAL,
     result TEXT,
     error TEXT,
-    user TEXT NOT NULL DEFAULT ''
+    user TEXT NOT NULL DEFAULT '',
+    owner TEXT NOT NULL DEFAULT ''
 );
 CREATE INDEX IF NOT EXISTS tasks_state ON tasks (state, run_after);
 """
+
+_MIGRATIONS: Final[tuple[tuple[str, str], ...]] = (
+    ("owner", "ALTER TABLE tasks ADD COLUMN owner TEXT NOT NULL DEFAULT ''"),
+)
+"""Columns a queue file written by an older chassis lacks, and how to add them."""
+
+
+def worker_identity() -> str:
+    """Return 'host:pid', the owner a claimed task records for this process."""
+    return f"{socket.gethostname().strip().lower()}:{os.getpid()}"
+
+
+def _owner_alive(owner: str) -> bool:
+    """Return True when *owner* is another live process on this machine.
+
+    A task claimed on another host cannot be probed from here and is treated as
+    interrupted, which is what a single shared queue file has always assumed.
+    """
+    host, _, pid_text = str(owner).rpartition(":")
+    if not host or host != socket.gethostname().strip().lower():
+        return False
+    try:
+        pid = int(pid_text)
+    except ValueError:
+        return False
+    return pid != os.getpid() and pid_alive(pid)
 
 
 class PermanentJobError(Exception):
@@ -82,6 +113,8 @@ class QueueTask:
     result: Any
     error: str | None
     user: str
+    owner: str = ""
+    """'host:pid' of the process that claimed the task last; empty until claimed."""
 
     def as_dict(self) -> dict[str, Any]:
         """Return the task as JSON."""
@@ -99,6 +132,7 @@ class QueueTask:
             "result": self.result,
             "error": self.error,
             "user": self.user or None,
+            "owner": self.owner or None,
         }
 
 
@@ -126,6 +160,7 @@ def _row(row: sqlite3.Row) -> QueueTask:
         result=_loads(row["result"]),
         error=row["error"],
         user=str(row["user"] or ""),
+        owner=str(row["owner"] or ""),
     )
 
 
@@ -183,12 +218,20 @@ class JobQueue:
     def _connect(self, *, create: bool = True) -> Iterator[sqlite3.Connection]:
         if create:
             self._path.parent.mkdir(parents=True, exist_ok=True)
+            if not self._path.is_file():
+                # The file went away under a live queue ('kdx reset', a manual delete):
+                # the schema this instance once created must be created again.
+                self._ready = False
         connection = sqlite3.connect(self._path, timeout=30.0, isolation_level=None)
         connection.row_factory = sqlite3.Row
         try:
             if create and not self._ready:
                 connection.execute("PRAGMA journal_mode=WAL")
                 connection.executescript(_SCHEMA)
+                present = {row["name"] for row in connection.execute("PRAGMA table_info(tasks)")}
+                for column, statement in _MIGRATIONS:
+                    if column not in present:
+                        connection.execute(statement)
                 self._ready = True
             yield connection
         finally:
@@ -244,8 +287,8 @@ class JobQueue:
                     return None
                 db.execute(
                     "UPDATE tasks SET state='running', attempts=attempts+1, started_at=?,"
-                    " finished_at=NULL, error=NULL WHERE id=?",
-                    (now, row["id"]),
+                    " finished_at=NULL, error=NULL, owner=? WHERE id=?",
+                    (now, worker_identity(), row["id"]),
                 )
                 task = self._one(db, int(row["id"]))
                 db.execute("COMMIT")
@@ -290,24 +333,37 @@ class JobQueue:
     def recover(self) -> int:
         """Requeue tasks a crash left ``running``; return how many.
 
-        Call it once when a worker pool starts. The attempt the crash interrupted stays
-        counted, so a task that kills its worker every time still ends as ``failed``.
+        Call it once when a worker pool starts. A task another live process on this
+        machine is still running is left alone - two processes may share one queue
+        file - so only a task whose worker is gone is recovered. The attempt the crash
+        interrupted stays counted, so a task that kills its worker every time still
+        ends as ``failed``.
         """
         if not self.exists:
             return 0
+        recovered = 0
         with self._guard, self._connect() as db:
-            cursor = db.execute(
-                "UPDATE tasks SET state='queued', error='interrupted by a restart'"
-                " WHERE state='running' AND attempts<max_attempts"
-            )
-            requeued = cursor.rowcount
-            cursor = db.execute(
-                "UPDATE tasks SET state='failed', finished_at=?,"
-                " error='interrupted by a restart on its last attempt'"
-                " WHERE state='running'",
-                (float(self._clock()),),
-            )
-            return int(requeued) + int(cursor.rowcount)
+            rows = db.execute(
+                "SELECT id, attempts, max_attempts, owner FROM tasks WHERE state='running'"
+            ).fetchall()
+            for row in rows:
+                if _owner_alive(str(row["owner"] or "")):
+                    continue
+                if int(row["attempts"]) < int(row["max_attempts"]):
+                    db.execute(
+                        "UPDATE tasks SET state='queued', error='interrupted by a restart'"
+                        " WHERE id=? AND state='running'",
+                        (row["id"],),
+                    )
+                else:
+                    db.execute(
+                        "UPDATE tasks SET state='failed', finished_at=?,"
+                        " error='interrupted by a restart on its last attempt'"
+                        " WHERE id=? AND state='running'",
+                        (float(self._clock()), row["id"]),
+                    )
+                recovered += 1
+        return recovered
 
     def cancel(self, task_id: int) -> bool:
         """Cancel a queued task; a running one cannot be recalled, so False."""

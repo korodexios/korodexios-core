@@ -470,7 +470,9 @@ def test_commands_exist_without_a_cli_surface(project_root: Path) -> None:
     chassis.start(ipc=False)
     try:
         names = [command.name for command in chassis.registry.commands()]
-        assert names == ["system", "queue", "heartbeat", "backup", "ui"]
+        assert names == [
+            "system", "queue", "heartbeat", "backup", "ui", "metrics", "mcp", "webhooks", "wiki"
+        ]
         result = chassis.dispatch_rpc("heartbeat status")
         assert result["exit_code"] == 0
         assert result["module"] == "heartbeat"

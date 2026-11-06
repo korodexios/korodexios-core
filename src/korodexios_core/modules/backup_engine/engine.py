@@ -168,6 +168,27 @@ def _unique_target(dest: Path, label: str) -> Path:
         index += 1
 
 
+def _claim_target(target: Path) -> Path:
+    """Create *target*, or the next free '<stamp>-N' beside it, and return what was made.
+
+    'mkdir(exist_ok=False)' is atomic, so two runs that planned the same folder never
+    write into one: the second gets a suffix, and retention still reads it as a stamp.
+    """
+    parent, label = target.parent, target.name
+    parent.mkdir(parents=True, exist_ok=True)
+    head, separator, tail = label.rpartition("-")
+    base = head if separator and tail.isdigit() and parse_stamp(head) is not None else label
+    candidate, index = target, 0
+    while True:
+        try:
+            candidate.mkdir(exist_ok=False)
+        except FileExistsError:
+            index += 1
+            candidate = parent / f"{base}-{index}"
+            continue
+        return candidate
+
+
 def build_plan(settings: BackupSettings, *, stamp: str | None = None) -> BackupPlan:
     """Walk the source tree and decide what a backup would copy."""
     source = Path(settings.source)
@@ -254,7 +275,9 @@ def execute_plan(
     total = len(plan.files)
     source = Path(plan.settings.source)
     if not simulate:
-        plan.target.mkdir(parents=True, exist_ok=True)
+        # Planning only looked: another run (a scheduled sweep, a second terminal) may
+        # have taken the same folder since. Creating it is the claim that decides.
+        plan.target = _claim_target(plan.target)
     for candidate in plan.files:
         if should_stop is not None and should_stop():
             result.cancelled = True
@@ -265,8 +288,13 @@ def execute_plan(
         relative = candidate.relative_to(source)
         destination = plan.target / relative
         if simulate:
+            try:
+                size = candidate.stat().st_size
+            except OSError as exc:
+                result.errors.append(f"{relative}: {exc.strerror or exc}")
+                continue
             result.copied += 1
-            result.bytes_copied += candidate.stat().st_size
+            result.bytes_copied += size
             continue
         try:
             destination.parent.mkdir(parents=True, exist_ok=True)

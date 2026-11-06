@@ -26,6 +26,7 @@ def start(
     host: str = "127.0.0.1",
     token: str = "sekret",
     auth: bool = True,
+    allowed_hosts: tuple[str, ...] = (),
 ) -> tuple[IpcServer, list[str]]:
     """Start a control plane whose RPC hook records every command it is asked to run."""
     ran: list[str] = []
@@ -44,6 +45,7 @@ def start(
             discovery_path=tmp_path / "chassis.ipc",
             token=token,
             auth=auth,
+            allowed_hosts=allowed_hosts,
         ),
         rpc_fn=rpc,
         reload_fn=lambda: {"changed": []},
@@ -152,12 +154,19 @@ def test_dns_rebinding_host_is_refused_on_loopback(tmp_path: Path) -> None:
         server.stop()
 
 
-def test_a_lan_bind_accepts_any_host_name(tmp_path: Path) -> None:
+def test_a_lan_bind_answers_addresses_but_not_foreign_names(tmp_path: Path) -> None:
+    """Without core.ipc.allowed_hosts a LAN plane answers IPs, not a rebinding DNS name."""
     server, _ = start(tmp_path, host="0.0.0.0")
     try:
-        assert raw_call(server, "/health", headers={"Host": "nas.lan:18123"})[0] == 200
+        assert raw_call(server, "/health", headers={"Host": "192.168.1.20:18123"})[0] == 200
+        assert raw_call(server, "/health", headers={"Host": "nas.lan:18123"})[0] == 403
     finally:
         server.stop()
+    listed, _ = start(tmp_path, host="0.0.0.0", allowed_hosts=("nas.lan",))
+    try:
+        assert raw_call(listed, "/health", headers={"Host": "nas.lan:18123"})[0] == 200
+    finally:
+        listed.stop()
 
 
 @pytest.mark.parametrize(

@@ -5,6 +5,72 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-06
+
+### Added
+
+- MCP server (built-in module `mcp`): every module command is a tool for AI agents, built from the
+  declarative CLI contract (names, arguments, choices, roles, `danger` as `destructiveHint`), plus
+  `kdx_health`, `kdx_logs`, `kdx_config` and the playbook/conventions/AGENTS.md as resources.
+  Transports: `kdx mcp serve` (stdio; delegates to a live daemon) and `POST /api/v1/mcp`
+  (Streamable HTTP, for n8n's MCP Client node and remote agents). `kdx mcp tools`, `kdx mcp config
+  [--write]` (Claude Code, Cursor, VS Code, Windsurf, n8n).
+- Webhooks (built-in module `webhooks`): matching bus events POSTed to `modules.webhooks.targets`
+  (`URL` or `PATTERN URL`) from a background worker with retries, signed with HMAC-SHA256 over
+  `<timestamp>.<body>` (`X-Kdx-Signature`); `POST /api/v1/webhooks/inbound` lets a contributor
+  publish `inbound.<event>`; `kdx webhooks list|test`; doctor rows for invalid, plain-http and
+  unsigned targets.
+- WebSocket on the control plane (`kernel/websocket.py`, RFC 6455, stdlib) and the `realtime`
+  module: `/api/v1/ws` with subscribe, rpc (also background jobs), publish and ping, each checked
+  against the caller's role and audited.
+- `Authorization: Bearer <token>` is accepted wherever `X-Kdx-Token` is; a browser WebSocket may
+  offer `kdx.token.<token>` as a subprotocol.
+- `kdx agents sync [--check] [--force] [--only]`: CLAUDE.md, GEMINI.md, `.cursor/rules/agents.mdc`,
+  `.github/copilot-instructions.md`, `.windsurf/rules/agents.md` and `.clinerules/agents.md`
+  generated from AGENTS.md; `kdx init` seeds them and `.mcp.json`. Playbook sections 10 (MCP
+  tools) and 11 (integrations). `docs/INTEGRATIONS.md`.
+- Measurements: `context.metrics` (`kernel/metrics.py`: counter, gauge, summary, collectors, the
+  Prometheus text format), built-in module `metrics` (`GET /metrics`, `?format=json`, `kdx metrics`,
+  optional `core.metrics.snapshot` events), host metrics from `system_info` (`kdx_host_*`, with
+  memory and uptime now read on Windows too), queue metrics from `job_queue`.
+- Project wiki (built-in module `wiki`): `kdx wiki init|new|list|show|search|index|check`, public
+  `docs/wiki/` and git-ignored `docs-dev/wiki/`, one file per language (`page.sk.md`), indexes as
+  MCP resources; modules may offer MCP resources through an optional `mcp_resources()` hook.
+- Core proposals: `kdx proposal show|export|send` (shows the text, leaves the project name out,
+  lists similar issues, asks, creates the issue with `gh` and records it; without `gh` a form
+  link), MCP tool `kdx_proposal_draft` (local note only), `kdx_metrics` tool; template sections
+  "Why it belongs in the core" and "Implementation offered"; `CONTRIBUTING.md`, an issue form and a
+  pull-request template.
+- `declare_secret_keys`, `mask_url_credentials`, `redact_for_display`; `MAX_STREAMS` bounds open
+  SSE/WebSocket streams (503 beyond it); queue tasks record their `owner`.
+
+### Fixed
+
+- `run_process` with `stdin`: a child that does not read its input no longer blocks the timeout,
+  the cancel flag and the chassis stop (the input is fed from a thread).
+- `kdx init`: an author or description with `"` or `\` no longer produces an invalid
+  `pyproject.toml`; the default author is `git config user.name`; the `index` pin floor is the
+  seeding version.
+- `ConfigField(secret=True)` now masks the key in `kdx config show`, the web console and the audit;
+  list values are masked item by item; URL passwords (`scheme://user:pass@`) are masked under any
+  key; `signing_key`, `encryption_key`, `cookie`, `bearer`, `connection_string` count as secret.
+- Durable queue: `recover()` leaves tasks a live process on this machine still runs; a queue whose
+  file was deleted recreates its schema instead of failing with "no such table".
+- Backups: two runs planned for the same folder never share it (the folder is claimed atomically);
+  a file that vanishes before a dry run is an error row, not a crash.
+- `kdx service`: systemd `%` specifiers are escaped, Windows task arguments are quoted the way the
+  scheduler splits them, the launchd log follows `core.paths.log_dir`.
+
+### Security
+
+- `kdx status|jobs|... --target` no longer sends the local `core.ipc.token` (the built-in admin)
+  to a non-loopback host; pass `--token` for a remote daemon.
+- A LAN bind without `core.ipc.allowed_hosts` now answers IP addresses and this machine's own
+  names only, closing DNS rebinding; list any other name in `allowed_hosts`.
+- Process command lines in the log and in `core.process.finished` events mask secret flags and
+  URL passwords. `/api/v1/schema` no longer lists static mount directories. A module route that
+  raises tells an anonymous caller the exception type only.
+
 ## [0.5.6] - 2026-11-06
 
 ### Changed
