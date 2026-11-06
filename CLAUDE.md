@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.0.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.1.
 
 ## Working preferences
 
@@ -51,6 +51,13 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
   `var/` and runtime state out of git.
 
 ## Current state (2026-11-06)
+
+- `main` is at v0.6.1 (tagged, pushed): v0.6.0 plus the Linux mypy fix and the wiki in the
+  LLM-wiki layout (`raw/`, `SCHEMA.md`, `index.md`, `log.md`, `[[wikilinks]]`, `kdx wiki ingest|log`,
+  `kdx wiki export` into a user's own wiki). Tag `v0.6.0` points at a commit whose CI failed
+  (no release from it). Linux test host: see memory `test-container-198`.
+
+## Earlier on 2026-11-06
 
 - Branch `feature/agentic-integrations` (not merged, not pushed, not tagged) holds v0.6.0: the
   November audit fixes plus the agentic surface - modules `mcp` (`kdx mcp serve|tools|config`,

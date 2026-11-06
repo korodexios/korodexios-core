@@ -198,7 +198,7 @@ def test_pages_parse_search_and_check(tmp_path: Path) -> None:
     (wiki / "home.md").write_text("# Home\n\nStart [here](missing.en.md).\n", encoding="utf-8")
     (wiki / "broken.en.md").write_text("---\ntitle: [unclosed\n---\nbody\n", encoding="utf-8")
     (wiki / "open.en.md").write_text("---\ntitle: x\nno end\n", encoding="utf-8")
-    (wiki / "INDEX.md").write_text("generated\n", encoding="utf-8")
+    (wiki / "index.md").write_text("generated\n", encoding="utf-8")
     pages = scan(wiki, "public", "en")
     by_key = {(page.slug, page.language): page for page in pages}
     assert ("ops/deploy", "en") in by_key and ("ops/deploy", "sk") in by_key
@@ -266,8 +266,8 @@ def test_wiki_commands_end_to_end(capsys, project_root: Path) -> None:
     assert hits["hits"][0]["slug"] == "deploy"
     assert run(project_root, capsys, "wiki", "check")[0] == 0  # warnings only
     code, out = run(project_root, capsys, "wiki", "index")
-    index = (project_root / "docs" / "wiki" / "INDEX.md").read_text(encoding="utf-8")
-    assert "[en](deploy.en.md), [sk](deploy.sk.md)" in index
+    index = (project_root / "docs" / "wiki" / "index.md").read_text(encoding="utf-8")
+    assert "- [[deploy]] - How we deploy. (en, [[deploy.sk|sk]])" in index
     code, out = run(project_root, capsys, "wiki", "check", "--json")
     report = json.loads(out)
     assert report["errors"] == 0
@@ -287,7 +287,7 @@ def test_wiki_index_is_an_mcp_resource(monkeypatch, capsys, project_root: Path) 
     ], "--in-process")
     uris = {item["uri"] for item in replies[0]["result"]["resources"]}
     assert {"kdx://wiki/public", "kdx://wiki/internal"} <= uris
-    assert "`home`" in replies[1]["result"]["contents"][0]["text"]
+    assert "[[home]]" in replies[1]["result"]["contents"][0]["text"]
     assert replies[2]["result"]["isError"] is False
 
 

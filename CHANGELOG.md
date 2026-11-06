@@ -5,6 +5,36 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-11-06
+
+### Fixed
+
+- `system_info`: the Windows memory probe is defined per platform, so `mypy --strict` passes on
+  Linux and macOS again (`ctypes.WinDLL` exists only in the win32 stubs). The `v0.6.0` tag failed
+  that CI step and published no release; `v0.6.1` is the first published 0.6 release.
+
+### Changed
+
+- The wiki follows the LLM-wiki layout, so it opens in Obsidian and merges with an existing
+  LLM-wiki: each scope has `SCHEMA.md`, `raw/` (immutable sources), `index.md` (generated catalog of
+  `[[wikilinks]]`, grouped by page type; replaces `INDEX.md`, which `kdx wiki index` removes) and an
+  append-only `log.md` (`## [YYYY-MM-DD] <op> | <description>`). Page headers carry `type`, `tags`,
+  `sources`, `created`, `updated` with inline lists; types have folders (`sources/`, `concepts/`,
+  `entities/`, `synthesis/`, `decisions/`, `guides/`); the default language has no suffix
+  (`deploy.md`, `deploy.sk.md`) so `[[deploy]]` resolves in any LLM-wiki or Obsidian tool.
+
+### Added
+
+- `kdx wiki ingest FILE` (raw copy plus a source page), `kdx wiki log [OP TEXT]`,
+  `kdx wiki new --type --sources`, `kdx wiki check --record`; the check now reports broken
+  `[[wikilinks]]`, unknown `sources`, missing raw files, raw files no page names, orphans, missing
+  `type`/`tags`, duplicate names, and pages over 800 lines.
+- `kdx wiki export DIR` merges the wiki into a wiki its user runs (LLM-wiki, Obsidian, a git wiki):
+  one namespace folder, raw files beside the target's own, `--prefix` against name clashes, a
+  manifest so re-exports update, remove and never overwrite edited files, one link in the target's
+  `index.md` and one `import` line in its `log.md`; `--format json` prints a bundle for API pushes.
+  The wiki schema is an MCP resource (`kdx://wiki/public/schema`).
+
 ## [0.6.0] - 2026-11-06
 
 ### Added
