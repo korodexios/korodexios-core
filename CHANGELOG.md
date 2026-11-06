@@ -5,6 +5,13 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Fixed
+
+- A LAN control plane no longer asks DNS for its own names (`socket.getfqdn`): the reverse lookup
+  stalled the first request carrying a foreign `Host` header for seconds on macOS. Its own names are
+  now the local hostname, its short form, and `<name>.local`; a DNS name the machine is reached by
+  belongs in `core.ipc.allowed_hosts`.
+
 ## [0.6.1] - 2026-11-06
 
 ### Fixed

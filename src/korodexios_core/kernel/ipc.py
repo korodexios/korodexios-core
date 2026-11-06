@@ -619,16 +619,20 @@ def _is_ip_literal(name: str) -> bool:
 
 @functools.lru_cache(maxsize=1)
 def _own_host_names() -> frozenset[str]:
-    """Return the names this machine calls itself: hostname, FQDN, and '<host>.local'."""
+    """Return the names this machine calls itself: its hostname and '<host>.local'.
+
+    Only the local hostname is read - never DNS. A reverse lookup ('socket.getfqdn')
+    can stall for seconds (it did on macOS), and it would run inside the first request
+    that carries a foreign Host header. A DNS name the machine is reached by belongs in
+    core.ipc.allowed_hosts.
+    """
     names: set[str] = set()
     with contextlib.suppress(OSError):
         host = socket.gethostname().strip().lower()
-        if host:
-            names.update({host, f"{host}.local"})
-    with contextlib.suppress(OSError):
-        fqdn = socket.getfqdn().strip().lower()
-        if fqdn:
-            names.add(fqdn)
+        short = host.split(".", 1)[0]
+        for name in {host, short}:
+            if name:
+                names.update({name, f"{name}.local"})
     return frozenset(names)
 
 

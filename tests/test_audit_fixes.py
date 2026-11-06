@@ -270,3 +270,31 @@ def test_locale_extract_writes_lf_catalogues(
     assert main([*args, "locale", "extract", "--source", str(source)]) == 0
     catalogues = [item for item in seen if item[0].endswith((".pot", ".po"))]
     assert catalogues and all(newline == "\n" for _name, newline in catalogues)
+
+
+def test_own_host_names_never_ask_dns(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A reverse lookup stalled the first foreign-Host request past a client timeout on macOS."""
+    import socket as socket_module
+
+    from korodexios_core.kernel import ipc as ipc_module
+
+    def no_dns(*_args: object) -> str:
+        raise AssertionError("the control plane must not ask DNS for its own names")
+
+    monkeypatch.setattr(socket_module, "getfqdn", no_dns)
+    monkeypatch.setattr(socket_module, "gethostbyaddr", no_dns)
+    monkeypatch.setattr(socket_module, "gethostname", lambda: "Mac-mini.local")
+    ipc_module._own_host_names.cache_clear()
+    try:
+        names = ipc_module._own_host_names()
+        assert {"mac-mini.local", "mac-mini"} <= names
+        started = time.monotonic()
+        server = IpcServer(
+            status_fn=dict, shutdown_fn=lambda: None, state_fn=lambda: "running",
+            options=IpcOptions(host="0.0.0.0", port=0),
+        )
+        assert server.cross_origin_refusal("nas.lan:18123", None)
+        assert server.cross_origin_refusal("mac-mini:18123", None) is None
+        assert time.monotonic() - started < 1.0
+    finally:
+        ipc_module._own_host_names.cache_clear()
