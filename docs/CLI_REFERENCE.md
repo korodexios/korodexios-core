@@ -20,8 +20,8 @@ docs. `kdx --help` lists every command, including the ones modules contributed.
 | uv, in the chassis repository | `uv venv --python 3.13 && uv sync --extra dev && uv run kdx doctor` | uv (Astral) owns the environment; `make` resolves to `uv run` when uv is on `PATH` |
 | guided installer | `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) | four coloured steps - check, install, verify, first project; asks before installing uv; `--lang sk`, `--yes`, `--dry-run` (`-Language`, `-Yes`, `-DryRun` on Windows) |
 | uv tool | `uv tool install korodexios-core` | a global `kdx` on PATH, no project involved |
-| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.0"` | the documented pin before an index publish; needs network |
-| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.6.0"` | what `kdx init --chassis-source git` writes into the seed |
+| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.1"` | the documented pin before an index publish; needs network |
+| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.6.1"` | what `kdx init --chassis-source git` writes into the seed |
 | pipx, or venv + pip | `pipx install korodexios-core`; `python3 -m venv .venv && pip install -e ".[dev]"` | the fallback when uv is absent - and it fails as written on a PEP 668 `EXTERNALLY-MANAGED` interpreter with no `pip` and no `ensurepip` |
 | from an index | `uv pip install korodexios-core`, or `pip install korodexios-core` | once published; a consumer pins it with `uv lock` |
 
@@ -346,7 +346,7 @@ The seed ships `kdx.yml`, `.env.example`, `Makefile`, `README.md`, `AGENTS.md`,
 smoke tests. It passes `make check` on arrival.
 
 The chassis dependency is pinned to the repository by default
-(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.0`), so a fresh
+(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.1`), so a fresh
 venv can `pip install -e .` the seeded project before any index publish. Pass
 `--chassis-source index` once the package is on an index; an unknown choice is refused
 with a hint. A git pin needs network and uv at install time - `uv venv`,
@@ -411,7 +411,7 @@ kdx backup plan | run | retention | configure   # dry-run, execute, ask what ret
 kdx mcp serve | tools | config            # MCP server for AI agents (see below)
 kdx webhooks list | test                  # outbound webhook targets (see below)
 kdx metrics [--json | --prometheus]       # measurements (see below)
-kdx wiki new | list | show | search | index | check   # the project wiki (see below)
+kdx wiki init | new | ingest | log | index | check | export   # the project wiki (see below)
 ```
 
 Each is registered by its module through `register_cli`, so argparse and the wizard
@@ -641,7 +641,8 @@ or the target cannot be written.
 | `kdx webhooks list [--json]` | targets with their URL masked; exit 3 while one is invalid |
 | `kdx webhooks test [--event NAME] [--json]` | one signed test delivery to every target; exit 1 if one fails |
 | `kdx metrics [--json] [--prometheus] [--filter TEXT]` | the measurements, from the running daemon when there is one |
-| `kdx wiki init\|new\|list\|show\|search\|index\|check` | the project wiki: public `docs/wiki/`, internal `docs-dev/wiki/`, one file per language (`page.sk.md`) |
+| `kdx wiki init\|new\|ingest\|log\|list\|show\|search\|index\|check` | the project wiki in the LLM-wiki layout (`raw/`, `SCHEMA.md`, `index.md`, `log.md`, `[[wikilinks]]`): public `docs/wiki/`, internal `docs-dev/wiki/`, one file per language (`page.sk.md`) |
+| `kdx wiki export DIR [--namespace N] [--prefix P] [--dry-run] [--internal]` | merge the wiki into an LLM-wiki, Obsidian vault or git wiki you run; `--format json` prints one bundle |
 | `kdx proposal new\|list\|show\|export\|send` | core-change notes; `send` shows the text, lists similar issues, asks, and creates the issue with `gh` (`--confirm`, `--repo`, `--with-project`) |
 | `kdx agents sync [--check] [--force] [--only a,b] [--json]` | CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf, Cline rules from AGENTS.md; `--check` exits 1 when one is missing or stale |
 

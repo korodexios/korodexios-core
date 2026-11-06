@@ -131,6 +131,10 @@ msgid "Collect translatable strings into the template and update translations."
 msgstr "Zbiera preložiteľné texty do šablóny a dopĺňa preklady."
 
 #: modules/wiki/module.py
+msgid "Comma-separated names of the source pages used."
+msgstr "Názvy použitých zdrojových stránok oddelené čiarkou."
+
+#: modules/wiki/module.py
 msgid "Comma-separated tags."
 msgstr "Štítky oddelené čiarkou."
 
@@ -150,6 +154,10 @@ msgstr "Kontrakty"
 msgid "Control plane"
 msgstr "Riadiaca rovina"
 
+#: modules/wiki/module.py
+msgid "Copy a source into raw/ and create its source page to fill in."
+msgstr "Skopíruje zdroj do raw/ a vytvorí jeho zdrojovú stránku na doplnenie."
+
 #: modules/backup_engine/module.py
 msgid "Copy even when the size budget is exceeded."
 msgstr "Skopíruje aj pri prekročení limitu veľkosti."
@@ -159,8 +167,8 @@ msgid "Create a numbered proposal note from the template."
 msgstr "Vytvorí očíslovaný návrh zo šablóny."
 
 #: modules/wiki/module.py
-msgid "Create a page with its header (title, tags, summary)."
-msgstr "Vytvorí stránku s hlavičkou (názov, štítky, zhrnutie)."
+msgid "Create a page with its header (type, title, tags, sources)."
+msgstr "Vytvorí stránku s hlavičkou (typ, názov, štítky, zdroje)."
 
 #: cli/tls.py
 msgid "Create a self-signed certificate for 'kdx run --tls'."
@@ -169,6 +177,10 @@ msgstr "Vytvorí samopodpísaný certifikát pre 'kdx run --tls'."
 #: cli/users.py
 msgid "Create a user; prints the new token once."
 msgstr "Vytvorí používateľa; nový token vypíše iba raz."
+
+#: modules/wiki/module.py
+msgid "Create both wikis (SCHEMA.md, raw/, log.md) and keep the internal one out of git."
+msgstr "Vytvorí obe wiki (SCHEMA.md, raw/, log.md) a internú vylúči z gitu."
 
 #: cli/commands.py
 msgid "Create modules (kdx module new NAME writes the module trio and a test)."
@@ -181,10 +193,6 @@ msgstr "Vytvorí certifikát pre riadiacu rovinu cez https."
 #: cli/proposal.py
 msgid "Create the issue on github.com/{repo}?"
 msgstr "Vytvoriť issue na github.com/{repo}?"
-
-#: modules/wiki/module.py
-msgid "Create the wiki folders and keep the internal one out of git."
-msgstr "Vytvorí priečinky wiki a internú časť vylúči z gitu."
 
 #: cli/users.py
 msgid "Delete a user; their token stops working at once."
@@ -278,6 +286,10 @@ msgstr "Vypíše snímku ako JSON."
 msgid "End a cooldown early."
 msgstr "Ukončí cooldown predčasne."
 
+#: modules/wiki/module.py
+msgid "Entry kind: update, query, lint, schema, ..."
+msgstr "Druh záznamu: update, query, lint, schema, ..."
+
 #: cli/commands.py
 msgid "Event bus"
 msgstr "Zbernica udalostí"
@@ -289,6 +301,10 @@ msgstr "Názov udalosti na odoslanie [webhooks.test]."
 #: cli/jobs.py
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr "Vzor udalostí: 'backup.*', 'core.job.**', '*' pre všetky [*]."
+
+#: modules/wiki/module.py
+msgid "Export the internal wiki (it leaves the project)."
+msgstr "Exportuje internú wiki (opustí projekt)."
 
 #: cli/tls.py
 msgid "Extra host name or IP the certificate covers (repeatable)."
@@ -309,6 +325,10 @@ msgstr "Nájde stránky, ktoré obsahujú všetky slová dopytu."
 #: cli/txn.py
 msgid "Finish or roll back every transaction a crash left in flight."
 msgstr "Dokončí alebo vráti späť každú transakciu, ktorú pád nechal rozpracovanú."
+
+#: modules/wiki/module.py
+msgid "Folder in the target [the project name]."
+msgstr "Priečinok v cieli [názov projektu]."
 
 #: cli/jobs.py
 msgid "Follow the daemon's live events (Ctrl+C to stop)."
@@ -337,6 +357,10 @@ msgstr "Diagnostika hostiteľa (OS, CPU, pamäť, disk)."
 #: cli/limiter.py
 msgid "Hours to cool down."
 msgstr "Hodiny cooldownu."
+
+#: modules/wiki/module.py
+msgid "How many entries to show [20]."
+msgstr "Koľko záznamov zobraziť [20]."
 
 #: cli/users.py
 msgid "How many records to show [50]."
@@ -422,6 +446,10 @@ msgstr "Názov limitera (pozri 'kdx limiter list')."
 msgid "Limits to respect: platforms, languages, data, security (optional)"
 msgstr "Obmedzenia: platformy, jazyky, dáta, bezpečnosť (voliteľné)"
 
+#: modules/wiki/module.py
+msgid "Lint: links, sources, orphans, raw files, translations, size."
+msgstr "Lint: odkazy, zdroje, siroty, raw súbory, preklady, veľkosť."
+
 #: cli/jobs.py
 msgid "List background jobs, newest first."
 msgstr "Vypíše úlohy na pozadí, najnovšie prvé."
@@ -435,8 +463,8 @@ msgid "List limiters: calls today, budget left, cooldown."
 msgstr "Zoznam limiterov: dnešné volania, zostávajúci rozpočet, cooldown."
 
 #: modules/wiki/module.py
-msgid "List pages with their languages and tags."
-msgstr "Vypíše stránky s ich jazykmi a štítkami."
+msgid "List pages with their type, languages and tags."
+msgstr "Vypíše stránky s typom, jazykmi a štítkami."
 
 #: modules/job_queue/module.py
 msgid "List tasks, newest first."
@@ -493,6 +521,10 @@ msgstr "Spravuje pomenovaných používateľov riadiacej roviny a ich role."
 #: cli/commands.py
 msgid "Memory"
 msgstr "Pamäť"
+
+#: modules/wiki/module.py
+msgid "Merge this wiki into another one (an LLM-wiki, Obsidian, a git wiki), or print it as JSON."
+msgstr "Zlúči túto wiki do inej (LLM-wiki, Obsidian, git wiki) alebo ju vypíše ako JSON."
 
 #: cli/language.py
 msgid "Merge translations from a JSON file {source: translation}, checked."
@@ -587,6 +619,10 @@ msgid "Outbound webhooks for bus events (n8n, Zapier, Make, Slack, ...)."
 msgstr "Odchádzajúce webhooky pre udalosti zbernice (n8n, Zapier, Make, Slack, ...)."
 
 #: modules/wiki/module.py
+msgid "Page name [from the file name]."
+msgstr "Názov stránky [podľa názvu súboru]."
+
+#: modules/wiki/module.py
 msgid "Page name, e.g. deploy or ops/deploy."
 msgstr "Názov stránky, napr. deploy alebo ops/deploy."
 
@@ -601,6 +637,10 @@ msgstr "Text stránky za nadpisom."
 #: modules/wiki/module.py
 msgid "Page title [from the slug]."
 msgstr "Názov stránky [podľa slugu]."
+
+#: modules/wiki/module.py
+msgid "Page type: page, source, entity, concept, synthesis, decision, guide, or your own [page]."
+msgstr "Typ stránky: page, source, entity, concept, synthesis, decision, guide alebo vlastný [page]."
 
 #: cli/commands.py
 msgid "Paths"
@@ -694,6 +734,10 @@ msgstr "Znova zaradí zlyhanú alebo zrušenú úlohu do frontu."
 msgid "Queue a task for the running daemon's handler of that kind."
 msgstr "Zaradí úlohu pre handler daemona tohto druhu."
 
+#: modules/wiki/module.py
+msgid "Record the check in log.md."
+msgstr "Zapíše kontrolu do log.md."
+
 #: cli/limiter.py
 msgid "Refuse every call of a limiter for a while (after a 429 or 503)."
 msgstr "Na chvíľu odmietne každé volanie limitera (po chybe 429 alebo 503)."
@@ -706,6 +750,10 @@ msgstr "Zaregistruje démona na spustenie pri prihlásení a hneď ho spustí."
 msgid "Remove obsolete translations (strings no longer in the template)."
 msgstr "Odstráni zastarané preklady (reťazce, ktoré už nie sú v šablóne)."
 
+#: modules/wiki/module.py
+msgid "Rename exported pages NAME-<page> to avoid clashes."
+msgstr "Premenuje exportované stránky na NAME-<stránka>, aby nekolidovali."
+
 #: cli/tls.py
 msgid "Replace an existing certificate."
 msgstr "Nahradí existujúci certifikát."
@@ -713,10 +761,6 @@ msgstr "Nahradí existujúci certifikát."
 #: cli/commands.py
 msgid "Replace an existing module directory."
 msgstr "Nahradí existujúci adresár modulu."
-
-#: modules/wiki/module.py
-msgid "Report broken links, missing headers and translations."
-msgstr "Nahlási rozbité odkazy, chýbajúce hlavičky a preklady."
 
 #: modules/system_info/module.py
 msgid "Report disk usage for a path."
@@ -733,6 +777,10 @@ msgstr "Ohlási okno uchovávania, platné kópie a záznam o čistení."
 #: modules/backup_engine/module.py
 msgid "Report what would be copied without writing."
 msgstr "Ohlási, čo by sa skopírovalo, bez zápisu."
+
+#: modules/wiki/module.py
+msgid "Root of the wiki to merge into."
+msgstr "Koreň wiki, do ktorej sa zlučuje."
 
 #: cli/commands.py
 msgid "Run it as a job and print its output live; no timeout."
@@ -826,6 +874,14 @@ msgstr "Zobrazí definíciu a príkazy; nič nemení."
 msgid "Show the measurements (from the running daemon when there is one)."
 msgstr "Zobrazí merania (z bežiaceho démona, ak beží)."
 
+#: modules/wiki/module.py
+msgid "Show the plan; write nothing."
+msgstr "Zobrazí plán; nič nezapíše."
+
+#: modules/wiki/module.py
+msgid "Show the wiki log, or append one entry to it."
+msgstr "Zobrazí log wiki alebo doň pridá jeden záznam."
+
 #: cli/users.py
 msgid "Show who acted over the control plane (commands, jobs, reloads, stops)."
 msgstr "Zobrazí, kto konal cez riadiacu rovinu (príkazy, úlohy, načítania, zastavenia)."
@@ -853,6 +909,10 @@ msgstr "Preskočí cesty zodpovedajúce VZORU (opakovateľné)."
 #: modules/backup_engine/module.py
 msgid "Source directory to back up."
 msgstr "Zdrojový adresár na zálohovanie."
+
+#: modules/wiki/module.py
+msgid "Source title [from the file name]."
+msgstr "Názov zdroja [podľa názvu súboru]."
 
 #: modules/mcp_server/module.py
 msgid "Speak MCP on stdin/stdout (what an agent launches)."
@@ -907,8 +967,12 @@ msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "3 až 5 vecí, ktoré musí robiť, oddelené „;“"
 
 #: modules/wiki/module.py
-msgid "The project wiki: public and internal pages, per language."
-msgstr "Wiki projektu: verejné a interné stránky, po jazykoch."
+msgid "The project wiki (LLM-wiki layout): public and internal, per language."
+msgstr "Wiki projektu (rozloženie LLM-wiki): verejná a interná, po jazykoch."
+
+#: modules/wiki/module.py
+msgid "The source: an article, PDF, transcript, notes."
+msgstr "Zdroj: článok, PDF, prepis, poznámky."
 
 #: cli/txn.py
 msgid "Transaction id (see 'kdx txn list')."
@@ -937,6 +1001,10 @@ msgstr "Overí deklarovanú sadu súborov projektu bez jej prepísania."
 #: cli/brief.py
 msgid "What could go wrong, or who could abuse it? (optional)"
 msgstr "Čo sa môže pokaziť alebo kto to môže zneužiť? (voliteľné)"
+
+#: modules/wiki/module.py
+msgid "What happened, in one line."
+msgstr "Čo sa stalo, jedným riadkom."
 
 #: cli/brief.py
 msgid "What it will NOT do, separated by ';'"
@@ -978,13 +1046,13 @@ msgstr "Zapíše .mcp.json, .cursor/mcp.json a .vscode/mcp.json."
 msgid "Write CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf and Cline rules from AGENTS.md."
 msgstr "Zapíše pravidlá CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf a Cline z AGENTS.md."
 
-#: modules/wiki/module.py
-msgid "Write INDEX.md for each wiki (what an agent reads first)."
-msgstr "Zapíše INDEX.md pre každú wiki (to, čo agent číta ako prvé)."
-
 #: cli/brief.py
 msgid "Write down what the project must do (interview), or check that it is complete."
 msgstr "Zapíše, čo má projekt robiť (rozhovor), alebo skontroluje, či je úplné."
+
+#: modules/wiki/module.py
+msgid "Write index.md for each wiki (what an agent reads first)."
+msgstr "Zapíše index.md pre každú wiki (to, čo agent číta ako prvé)."
 
 #: cli/conventions.py
 msgid "Write the conventions to FILE instead of printing them (overwrites)."
@@ -1278,6 +1346,10 @@ msgstr "hotovo"
 msgid "drifted"
 msgstr "odchýlené"
 
+#: modules/wiki/module.py
+msgid "dry run: nothing was written"
+msgstr "skúšobný beh: nič sa nezapísalo"
+
 #: cli/reset.py
 msgid "durable, never touched: {root}"
 msgstr "trvalé, nikdy sa ich nedotkne: {root}"
@@ -1337,6 +1409,10 @@ msgstr "zlyhalo"
 #: cli/txn.py
 msgid "files"
 msgstr "súbory"
+
+#: modules/wiki/module.py
+msgid "files (merge into DIR) or json (print a bundle)."
+msgstr "files (zlúčiť do DIR) alebo json (vypísať balík)."
 
 #: cli/commands.py
 msgid "files written"
@@ -1554,6 +1630,10 @@ msgstr "moduly"
 msgid "name"
 msgstr "názov"
 
+#: modules/wiki/module.py
+msgid "name the wiki to merge into: kdx wiki export DIR"
+msgstr "uveďte wiki, do ktorej sa zlučuje: kdx wiki export DIR"
+
 #: cli/commands.py
 msgid "named locks"
 msgstr "pomenované zámky"
@@ -1573,6 +1653,10 @@ msgstr "ďalej: kdx modules list"
 #: modules/wiki/module.py
 msgid "next: kdx wiki new home --title \"Start here\""
 msgstr "ďalej: kdx wiki new home --title \"Start here\""
+
+#: modules/wiki/module.py
+msgid "next: write the summary, update the pages it touches, then kdx wiki index"
+msgstr "ďalej: napíšte zhrnutie, upravte dotknuté stránky, potom kdx wiki index"
 
 #: renderer
 msgid "no"
@@ -1950,6 +2034,10 @@ msgstr "spustite „kdx brief“, aby sa vytvorilo"
 msgid "running"
 msgstr "beží"
 
+#: modules/wiki/module.py
+msgid "say what happened: kdx wiki log update \"what changed\""
+msgstr "povedzte, čo sa stalo: kdx wiki log update \"čo sa zmenilo\""
+
 #: cli/commands.py
 msgid "scheduled tasks"
 msgstr "naplánované úlohy"
@@ -2138,6 +2226,10 @@ msgstr "démon sa spúšťa pri prihlásení a práve sa spúšťa"
 msgid "the event feed ended: {exc}"
 msgstr "prenos udalostí skončil: {exc}"
 
+#: modules/wiki/module.py
+msgid "the internal wiki is exported: its notes leave the project"
+msgstr "exportuje sa interná wiki: jej poznámky opustia projekt"
+
 #: cli/commands.py
 msgid "the live state of a running daemon: 'kdx status' or 'kdx ui'"
 msgstr "živý stav bežiaceho démona: 'kdx status' alebo 'kdx ui'"
@@ -2153,6 +2245,10 @@ msgstr "bežiaceho démona"
 #: cli/users.py
 msgid "the shared core.ipc.token is the built-in admin 'owner'"
 msgstr "zdieľaný core.ipc.token je vstavaný admin 'owner'"
+
+#: modules/wiki/module.py
+msgid "the target already has pages with these names; pass --prefix NAME"
+msgstr "cieľ už má stránky s týmito názvami; zadajte --prefix NAME"
 
 #: modules/wiki/module.py
 msgid "the wiki is empty; start with 'kdx wiki init'"
@@ -2217,6 +2313,10 @@ msgstr "spolu"
 #: cli/commands.py
 msgid "truncate the log file (asks first)"
 msgstr "vyprázdni logový súbor (najprv sa opýta)"
+
+#: modules/wiki/module.py
+msgid "type"
+msgstr "typ"
 
 #: cli/agents.py
 msgid "unknown agent: {names}"
@@ -2314,9 +2414,17 @@ msgstr "{copied}/{total} súbor(ov), zatiaľ {size}"
 msgid "{count} catalogue(s) need attention"
 msgstr "{count} katalóg(ov) vyžaduje pozornosť"
 
+#: modules/wiki/module.py
+msgid "{count} change(s) written to {path}"
+msgstr "{count} zmien zapísaných do {path}"
+
 #: cli/commands.py
 msgid "{count} configuration findings need attention"
 msgstr "{count} nálezov v konfigurácii vyžaduje pozornosť"
+
+#: modules/wiki/module.py
+msgid "{count} file(s) unchanged"
+msgstr "{count} súborov bez zmeny"
 
 #: modules/job_queue/module.py
 msgid "{count} finished task(s) removed"
@@ -2509,3 +2617,21 @@ msgstr "{value} nie je jazyk, do ktorého sa dá prekladať"
 #: cli/users.py
 msgid "{verb}; this token is shown only now - hand it over privately"
 msgstr "{verb}; tento token sa zobrazí iba teraz - odovzdaj ho súkromne"
+
+#~ msgid "Create a page with its header (title, tags, summary)."
+#~ msgstr "Vytvorí stránku s hlavičkou (názov, štítky, zhrnutie)."
+
+#~ msgid "Create the wiki folders and keep the internal one out of git."
+#~ msgstr "Vytvorí priečinky wiki a internú časť vylúči z gitu."
+
+#~ msgid "List pages with their languages and tags."
+#~ msgstr "Vypíše stránky s ich jazykmi a štítkami."
+
+#~ msgid "Report broken links, missing headers and translations."
+#~ msgstr "Nahlási rozbité odkazy, chýbajúce hlavičky a preklady."
+
+#~ msgid "The project wiki: public and internal pages, per language."
+#~ msgstr "Wiki projektu: verejné a interné stránky, po jazykoch."
+
+#~ msgid "Write INDEX.md for each wiki (what an agent reads first)."
+#~ msgstr "Zapíše INDEX.md pre každú wiki (to, čo agent číta ako prvé)."

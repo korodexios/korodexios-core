@@ -12,7 +12,7 @@ clients that talk to the same core and never reimplement it.
 - **Bootstrap:** uv (Astral) owns the environment - `uv venv`, `uv sync --extra dev`,
   `uv run kdx ...`, `uv tool install korodexios-core`, `uv lock` for a consumer's own pins
 - **Dependencies:** `pyyaml` (config files), `rich` (the wizard layer)
-- **Release:** `v0.6.0`, core API frozen at `v2`
+- **Release:** `v0.6.1`, core API frozen at `v2`
 
 **Install in one go:** `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) - a guided,
 coloured installer in English or Slovak (`--dry-run` shows the steps without running them).
@@ -76,7 +76,7 @@ Pin the chassis the way a consumer project does, entirely with uv:
 
 ```bash
 uv tool install korodexios-core   # a global kdx on PATH, no project involved
-uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.0"
+uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.1"
 uv lock                          # and 'uv add' for this project's own pinned dependencies
 ```
 
@@ -170,8 +170,9 @@ the LAN (the default port, 18123, avoids the usual 8000/8080/8123 neighbours; ch
 - **Measurements:** `context.metrics` (counter, gauge, summary, collector), host CPU, memory
   and disk built in; `GET /metrics` for Prometheus/Grafana, `?format=json` for Home Assistant,
   `kdx metrics` in the terminal, optional `core.metrics.snapshot` events for push bridges.
-- **Project wiki:** `kdx wiki` - public `docs/wiki/`, internal git-ignored `docs-dev/wiki/`, one
-  file per language (`page.en.md`, `page.sk.md`), indexed and searchable for agents.
+- **Project wiki:** `kdx wiki` in the LLM-wiki layout (raw sources, `SCHEMA.md`, `index.md`,
+  `log.md`, `[[wikilinks]]`) - public `docs/wiki/`, internal git-ignored `docs-dev/wiki/`, one file
+  per language (`page.sk.md`); `kdx wiki export` merges it into a wiki or Obsidian vault you run.
 - **Improving the core:** agents draft `kdx proposal` notes instead of editing the core; the
   owner reviews and sends them (`kdx proposal send`) - see [CONTRIBUTING.md](CONTRIBUTING.md).
 

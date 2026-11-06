@@ -179,12 +179,20 @@ in plain words. If something is risky or surprising, say it first, not last.
 
 ## 12. Project knowledge, measurements, and the core itself
 
-- **Wiki.** Project knowledge lives in the wiki, not in chat: `docs/wiki/` is public
-  (committed), `docs-dev/wiki/` is internal (git-ignored: plans, findings, where secrets are
-  kept - never the secrets). One file per language: `deploy.en.md`, `deploy.sk.md`. Read
-  `INDEX.md` (or `kdx://wiki/public`) first and `kdx wiki search` before asking. Record a
-  decision or a finding with `kdx wiki new`, then `kdx wiki index`; `kdx wiki check` must stay
-  clean. Write the languages listed in `modules.wiki.languages`.
+- **Wiki.** Project knowledge lives in the wiki, not in chat, in the LLM-wiki layout:
+  `docs/wiki/` is public (committed), `docs-dev/wiki/` internal (git-ignored: plans, findings,
+  where secrets are kept - never the secrets). Read its `SCHEMA.md` and `index.md` (or
+  `kdx://wiki/public`) first and `kdx wiki search` before asking.
+  - *Ingest:* `kdx wiki ingest FILE` puts the source in `raw/` (never edit it) and creates its
+    source page; write the summary, update the pages it touches with `[[name]]` links, list
+    the source in their `sources`, then `kdx wiki index`.
+  - *Query:* answer from the pages with `[[name]]` citations; file a substantial answer back
+    as a `synthesis` page.
+  - *Lint:* `kdx wiki check` must have no errors; propose fixes for warnings, do not rewrite
+    silently.
+  - Every change gets one log line: `kdx wiki log update "..."`. One page is about one thing;
+    the default language is `page.md`, others `page.sk.md`. Write the languages listed in
+    `modules.wiki.languages`.
 - **Measurements.** Record numbers through `context.metrics` (`counter`, `gauge`, `summary`,
   or a `collector` read at scrape time), with Prometheus names (`myapp_orders_total`,
   `_seconds`, `_bytes`) and bounded labels (never a user id). They appear on `GET /metrics`,

@@ -131,6 +131,10 @@ msgid "Collect translatable strings into the template and update translations."
 msgstr "Zbierz tłumaczone teksty do szablonu i zaktualizuj tłumaczenia."
 
 #: modules/wiki/module.py
+msgid "Comma-separated names of the source pages used."
+msgstr "Nazwy użytych stron źródłowych oddzielone przecinkami."
+
+#: modules/wiki/module.py
 msgid "Comma-separated tags."
 msgstr "Tagi oddzielone przecinkami."
 
@@ -150,6 +154,10 @@ msgstr "Kontrakty"
 msgid "Control plane"
 msgstr "Płaszczyzna sterowania"
 
+#: modules/wiki/module.py
+msgid "Copy a source into raw/ and create its source page to fill in."
+msgstr "Kopiuje źródło do raw/ i tworzy jego stronę źródłową do uzupełnienia."
+
 #: modules/backup_engine/module.py
 msgid "Copy even when the size budget is exceeded."
 msgstr "Kopiuj nawet po przekroczeniu limitu rozmiaru."
@@ -159,8 +167,8 @@ msgid "Create a numbered proposal note from the template."
 msgstr "Tworzy numerowaną propozycję z szablonu."
 
 #: modules/wiki/module.py
-msgid "Create a page with its header (title, tags, summary)."
-msgstr "Tworzy stronę z nagłówkiem (tytuł, tagi, podsumowanie)."
+msgid "Create a page with its header (type, title, tags, sources)."
+msgstr "Tworzy stronę z nagłówkiem (typ, tytuł, tagi, źródła)."
 
 #: cli/tls.py
 msgid "Create a self-signed certificate for 'kdx run --tls'."
@@ -169,6 +177,10 @@ msgstr "Utwórz certyfikat z podpisem własnym dla 'kdx run --tls'."
 #: cli/users.py
 msgid "Create a user; prints the new token once."
 msgstr "Utwórz użytkownika; token zostanie wyświetlony tylko raz."
+
+#: modules/wiki/module.py
+msgid "Create both wikis (SCHEMA.md, raw/, log.md) and keep the internal one out of git."
+msgstr "Tworzy oba wiki (SCHEMA.md, raw/, log.md) i wyłącza wewnętrzne z gita."
 
 #: cli/commands.py
 msgid "Create modules (kdx module new NAME writes the module trio and a test)."
@@ -181,10 +193,6 @@ msgstr "Utwórz certyfikat dla płaszczyzny sterowania przez https."
 #: cli/proposal.py
 msgid "Create the issue on github.com/{repo}?"
 msgstr "Utworzyć issue na github.com/{repo}?"
-
-#: modules/wiki/module.py
-msgid "Create the wiki folders and keep the internal one out of git."
-msgstr "Tworzy foldery wiki i wyłącza wewnętrzny z gita."
 
 #: cli/users.py
 msgid "Delete a user; their token stops working at once."
@@ -278,6 +286,10 @@ msgstr "Wypisz migawkę jako JSON."
 msgid "End a cooldown early."
 msgstr "Kończy okres schładzania przed czasem."
 
+#: modules/wiki/module.py
+msgid "Entry kind: update, query, lint, schema, ..."
+msgstr "Rodzaj wpisu: update, query, lint, schema, ..."
+
 #: cli/commands.py
 msgid "Event bus"
 msgstr "Magistrala zdarzeń"
@@ -289,6 +301,10 @@ msgstr "Nazwa zdarzenia do wysłania [webhooks.test]."
 #: cli/jobs.py
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr "Wzorzec zdarzeń: 'backup.*', 'core.job.**', '*' dla wszystkich [*]."
+
+#: modules/wiki/module.py
+msgid "Export the internal wiki (it leaves the project)."
+msgstr "Eksportuje wewnętrzne wiki (opuszcza projekt)."
 
 #: cli/tls.py
 msgid "Extra host name or IP the certificate covers (repeatable)."
@@ -309,6 +325,10 @@ msgstr "Znajduje strony zawierające wszystkie słowa zapytania."
 #: cli/txn.py
 msgid "Finish or roll back every transaction a crash left in flight."
 msgstr "Kończy lub wycofuje każdą transakcję, którą awaria zostawiła w toku."
+
+#: modules/wiki/module.py
+msgid "Folder in the target [the project name]."
+msgstr "Folder w celu [nazwa projektu]."
 
 #: cli/jobs.py
 msgid "Follow the daemon's live events (Ctrl+C to stop)."
@@ -337,6 +357,10 @@ msgstr "Diagnostyka hosta (system, CPU, pamięć, dysk)."
 #: cli/limiter.py
 msgid "Hours to cool down."
 msgstr "Godziny schładzania."
+
+#: modules/wiki/module.py
+msgid "How many entries to show [20]."
+msgstr "Ile wpisów pokazać [20]."
 
 #: cli/users.py
 msgid "How many records to show [50]."
@@ -422,6 +446,10 @@ msgstr "Nazwa limitera (zob. 'kdx limiter list')."
 msgid "Limits to respect: platforms, languages, data, security (optional)"
 msgstr "Ograniczenia: platformy, języki, dane, bezpieczeństwo (opcjonalnie)"
 
+#: modules/wiki/module.py
+msgid "Lint: links, sources, orphans, raw files, translations, size."
+msgstr "Lint: linki, źródła, sieroty, pliki raw, tłumaczenia, rozmiar."
+
 #: cli/jobs.py
 msgid "List background jobs, newest first."
 msgstr "Wypisz zadania w tle, od najnowszych."
@@ -435,8 +463,8 @@ msgid "List limiters: calls today, budget left, cooldown."
 msgstr "Lista limiterów: dzisiejsze wywołania, pozostały budżet, schładzanie."
 
 #: modules/wiki/module.py
-msgid "List pages with their languages and tags."
-msgstr "Wypisuje strony z ich językami i tagami."
+msgid "List pages with their type, languages and tags."
+msgstr "Wypisuje strony z typem, językami i tagami."
 
 #: modules/job_queue/module.py
 msgid "List tasks, newest first."
@@ -493,6 +521,10 @@ msgstr "Zarządzaj nazwanymi użytkownikami płaszczyzny sterowania i ich rolami
 #: cli/commands.py
 msgid "Memory"
 msgstr "Pamięć"
+
+#: modules/wiki/module.py
+msgid "Merge this wiki into another one (an LLM-wiki, Obsidian, a git wiki), or print it as JSON."
+msgstr "Scala to wiki z innym (LLM-wiki, Obsidian, wiki git) albo wypisuje je jako JSON."
 
 #: cli/language.py
 msgid "Merge translations from a JSON file {source: translation}, checked."
@@ -587,6 +619,10 @@ msgid "Outbound webhooks for bus events (n8n, Zapier, Make, Slack, ...)."
 msgstr "Wychodzące webhooki dla zdarzeń magistrali (n8n, Zapier, Make, Slack, ...)."
 
 #: modules/wiki/module.py
+msgid "Page name [from the file name]."
+msgstr "Nazwa strony [z nazwy pliku]."
+
+#: modules/wiki/module.py
 msgid "Page name, e.g. deploy or ops/deploy."
 msgstr "Nazwa strony, np. deploy lub ops/deploy."
 
@@ -601,6 +637,10 @@ msgstr "Tekst strony po nagłówku."
 #: modules/wiki/module.py
 msgid "Page title [from the slug]."
 msgstr "Tytuł strony [ze sluga]."
+
+#: modules/wiki/module.py
+msgid "Page type: page, source, entity, concept, synthesis, decision, guide, or your own [page]."
+msgstr "Typ strony: page, source, entity, concept, synthesis, decision, guide lub własny [page]."
 
 #: cli/commands.py
 msgid "Paths"
@@ -694,6 +734,10 @@ msgstr "Ponownie dodaje do kolejki nieudane lub anulowane zadanie."
 msgid "Queue a task for the running daemon's handler of that kind."
 msgstr "Dodaje zadanie dla handlera tego rodzaju w działającym demonie."
 
+#: modules/wiki/module.py
+msgid "Record the check in log.md."
+msgstr "Zapisuje sprawdzenie w log.md."
+
 #: cli/limiter.py
 msgid "Refuse every call of a limiter for a while (after a 429 or 503)."
 msgstr "Na pewien czas odrzuca każde wywołanie limitera (po błędzie 429 lub 503)."
@@ -706,6 +750,10 @@ msgstr "Zarejestruj demona do uruchamiania przy logowaniu i uruchom go teraz."
 msgid "Remove obsolete translations (strings no longer in the template)."
 msgstr "Usuwa przestarzałe tłumaczenia (ciągi, których nie ma już w szablonie)."
 
+#: modules/wiki/module.py
+msgid "Rename exported pages NAME-<page> to avoid clashes."
+msgstr "Zmienia nazwy eksportowanych stron na NAME-<strona>, by uniknąć kolizji."
+
 #: cli/tls.py
 msgid "Replace an existing certificate."
 msgstr "Zastąp istniejący certyfikat."
@@ -713,10 +761,6 @@ msgstr "Zastąp istniejący certyfikat."
 #: cli/commands.py
 msgid "Replace an existing module directory."
 msgstr "Zastąp istniejący katalog modułu."
-
-#: modules/wiki/module.py
-msgid "Report broken links, missing headers and translations."
-msgstr "Zgłasza zepsute linki, brakujące nagłówki i tłumaczenia."
 
 #: modules/system_info/module.py
 msgid "Report disk usage for a path."
@@ -733,6 +777,10 @@ msgstr "Pokaż okno retencji, trwające kopie i zapis czyszczenia."
 #: modules/backup_engine/module.py
 msgid "Report what would be copied without writing."
 msgstr "Pokaż, co zostałoby skopiowane, bez zapisywania."
+
+#: modules/wiki/module.py
+msgid "Root of the wiki to merge into."
+msgstr "Katalog główny wiki, do którego się scala."
 
 #: cli/commands.py
 msgid "Run it as a job and print its output live; no timeout."
@@ -826,6 +874,14 @@ msgstr "Pokaż definicję i polecenia; niczego nie zmieniaj."
 msgid "Show the measurements (from the running daemon when there is one)."
 msgstr "Pokazuje pomiary (z działającego demona, jeśli jest)."
 
+#: modules/wiki/module.py
+msgid "Show the plan; write nothing."
+msgstr "Pokazuje plan; niczego nie zapisuje."
+
+#: modules/wiki/module.py
+msgid "Show the wiki log, or append one entry to it."
+msgstr "Pokazuje log wiki albo dodaje do niego wpis."
+
 #: cli/users.py
 msgid "Show who acted over the control plane (commands, jobs, reloads, stops)."
 msgstr "Pokaż, kto działał przez płaszczyznę sterowania (polecenia, zadania, przeładowania, zatrzymania)."
@@ -853,6 +909,10 @@ msgstr "Pomiń ścieżki pasujące do PATTERN (można powtarzać)."
 #: modules/backup_engine/module.py
 msgid "Source directory to back up."
 msgstr "Katalog źródłowy do skopiowania."
+
+#: modules/wiki/module.py
+msgid "Source title [from the file name]."
+msgstr "Tytuł źródła [z nazwy pliku]."
 
 #: modules/mcp_server/module.py
 msgid "Speak MCP on stdin/stdout (what an agent launches)."
@@ -907,8 +967,12 @@ msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "3 do 5 rzeczy, które musi robić, oddzielone „;”"
 
 #: modules/wiki/module.py
-msgid "The project wiki: public and internal pages, per language."
-msgstr "Wiki projektu: strony publiczne i wewnętrzne, według języka."
+msgid "The project wiki (LLM-wiki layout): public and internal, per language."
+msgstr "Wiki projektu (układ LLM-wiki): publiczne i wewnętrzne, według języka."
+
+#: modules/wiki/module.py
+msgid "The source: an article, PDF, transcript, notes."
+msgstr "Źródło: artykuł, PDF, transkrypcja, notatki."
 
 #: cli/txn.py
 msgid "Transaction id (see 'kdx txn list')."
@@ -937,6 +1001,10 @@ msgstr "Zweryfikuj zadeklarowany zestaw plików projektu bez jego przepisywania.
 #: cli/brief.py
 msgid "What could go wrong, or who could abuse it? (optional)"
 msgstr "Co może pójść źle albo kto mógłby to nadużyć? (opcjonalnie)"
+
+#: modules/wiki/module.py
+msgid "What happened, in one line."
+msgstr "Co się stało, w jednym wierszu."
 
 #: cli/brief.py
 msgid "What it will NOT do, separated by ';'"
@@ -978,13 +1046,13 @@ msgstr "Zapisuje .mcp.json, .cursor/mcp.json i .vscode/mcp.json."
 msgid "Write CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf and Cline rules from AGENTS.md."
 msgstr "Zapisuje reguły CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf i Cline na podstawie AGENTS.md."
 
-#: modules/wiki/module.py
-msgid "Write INDEX.md for each wiki (what an agent reads first)."
-msgstr "Zapisuje INDEX.md dla każdego wiki (to, co agent czyta najpierw)."
-
 #: cli/brief.py
 msgid "Write down what the project must do (interview), or check that it is complete."
 msgstr "Zapisuje, co projekt ma robić (wywiad), lub sprawdza, czy jest kompletny."
+
+#: modules/wiki/module.py
+msgid "Write index.md for each wiki (what an agent reads first)."
+msgstr "Zapisuje index.md dla każdego wiki (to, co agent czyta najpierw)."
 
 #: cli/conventions.py
 msgid "Write the conventions to FILE instead of printing them (overwrites)."
@@ -1278,6 +1346,10 @@ msgstr "gotowe"
 msgid "drifted"
 msgstr "odchylone"
 
+#: modules/wiki/module.py
+msgid "dry run: nothing was written"
+msgstr "próba: niczego nie zapisano"
+
 #: cli/reset.py
 msgid "durable, never touched: {root}"
 msgstr "trwałe, nigdy nie ruszane: {root}"
@@ -1337,6 +1409,10 @@ msgstr "niepowodzenie"
 #: cli/txn.py
 msgid "files"
 msgstr "pliki"
+
+#: modules/wiki/module.py
+msgid "files (merge into DIR) or json (print a bundle)."
+msgstr "files (scal do DIR) albo json (wypisz pakiet)."
 
 #: cli/commands.py
 msgid "files written"
@@ -1554,6 +1630,10 @@ msgstr "moduły"
 msgid "name"
 msgstr "nazwa"
 
+#: modules/wiki/module.py
+msgid "name the wiki to merge into: kdx wiki export DIR"
+msgstr "podaj wiki docelowe: kdx wiki export DIR"
+
 #: cli/commands.py
 msgid "named locks"
 msgstr "nazwane blokady"
@@ -1573,6 +1653,10 @@ msgstr "dalej: kdx modules list"
 #: modules/wiki/module.py
 msgid "next: kdx wiki new home --title \"Start here\""
 msgstr "dalej: kdx wiki new home --title \"Start here\""
+
+#: modules/wiki/module.py
+msgid "next: write the summary, update the pages it touches, then kdx wiki index"
+msgstr "dalej: napisz podsumowanie, zaktualizuj dotknięte strony, potem kdx wiki index"
 
 #: renderer
 msgid "no"
@@ -1950,6 +2034,10 @@ msgstr "uruchom „kdx brief”, aby go utworzyć"
 msgid "running"
 msgstr "działa"
 
+#: modules/wiki/module.py
+msgid "say what happened: kdx wiki log update \"what changed\""
+msgstr "powiedz, co się stało: kdx wiki log update \"co się zmieniło\""
+
 #: cli/commands.py
 msgid "scheduled tasks"
 msgstr "zaplanowane zadania"
@@ -2138,6 +2226,10 @@ msgstr "demon uruchamia się przy logowaniu i właśnie startuje"
 msgid "the event feed ended: {exc}"
 msgstr "strumień zdarzeń zakończył się: {exc}"
 
+#: modules/wiki/module.py
+msgid "the internal wiki is exported: its notes leave the project"
+msgstr "eksportowane jest wewnętrzne wiki: jego notatki opuszczają projekt"
+
 #: cli/commands.py
 msgid "the live state of a running daemon: 'kdx status' or 'kdx ui'"
 msgstr "stan działającego demona: 'kdx status' lub 'kdx ui'"
@@ -2153,6 +2245,10 @@ msgstr "działającego demona"
 #: cli/users.py
 msgid "the shared core.ipc.token is the built-in admin 'owner'"
 msgstr "wspólny core.ipc.token to wbudowany administrator 'owner'"
+
+#: modules/wiki/module.py
+msgid "the target already has pages with these names; pass --prefix NAME"
+msgstr "cel ma już strony o tych nazwach; podaj --prefix NAME"
 
 #: modules/wiki/module.py
 msgid "the wiki is empty; start with 'kdx wiki init'"
@@ -2217,6 +2313,10 @@ msgstr "razem"
 #: cli/commands.py
 msgid "truncate the log file (asks first)"
 msgstr "obetnij plik logu (najpierw zapyta)"
+
+#: modules/wiki/module.py
+msgid "type"
+msgstr "typ"
 
 #: cli/agents.py
 msgid "unknown agent: {names}"
@@ -2314,9 +2414,17 @@ msgstr "{copied}/{total} plik(ów), dotąd {size}"
 msgid "{count} catalogue(s) need attention"
 msgstr "{count} katalog(ów) wymaga uwagi"
 
+#: modules/wiki/module.py
+msgid "{count} change(s) written to {path}"
+msgstr "{count} zmian(a) zapisano w {path}"
+
 #: cli/commands.py
 msgid "{count} configuration findings need attention"
 msgstr "{count} ustaleń konfiguracji wymaga uwagi"
+
+#: modules/wiki/module.py
+msgid "{count} file(s) unchanged"
+msgstr "{count} plik(ów) bez zmian"
 
 #: modules/job_queue/module.py
 msgid "{count} finished task(s) removed"
@@ -2509,3 +2617,21 @@ msgstr "{value} nie jest językiem, na który można tłumaczyć"
 #: cli/users.py
 msgid "{verb}; this token is shown only now - hand it over privately"
 msgstr "{verb}; ten token jest pokazywany tylko teraz - przekaż go prywatnie"
+
+#~ msgid "Create a page with its header (title, tags, summary)."
+#~ msgstr "Tworzy stronę z nagłówkiem (tytuł, tagi, podsumowanie)."
+
+#~ msgid "Create the wiki folders and keep the internal one out of git."
+#~ msgstr "Tworzy foldery wiki i wyłącza wewnętrzny z gita."
+
+#~ msgid "List pages with their languages and tags."
+#~ msgstr "Wypisuje strony z ich językami i tagami."
+
+#~ msgid "Report broken links, missing headers and translations."
+#~ msgstr "Zgłasza zepsute linki, brakujące nagłówki i tłumaczenia."
+
+#~ msgid "The project wiki: public and internal pages, per language."
+#~ msgstr "Wiki projektu: strony publiczne i wewnętrzne, według języka."
+
+#~ msgid "Write INDEX.md for each wiki (what an agent reads first)."
+#~ msgstr "Zapisuje INDEX.md dla każdego wiki (to, co agent czyta najpierw)."

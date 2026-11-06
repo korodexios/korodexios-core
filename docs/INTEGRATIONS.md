@@ -227,24 +227,58 @@ MQTT node), or with a small project module that subscribes to it and publishes w
 MQTT client the project already uses. The core ships no MQTT client: most projects do not
 need one, and the bus event is the one hook a bridge needs.
 
-## Project wiki
+## Project wiki (LLM-wiki layout)
 
-`docs/wiki/` (public, committed) and `docs-dev/wiki/` (internal, git-ignored), one file per
-language: `deploy.en.md`, `deploy.sk.md`.
+`docs/wiki/` (public, committed) and `docs-dev/wiki/` (internal, git-ignored) each follow the
+LLM-wiki pattern - immutable raw sources, a wiki an agent maintains, and a schema - so either
+can be opened as an Obsidian vault, maintained the LLM-wiki way (ingest, query, lint),
+pointed at an LLM-wiki you already have (`modules.wiki.public_dir`), or merged into one:
 
-```bash
-kdx wiki init                      # both folders; adds the internal one to .gitignore
-kdx wiki new deploy --tags ops --summary "How we deploy"
-kdx wiki new deploy --lang sk --title "Nasadenie"
-kdx wiki new plans --internal
-kdx wiki search service install    # also the MCP tool wiki_search
-kdx wiki index                     # INDEX.md per wiki: what an agent reads first
-kdx wiki check                     # broken links, missing headers and translations
+```text
+docs/wiki/
+  SCHEMA.md      conventions (written once, then yours)     raw/        immutable sources
+  index.md       generated catalog of [[wikilinks]]           sources/    one page per source
+  log.md         "## [YYYY-MM-DD] <op> | <description>"       concepts/ entities/ synthesis/
+  home.md        a page in the default language               decisions/ guides/
+  home.sk.md     the same page in Slovak
 ```
 
-`modules.wiki.languages: [en, sk, de]` lists the languages a page should have;
-`default_language` names the language of a file without a suffix. Agents read the indexes as
-MCP resources `kdx://wiki/public` and `kdx://wiki/internal`.
+A page header is the LLM-wiki one - `type`, `title`, `tags: [a, b]`, `sources: [name]`,
+`summary`, `created`, `updated` (a source page: `raw`, `ingested`) - and pages link each other
+as `[[name]]`: the file name without `.md` and without the language suffix.
+
+```bash
+kdx wiki init                          # SCHEMA.md, raw/, log.md; internal wiki git-ignored
+kdx wiki ingest article.pdf --tags ml  # raw/article.pdf + sources/article.md to fill in
+kdx wiki new attention --type concept --sources article --tags ml
+kdx wiki new attention --lang sk --type concept --title "Pozornosť"
+kdx wiki log update "linked attention from home"
+kdx wiki search attention              # also the MCP tool wiki_search
+kdx wiki index                         # index.md: what an agent reads first
+kdx wiki check [--record]              # links, sources, orphans, raw files, translations, size
+```
+
+`modules.wiki.languages: [en, sk, de]` lists the languages a page should have (a source summary
+stays in its source's language). Agents read `kdx://wiki/public`, `kdx://wiki/public/schema`
+and the internal pair as MCP resources.
+
+### Merging into a wiki you already run
+
+```bash
+kdx wiki export ~/brain/wiki --namespace myapp --dry-run   # the plan, nothing written
+kdx wiki export ~/brain/wiki --namespace myapp --prefix myapp
+kdx wiki export --format json > wiki.json                  # one bundle for an API push
+```
+
+The pages land in `<wiki>/myapp/`; raw sources go where the target keeps its own (beside
+`wiki/` in an LLM-wiki: `<base>/raw/myapp/`, and each source page's `raw:` points there). The
+target's `index.md` gets one `[[myapp-index]]` link and its `log.md` one `import` line - each
+written once. Because wikilinks are global by name, a page name the target already uses stops
+the export; `--prefix` renames every exported page (`deploy` -> `myapp-deploy`) and rewrites
+links and `sources`. A manifest (`.kdx-export.json`) makes the next export update what
+changed, remove what the project deleted, and keep any file edited in the target since.
+`--internal` exports the internal wiki and says so. Wikis behind an API (Wiki.js, BookStack,
+Outline, Confluence, MediaWiki) take the JSON bundle through an n8n flow or a small script.
 
 ## Improving the core from a project
 
