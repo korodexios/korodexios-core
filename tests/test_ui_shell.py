@@ -344,7 +344,8 @@ def test_shell_page_ships_and_keeps_the_console_security_rules() -> None:
     script = (STATIC_DIR / "shell.js").read_text(encoding="utf-8")
     assert "innerHTML" not in script  # daemon data is only ever written as text
     assert "eval(" not in script and "setAttribute(\"style\"" not in script
-    for endpoint in ("/api/v1/ui/manifest", "/api/v1/ui/theme", "/api/v1/ui/prefs"):
+    for endpoint in ("/api/v1/ui/manifest", "/api/v1/ui/theme", "/api/v1/ui/prefs", "/api/v1/rpc",
+                     "/api/v1/jobs", "/api/v1/ui/config/edit", "/api/v1/ui/catalog"):
         assert endpoint in script
 
 

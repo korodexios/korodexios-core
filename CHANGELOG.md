@@ -20,9 +20,12 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
     `shell.js`, no inline script or style). Ribbon (areas from the manifest, badges, System and
     Settings), side list with lazy trees per section, tabs, bottom panel for docked panels,
     inspector, splitters (pointer, touch, arrow keys, double click resets), per-pane hide and a
-    Focus toggle, theme picker, responsive down to a phone. It draws the read-only panel types
-    (keyvalue, table, log, text); form, actions and settings panels point to the classic console,
-    which stays at `/ui/`. Shell texts are English only for now.
+    Focus toggle, theme picker, responsive down to a phone. It draws every panel type:
+    tables with typed cells, row actions and details, forms built from the command's own
+    arguments (remembered values, saved defaults), action buttons that ask twice when dangerous,
+    command output followed as a job, and the typed settings editor. Role limits are respected.
+    The classic console stays at `/ui/` for commands, events and audit. Shell texts are English
+    only for now.
 
 ## [0.6.3] - 2026-11-07
 

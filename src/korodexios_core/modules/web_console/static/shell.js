@@ -37,6 +37,7 @@
 
   const state = {
     token: "", manifest: null, prefs: null, themes: null, status: null,
+    catalog: [], me: null,
     area: "", tabs: [], active: "", selected: null,
     trees: {}, open: new Set(), badges: {}, timers: [], dockTimers: [],
   };
@@ -94,6 +95,13 @@
   class AuthError extends Error {}
 
   async function api(path, options) {
+    const { ok, status, payload } = await call(path, options);
+    if (!ok) throw new Error(payload.error || `HTTP ${status}`);
+    return payload;
+  }
+
+  // like api(), but a refusal (HTTP 4xx) is returned, not thrown: a command's own error is output
+  async function call(path, options) {
     const opts = options || {};
     const headers = { [TOKEN_HEADER]: state.token };
     let body;
@@ -105,8 +113,7 @@
     let payload = {};
     try { payload = await response.json(); } catch (e) { payload = {}; }
     if (response.status === 401) throw new AuthError(payload.error || "token rejected");
-    if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
-    return payload;
+    return { ok: response.ok, status: response.status, payload };
   }
 
   function dig(value, path) {
@@ -544,12 +551,12 @@
         content.replaceChildren(el("pre", { class: "log", text }));
         return;
       }
-      case "table": renderTable(content, panel, dig(await api(panel.source), panel.path) || []); return;
+      case "table": renderTable(content, panel, dig(await api(panel.source), panel.path) || [], area); return;
       case "data": renderData(content, dig(await api(panel.source), panel.path)); return;
-      default: {
-        const link = el("a", { href: "./", text: "Open the classic console" });
-        content.replaceChildren(el("p", { class: "muted", text: `A ${panel.type} panel needs input, which the classic console provides.` }), link);
-      }
+      case "form": renderForm(content, panel, area); return;
+      case "actions": renderActions(content, panel); return;
+      case "settings": await renderSettings(content, panel, area); return;
+      default: content.replaceChildren(el("p", { class: "muted", text: `Unknown panel type ${panel.type}.` }));
     }
   }
 
@@ -558,20 +565,379 @@
     return el("span", { class: `chip${tone ? ` tone-${tone}` : ""}`, text: fmt(text) });
   }
 
-  function renderTable(content, panel, rows) {
-    const list = Array.isArray(rows) ? rows : Object.values(rows);
-    const columns = (panel.columns && panel.columns.length) ? panel.columns : Object.keys(list[0] || {}).map((key) => ({ key, label: key }));
-    if (!list.length) { content.replaceChildren(el("p", { class: "muted", text: "No rows." })); return; }
-    const head = el("tr", {}, columns.map((c) => el("th", { text: c.label || c.key })));
-    const body = list.map((row) => {
-      const tr = el("tr", { tabindex: "0", onclick: () => renderInspector(Object.entries(row)) },
-        columns.map((c) => {
-          const value = dig(row, c.key);
-          return el("td", {}, [c.kind === "chip" ? chip(value, c.tones) : document.createTextNode(c.kind === "code" ? fmt(value) : fmt(value))]);
-        }));
-      return tr;
+  const TONE_WORDS = {
+    ok: ["ok", "done", "ready", "success", "succeeded", "passed", "running", "active", "enabled", "up", "true", "yes"],
+    warn: ["warn", "warning", "degraded", "stale", "retrying", "slow"],
+    bad: ["bad", "error", "failed", "failure", "dead", "down", "refused", "denied", "cancelled", "false", "no"],
+    busy: ["busy", "queued", "pending", "starting", "stopping", "waiting"],
+  };
+
+  function toneOf(column, text) {
+    if (column.tones && Object.prototype.hasOwnProperty.call(column.tones, text)) return column.tones[text];
+    const word = String(text).toLowerCase();
+    return Object.keys(TONE_WORDS).find((tone) => TONE_WORDS[tone].includes(word)) || "muted";
+  }
+
+  function fmtBytes(value) {
+    let n = Number(value);
+    if (!Number.isFinite(n)) return String(value);
+    const units = ["B", "KB", "MB", "GB", "TB"];
+    let i = 0;
+    while (Math.abs(n) >= 1024 && i < units.length - 1) { n /= 1024; i += 1; }
+    return `${i ? n.toFixed(n < 10 ? 1 : 0) : n} ${units[i]}`;
+  }
+
+  function fmtDuration(value) {
+    const total = Math.floor(Number(value));
+    if (!Number.isFinite(total)) return String(value);
+    const d = Math.floor(total / 86400), h = Math.floor((total % 86400) / 3600), m = Math.floor((total % 3600) / 60), s = total % 60;
+    return d ? `${d}d ${h}h` : h ? `${h}h ${m}m` : m ? `${m}m ${s}s` : `${s}s`;
+  }
+
+  function fmtTime(value) {
+    const n = Number(value);
+    const date = Number.isFinite(n) && String(value).trim() !== "" ? new Date(n < 1e11 ? n * 1000 : n) : new Date(value);
+    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+  }
+
+  // a link is followed only when it is a web address or a path of this host
+  function safeHref(value) {
+    const text = String(value).trim();
+    return /^https?:\/\//i.test(text) || (text.startsWith("/") && !text.startsWith("//")) ? text : "";
+  }
+
+  function cellNode(column, value) {
+    if (value === null || value === undefined) return el("td", { text: "-" });
+    const text = fmt(value);
+    switch (column.kind) {
+      case "chip": return el("td", {}, [el("span", { class: `chip tone-${toneOf(column, text)}`, text })]);
+      case "bytes": return el("td", { text: fmtBytes(value) });
+      case "duration": return el("td", { text: fmtDuration(value) });
+      case "time": return el("td", { text: fmtTime(value) });
+      case "code": return el("td", {}, [el("code", { text })]);
+      case "link": {
+        const href = safeHref(text);
+        return el("td", {}, [href ? el("a", { href, target: "_blank", rel: "noopener noreferrer", text }) : document.createTextNode(text)]);
+      }
+      default: return el("td", { text });
+    }
+  }
+
+  // {column} placeholders in a row action's args or a detail route are filled from the row
+  function fillRow(template, row, urlSafe) {
+    return String(template).replace(/\{([^{}]+)\}/g, (match, name) => {
+      const value = dig(row, name);
+      const text = value === null || value === undefined ? "" : String(value);
+      return urlSafe ? encodeURIComponent(text) : text;
     });
-    content.replaceChildren(el("div", { class: "scroll-x" }, [el("table", {}, [el("thead", {}, [head]), el("tbody", {}, body)])]));
+  }
+
+  function rowArgs(args, row) {
+    const out = {};
+    Object.entries(args || {}).forEach(([name, value]) => { out[name] = typeof value === "string" ? fillRow(value, row, false) : value; });
+    return out;
+  }
+
+  function renderTable(content, panel, rows, area) {
+    const list = Array.isArray(rows) ? rows : Object.entries(rows).map(([name, value]) => ({ name, value }));
+    const columns = (panel.columns && panel.columns.length) ? panel.columns : Object.keys(list[0] || {}).map((key) => ({ key, label: key }));
+    if (!list.length) { content.replaceChildren(el("p", { class: "muted", text: "Nothing to show." })); return; }
+    const actions = panel.actions || [];
+    const extra = actions.length || panel.detail ? 1 : 0;
+    const runs = el("div", { class: "runs" });
+    const detail = el("div", { class: "detail" });
+    const reload = () => fill(content, panel, area).catch(() => {});
+    const actionCell = (row) => {
+      const cell = el("td", { class: "row-actions" });
+      if (panel.detail) {
+        cell.append(el("button", { type: "button", class: "plain", text: "Details", onclick: async () => {
+          try {
+            const value = dig(await api(fillRow(panel.detail.source, row, true)), panel.detail.path);
+            const pairs = value && typeof value === "object" ? Object.entries(value) : [["value", value]];
+            const list2 = el("dl", { class: "kv" });
+            pairs.forEach(([k, v]) => list2.append(el("dt", { text: k }), el("dd", { text: fmt(v) })));
+            detail.replaceChildren(list2, el("button", { type: "button", class: "plain", text: "Close", onclick: () => detail.replaceChildren() }));
+          } catch (error) { toast(error.message, true); }
+        } }));
+      }
+      actions.forEach((action) => {
+        const command = commandEntry(action.command);
+        const button = el("button", { type: "button", class: action.danger ? "plain danger" : "plain", text: action.label });
+        if (!command || !command.remote || !can(command.role)) button.disabled = true;
+        button.addEventListener("click", () => {
+          if ((action.confirm || action.danger) && !armed(button, "Click again to run")) return;
+          runCommand(runs, action.command, rowArgs(action.args, row)).then(reload);
+        });
+        cell.append(button);
+      });
+      return cell;
+    };
+    const head = el("tr", {}, [...columns.map((c) => el("th", { text: c.label || c.key })), ...(extra ? [el("th")] : [])]);
+    const body = list.map((row) => el("tr", { onclick: () => renderInspector(Object.entries(row)) },
+      [...columns.map((c) => cellNode(c, c.key ? dig(row, c.key) : row)), ...(extra ? [actionCell(row)] : [])]));
+    content.replaceChildren(el("div", { class: "scroll-x" }, [el("table", {}, [el("thead", {}, [head]), el("tbody", {}, body)])]), detail, runs);
+  }
+
+  // ---- running commands: forms, buttons, output ------------------------------------------
+
+  const ROLE_RANK = { viewer: 0, operator: 1, admin: 2 };
+  const JOB_POLL_MS = 500;
+  const CONFIRM_MS = 5000;
+
+  function can(role) {
+    const mine = state.me && state.me.role;
+    if (!mine) return true; // anonymous with auth off; the daemon still decides
+    return (ROLE_RANK[mine] ?? -1) >= (ROLE_RANK[role] ?? 99);
+  }
+
+  const commandEntry = (path) => state.catalog.find((command) => command.path === path);
+  const shellQuote = (token) => (/^[\w./:=@,+-]+$/.test(token) ? token : `'${token.replace(/'/g, "'\\''")}'`);
+
+  // a risky button asks twice: the first click arms it for a few seconds, the second acts
+  function armed(button, label) {
+    if (button.dataset.armed === "1") { button.dataset.armed = ""; button.textContent = button.dataset.label; return true; }
+    button.dataset.label = button.dataset.label || button.textContent;
+    button.dataset.armed = "1";
+    button.textContent = label;
+    clearTimeout(button.armTimer);
+    button.armTimer = setTimeout(() => { button.dataset.armed = ""; button.textContent = button.dataset.label; }, CONFIRM_MS);
+    return false;
+  }
+
+  // the argv a terminal user would type; the daemon parses it with the command's own declaration
+  function argvFrom(command, values) {
+    const argv = [];
+    command.args.forEach((arg) => {
+      const value = values[arg.dest];
+      if (value === undefined || value === null || value === "") return;
+      const flag = arg.flags[arg.flags.length - 1];
+      if (arg.kind === "flag") {
+        const on = value === true || value === "true";
+        if (on !== (arg.default === true)) argv.push(flag);
+        return;
+      }
+      const many = Array.isArray(value) ? value.map(String)
+        : (arg.nargs === "*" || arg.nargs === "+") ? String(value).split(/\s+/) : [String(value)];
+      if (arg.positional) { argv.push(...many); return; }
+      if (arg.action === "append") { many.forEach((part) => argv.push(flag, part)); return; }
+      argv.push(flag, ...many);
+    });
+    return argv;
+  }
+
+  function runCard(line, host) {
+    const output = el("pre", { class: "log", text: "starting…" });
+    const meta = el("div", { class: "muted", text: "running" });
+    const cancel = el("button", { type: "button", class: "plain", hidden: true, text: "Cancel" });
+    const card = el("div", { class: "run" }, [el("div", { class: "row" }, [el("code", { text: `$ ${line}` }), cancel]), output, meta]);
+    card.output = output; card.meta = meta; card.cancel = cancel;
+    host.prepend(card);
+    while (host.children.length > 10) host.lastChild.remove();
+    return card;
+  }
+
+  function finishCard(card, text, meta, failed) {
+    card.cancel.hidden = true;
+    card.output.textContent = text;
+    card.meta.textContent = meta;
+    card.classList.toggle("failed", Boolean(failed));
+  }
+
+  async function followJob(id, card) {
+    for (;;) {
+      let job;
+      try { job = await api(`/api/v1/jobs?id=${encodeURIComponent(id)}`); }
+      catch (error) { finishCard(card, card.output.textContent, `lost track of ${id}: ${error.message}`, true); return; }
+      if (job.state === "running" || job.state === "cancelling") {
+        card.output.textContent = job.output || "running…";
+        card.meta.textContent = `${id} · ${job.state} ${job.seconds}s${job.user ? ` · by ${job.user}` : ""}`;
+        const mine = !state.me || state.me.role === "admin" || state.me.name === job.user;
+        card.cancel.hidden = !mine || job.state === "cancelling";
+        if (!card.cancel.onclick) {
+          card.cancel.onclick = () => {
+            if (!armed(card.cancel, "Click again to cancel")) return;
+            api("/api/v1/jobs", { method: "POST", body: { cancel: id } }).then(() => { card.cancel.hidden = true; }).catch((e) => toast(e.message, true));
+          };
+        }
+        await new Promise((resolve) => setTimeout(resolve, JOB_POLL_MS));
+        continue;
+      }
+      const text = job.error ? `${job.output || ""}${job.error}` : (job.output || "(no output)");
+      finishCard(card, text, `${id} · ${job.state} · exit ${job.exit_code ?? "-"} · ${job.seconds}s`, job.state !== "done");
+      return;
+    }
+  }
+
+  async function runCommand(host, path, values) {
+    const command = commandEntry(path);
+    if (!command || !command.remote || !can(command.role)) {
+      toast(command ? "this command is not available to you here" : "unknown command", true);
+      return;
+    }
+    const argv = argvFrom(command, values || {});
+    const card = runCard(["kdx", ...path.split(" "), ...argv].map(shellQuote).join(" "), host);
+    try {
+      const { status, payload } = await call("/api/v1/rpc", { method: "POST", body: { command: path, args: { argv }, background: true } });
+      if (!payload.ok) { finishCard(card, payload.error || `HTTP ${status}`, `refused · HTTP ${status}`, true); return; }
+      await followJob(payload.job.id, card);
+    } catch (error) {
+      if (error instanceof AuthError) showGate(error.message); else finishCard(card, error.message, "failed", true);
+    }
+  }
+
+  async function savePrefs(changes) {
+    const layoutKept = state.prefs.layout;
+    state.prefs = await api("/api/v1/ui/prefs", { method: "PATCH", body: changes });
+    state.prefs.layout = layoutKept;
+  }
+
+  function renderActions(content, panel) {
+    const runs = el("div", { class: "runs" });
+    const row = el("div", { class: "row" }, panel.buttons.map((button) => {
+      const command = commandEntry(button.command);
+      const node = el("button", { type: "button", class: button.danger ? "plain danger" : "plain", text: button.label });
+      if (!command || !command.remote || !can(command.role)) node.disabled = true;
+      node.addEventListener("click", () => {
+        if ((button.confirm || button.danger) && !armed(node, "Click again to run")) return;
+        runCommand(runs, button.command, button.args);
+      });
+      return node;
+    }));
+    content.replaceChildren(row, runs);
+  }
+
+  function renderForm(content, panel, area) {
+    const command = commandEntry(panel.command);
+    if (!command) { content.replaceChildren(el("p", { class: "error", text: `unknown command: ${panel.command}` })); return; }
+    const formKey = `${area.id}.${panel.id}`;
+    const prefs = () => state.prefs;
+    const fresh = () => Object.assign({}, panel.args, (prefs().defaults || {})[formKey] || {});
+    const remembered = () => Object.assign(fresh(), (prefs().values || {})[formKey] || {});
+    const inputs = new Map();
+    const later = [];
+    const numeric = (arg) => arg.kind === "int" || arg.kind === "float";
+    const fields = command.args.map((arg) => {
+      const label = arg.positional ? arg.dest : arg.flags[arg.flags.length - 1];
+      const spec = (panel.fields || {})[arg.dest] || {};
+      let input;
+      let extra = null;
+      const id = `f-${panel.id}-${arg.dest}`;
+      if (arg.kind === "flag") input = el("input", { type: "checkbox", id });
+      else if (spec.choices_from) { input = el("select", { id }, [el("option", { value: "", text: "(default)" })]); later.push({ input, arg, spec }); }
+      else if (arg.choices && arg.choices.length) input = el("select", { id }, [el("option", { value: "", text: "(default)" }), ...arg.choices.map((c) => el("option", { value: c, text: c }))]);
+      else if (spec.kind === "textarea") input = el("textarea", { id, rows: String(spec.rows || 4), placeholder: arg.metavar || "" });
+      else if (numeric(arg) && (spec.kind === "slider" || spec.kind === "number" || arg.minimum != null || arg.maximum != null)) {
+        const slide = spec.kind === "slider" && arg.minimum != null && arg.maximum != null;
+        input = el("input", { id, type: slide ? "range" : "number", min: arg.minimum != null ? String(arg.minimum) : null, max: arg.maximum != null ? String(arg.maximum) : null,
+          step: arg.step != null ? String(arg.step) : (arg.kind === "float" ? "any" : "1"), placeholder: arg.default != null ? `default: ${arg.default}` : "" });
+        if (slide) { const shown = el("output", { class: "muted", text: input.value }); input.addEventListener("input", () => { shown.textContent = input.value; }); extra = shown; }
+      } else input = el("input", { id, type: numeric(arg) ? "number" : "text", step: arg.kind === "float" ? "any" : null, placeholder: arg.default != null ? `default: ${arg.default}` : (arg.metavar || "") });
+      inputs.set(arg.dest, { input, arg, spec });
+      const hint = el("small", { class: "muted", text: arg.help || "" });
+      return arg.kind === "flag"
+        ? el("div", { class: "field check" }, [input, el("label", { for: id, text: label }), hint])
+        : el("div", { class: "field" }, [el("label", { for: id, text: label }), input, ...(extra ? [extra] : []), hint]);
+    });
+    later.forEach(({ input, arg, spec }) => api(spec.choices_from).then((payload) => {
+      const wanted = remembered()[arg.dest];
+      const items = dig(payload, spec.path);
+      (Array.isArray(items) ? items : []).forEach((item) => {
+        const value = spec.value ? dig(item, spec.value) : item;
+        const text = spec.label ? dig(item, spec.label) : value;
+        if (value === null || value === undefined || typeof value === "object") return;
+        input.append(el("option", { value: String(value), text: text === null || text === undefined ? String(value) : String(text) }));
+      });
+      if (wanted !== undefined && wanted !== null) input.value = String(wanted);
+    }).catch((error) => toast(error.message, true)));
+    const apply = (values) => inputs.forEach(({ input, arg }, dest) => {
+      const value = values[dest];
+      if (arg.kind === "flag") input.checked = value === true || value === "true" || (value === undefined && arg.default === true);
+      else input.value = value === undefined || value === null ? "" : String(value);
+    });
+    const collect = () => {
+      const out = {};
+      inputs.forEach(({ input, arg, spec }, dest) => {
+        if (arg.kind === "flag") out[dest] = input.checked;
+        else if (input.value.trim() !== "") out[dest] = numeric(arg) ? Number(input.value) : (spec.kind === "textarea" ? input.value : input.value.trim());
+      });
+      return out;
+    };
+    const forget = (stored, current) => { const wipe = {}; Object.keys(stored || {}).forEach((name) => { if (!(name in current)) wipe[name] = null; }); return Object.assign(wipe, current); };
+    apply(remembered());
+    const runs = el("div", { class: "runs" });
+    const form = el("form", {}, [...fields, el("div", { class: "row" }, [
+      el("button", { type: "submit", text: "Run" }),
+      el("button", { type: "button", class: "plain", text: "Save as default", onclick: () => savePrefs({ defaults: { [formKey]: forget((prefs().defaults || {})[formKey], collect()) } }).then(() => toast("Default saved")).catch((e) => toast(e.message, true)) }),
+      el("button", { type: "button", class: "plain", text: "Restore defaults", onclick: () => apply(fresh()) }),
+    ])]);
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const values = collect();
+      savePrefs({ values: { [formKey]: forget((prefs().values || {})[formKey], values) } }).catch(() => {});
+      runCommand(runs, panel.command, values);
+    });
+    content.replaceChildren(form, runs);
+  }
+
+  // typed form of the declared config keys; one admin-only POST saves them to the local layer
+  async function renderSettings(content, panel, area) {
+    const query = new URLSearchParams();
+    if (panel.module) query.set("module", panel.module);
+    if (panel.group) query.set("group", panel.group);
+    const payload = await api(`${panel.source}?${query}`);
+    const mayEdit = can("admin");
+    const prefix = panel.module ? `modules.${panel.module}.` : "";
+    const inputs = new Map();
+    const result = el("div", { class: "settings-result" });
+    const rows = (payload.keys || []).map((item) => {
+      const name = prefix && item.key.startsWith(prefix) ? item.key.slice(prefix.length) : item.key;
+      const id = `s-${item.key}`;
+      let input;
+      if (item.type === "bool") { input = el("input", { id, type: "checkbox" }); input.checked = item.value === true; }
+      else if (item.choices && item.choices.length) { input = el("select", { id }, item.choices.map((c) => el("option", { value: c, text: c }))); input.value = item.value == null ? "" : String(item.value); }
+      else if (item.type === "int" || item.type === "float") { input = el("input", { id, type: "number", step: item.type === "float" ? "any" : "1", min: item.minimum != null ? String(item.minimum) : null, max: item.maximum != null ? String(item.maximum) : null }); input.value = item.value == null ? "" : String(item.value); }
+      else { input = el("input", { id, type: "text" }); input.value = Array.isArray(item.value) ? item.value.join(", ") : (item.value == null ? "" : String(item.value)); }
+      input.disabled = !mayEdit || !item.editable;
+      inputs.set(item.key, { input, item });
+      const badges = el("span", { class: "row" }, [
+        el("span", { class: "chip", text: item.layer }),
+        el("span", { class: `chip tone-${item.live ? "ok" : "warn"}`, text: item.live ? "applies live" : "needs restart" }),
+        ...(item.overridden ? [el("span", { class: "chip tone-bad", text: "overridden by environment or CLI" })] : []),
+        ...(item.secret ? [el("span", { class: "chip tone-bad", text: "secret: set it in .env" })] : []),
+      ]);
+      const unset = el("button", { type: "button", class: "plain", text: "Reset", hidden: !String(item.layer).startsWith("local") || !mayEdit, onclick: () => submit({}, [item.key]) });
+      return el("div", { class: "field" }, [el("label", { for: id, text: name }), input, el("small", { class: "muted", text: item.description || "" }), badges, unset]);
+    });
+    const changes = () => {
+      const set = {};
+      inputs.forEach(({ input, item }, key) => {
+        if (input.disabled) return;
+        let value;
+        if (item.type === "bool") value = input.checked;
+        else if (input.value.trim() === "") return;
+        else if (item.type === "int" || item.type === "float") value = Number(input.value);
+        else if (item.type === "list") value = input.value.split(",").map((part) => part.trim()).filter(Boolean);
+        else value = input.value;
+        if (JSON.stringify(value) !== JSON.stringify(item.value)) set[key] = value;
+      });
+      return set;
+    };
+    async function submit(set, unset) {
+      const { ok, payload: answer } = await call("/api/v1/ui/config/edit", { method: "POST", body: { set, unset } });
+      if (!ok) { result.replaceChildren(el("p", { class: "error", text: [answer.error, answer.hint].filter(Boolean).join(" - ") })); return; }
+      const words = { live: "applied now", restart: "saved; needs a restart", shadowed: "saved, but a higher layer still wins", saved: "saved" };
+      const lines = answer.keys.map((row) => el("p", { class: row.applied === "shadowed" ? "error" : "muted", text: `${row.key}: ${words[row.applied] || row.applied}` }));
+      toast("Settings saved");
+      await renderSettings(content, panel, area);
+      content.append(...lines);
+    }
+    const save = el("button", { type: "button", text: "Save changes", disabled: !mayEdit, onclick: async () => {
+      const set = changes();
+      if (!Object.keys(set).length) { toast("Nothing changed"); return; }
+      try { await submit(set, []); } catch (error) { toast(error.message, true); }
+    } });
+    content.replaceChildren(...(rows.length ? rows : [el("p", { class: "muted", text: "No declared settings." })]),
+      el("div", { class: "row" }, [save, ...(mayEdit ? [] : [el("span", { class: "muted", text: "Saving needs the admin role." })])]), result);
   }
 
   // a generic view for System: scalars as key/value, arrays of objects as tables
@@ -658,6 +1024,10 @@
       state.prefs = prefs;
       state.prefs.layout = prefs.layout || {};
       await loadTheme();
+      state.catalog = (await api("/api/v1/ui/catalog").catch(() => ({}))).commands || [];
+      const me = await api("/api/v1/whoami").catch(() => ({}));
+      state.me = me.name ? me : null;
+      $("status-user").textContent = state.me ? `${state.me.name} · ${state.me.role}` : "anonymous";
       $("token-gate").hidden = true;
     } catch (error) {
       if (error instanceof AuthError) showGate(error.message); else toast(error.message, true);
