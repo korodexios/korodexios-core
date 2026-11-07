@@ -546,6 +546,14 @@ app's type check, component tests and headless e2e, and with `--headed` a visibl
 `kdx ui doctor` reports a display; steps that cannot run here come back `skipped` with the reason,
 so say so in your report instead of claiming they passed. `--json` gives you every step.
 
+**Containers.** `kdx init NAME --container` adds a Dockerfile, `compose.yaml` and `.dockerignore`
+(Docker and Podman). Rules an agent must not break: the control plane must stay token-protected
+whenever it listens beyond the loopback (`KDX_TOKEN` is required by compose), the host port is
+published on `127.0.0.1` only, durable state lives in the `/app/data` volume, and the project's
+modules are found through `src/<package>/modules`, so the image keeps `src/`. Build and run the
+image on a machine with Docker before you say the container works; `kdx ui doctor` lists the
+engines found. Verify portability with `scripts/distro-check.sh` (see `docs/CLI_REFERENCE.md`).
+
 **Known limits - read before you build.** `kdx ui guide --json` lists them under `notes`; they are
 also in the seeded `web/README.md`. In short: the `react` app only *reads* the saved layout
 (renaming, hiding and shortcut buttons are edited in the built-in console or with `kdx ui prefs

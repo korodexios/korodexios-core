@@ -169,6 +169,12 @@ def core_commands(chassis: Chassis) -> list[CliCommand]:
                     help="GUI tier: none | static | react [none]; see 'kdx ui guide'",
                 ),
                 CliArgument(
+                    ("--container",),
+                    dest="container",
+                    action="store_true",
+                    help="also write a Dockerfile, compose.yaml and .dockerignore",
+                ),
+                CliArgument(
                     ("--pm",),
                     dest="pm",
                     metavar="MANAGER",
@@ -965,6 +971,7 @@ def _init_command(request: CliRequest) -> int:
             chassis_source=str(request.option("chassis_source") or "").strip(),
             ui=str(request.option("ui") or "").strip(),
             pm=str(request.option("pm") or "").strip(),
+            container=bool(request.flag("container")),
         )
         target_text = str(request.option("path") or "").strip()
         target = Path(target_text).expanduser() if target_text else Path.cwd() / project.package
@@ -981,6 +988,7 @@ def _init_command(request: CliRequest) -> int:
             ("package", project.package),
             ("ecosystem", ECOSYSTEMS[project.ecosystem]),
             ("ui", project.ui),
+            ("container", "Dockerfile + compose.yaml" if project.container else "no"),
             ("modules", "(bare chassis)" if project.minimal else "app"),
             ("files written", len(result.files)),
             ("chassis", f"korodexios-core {project.core_version}"),

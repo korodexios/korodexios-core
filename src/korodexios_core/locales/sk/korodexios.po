@@ -1191,6 +1191,10 @@ msgid "already sent: {url} (--again sends it once more)"
 msgstr "už odoslané: {url} (--again ho pošle znova)"
 
 #: cli/commands.py
+msgid "also write a Dockerfile, compose.yaml and .dockerignore"
+msgstr "zapísať aj Dockerfile, compose.yaml a .dockerignore"
+
+#: cli/commands.py
 msgid "app"
 msgstr "aplikácia"
 
@@ -1353,6 +1357,14 @@ msgstr "nastavené, ale nespustené"
 #: modules/web_console/module.py
 msgid "console"
 msgstr "konzola"
+
+#: cli/commands.py
+msgid "container"
+msgstr "kontajner"
+
+#: modules/web_console/module.py
+msgid "container engines"
+msgstr "kontajnerové nástroje"
 
 #: cli/commands.py
 msgid "contract directory"
@@ -2205,6 +2217,10 @@ msgstr "spustite „kdx brief“, aby sa vytvorilo"
 #: cli/commands.py
 msgid "running"
 msgstr "beží"
+
+#: modules/web_console/module.py
+msgid "running inside"
+msgstr "beží v"
 
 #: modules/wiki/module.py
 msgid "say what happened: kdx wiki log update \"what changed\""

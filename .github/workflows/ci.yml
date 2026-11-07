@@ -159,6 +159,33 @@ jobs:
           uv run --project ../.. mypy
           uv run --project ../.. pytest -q
 
+  # The most widespread Linux distributions with their own Python (apt, dnf, apk, pacman) and the
+  # oldest and newest python images, each in a clean container. The same script runs locally:
+  #   docker run --rm -v "$PWD:/src:ro" debian:13 sh /src/scripts/distro-check.sh
+  # A distribution leg is information about portability, not a release gate.
+  distros:
+    name: distro (${{ matrix.image }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - debian:13
+          - ubuntu:24.04
+          - fedora:42
+          - alpine:3.21
+          - archlinux:latest
+          - python:3.11-slim
+          - python:3.13-slim
+    steps:
+      - name: Check out the chassis
+        uses: actions/checkout@v4
+
+      - name: Run the checks inside the image
+        run: docker run --rm -v "$PWD:/src:ro" "${{ matrix.image }}" sh /src/scripts/distro-check.sh
+
   package:
     name: package audit
     runs-on: ubuntu-latest

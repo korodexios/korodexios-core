@@ -121,3 +121,17 @@ def test_jobs_that_need_the_tree_check_it_out() -> None:
     prepare = str(jobs(data)['prepare'].get('steps', ''))
     assert 'actions/checkout@' not in prepare
 
+
+
+def test_distribution_legs_run_the_shared_script_without_gating_the_release() -> None:
+    data = parsed()
+    distros = jobs(data)["distros"]
+    assert distros["continue-on-error"] is True
+    images = distros["strategy"]["matrix"]["image"]
+    families = ("debian", "ubuntu", "fedora", "alpine", "archlinux", "python:3.11", "python:3.13")
+    for family in families:
+        assert any(str(image).startswith(family) for image in images), family
+    body = str(distros["steps"])
+    assert "actions/checkout@" in body and "scripts/distro-check.sh" in body
+    assert "distros" not in jobs(data)["release"]["needs"]
+    assert (REPO_ROOT / "scripts" / "distro-check.sh").is_file()

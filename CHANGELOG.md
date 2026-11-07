@@ -20,6 +20,11 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - Opt-in durable database: `context.db(name)` (SQLite in `data/db/`, ordered transactional
   migrations, `query`/`execute`/`transaction`) and `kdx db list|show|query|backup`. Nothing is
   created unless a module asks; `kdx ui guide` says when a database earns its place.
+- `kdx init --container`: Dockerfile (multi-stage, unprivileged user, healthcheck, Node stage for the
+  react tier), `compose.yaml` (token required, loopback port, state volumes) and `.dockerignore`, for
+  Docker and Podman. `kdx ui doctor` reports container engines and whether it runs inside a container.
+- `scripts/distro-check.sh` and a CI `distros` job: ruff, mypy and pytest in clean Debian, Ubuntu,
+  Fedora, Alpine, Arch and python-slim images with the distribution's own Python.
 - `kdx ui test [--headed] [--install]`: one command for the manifest check, the web app's type
   check, component tests and headless e2e; `--headed` adds a visible-window run when a display exists;
   steps that cannot run here are reported as skipped with the reason.

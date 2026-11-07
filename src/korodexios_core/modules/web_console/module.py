@@ -356,6 +356,8 @@ class WebConsoleModule(Module):
                 ("playwright browsers", "yes" if report["playwright_browsers"] else "no"),
                 ("display", f"{'yes' if report['display']['available'] else 'no'} "
                  f"({report['display']['reason']})"),
+                ("container engines", ", ".join(report["container"]["engines"]) or "none found"),
+                ("running inside", report["container"]["inside"] or "no container"),
             ]
         )
         testing = report["testing"]

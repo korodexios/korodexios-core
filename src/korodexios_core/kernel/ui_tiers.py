@@ -221,7 +221,7 @@ def probe_environment(
     system = sys.platform if platform is None else platform
     runner = run or _version_of
     tools: dict[str, dict[str, Any]] = {}
-    for name in ("node", "npm", "bun", "pnpm"):
+    for name in ("node", "npm", "bun", "pnpm", "docker", "podman"):
         path = which(name)
         tools[name] = {
             "found": path is not None,
@@ -246,11 +246,31 @@ def probe_environment(
         },
     }
     report["testing"]["recommended"] = _recommended(browsers, playwright, display)
+    report["container"] = {
+        "inside": _inside_container(env, exists),
+        "engines": [name for name in ("docker", "podman") if tools[name]["found"]],
+    }
     report["tiers"] = {
         name: _readiness(name, tool_found={k: v["found"] for k, v in tools.items()})
         for name in TIERS
     }
     return report
+
+
+def _inside_container(env: Mapping[str, str], exists: Callable[[Path], bool]) -> str:
+    """Return the kind of container this process runs in ('' when on a plain host).
+
+    Inside a container there is normally no display, so headed tests are skipped by the
+    display probe already; this tells an agent *why*, and that the files it writes live in a
+    layer unless a volume was mounted.
+    """
+    if exists(Path("/.dockerenv")):
+        return "docker"
+    if exists(Path("/run/.containerenv")):
+        return "podman"
+    if env.get("KUBERNETES_SERVICE_HOST"):
+        return "kubernetes"
+    return str(env.get("container", ""))
 
 
 def _recommended(

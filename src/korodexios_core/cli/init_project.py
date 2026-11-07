@@ -18,6 +18,7 @@ from typing import Any
 from ..kernel.ui_tiers import PACKAGE_MANAGERS, tier_names
 from ..validate import ValidationResult
 from ..version import __version__ as CORE_VERSION
+from .container import container_files
 from .ui_react import PM_COMMANDS, react_files
 from .ux import UserExperience
 
@@ -86,6 +87,8 @@ class ProjectTemplate:
     """GUI tier (see kernel/ui_tiers.py); empty derives it from the ecosystem."""
     pm: str = "npm"
     """Package manager of the react tier's web/ (npm, bun or pnpm)."""
+    container: bool = False
+    """Also seed a Dockerfile, compose.yaml and .dockerignore (Docker and Podman)."""
 
     def __post_init__(self) -> None:
         if not self.ui:
@@ -112,6 +115,7 @@ class ProjectTemplate:
             "ecosystem": self.ecosystem,
             "ui": self.ui,
             "pm": self.pm,
+            "container": self.container,
             "minimal": self.minimal,
             "description": self.description,
             "core_version": self.core_version,
@@ -208,6 +212,7 @@ def project_from_inputs(
     chassis_source: str = "",
     ui: str = "",
     pm: str = "",
+    container: bool = False,
 ) -> ProjectTemplate:
     """Build a ProjectTemplate from CLI input, validating the name strictly.
 
@@ -270,6 +275,7 @@ def project_from_inputs(
         chassis_source=source,
         ui=tier,
         pm=manager or "npm",
+        container=bool(container),
     )
 
 
@@ -283,6 +289,7 @@ def prompt_project(
     chassis_source: str = "",
     ui: str = "",
     pm: str = "",
+    container: bool = False,
 ) -> ProjectTemplate:
     """Ask the operator for the project identity, re-prompting on bad input.
 
@@ -321,6 +328,7 @@ def prompt_project(
         chassis_source=chassis_source,
         ui=ui,
         pm=pm,
+        container=container,
     )
 
 
@@ -391,6 +399,8 @@ def build_files(project: ProjectTemplate) -> dict[str, str]:
                 f"src/{package}/modules/app/kdx_module.toml": _app_manifest(project),
             }
         )
+    if project.container:
+        files.update(container_files(project))
     if project.ui == "react":
         files.update(react_files(project))
         files[".agents/skills/web-ui.md"] = _skill_web_ui(project)

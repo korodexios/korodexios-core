@@ -536,6 +536,30 @@ A database exists only when a module asked for one (`context.db()`, `docs/AGENTS
 section 16.4), so `kdx db list` is often empty. The commands are terminal-only and read-only
 apart from `backup`; schema changes are a module's migrations, never an ad-hoc command.
 
+## Containers (`kdx init --container`)
+
+```bash
+kdx init NAME --container [--ui react --pm npm]   # also writes Dockerfile, compose.yaml, .dockerignore
+KDX_TOKEN=<long random string> docker compose up -d     # or: podman compose up -d
+```
+
+One `Dockerfile` serves Docker and Podman. It is multi-stage (a build stage installs the project
+into a virtual environment; the runtime stage holds only that environment, `kdx.yml` and `src/`),
+runs as an unprivileged user (uid 10001), has a `HEALTHCHECK` on `/health`, and with `--ui react`
+adds a Node stage that builds `web/` (served at `/app/`). Inside the container the control plane
+binds `0.0.0.0` on the fixed port 18123 (the seeded `kdx.yml` uses the ephemeral port 0, which a
+published port cannot use), so `compose.yaml` refuses to start without `KDX_TOKEN` and publishes
+only `127.0.0.1:${KDX_PORT:-18123}` on the host; widen that only behind TLS and a firewall.
+`/app/var` (logs, locks) and `/app/data` (databases, queue, GUI preferences) are named volumes,
+so state survives `docker compose down` and an image rebuild. With the default git chassis source
+the build stage installs `git`. `kdx ui doctor` reports the container engines found and whether
+it runs inside a container (then there is no display, so headed tests are skipped).
+
+Linux distributions: `scripts/distro-check.sh` runs ruff, mypy and pytest in a clean image with
+the distribution's own Python as an unprivileged user (`docker run --rm -v "$PWD:/src:ro" debian:13
+sh /src/scripts/distro-check.sh`). CI runs it for Debian 13, Ubuntu 24.04, Fedora 42, Alpine 3.21,
+Arch and the python 3.11 and 3.13 slim images; these legs report but do not gate a release.
+
 ## Rate limiters (`kdx limiter`)
 
 ```bash

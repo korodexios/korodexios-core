@@ -1191,6 +1191,10 @@ msgid "already sent: {url} (--again sends it once more)"
 msgstr "już wysłano: {url} (--again wysyła ponownie)"
 
 #: cli/commands.py
+msgid "also write a Dockerfile, compose.yaml and .dockerignore"
+msgstr "zapisz także Dockerfile, compose.yaml i .dockerignore"
+
+#: cli/commands.py
 msgid "app"
 msgstr "aplikacja"
 
@@ -1353,6 +1357,14 @@ msgstr "skonfigurowany, ale nie uruchomiony"
 #: modules/web_console/module.py
 msgid "console"
 msgstr "konsola"
+
+#: cli/commands.py
+msgid "container"
+msgstr "kontener"
+
+#: modules/web_console/module.py
+msgid "container engines"
+msgstr "silniki kontenerów"
 
 #: cli/commands.py
 msgid "contract directory"
@@ -2205,6 +2217,10 @@ msgstr "uruchom „kdx brief”, aby go utworzyć"
 #: cli/commands.py
 msgid "running"
 msgstr "działa"
+
+#: modules/web_console/module.py
+msgid "running inside"
+msgstr "działa w"
 
 #: modules/wiki/module.py
 msgid "say what happened: kdx wiki log update \"what changed\""
