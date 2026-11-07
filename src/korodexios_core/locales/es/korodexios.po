@@ -343,8 +343,8 @@ msgid "Forget the remembered choices (defaults stay unless named)."
 msgstr "Olvidar las opciones recordadas (los valores predeterminados se conservan salvo que se nombren)."
 
 #: cli/commands.py
-msgid "GUI tier: none | static [none]; 'kdx ui guide' says which to pick"
-msgstr "nivel de GUI: none | static [none]; 'kdx ui guide' dice cuál elegir"
+msgid "GUI tier: none | static | react [none]; see 'kdx ui guide'"
+msgstr "nivel de GUI: none | static | react [none]; véase 'kdx ui guide'"
 
 #: modules/job_queue/module.py
 msgid "Handler kind."
@@ -1926,6 +1926,10 @@ msgstr "propietario"
 msgid "package"
 msgstr "paquete"
 
+#: cli/commands.py
+msgid "package manager of the react tier: npm | bun | pnpm [npm]"
+msgstr "gestor de paquetes del nivel react: npm | bun | pnpm [npm]"
+
 #: modules/wiki/module.py
 msgid "page"
 msgstr "página"
@@ -2715,6 +2719,9 @@ msgstr "{verb}; este token solo se muestra ahora - entrégalo en privado"
 
 #~ msgid "Create the wiki folders and keep the internal one out of git."
 #~ msgstr "Crea las carpetas del wiki y deja la interna fuera de git."
+
+#~ msgid "GUI tier: none | static [none]; 'kdx ui guide' says which to pick"
+#~ msgstr "nivel de GUI: none | static [none]; 'kdx ui guide' dice cuál elegir"
 
 #~ msgid "List pages with their languages and tags."
 #~ msgstr "Lista las páginas con sus idiomas y etiquetas."

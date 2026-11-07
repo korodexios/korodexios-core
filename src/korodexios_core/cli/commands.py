@@ -166,7 +166,13 @@ def core_commands(chassis: Chassis) -> list[CliCommand]:
                     ("--ui",),
                     dest="ui",
                     metavar="TIER",
-                    help="GUI tier: none | static [none]; 'kdx ui guide' says which to pick",
+                    help="GUI tier: none | static | react [none]; see 'kdx ui guide'",
+                ),
+                CliArgument(
+                    ("--pm",),
+                    dest="pm",
+                    metavar="MANAGER",
+                    help="package manager of the react tier: npm | bun | pnpm [npm]",
                 ),
                 CliArgument(
                     ("--minimal",),
@@ -958,6 +964,7 @@ def _init_command(request: CliRequest) -> int:
             minimal=bool(request.flag("minimal")),
             chassis_source=str(request.option("chassis_source") or "").strip(),
             ui=str(request.option("ui") or "").strip(),
+            pm=str(request.option("pm") or "").strip(),
         )
         target_text = str(request.option("path") or "").strip()
         target = Path(target_text).expanduser() if target_text else Path.cwd() / project.package

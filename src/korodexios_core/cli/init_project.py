@@ -15,9 +15,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from ..kernel.ui_tiers import tier_names
+from ..kernel.ui_tiers import PACKAGE_MANAGERS, tier_names
 from ..validate import ValidationResult
 from ..version import __version__ as CORE_VERSION
+from .ui_react import PM_COMMANDS, react_files
 from .ux import UserExperience
 
 NAME_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
@@ -83,6 +84,8 @@ class ProjectTemplate:
     chassis_source: str = CHASSIS_SOURCE_DEFAULT
     ui: str = ""
     """GUI tier (see kernel/ui_tiers.py); empty derives it from the ecosystem."""
+    pm: str = "npm"
+    """Package manager of the react tier's web/ (npm, bun or pnpm)."""
 
     def __post_init__(self) -> None:
         if not self.ui:
@@ -108,6 +111,7 @@ class ProjectTemplate:
             "author": self.author,
             "ecosystem": self.ecosystem,
             "ui": self.ui,
+            "pm": self.pm,
             "minimal": self.minimal,
             "description": self.description,
             "core_version": self.core_version,
@@ -203,6 +207,7 @@ def project_from_inputs(
     description: str = "",
     chassis_source: str = "",
     ui: str = "",
+    pm: str = "",
 ) -> ProjectTemplate:
     """Build a ProjectTemplate from CLI input, validating the name strictly.
 
@@ -238,6 +243,13 @@ def project_from_inputs(
             "--ui none contradicts --ecosystem fullstack",
             hint="drop --ecosystem, or pick a --ui tier other than 'none'",
         )
+    manager = str(pm).strip().lower()
+    if manager and manager not in PACKAGE_MANAGERS:
+        raise ProjectError(
+            f"unknown package manager {pm!r}", hint="choose " + ", ".join(PACKAGE_MANAGERS)
+        )
+    if manager and tier != "react":
+        raise ProjectError("--pm only applies to --ui react", hint="add --ui react")
     key = key or ("fullstack" if tier not in ("", "none") else "python")
     source = str(chassis_source).strip().lower() or CHASSIS_SOURCE_DEFAULT
     if source not in CHASSIS_SOURCES:
@@ -257,6 +269,7 @@ def project_from_inputs(
         description=str(description).strip() or f"{title}: a korodexios chassis project.",
         chassis_source=source,
         ui=tier,
+        pm=manager or "npm",
     )
 
 
@@ -269,6 +282,7 @@ def prompt_project(
     minimal: bool = False,
     chassis_source: str = "",
     ui: str = "",
+    pm: str = "",
 ) -> ProjectTemplate:
     """Ask the operator for the project identity, re-prompting on bad input.
 
@@ -306,6 +320,7 @@ def prompt_project(
         minimal=minimal_flag,
         chassis_source=chassis_source,
         ui=ui,
+        pm=pm,
     )
 
 
@@ -376,7 +391,10 @@ def build_files(project: ProjectTemplate) -> dict[str, str]:
                 f"src/{package}/modules/app/kdx_module.toml": _app_manifest(project),
             }
         )
-    if project.fullstack:
+    if project.ui == "react":
+        files.update(react_files(project))
+        files[".agents/skills/web-ui.md"] = _skill_web_ui(project)
+    elif project.fullstack:
         files["web/package.json"] = _web_package(project)
         files["web/index.html"] = _web_index(project)
         files["web/src/main.js"] = _web_main(project)
@@ -561,7 +579,15 @@ def _readme(project: ProjectTemplate) -> str:
         "docs/specs/TEMPLATE.md    # start every feature spec from this",
         ".agents/skills/          # playbooks: how to extend this project safely",
     ]
-    if project.fullstack:
+    if project.ui == "react":
+        lines += [
+            "web/",
+            "  src/                   # React + TypeScript app: draws /api/v1/ui/manifest",
+            "  e2e/                   # Playwright tests (headless; PW_HEADED=1 for a window)",
+            "  README.md              # commands for the chosen package manager",
+            "  modules/web_app/       # serves web/dist at /app/ once built",
+        ]
+    elif project.fullstack:
         lines += [
             "web/",
             "  index.html, src/       # static client: talks to the daemon over the IPC endpoint",
@@ -1182,6 +1208,9 @@ def _gitignore() -> str:
             "data/limiters/",
             "node_modules/",
             "web/dist/",
+            "web/test-results/",
+            "web/playwright-report/",
+            "data/ui/",
             "*.mo",
             "# internal developer notes and the internal wiki (kdx wiki)",
             "docs-dev/",
@@ -1795,6 +1824,28 @@ def _skill_verification(project: ProjectTemplate) -> str:
 
 
 def _skill_web_ui(project: ProjectTemplate) -> str:
+    if project.ui == "react":
+        run = PM_COMMANDS[project.pm]["run"]
+        return _skill(
+            "web-ui",
+            f"Extend the {project.title} React app without breaking the contract.",
+            [
+                "## Contract",
+                "- The app is a client of @BT@/api/v1/*@BT@; it holds no core logic.",
+                "- A module gets a tab by declaring a @BT@[ui]@BT@ table; no React is needed.",
+                "- Per-person state (labels, hidden panels, form values) lives in",
+                "  @BT@/api/v1/ui/prefs@BT@.",
+                "- The token travels in the URL fragment, never in committed code.",
+                "",
+                "## Steps",
+                f"1. @BT@{project.script} ui manifest --json@BT@ shows what the app will draw.",
+                f"2. @BT@{run} dev@BT@ in web/ while @BT@{project.script} run@BT@ is running.",
+                f"3. @BT@{run} typecheck && {run} test@BT@ before every commit.",
+                f"4. @BT@{run} e2e@BT@ for the real daemon; @BT@PW_HEADED=1@BT@ only when",
+                "   @BT@kdx ui doctor@BT@ reports a display.",
+                "5. Draw one panel yourself with @BT@overridePanel()@BT@ in web/src/overrides.tsx.",
+            ],
+        ).replace("@BT@", chr(96))
     return _skill(
         "web-ui",
         f"Keep the {project.title} web client honest about the daemon.",

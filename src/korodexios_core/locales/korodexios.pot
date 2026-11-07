@@ -341,7 +341,7 @@ msgid "Forget the remembered choices (defaults stay unless named)."
 msgstr ""
 
 #: cli/commands.py
-msgid "GUI tier: none | static [none]; 'kdx ui guide' says which to pick"
+msgid "GUI tier: none | static | react [none]; see 'kdx ui guide'"
 msgstr ""
 
 #: modules/job_queue/module.py
@@ -1922,6 +1922,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "package"
+msgstr ""
+
+#: cli/commands.py
+msgid "package manager of the react tier: npm | bun | pnpm [npm]"
 msgstr ""
 
 #: modules/wiki/module.py

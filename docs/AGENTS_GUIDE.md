@@ -535,9 +535,11 @@ must live under `/api/v1/`, ids are unique, and everything is plain data. Check 
 **Choosing a GUI tier.** Start with no GUI files: the built-in console already draws every
 module's `[ui]` panels. Run `kdx ui guide --json` for the tiers and when to pick each, and
 `kdx ui doctor --json` for what this machine can run (Node, Bun, browsers, a display). Create a
-project with `kdx init NAME --ui none|static`, record the choice in `docs/BRIEF.md`, and test
-headless first: assert `kdx ui manifest --json` and the HTTP answers; run a headed check only
-when `doctor` reports a display.
+project with `kdx init NAME --ui none|static|react [--pm npm|bun|pnpm]`, record the choice in
+`docs/BRIEF.md`, and test headless first: assert `kdx ui manifest --json` and the HTTP answers
+(`static`), or run Vitest and Playwright headless (`react`); run a headed check only when
+`doctor` reports a display. The `react` tier draws the same manifest as the built-in console,
+so a module's `[ui]` table needs no React; override a single panel with `overridePanel()`.
 
 **What the person using the GUI can change** is stored per user on the daemon
 (`data/ui/prefs-<user>.json`, `GET/PUT/PATCH/DELETE /api/v1/ui/prefs`, `kdx ui prefs

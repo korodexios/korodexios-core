@@ -45,7 +45,7 @@ def test_probe_on_a_bare_linux_host_reports_no_browser_and_no_display() -> None:
     assert report["display"] == {"available": False, "reason": "no DISPLAY or WAYLAND_DISPLAY"}
     assert report["testing"] == {
         "api_and_html": True, "headless_browser": False, "headed_browser": False}
-    assert all(tier["ready"] for tier in report["tiers"].values())  # none/static need Python only
+    assert report["tiers"]["none"]["ready"] and report["tiers"]["static"]["ready"]  # Python only
 
 
 def test_probe_finds_tools_browsers_and_a_display() -> None:
@@ -89,8 +89,10 @@ def test_init_ui_option_and_the_ecosystem_alias_agree() -> None:
     assert project_from_inputs("demo", ui="none").fullstack is False
     assert project_from_inputs("demo", ui="static", ecosystem="fullstack").ui == "static"
     for kwargs in (
-        {"ui": "react"},
+        {"ui": "angular"},
         {"ui": "static", "ecosystem": "python"},
+        {"ui": "static", "pm": "bun"},
+        {"ui": "react", "pm": "yarn"},
         {"ui": "none", "ecosystem": "fullstack"},
     ):
         with pytest.raises(ProjectError):
@@ -111,7 +113,7 @@ def test_init_seeds_web_only_for_a_gui_tier_and_documents_the_choice(tmp_path, c
     assert "GUI tier: `static`" in (web / "README.md").read_text(encoding="utf-8")
     capsys.readouterr()
     assert main([*args, "init", "bad_app", "--path", str(tmp_path / "bad"), "--yes",
-                 "--ui", "react"]) == int(ExitCode.ERROR)
+                 "--ui", "angular"]) == int(ExitCode.ERROR)
     assert "unknown ui tier" in capsys.readouterr().out
 
 
@@ -127,3 +129,78 @@ def test_terminal_prints_the_guide_and_the_doctor_report(capsys) -> None:
     assert "headless_browser" in json.loads(out[out.index("{"):out.rindex("}") + 1])["testing"]
     assert main([*args, "ui", "doctor"]) == 0
     assert "tier static" in capsys.readouterr().out
+
+
+def test_react_tier_needs_node_with_npm_or_bun() -> None:
+    bare = _probe()
+    assert bare["tiers"]["react"] == {"ready": False, "missing": ["node (with npm) or bun"]}
+    node_only = _probe(which={"node": "/bin/node"}.get)
+    assert node_only["tiers"]["react"]["ready"] is False  # Node without npm is not enough
+    assert _probe(which={"node": "/n", "npm": "/n"}.get)["tiers"]["react"]["ready"] is True
+    assert _probe(which={"bun": "/b"}.get)["tiers"]["react"]["ready"] is True
+
+
+def test_react_tier_seeds_the_app_the_module_and_the_chosen_package_manager(tmp_path) -> None:
+    from korodexios_core.cli.init_project import build_files
+
+    project = project_from_inputs("demo_app", ui="react", pm="bun")
+    assert (project.ecosystem, project.ui, project.pm) == ("fullstack", "react", "bun")
+    files = build_files(project)
+    for name in (
+        "web/package.json", "web/tsconfig.json", "web/vite.config.ts", "web/playwright.config.ts",
+        "web/src/App.tsx", "web/src/panels.tsx", "web/src/overrides.tsx", "web/src/App.test.tsx",
+        "web/e2e/smoke.spec.ts", "web/README.md",
+        "src/demo_app/modules/web_app/module.py", "src/demo_app/modules/web_app/kdx_module.toml",
+        ".agents/skills/web-ui.md",
+    ):
+        assert name in files, name
+    package = json.loads(files["web/package.json"])
+    assert package["name"] == "demo-app-web"
+    assert {"test", "e2e", "build", "typecheck"} <= set(package["scripts"])
+    assert "react" in package["dependencies"] and "vitest" in package["devDependencies"]
+    json.loads(files["web/tsconfig.json"])
+    assert 'const pm = "bun";' in files["web/playwright.config.ts"]
+    assert "uv run demo-app run" in files["web/playwright.config.ts"]
+    assert "bun install" in files["web/README.md"] and "bun run e2e" in files["web/README.md"]
+    assert "@" not in "".join(
+        line for line in files["web/README.md"].splitlines() if "@DIST@" in line or "@PM@" in line
+    )
+    assert "bun run typecheck" in files[".agents/skills/web-ui.md"]
+    assert "web/playwright-report/" in files[".gitignore"] and "data/ui/" in files[".gitignore"]
+    assert "React" in files["README.md"] and "GUI tier: `react`" in files["README.md"]
+    assert not any(name.startswith("web/src/main.js") for name in files)
+
+
+def test_the_seeded_web_app_module_serves_dist_only_once_it_is_built(tmp_path) -> None:
+    import importlib.util
+    from types import SimpleNamespace
+
+    from korodexios_core.cli.init_project import build_files
+
+    source = build_files(project_from_inputs("demo_app", ui="react"))[
+        "src/demo_app/modules/web_app/module.py"
+    ]
+    module_file = tmp_path / "web_app_module.py"
+    module_file.write_text(source, encoding="utf-8")
+    spec = importlib.util.spec_from_file_location("web_app_module", module_file)
+    assert spec is not None and spec.loader is not None
+    loaded = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(loaded)
+    module = loaded.MODULE
+    assert module.static_dirs() == ()  # no context yet
+    module._context = SimpleNamespace(paths=SimpleNamespace(root=tmp_path))
+    module.__class__.paths = property(lambda self: self._context.paths)  # the context is a stub
+    assert module.static_dirs() == ()  # not built yet
+    (tmp_path / "web" / "dist").mkdir(parents=True)
+    (mount,) = module.static_dirs()
+    assert mount.route_prefix == "/app" and mount.auth is False
+    assert Path(mount.directory) == tmp_path / "web" / "dist"
+
+
+def test_init_pm_flag_reaches_the_react_seed(tmp_path) -> None:
+    args = base_args(tmp_path)
+    target = tmp_path / "pm_app"
+    assert main([*args, "init", "pm_app", "--path", str(target), "--yes", "--ui", "react",
+                 "--pm", "pnpm"]) == 0
+    assert "pnpm run e2e" in (target / "web" / "README.md").read_text(encoding="utf-8")
+    assert (target / "web" / "src" / "App.tsx").is_file()

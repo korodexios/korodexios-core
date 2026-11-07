@@ -5,6 +5,18 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Added
+
+- GUI manifest: a module declares a `[ui]` table (or `Module.ui_spec()`) and the web console draws a
+  tab for it (`GET /api/v1/ui/manifest`, `kdx ui manifest`); table, keyvalue, log, text, form and
+  actions panels. `job_queue` ships one.
+- Remembered GUI choices per user on the daemon (`/api/v1/ui/prefs`, `kdx ui prefs`): rename, hide
+  and reorder tabs and panels, own shortcut buttons, remembered and pinned form values, last tab.
+- GUI tiers for agents: `kdx ui guide` and `kdx ui doctor` (Node, Bun, browsers, display, headless
+  and headed testing) and `kdx init --ui none|static|react [--pm npm|bun|pnpm]`. The `react` tier
+  seeds a Vite + React + TypeScript app with Vitest and Playwright and a `web_app` module serving
+  `web/dist` at `/app/`.
+
 ### Fixed
 
 - A LAN control plane no longer asks DNS for its own names (`socket.getfqdn`): the reverse lookup

@@ -144,6 +144,7 @@ select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM", "RUF"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["B018"]
+"src/korodexios_core/cli/ui_react.py" = ["E501"]  # embedded TypeScript templates
 
 [tool.mypy]
 python_version = "3.11"

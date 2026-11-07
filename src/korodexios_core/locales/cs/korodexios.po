@@ -343,8 +343,8 @@ msgid "Forget the remembered choices (defaults stay unless named)."
 msgstr "Zapomenout zapamatované volby (výchozí hodnoty zůstanou, pokud je nepojmenuješ)."
 
 #: cli/commands.py
-msgid "GUI tier: none | static [none]; 'kdx ui guide' says which to pick"
-msgstr "úroveň GUI: none | static [none]; 'kdx ui guide' poradí, kterou vybrat"
+msgid "GUI tier: none | static | react [none]; see 'kdx ui guide'"
+msgstr "úroveň GUI: none | static | react [none]; viz 'kdx ui guide'"
 
 #: modules/job_queue/module.py
 msgid "Handler kind."
@@ -1926,6 +1926,10 @@ msgstr "vlastník"
 msgid "package"
 msgstr "balíček"
 
+#: cli/commands.py
+msgid "package manager of the react tier: npm | bun | pnpm [npm]"
+msgstr "správce balíčků úrovně react: npm | bun | pnpm [npm]"
+
 #: modules/wiki/module.py
 msgid "page"
 msgstr "stránka"
@@ -2715,6 +2719,9 @@ msgstr "{verb}; tento token se zobrazí pouze teď - předej ho soukromě"
 
 #~ msgid "Create the wiki folders and keep the internal one out of git."
 #~ msgstr "Vytvoří složky wiki a interní část vyloučí z gitu."
+
+#~ msgid "GUI tier: none | static [none]; 'kdx ui guide' says which to pick"
+#~ msgstr "úroveň GUI: none | static [none]; 'kdx ui guide' poradí, kterou vybrat"
 
 #~ msgid "List pages with their languages and tags."
 #~ msgstr "Vypíše stránky s jejich jazyky a štítky."

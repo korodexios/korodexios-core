@@ -627,14 +627,18 @@ Choosing a GUI for a project is a decision for the person or the AI agent, so th
 publishes the facts instead of guessing:
 
 ```bash
-kdx ui guide [--json]     # the tiers (none, static), when to pick each, the rules
+kdx ui guide [--json]     # the tiers (none, static, react), when to pick each, the rules
 kdx ui doctor [--json]    # Node/npm/Bun/pnpm, browsers, a display, headless and headed testing
-kdx init NAME --ui none|static   # create the project with that tier (default: none)
+kdx init NAME --ui none|static|react [--pm npm|bun|pnpm]   # default tier: none
 ```
 
 `--ecosystem fullstack` remains as an alias of `--ui static`; the two must not contradict
-each other. Test the GUI headless first (API and HTML over HTTP, no browser); `doctor` says
-whether a headless or headed browser is available here.
+each other. `--ui react` seeds `web/` (Vite, React, TypeScript, Vitest, Playwright) that draws
+the module manifest, plus a `web_app` module that serves `web/dist` at `/app/`; `--pm` only
+applies to it (default `npm`). Test the GUI headless first (API and HTML over HTTP, no
+browser; Vitest in jsdom; Playwright headless). `doctor` says whether a headless or headed
+browser is available here; in the react app `PW_HEADED=1` opens the window and
+`PW_CHANNEL=chrome` uses an installed browser instead of a download.
 
 The **Customize** button lets a person rename, hide and reorder tabs and panels and add
 their own **Shortcuts** (a label that runs a known command with fixed arguments). Form

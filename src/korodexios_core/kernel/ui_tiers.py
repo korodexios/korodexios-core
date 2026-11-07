@@ -75,6 +75,30 @@ TIERS: dict[str, dict[str, Any]] = {
             "headed": "optional: open the page in a browser to judge layout",
         },
     },
+    "react": {
+        "summary": "Vite + React + TypeScript app in web/ that draws the module manifest.",
+        "choose_when": [
+            "the product needs its own screens, many interactive views or shared state",
+            "agents and developers should work with the most widely known UI stack",
+            "you want component tests (Vitest) and end-to-end tests (Playwright)",
+        ],
+        "avoid_when": [
+            "a module [ui] table or one static page is enough (less to build and maintain)",
+            "neither Node nor Bun can be installed on the build host",
+        ],
+        "needs": ["node-or-bun"],
+        "dependencies": ["react", "react-dom", "vite", "typescript", "vitest", "playwright"],
+        "how": (
+            "kdx init NAME --ui react [--pm npm|bun|pnpm] seeds web/ and the web_app module that "
+            "serves web/dist at /app/. The app draws /api/v1/ui/manifest and honours "
+            "/api/v1/ui/prefs; replace a panel with overridePanel() in web/src/overrides.tsx."
+        ),
+        "testing": {
+            "headless": "vitest run (components, jsdom) and playwright test (real daemon, "
+            "headless Chromium; PW_CHANNEL=chrome uses an installed browser)",
+            "headed": "PW_HEADED=1 playwright test when 'kdx ui doctor' reports a display",
+        },
+    },
 }
 
 
@@ -91,7 +115,8 @@ def guide() -> dict[str, Any]:
         "package_managers": list(PACKAGE_MANAGERS),
         "decide": [
             "Start from 'none': give each module a [ui] table and look at 'kdx ui'.",
-            "Move to 'static' only when the project needs a page of its own.",
+            "Move to 'static' for one small page of your own, or to 'react' for many "
+            "screens with shared state.",
             "Run 'kdx ui doctor --json' first: a tier whose tools are missing here is not ready.",
             "Test headless first; run headed checks only when doctor reports a display.",
             "Keep the choice in docs/BRIEF.md so the next agent does not have to guess.",
@@ -156,8 +181,17 @@ def probe_environment(
 
 
 def _readiness(name: str, *, tool_found: Mapping[str, bool]) -> dict[str, Any]:
-    needs = [tool for tool in TIERS[name]["needs"] if tool != "python" and not tool_found.get(tool)]
-    return {"ready": not needs, "missing": needs}
+    missing: list[str] = []
+    for need in TIERS[name]["needs"]:
+        if need == "python":
+            continue
+        if need == "node-or-bun":
+            # Bun runs Vite itself; Node needs its package manager (npm) beside it.
+            if not (tool_found.get("bun") or (tool_found.get("node") and tool_found.get("npm"))):
+                missing.append("node (with npm) or bun")
+        elif not tool_found.get(need):
+            missing.append(need)
+    return {"ready": not missing, "missing": missing}
 
 
 def _version_of(command: list[str]) -> str | None:
