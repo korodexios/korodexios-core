@@ -160,7 +160,13 @@ def core_commands(chassis: Chassis) -> list[CliCommand]:
                     ("--ecosystem",),
                     dest="ecosystem",
                     metavar="CHOICE",
-                    help="python | fullstack",
+                    help="python | fullstack (older word; --ui is the precise one)",
+                ),
+                CliArgument(
+                    ("--ui",),
+                    dest="ui",
+                    metavar="TIER",
+                    help="GUI tier: none | static [none]; 'kdx ui guide' says which to pick",
                 ),
                 CliArgument(
                     ("--minimal",),
@@ -951,6 +957,7 @@ def _init_command(request: CliRequest) -> int:
             ecosystem=str(request.option("ecosystem") or "").strip(),
             minimal=bool(request.flag("minimal")),
             chassis_source=str(request.option("chassis_source") or "").strip(),
+            ui=str(request.option("ui") or "").strip(),
         )
         target_text = str(request.option("path") or "").strip()
         target = Path(target_text).expanduser() if target_text else Path.cwd() / project.package
@@ -966,6 +973,7 @@ def _init_command(request: CliRequest) -> int:
             ("root", str(result.root)),
             ("package", project.package),
             ("ecosystem", ECOSYSTEMS[project.ecosystem]),
+            ("ui", project.ui),
             ("modules", "(bare chassis)" if project.minimal else "app"),
             ("files written", len(result.files)),
             ("chassis", f"korodexios-core {project.core_version}"),

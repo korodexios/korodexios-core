@@ -302,6 +302,10 @@ msgstr "Názov udalosti na odoslanie [webhooks.test]."
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr "Vzor udalostí: 'backup.*', 'core.job.**', '*' pre všetky [*]."
 
+#: modules/web_console/module.py
+msgid "Explain the GUI tiers a project can choose and when to pick each."
+msgstr "Vysvetliť úrovne GUI, ktoré si projekt môže zvoliť, a kedy ktorú vybrať."
+
 #: modules/wiki/module.py
 msgid "Export the internal wiki (it leaves the project)."
 msgstr "Exportuje internú wiki (opustí projekt)."
@@ -337,6 +341,10 @@ msgstr "Sleduje udalosti démona naživo (zastavíš ich Ctrl+C)."
 #: modules/web_console/module.py
 msgid "Forget the remembered choices (defaults stay unless named)."
 msgstr "Zabudnúť zapamätané voľby (predvolené hodnoty ostanú, ak ich nepomenuješ)."
+
+#: cli/commands.py
+msgid "GUI tier: none | static [none]; 'kdx ui guide' says which to pick"
+msgstr "úroveň GUI: none | static [none]; 'kdx ui guide' poradí, ktorú vybrať"
 
 #: modules/job_queue/module.py
 msgid "Handler kind."
@@ -786,6 +794,10 @@ msgstr "Ohlási kľúče, ktoré nič nečíta; ak je kľúč preklep, skončí 
 msgid "Report the retention window, standing copies, and sweep record."
 msgstr "Ohlási okno uchovávania, platné kópie a záznam o čistení."
 
+#: modules/web_console/module.py
+msgid "Report what this machine can run for a GUI: Node, Bun, browsers, a display, headless testing."
+msgstr "Ukázať, čo tento stroj zvládne pre GUI: Node, Bun, prehliadače, displej, headless testovanie."
+
 #: modules/backup_engine/module.py
 msgid "Report what would be copied without writing."
 msgstr "Ohlási, čo by sa skopírovalo, bez zápisu."
@@ -1198,6 +1210,10 @@ msgstr "pokazené"
 msgid "browser:  open http://HOST:18123/ui/ and paste the token"
 msgstr "prehliadač: otvor http://HOST:18123/ui/ a vlož token"
 
+#: modules/web_console/module.py
+msgid "browsers"
+msgstr "prehliadače"
+
 #: cli/language.py
 msgid "built-in default"
 msgstr "vstavaná predvolená hodnota"
@@ -1354,6 +1370,10 @@ msgstr "súbor objavovania"
 msgid "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir"
 msgstr "objavovanie potrebuje {parent} v core.modules.extra_paths alebo zadané cez --modules-dir"
 
+#: modules/web_console/module.py
+msgid "display"
+msgstr "displej"
+
 #: cli/reset.py
 msgid "disposable root: {root}"
 msgstr "jednorazový koreň: {root}"
@@ -1474,6 +1494,14 @@ msgstr "zadajte --hours alebo --minutes"
 msgid "handler errors"
 msgstr "chyby obslužných funkcií"
 
+#: modules/web_console/module.py
+msgid "headed browser tests: {state}"
+msgstr "testy v prehliadači s displejom: {state}"
+
+#: modules/web_console/module.py
+msgid "headless browser tests: {state}"
+msgstr "headless testy v prehliadači: {state}"
+
 #: cli/commands.py
 msgid "health"
 msgstr "zdravie"
@@ -1489,6 +1517,10 @@ msgstr "heartbeat {version} je {value}"
 #: cli/commands.py
 msgid "how the project resolves the chassis: git | index [git]"
 msgstr "ako projekt získa šasi: git | index [git]"
+
+#: modules/web_console/module.py
+msgid "how to decide"
+msgstr "ako sa rozhodnúť"
 
 #: cli/jobs.py
 msgid "id"
@@ -1938,6 +1970,10 @@ msgstr "zástupné polia"
 msgid "platform"
 msgstr "platforma"
 
+#: modules/web_console/module.py
+msgid "playwright browsers"
+msgstr "prehliadače Playwright"
+
 #: cli/commands.py
 msgid "port of --host [core.ipc.port]"
 msgstr "port pre --host [core.ipc.port]"
@@ -1991,8 +2027,8 @@ msgid "python"
 msgstr "python"
 
 #: cli/commands.py
-msgid "python | fullstack"
-msgstr "python | fullstack"
+msgid "python | fullstack (older word; --ui is the precise one)"
+msgstr "python | fullstack (staršie slovo; presnejšie je --ui)"
 
 #: cli/commands.py
 msgid "query http://host:port directly, skipping the local discovery file"
@@ -2061,6 +2097,10 @@ msgstr "rola"
 #: cli/commands.py
 msgid "root"
 msgstr "koreň"
+
+#: modules/web_console/module.py
+msgid "rules"
+msgstr "pravidlá"
 
 #: cli/brief.py
 msgid "run 'kdx brief' to answer the questions"
@@ -2330,6 +2370,10 @@ msgstr "ticker naplánovaný"
 msgid "ticks"
 msgstr "tiky"
 
+#: modules/web_console/module.py
+msgid "tier {name}: {state}"
+msgstr "úroveň {name}: {state}"
+
 #: cli/jobs.py
 msgid "time"
 msgstr "čas"
@@ -2361,6 +2405,10 @@ msgstr "vyprázdni logový súbor (najprv sa opýta)"
 #: modules/web_console/module.py
 msgid "type"
 msgstr "typ"
+
+#: cli/commands.py
+msgid "ui"
+msgstr "ui"
 
 #: cli/agents.py
 msgid "unknown agent: {names}"
@@ -2679,3 +2727,6 @@ msgstr "{verb}; tento token sa zobrazí iba teraz - odovzdaj ho súkromne"
 
 #~ msgid "Write INDEX.md for each wiki (what an agent reads first)."
 #~ msgstr "Zapíše INDEX.md pre každú wiki (to, čo agent číta ako prvé)."
+
+#~ msgid "python | fullstack"
+#~ msgstr "python | fullstack"

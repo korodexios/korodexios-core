@@ -300,6 +300,10 @@ msgstr ""
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Explain the GUI tiers a project can choose and when to pick each."
+msgstr ""
+
 #: modules/wiki/module.py
 msgid "Export the internal wiki (it leaves the project)."
 msgstr ""
@@ -334,6 +338,10 @@ msgstr ""
 
 #: modules/web_console/module.py
 msgid "Forget the remembered choices (defaults stay unless named)."
+msgstr ""
+
+#: cli/commands.py
+msgid "GUI tier: none | static [none]; 'kdx ui guide' says which to pick"
 msgstr ""
 
 #: modules/job_queue/module.py
@@ -784,6 +792,10 @@ msgstr ""
 msgid "Report the retention window, standing copies, and sweep record."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Report what this machine can run for a GUI: Node, Bun, browsers, a display, headless testing."
+msgstr ""
+
 #: modules/backup_engine/module.py
 msgid "Report what would be copied without writing."
 msgstr ""
@@ -1196,6 +1208,10 @@ msgstr ""
 msgid "browser:  open http://HOST:18123/ui/ and paste the token"
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "browsers"
+msgstr ""
+
 #: cli/language.py
 msgid "built-in default"
 msgstr ""
@@ -1352,6 +1368,10 @@ msgstr ""
 msgid "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir"
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "display"
+msgstr ""
+
 #: cli/reset.py
 msgid "disposable root: {root}"
 msgstr ""
@@ -1472,6 +1492,14 @@ msgstr ""
 msgid "handler errors"
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "headed browser tests: {state}"
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "headless browser tests: {state}"
+msgstr ""
+
 #: cli/commands.py
 msgid "health"
 msgstr ""
@@ -1486,6 +1514,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "how the project resolves the chassis: git | index [git]"
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "how to decide"
 msgstr ""
 
 #: cli/jobs.py
@@ -1936,6 +1968,10 @@ msgstr ""
 msgid "platform"
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "playwright browsers"
+msgstr ""
+
 #: cli/commands.py
 msgid "port of --host [core.ipc.port]"
 msgstr ""
@@ -1989,7 +2025,7 @@ msgid "python"
 msgstr ""
 
 #: cli/commands.py
-msgid "python | fullstack"
+msgid "python | fullstack (older word; --ui is the precise one)"
 msgstr ""
 
 #: cli/commands.py
@@ -2058,6 +2094,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "root"
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "rules"
 msgstr ""
 
 #: cli/brief.py
@@ -2328,6 +2368,10 @@ msgstr ""
 msgid "ticks"
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "tier {name}: {state}"
+msgstr ""
+
 #: cli/jobs.py
 msgid "time"
 msgstr ""
@@ -2358,6 +2402,10 @@ msgstr ""
 
 #: modules/web_console/module.py
 msgid "type"
+msgstr ""
+
+#: cli/commands.py
+msgid "ui"
 msgstr ""
 
 #: cli/agents.py

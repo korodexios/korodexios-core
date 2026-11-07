@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from ..kernel.ui_tiers import tier_names
 from ..validate import ValidationResult
 from ..version import __version__ as CORE_VERSION
 from .ux import UserExperience
@@ -80,6 +81,12 @@ class ProjectTemplate:
     description: str
     core_version: str = CORE_VERSION
     chassis_source: str = CHASSIS_SOURCE_DEFAULT
+    ui: str = ""
+    """GUI tier (see kernel/ui_tiers.py); empty derives it from the ecosystem."""
+
+    def __post_init__(self) -> None:
+        if not self.ui:
+            object.__setattr__(self, "ui", "static" if self.ecosystem == "fullstack" else "none")
 
     @property
     def script(self) -> str:
@@ -88,8 +95,8 @@ class ProjectTemplate:
 
     @property
     def fullstack(self) -> bool:
-        """Return True when the project also carries a web UI."""
-        return self.ecosystem == "fullstack"
+        """Return True when the project also carries a web UI of its own."""
+        return self.ui != "none"
 
     def as_dict(self) -> dict[str, Any]:
         """Return a JSON-friendly view of the template."""
@@ -100,6 +107,7 @@ class ProjectTemplate:
             "title": self.title,
             "author": self.author,
             "ecosystem": self.ecosystem,
+            "ui": self.ui,
             "minimal": self.minimal,
             "description": self.description,
             "core_version": self.core_version,
@@ -194,8 +202,13 @@ def project_from_inputs(
     minimal: bool = False,
     description: str = "",
     chassis_source: str = "",
+    ui: str = "",
 ) -> ProjectTemplate:
-    """Build a ProjectTemplate from CLI input, validating the name strictly."""
+    """Build a ProjectTemplate from CLI input, validating the name strictly.
+
+    *ui* is the GUI tier (``none`` or ``static``); the older *ecosystem* word stays as an
+    alias (``fullstack`` means a ``static`` GUI) and the two must not contradict each other.
+    """
     validated = validate_project_name(name)
     if not validated.ok:
         raise ProjectError(
@@ -208,7 +221,24 @@ def project_from_inputs(
         raise ProjectError(
             f"unknown ecosystem {ecosystem!r}", hint="choose 'python' or 'fullstack'"
         )
-    key = key or "python"
+    tier = str(ui).strip().lower()
+    if tier and tier not in tier_names():
+        raise ProjectError(
+            f"unknown ui tier {ui!r}",
+            hint="choose " + " or ".join(repr(name) for name in tier_names())
+            + "; 'kdx ui guide' explains when to pick each",
+        )
+    if tier and key == "python" and ecosystem and tier != "none":
+        raise ProjectError(
+            f"--ui {tier} contradicts --ecosystem python",
+            hint="drop --ecosystem, or use --ecosystem fullstack",
+        )
+    if tier == "none" and key == "fullstack":
+        raise ProjectError(
+            "--ui none contradicts --ecosystem fullstack",
+            hint="drop --ecosystem, or pick a --ui tier other than 'none'",
+        )
+    key = key or ("fullstack" if tier not in ("", "none") else "python")
     source = str(chassis_source).strip().lower() or CHASSIS_SOURCE_DEFAULT
     if source not in CHASSIS_SOURCES:
         raise ProjectError(
@@ -226,6 +256,7 @@ def project_from_inputs(
         minimal=bool(minimal),
         description=str(description).strip() or f"{title}: a korodexios chassis project.",
         chassis_source=source,
+        ui=tier,
     )
 
 
@@ -237,6 +268,7 @@ def prompt_project(
     ecosystem: str = "",
     minimal: bool = False,
     chassis_source: str = "",
+    ui: str = "",
 ) -> ProjectTemplate:
     """Ask the operator for the project identity, re-prompting on bad input.
 
@@ -261,7 +293,7 @@ def prompt_project(
     if not author_value:
         author_value = ux.ask_text("Author / owner", default=default_author())
     ecosystem_value = ecosystem_key(ecosystem)
-    if not ecosystem:
+    if not ecosystem and not ui:
         chosen = ux.ask_choice("Target ecosystem", ECOSYSTEM_LABELS, default=ECOSYSTEM_LABELS[0])
         ecosystem_value = ecosystem_key(chosen) or "python"
     minimal_flag = minimal
@@ -273,6 +305,7 @@ def prompt_project(
         ecosystem=ecosystem_value,
         minimal=minimal_flag,
         chassis_source=chassis_source,
+        ui=ui,
     )
 
 
@@ -535,6 +568,15 @@ def _readme(project: ProjectTemplate) -> str:
         ]
     lines += [fence, ""]
     lines += [
+        "## GUI",
+        "",
+        f"GUI tier: @BT@{project.ui}@BT@. The console (@BT@{project.script} ui@BT@) already shows"
+        " every module; a module adds its own tab by declaring a @BT@[ui]@BT@ table in its"
+        " @BT@kdx_module.toml@BT@ (docs/AGENTS_GUIDE.md section 8.1, check it with"
+        f" @BT@{project.script} ui manifest --json@BT@). Before adding GUI files of your own,"
+        f" run @BT@{project.script} ui guide@BT@ and @BT@{project.script} ui doctor --json@BT@"
+        " and record the choice in @BT@docs/BRIEF.md@BT@.",
+        "",
         "## Messages (i18n)",
         "",
         "User-facing strings resolve through @BT@i18n.translate()@BT@: the chassis"

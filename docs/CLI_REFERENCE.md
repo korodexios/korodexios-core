@@ -623,6 +623,19 @@ kdx ui prefs patch '{"settings":{"theme":"dark"}}' [--user NAME]
 kdx ui prefs reset [SECTION ...] [--user NAME]   # no section: all but pinned defaults
 ```
 
+Choosing a GUI for a project is a decision for the person or the AI agent, so the chassis
+publishes the facts instead of guessing:
+
+```bash
+kdx ui guide [--json]     # the tiers (none, static), when to pick each, the rules
+kdx ui doctor [--json]    # Node/npm/Bun/pnpm, browsers, a display, headless and headed testing
+kdx init NAME --ui none|static   # create the project with that tier (default: none)
+```
+
+`--ecosystem fullstack` remains as an alias of `--ui static`; the two must not contradict
+each other. Test the GUI headless first (API and HTML over HTTP, no browser); `doctor` says
+whether a headless or headed browser is available here.
+
 The **Customize** button lets a person rename, hide and reorder tabs and panels and add
 their own **Shortcuts** (a label that runs a known command with fixed arguments). Form
 values are remembered per form, a form can **Save as default** and **Restore defaults**, and

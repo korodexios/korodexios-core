@@ -30,6 +30,7 @@ from ...cli.render import (
     print_key_values,
     print_section,
     print_table,
+    tr,
     write_line,
 )
 from ...config.layered import is_secret_key, redact_for_display
@@ -51,6 +52,7 @@ from ...kernel.ipc import (
 )
 from ...kernel.ui_manifest import build_manifest
 from ...kernel.ui_prefs import PrefsError, PrefsStore
+from ...kernel.ui_tiers import guide, probe_environment
 from ...kernel.users import current_caller, role_rank
 from ...logging.engine import tail_lines
 
@@ -225,6 +227,29 @@ class WebConsoleModule(Module):
                         ),
                     ),
                     CliCommand(
+                        name="doctor",
+                        help="Report what this machine can run for a GUI: Node, Bun, "
+                        "browsers, a display, headless testing.",
+                        module_name=self.name,
+                        handler=self._doctor_command,
+                        show_in_wizard=False,
+                        args=(
+                            CliArgument(("--json",), dest="as_json", action="store_true",
+                                        help="Emit JSON."),
+                        ),
+                    ),
+                    CliCommand(
+                        name="guide",
+                        help="Explain the GUI tiers a project can choose and when to pick each.",
+                        module_name=self.name,
+                        handler=self._guide_command,
+                        show_in_wizard=False,
+                        args=(
+                            CliArgument(("--json",), dest="as_json", action="store_true",
+                                        help="Emit JSON."),
+                        ),
+                    ),
+                    CliCommand(
                         name="prefs",
                         help="Show, change or reset the remembered GUI choices.",
                         module_name=self.name,
@@ -289,6 +314,63 @@ class WebConsoleModule(Module):
             write_line(f"{TAG_ERROR} {where}: {issue['message']}")
         if not manifest["modules"]:
             write_line(f"{TAG_NOTE} no loaded module declares a [ui] table")
+        return int(ExitCode.SUCCESS)
+
+    def _doctor_command(self, request: CliRequest) -> int:
+        report = probe_environment()
+        if request.flag("as_json"):
+            dump_json(report)
+            return int(ExitCode.SUCCESS)
+        tools = report["tools"]
+        print_key_values(
+            [
+                (name, tools[name]["version"] or ("found" if tools[name]["found"] else "missing"))
+                for name in tools
+            ]
+            + [
+                ("browsers", ", ".join(b["name"] for b in report["browsers"]) or "none found"),
+                ("playwright browsers", "yes" if report["playwright_browsers"] else "no"),
+                ("display", f"{'yes' if report['display']['available'] else 'no'} "
+                 f"({report['display']['reason']})"),
+            ]
+        )
+        testing = report["testing"]
+        write_line(
+            f"{TAG_OK if testing['headless_browser'] else TAG_NOTE} "
+            + tr("headless browser tests: {state}",
+                 state="yes" if testing["headless_browser"] else "no (API and HTML tests only)")
+        )
+        write_line(
+            f"{TAG_OK if testing['headed_browser'] else TAG_NOTE} "
+            + tr("headed browser tests: {state}",
+                 state="yes" if testing["headed_browser"] else "no")
+        )
+        for name, tier in report["tiers"].items():
+            write_line(
+                f"{TAG_OK if tier['ready'] else TAG_ERROR} "
+                + tr("tier {name}: {state}", name=name,
+                     state="ready" if tier["ready"] else "missing " + ", ".join(tier["missing"]))
+            )
+        return int(ExitCode.SUCCESS)
+
+    def _guide_command(self, request: CliRequest) -> int:
+        data = guide()
+        if request.flag("as_json"):
+            dump_json(data)
+            return int(ExitCode.SUCCESS)
+        for name, tier in data["tiers"].items():
+            print_section(f"{name}: {tier['summary']}")
+            for line in tier["choose_when"]:
+                write_line(f"  + {line}")
+            for line in tier["avoid_when"]:
+                write_line(f"  - {line}")
+            write_line(f"  create: {tier['init']}")
+        print_section("how to decide")
+        for line in data["decide"]:
+            write_line(f"  {line}")
+        print_section("rules")
+        for line in data["rules"]:
+            write_line(f"  {line}")
         return int(ExitCode.SUCCESS)
 
     def _prefs_user(self, request: CliRequest) -> str | None:

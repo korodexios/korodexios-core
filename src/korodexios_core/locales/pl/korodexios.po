@@ -302,6 +302,10 @@ msgstr "Nazwa zdarzenia do wysłania [webhooks.test]."
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr "Wzorzec zdarzeń: 'backup.*', 'core.job.**', '*' dla wszystkich [*]."
 
+#: modules/web_console/module.py
+msgid "Explain the GUI tiers a project can choose and when to pick each."
+msgstr "Wyjaśnij poziomy GUI, które może wybrać projekt, i kiedy który wybrać."
+
 #: modules/wiki/module.py
 msgid "Export the internal wiki (it leaves the project)."
 msgstr "Eksportuje wewnętrzne wiki (opuszcza projekt)."
@@ -337,6 +341,10 @@ msgstr "Śledź zdarzenia demona na żywo (Ctrl+C kończy)."
 #: modules/web_console/module.py
 msgid "Forget the remembered choices (defaults stay unless named)."
 msgstr "Zapomnij zapamiętane wybory (wartości domyślne zostają, chyba że je wskażesz)."
+
+#: cli/commands.py
+msgid "GUI tier: none | static [none]; 'kdx ui guide' says which to pick"
+msgstr "poziom GUI: none | static [none]; 'kdx ui guide' podpowie, który wybrać"
 
 #: modules/job_queue/module.py
 msgid "Handler kind."
@@ -786,6 +794,10 @@ msgstr "Zgłoś klucze, których nic nie czyta; zakończ kodem 3, gdy klucz jest
 msgid "Report the retention window, standing copies, and sweep record."
 msgstr "Pokaż okno retencji, trwające kopie i zapis czyszczenia."
 
+#: modules/web_console/module.py
+msgid "Report what this machine can run for a GUI: Node, Bun, browsers, a display, headless testing."
+msgstr "Pokaż, co ta maszyna potrafi dla GUI: Node, Bun, przeglądarki, wyświetlacz, testy headless."
+
 #: modules/backup_engine/module.py
 msgid "Report what would be copied without writing."
 msgstr "Pokaż, co zostałoby skopiowane, bez zapisywania."
@@ -1198,6 +1210,10 @@ msgstr "uszkodzony"
 msgid "browser:  open http://HOST:18123/ui/ and paste the token"
 msgstr "przeglądarka:  otwórz http://HOST:18123/ui/ i wklej token"
 
+#: modules/web_console/module.py
+msgid "browsers"
+msgstr "przeglądarki"
+
 #: cli/language.py
 msgid "built-in default"
 msgstr "wartość domyślna"
@@ -1354,6 +1370,10 @@ msgstr "plik wykrywania"
 msgid "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir"
 msgstr "wykrywanie wymaga {parent} w core.modules.extra_paths lub przekazanego jako --modules-dir"
 
+#: modules/web_console/module.py
+msgid "display"
+msgstr "wyświetlacz"
+
 #: cli/reset.py
 msgid "disposable root: {root}"
 msgstr "korzeń jednorazowy: {root}"
@@ -1474,6 +1494,14 @@ msgstr "podaj --hours lub --minutes"
 msgid "handler errors"
 msgstr "błędy handlerów"
 
+#: modules/web_console/module.py
+msgid "headed browser tests: {state}"
+msgstr "testy przeglądarki z wyświetlaczem: {state}"
+
+#: modules/web_console/module.py
+msgid "headless browser tests: {state}"
+msgstr "testy przeglądarki headless: {state}"
+
 #: cli/commands.py
 msgid "health"
 msgstr "stan"
@@ -1489,6 +1517,10 @@ msgstr "heartbeat {version} to {value}"
 #: cli/commands.py
 msgid "how the project resolves the chassis: git | index [git]"
 msgstr "jak projekt rozwiązuje szkielet: git | index [git]"
+
+#: modules/web_console/module.py
+msgid "how to decide"
+msgstr "jak zdecydować"
 
 #: cli/jobs.py
 msgid "id"
@@ -1938,6 +1970,10 @@ msgstr "symbole zastępcze"
 msgid "platform"
 msgstr "platforma"
 
+#: modules/web_console/module.py
+msgid "playwright browsers"
+msgstr "przeglądarki Playwright"
+
 #: cli/commands.py
 msgid "port of --host [core.ipc.port]"
 msgstr "port dla --host [core.ipc.port]"
@@ -1991,8 +2027,8 @@ msgid "python"
 msgstr "python"
 
 #: cli/commands.py
-msgid "python | fullstack"
-msgstr "python | fullstack"
+msgid "python | fullstack (older word; --ui is the precise one)"
+msgstr "python | fullstack (starsze słowo; --ui jest dokładniejsze)"
 
 #: cli/commands.py
 msgid "query http://host:port directly, skipping the local discovery file"
@@ -2061,6 +2097,10 @@ msgstr "rola"
 #: cli/commands.py
 msgid "root"
 msgstr "katalog główny"
+
+#: modules/web_console/module.py
+msgid "rules"
+msgstr "zasady"
 
 #: cli/brief.py
 msgid "run 'kdx brief' to answer the questions"
@@ -2330,6 +2370,10 @@ msgstr "ticker zaplanowany"
 msgid "ticks"
 msgstr "tyknięcia"
 
+#: modules/web_console/module.py
+msgid "tier {name}: {state}"
+msgstr "poziom {name}: {state}"
+
 #: cli/jobs.py
 msgid "time"
 msgstr "czas"
@@ -2361,6 +2405,10 @@ msgstr "obetnij plik logu (najpierw zapyta)"
 #: modules/web_console/module.py
 msgid "type"
 msgstr "typ"
+
+#: cli/commands.py
+msgid "ui"
+msgstr "ui"
 
 #: cli/agents.py
 msgid "unknown agent: {names}"
@@ -2679,3 +2727,6 @@ msgstr "{verb}; ten token jest pokazywany tylko teraz - przekaż go prywatnie"
 
 #~ msgid "Write INDEX.md for each wiki (what an agent reads first)."
 #~ msgstr "Zapisuje INDEX.md dla każdego wiki (to, co agent czyta najpierw)."
+
+#~ msgid "python | fullstack"
+#~ msgstr "python | fullstack"
