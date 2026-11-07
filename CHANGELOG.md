@@ -17,6 +17,12 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
   seeds a Vite + React + TypeScript app with Vitest and Playwright and a `web_app` module serving
   `web/dist` at `/app/`.
 
+- Opt-in durable database: `context.db(name)` (SQLite in `data/db/`, ordered transactional
+  migrations, `query`/`execute`/`transaction`) and `kdx db list|show|query|backup`. Nothing is
+  created unless a module asks; `kdx ui guide` says when a database earns its place.
+- `kdx ui guide` lists known limits (`notes`) and where each kind of state belongs (`storage`);
+  `kdx ui doctor` recommends the Playwright settings for this machine.
+
 ### Fixed
 
 - A LAN control plane no longer asks DNS for its own names (`socket.getfqdn`): the reverse lookup

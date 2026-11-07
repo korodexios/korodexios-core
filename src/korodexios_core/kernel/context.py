@@ -18,6 +18,7 @@ from ..logging.engine import KorodexiosLogger, LoggerFactory
 from ..paths import AppPaths
 from ..version import CORE_API_VERSION, __version__
 from .async_runtime import AsyncRuntime
+from .database import DB_DIR_NAME, DEFAULT_DATABASE, Database, validate_database_name
 from .i18n import CORE_DOMAIN, I18n
 from .limiter import UNSET, LimiterRegistry, RateLimiter, _Unset
 from .metrics import MetricsRegistry
@@ -53,6 +54,8 @@ class CoreContext:
     limiters: LimiterRegistry | None = None
     processes: ProcessSupervisor | None = None
     queue: JobQueue | None = None
+    databases: dict[str, Database] = field(default_factory=dict)
+    """Databases handed out by 'db()'; empty for a project that never asks for one."""
     i18n: I18n = field(default_factory=I18n)
     metrics: MetricsRegistry = field(default_factory=MetricsRegistry)
     """Counters, gauges, summaries and collectors; served by the 'metrics' module."""
@@ -122,6 +125,23 @@ class CoreContext:
         if self.queue is None:
             self.queue = JobQueue(self.paths.durable_dir / "jobs" / "queue.sqlite3")
         return self.queue
+
+    def db(self, name: str = DEFAULT_DATABASE) -> Database:
+        """Return the durable database *name* (``data/db/<name>.sqlite3``), opt-in.
+
+        Nothing is created until a statement runs, so a module that never calls this
+        leaves no file behind. Use ``db.migrate([(1, "CREATE TABLE ...")])`` for the schema,
+        then ``execute``/``query``/``transaction``; ``kdx db`` inspects it from the terminal.
+        Reach for it only when the state is relational or large; a config key, the GUI
+        preferences or a small JSON file are lighter (docs/AGENTS_GUIDE.md section 16.4).
+        """
+        key = validate_database_name(name)
+        handle = self.databases.get(key)
+        if handle is None:
+            handle = self.databases[key] = Database(
+                self.paths.durable_dir / DB_DIR_NAME / f"{key}.sqlite3", key
+            )
+        return handle
 
     def limiter(
         self,
@@ -335,6 +355,7 @@ class CoreContext:
             "workers": self.supervisor.stats() if self.supervisor else {"watched": 0},
             "scheduler": self.scheduler.stats() if self.scheduler else {"scheduled": 0},
             "limiters": self.limiters.states() if self.limiters else [],
+            "databases": sorted(self.databases),
             "processes": self.processes.active() if self.processes else [],
             "locale": self.i18n.locale,
             "locks": {"names": list(self.paths.named_lock_files())},

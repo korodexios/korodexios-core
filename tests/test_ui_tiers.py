@@ -44,7 +44,8 @@ def test_probe_on_a_bare_linux_host_reports_no_browser_and_no_display() -> None:
     assert report["browsers"] == [] and report["playwright_browsers"] is False
     assert report["display"] == {"available": False, "reason": "no DISPLAY or WAYLAND_DISPLAY"}
     assert report["testing"] == {
-        "api_and_html": True, "headless_browser": False, "headed_browser": False}
+        "api_and_html": True, "headless_browser": False, "headed_browser": False,
+        "recommended": {"install": "npx playwright install chromium"}}
     assert report["tiers"]["none"]["ready"] and report["tiers"]["static"]["ready"]  # Python only
 
 
@@ -204,3 +205,24 @@ def test_init_pm_flag_reaches_the_react_seed(tmp_path) -> None:
                  "--pm", "pnpm"]) == 0
     assert "pnpm run e2e" in (target / "web" / "README.md").read_text(encoding="utf-8")
     assert (target / "web" / "src" / "App.tsx").is_file()
+
+
+def test_the_recommended_browser_setting_follows_what_is_installed(tmp_path) -> None:
+    chrome = _probe(which={"google-chrome": "/bin/chrome"}.get, environ={"DISPLAY": ":0"})
+    assert chrome["testing"]["recommended"] == {"PW_CHANNEL": "chrome", "PW_HEADED": "1"}
+    edge = _probe(which={"msedge": "/bin/edge"}.get)
+    assert edge["testing"]["recommended"] == {"PW_CHANNEL": "msedge"}
+    (tmp_path / ".cache" / "ms-playwright" / "chromium-1").mkdir(parents=True)
+    cached = _probe(exists=Path.exists, home=tmp_path, environ={"DISPLAY": ":0"})
+    assert cached["testing"]["recommended"] == {"PW_HEADED": "1"}
+
+
+def test_known_limits_are_published_for_agents_and_in_the_seeded_readme() -> None:
+    from korodexios_core.cli.init_project import build_files
+
+    notes = guide()["notes"]
+    assert {note["applies_to"] for note in notes} == {"react", "static"}
+    assert all(note["id"] and note["text"] for note in notes)
+    readme = build_files(project_from_inputs("demo_app", ui="react", pm="pnpm"))["web/README.md"]
+    assert "Known limits" in readme and "pnpm run typecheck && pnpm run test" in readme
+    assert "@" not in readme.replace("@types", "")

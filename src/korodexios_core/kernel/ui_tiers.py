@@ -102,6 +102,76 @@ TIERS: dict[str, dict[str, Any]] = {
 }
 
 
+NOTES: list[dict[str, str]] = [
+    {
+        "id": "react-prefs-read-mostly",
+        "applies_to": "react",
+        "text": "The react app reads the saved GUI choices (labels, hidden panels, order, last "
+        "tab) and writes remembered form values and pinned defaults. Renaming, hiding, "
+        "reordering and own shortcut buttons are edited in the built-in console ('kdx ui', "
+        "Customize) or with 'kdx ui prefs patch'; the react app then shows them.",
+    },
+    {
+        "id": "package-managers",
+        "applies_to": "react",
+        "text": "npm is verified end to end. bun and pnpm get the same templates but are not "
+        "exercised by the chassis tests: run '<pm> run typecheck && <pm> run test' first.",
+    },
+    {
+        "id": "npm-install-scripts",
+        "applies_to": "react",
+        "text": "Newer npm versions may block the esbuild install script. The build normally "
+        "works anyway; if vite fails with an esbuild error, approve it ('npm install-scripts "
+        "approve esbuild') and reinstall.",
+    },
+    {
+        "id": "e2e-needs-project-env",
+        "applies_to": "react",
+        "text": "'<pm> run e2e' starts the project's own daemon with 'uv run <script> run': run "
+        "'uv sync --extra dev' in the project first, so the chassis dependency resolves.",
+    },
+    {
+        "id": "browser-for-e2e",
+        "applies_to": "react",
+        "text": "Playwright needs a browser: 'kdx ui doctor' prints the recommended setting "
+        "(PW_CHANNEL=chrome|msedge for an installed browser, or 'npx playwright install "
+        "chromium'). Headed runs (PW_HEADED=1) need a display; doctor says if there is one.",
+    },
+    {
+        "id": "static-is-not-served",
+        "applies_to": "static",
+        "text": "The static tier's web/ is not served by the chassis on its own. Serve it with "
+        "a module's static_dirs() or 'npm --prefix web run dev'.",
+    },
+]
+"""Known limits of each tier, shown by 'kdx ui guide' so an agent plans around them."""
+
+
+STORAGE: list[dict[str, str]] = [
+    {
+        "need": "settings an operator changes (intervals, flags, URLs)",
+        "use": "a config key in kdx.yml (ConfigField); no database",
+    },
+    {
+        "need": "what a person chose in the GUI (labels, hidden panels, form values)",
+        "use": "the GUI preferences ('kdx ui prefs'); no database",
+    },
+    {
+        "need": "a small state written by one process (a counter, a cursor, a last-run time)",
+        "use": "a JSON file in context.durable_module_dir(name); no database",
+    },
+    {
+        "need": "work that must survive a restart (jobs, retries)",
+        "use": "the durable queue: context.job_queue(); no database of your own",
+    },
+    {
+        "need": "relational or large data: many rows, queries, several writers, history",
+        "use": "context.db(name): SQLite in data/db/, ordered migrations; inspect with 'kdx db'",
+    },
+]
+"""Where each kind of state belongs; a database is the answer only for the last row."""
+
+
 def tier_names() -> tuple[str, ...]:
     """Return the tiers a project can be created with."""
     return tuple(TIERS)
@@ -113,6 +183,8 @@ def guide() -> dict[str, Any]:
         "default": DEFAULT_TIER,
         "tiers": {name: dict(tier, id=name, init=_init_line(name)) for name, tier in TIERS.items()},
         "package_managers": list(PACKAGE_MANAGERS),
+        "notes": [dict(note) for note in NOTES],
+        "storage": [dict(item) for item in STORAGE],
         "decide": [
             "Start from 'none': give each module a [ui] table and look at 'kdx ui'.",
             "Move to 'static' for one small page of your own, or to 'react' for many "
@@ -173,11 +245,35 @@ def probe_environment(
             "headed_browser": bool(display["available"]) and bool(browsers or playwright),
         },
     }
+    report["testing"]["recommended"] = _recommended(browsers, playwright, display)
     report["tiers"] = {
         name: _readiness(name, tool_found={k: v["found"] for k, v in tools.items()})
         for name in TIERS
     }
     return report
+
+
+def _recommended(
+    browsers: list[dict[str, str]], playwright: bool, display: Mapping[str, Any]
+) -> dict[str, str]:
+    """Return the Playwright settings that make browser tests work on this machine."""
+    advice: dict[str, str] = {}
+    channel = ""
+    for browser in browsers:
+        name = browser["name"]
+        if name in ("chrome", "google-chrome", "google-chrome-stable"):
+            channel = "chrome"
+            break
+        if name in ("msedge", "microsoft-edge"):
+            channel = channel or "msedge"
+    if not playwright:
+        if channel:
+            advice["PW_CHANNEL"] = channel
+        else:
+            advice["install"] = "npx playwright install chromium"
+    if display["available"] and (playwright or channel):
+        advice["PW_HEADED"] = "1"
+    return advice
 
 
 def _readiness(name: str, *, tool_found: Mapping[str, bool]) -> dict[str, Any]:

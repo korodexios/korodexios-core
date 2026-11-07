@@ -154,6 +154,10 @@ msgstr "Kontrakty"
 msgid "Control plane"
 msgstr "Płaszczyzna sterowania"
 
+#: cli/db.py
+msgid "Copy a database with SQLite's online backup (safe while it is in use)."
+msgstr "Skopiuj bazę danych kopią online SQLite (bezpieczne także w użyciu)."
+
 #: modules/wiki/module.py
 msgid "Copy a source into raw/ and create its source page to fill in."
 msgstr "Kopiuje źródło do raw/ i tworzy jego stronę źródłową do uzupełnienia."
@@ -193,6 +197,10 @@ msgstr "Utwórz certyfikat dla płaszczyzny sterowania przez https."
 #: cli/proposal.py
 msgid "Create the issue on github.com/{repo}?"
 msgstr "Utworzyć issue na github.com/{repo}?"
+
+#: cli/db.py
+msgid "Database name (see 'kdx db list') [main]."
+msgstr "Nazwa bazy danych (zob. 'kdx db list') [main]."
 
 #: cli/users.py
 msgid "Delete a user; their token stops working at once."
@@ -406,6 +414,10 @@ msgstr "Sprawdź automatycznie wykryte moduły."
 msgid "Inspect the environment, configuration, logging, and modules."
 msgstr "Sprawdź środowisko, konfigurację, logowanie i moduły."
 
+#: cli/db.py
+msgid "Inspect the project's SQLite databases (they exist only when a module asks)."
+msgstr "Przejrzyj bazy SQLite projektu (istnieją tylko, gdy moduł o nie poprosi)."
+
 #: cli/commands.py
 msgid "Instance and concurrency"
 msgstr "Instancja i współbieżność"
@@ -485,6 +497,10 @@ msgstr "Lista zadań, najnowsze pierwsze."
 #: modules/webhooks/module.py
 msgid "List the configured targets (URLs masked)."
 msgstr "Wyświetla skonfigurowane cele (adresy URL zamaskowane)."
+
+#: cli/db.py
+msgid "List the databases with size and schema version."
+msgstr "Wypisz bazy danych z rozmiarem i wersją schematu."
 
 #: cli/language.py
 msgid "List the languages that have a catalogue, per message domain."
@@ -566,9 +582,17 @@ msgstr "Nazwa modułu; pomiń, by objąć wszystkie."
 msgid "Modules"
 msgstr "Moduły"
 
+#: cli/db.py
+msgid "Most rows to print [100]."
+msgstr "Najwięcej wierszy do wypisania [100]."
+
 #: cli/jobs.py
 msgid "One JSON object per line."
 msgstr "Jeden obiekt JSON w wierszu."
+
+#: cli/db.py
+msgid "One statement, e.g. 'SELECT 1'."
+msgstr "Jedna instrukcja, np. 'SELECT 1'."
 
 #: cli/commands.py
 msgid "One-line module description."
@@ -806,6 +830,10 @@ msgstr "Pokaż, co zostałoby skopiowane, bez zapisywania."
 msgid "Root of the wiki to merge into."
 msgstr "Katalog główny wiki, do którego się scala."
 
+#: cli/db.py
+msgid "Run ONE read-only SQL statement (SELECT, PRAGMA ...) and print the rows."
+msgstr "Wykonaj JEDNĄ instrukcję SQL tylko do odczytu (SELECT, PRAGMA ...) i wypisz wiersze."
+
 #: cli/commands.py
 msgid "Run it as a job and print its output live; no timeout."
 msgstr "Uruchom jako zadanie i wypisuj dane na żywo; bez limitu czasu."
@@ -869,6 +897,10 @@ msgstr "Nazwa usługi [korodexios-<projekt>]."
 #: cli/proposal.py
 msgid "Short title of the proposal."
 msgstr "Krótki tytuł propozycji."
+
+#: cli/db.py
+msgid "Show a database's tables, columns and row counts."
+msgstr "Pokaż tabele, kolumny i liczby wierszy bazy danych."
 
 #: cli/jobs.py
 msgid "Show one job's state and output."
@@ -989,6 +1021,10 @@ msgstr "Proponuje zmianę rdzenia (projekty nigdy go nie edytują)."
 #: cli/txn.py
 msgid "Take back a finished transaction (refused if its files changed since)."
 msgstr "Cofa zakończoną transakcję (odmowa, jeśli jej pliki zmieniły się od tamtej pory)."
+
+#: cli/db.py
+msgid "Target file (default: data/db/backups/NAME-<time>.sqlite3)."
+msgstr "Plik docelowy (domyślnie: data/db/backups/NAME-<czas>.sqlite3)."
 
 #: modules/job_queue/module.py
 msgid "Task id (see 'kdx queue list')."
@@ -1218,6 +1254,10 @@ msgstr "przeglądarki"
 msgid "built-in default"
 msgstr "wartość domyślna"
 
+#: cli/db.py
+msgid "bytes"
+msgstr "bajty"
+
 #: modules/backup_engine/module.py
 msgid "cancelled after {copied} file(s); the partial copy stays at {target}"
 msgstr "anulowano po {copied} plikach; częściowa kopia pozostaje w {target}"
@@ -1261,6 +1301,10 @@ msgstr "zgłasza"
 #: cli/commands.py
 msgid "cli-collision: module commands shadowed by another owner:"
 msgstr "cli-collision: polecenia modułu zasłonił inny właściciel:"
+
+#: cli/db.py
+msgid "columns"
+msgstr "kolumny"
 
 #: cli/commands.py
 msgid "command"
@@ -1337,6 +1381,10 @@ msgstr "katalog roboczy"
 #: cli/commands.py
 msgid "daemon"
 msgstr "demon"
+
+#: cli/db.py
+msgid "database {name} does not exist yet"
+msgstr "baza danych {name} jeszcze nie istnieje"
 
 #: cli/commands.py
 msgid "declared"
@@ -1474,6 +1522,10 @@ msgstr "śledź: kdx jobs show {job_id} --follow"
 msgid "following events at {base_url} (Ctrl+C to stop)"
 msgstr "śledzenie zdarzeń pod {base_url} (Ctrl+C kończy)"
 
+#: modules/web_console/module.py
+msgid "for browser tests: {setting}={value}"
+msgstr "dla testów przeglądarki: {setting}={value}"
+
 #: modules/system_info/module.py
 msgid "free"
 msgstr "wolne"
@@ -1589,6 +1641,10 @@ msgstr "rodzaj"
 #: cli/commands.py
 msgid "known keys"
 msgstr "znane klucze"
+
+#: modules/web_console/module.py
+msgid "known limits"
+msgstr "znane ograniczenia"
 
 #: cli/txn.py
 msgid "label"
@@ -1770,6 +1826,10 @@ msgstr "żaden demon nie odpowiada; uruchom go poleceniem 'kdx run'"
 msgid "no daemon is running and this command has no chassis"
 msgstr "żaden demon nie działa, a to polecenie nie ma szkieletu"
 
+#: cli/db.py
+msgid "no databases: no module has asked for one"
+msgstr "brak baz danych: żaden moduł o nią nie poprosił"
+
 #: cli/commands.py
 msgid "no diagnostics findings"
 msgstr "brak ustaleń diagnostyki"
@@ -1821,6 +1881,10 @@ msgstr "brak propozycji {number}; zob. 'kdx proposal list'"
 #: cli/proposal.py
 msgid "no proposals yet"
 msgstr "na razie brak propozycji"
+
+#: cli/db.py
+msgid "no rows"
+msgstr "brak wierszy"
 
 #: modules/job_queue/module.py
 msgid "no such task"
@@ -2102,6 +2166,10 @@ msgstr "rola"
 msgid "root"
 msgstr "katalog główny"
 
+#: cli/db.py
+msgid "rows"
+msgstr "wiersze"
+
 #: modules/web_console/module.py
 msgid "rules"
 msgstr "zasady"
@@ -2125,6 +2193,10 @@ msgstr "powiedz, co się stało: kdx wiki log update \"co się zmieniło\""
 #: cli/commands.py
 msgid "scheduled tasks"
 msgstr "zaplanowane zadania"
+
+#: cli/db.py
+msgid "schema version"
+msgstr "wersja schematu"
 
 #: modules/wiki/module.py
 msgid "scope"
@@ -2229,6 +2301,10 @@ msgstr "przesyłaj nowo dopisane wiersze do Ctrl-C"
 #: cli/commands.py
 msgid "subscriptions"
 msgstr "subskrypcje"
+
+#: cli/db.py
+msgid "table"
+msgstr "tabela"
 
 #: modules/wiki/module.py
 msgid "tags"
@@ -2593,6 +2669,10 @@ msgstr "{locale}: {added} nowych, {stale} nieaktualnych"
 #: cli/language.py
 msgid "{locale}: {count} obsolete removed"
 msgstr "{locale}: usunięto przestarzałych: {count}"
+
+#: cli/db.py
+msgid "{name} backed up to {path}"
+msgstr "{name} zapisano do {path}"
 
 #: cli/limiter.py
 msgid "{name} cooldown ended"

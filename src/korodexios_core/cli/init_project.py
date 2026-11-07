@@ -1206,6 +1206,7 @@ def _gitignore() -> str:
             "data/audit.jsonl.1",
             "data/jobs/",
             "data/limiters/",
+            "data/db/backups/",
             "node_modules/",
             "web/dist/",
             "web/test-results/",

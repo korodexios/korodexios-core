@@ -345,6 +345,11 @@ class WebConsoleModule(Module):
             + tr("headed browser tests: {state}",
                  state="yes" if testing["headed_browser"] else "no")
         )
+        for setting, value in testing["recommended"].items():
+            write_line(
+                f"{TAG_NOTE} "
+                + tr("for browser tests: {setting}={value}", setting=setting, value=value)
+            )
         for name, tier in report["tiers"].items():
             write_line(
                 f"{TAG_OK if tier['ready'] else TAG_ERROR} "
@@ -371,6 +376,9 @@ class WebConsoleModule(Module):
         print_section("rules")
         for line in data["rules"]:
             write_line(f"  {line}")
+        print_section("known limits")
+        for note in data["notes"]:
+            write_line(f"  [{note['applies_to']}] {note['text']}")
         return int(ExitCode.SUCCESS)
 
     def _prefs_user(self, request: CliRequest) -> str | None:

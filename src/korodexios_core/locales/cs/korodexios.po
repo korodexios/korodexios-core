@@ -154,6 +154,10 @@ msgstr "Kontrakty"
 msgid "Control plane"
 msgstr "Řídicí rovina"
 
+#: cli/db.py
+msgid "Copy a database with SQLite's online backup (safe while it is in use)."
+msgstr "Zkopírovat databázi online zálohou SQLite (bezpečné i při používání)."
+
 #: modules/wiki/module.py
 msgid "Copy a source into raw/ and create its source page to fill in."
 msgstr "Zkopíruje zdroj do raw/ a vytvoří jeho zdrojovou stránku k doplnění."
@@ -193,6 +197,10 @@ msgstr "Vytvoří certifikát pro řídicí rovinu přes https."
 #: cli/proposal.py
 msgid "Create the issue on github.com/{repo}?"
 msgstr "Vytvořit issue na github.com/{repo}?"
+
+#: cli/db.py
+msgid "Database name (see 'kdx db list') [main]."
+msgstr "Název databáze (viz 'kdx db list') [main]."
 
 #: cli/users.py
 msgid "Delete a user; their token stops working at once."
@@ -406,6 +414,10 @@ msgstr "Prozkoumá automaticky nalezené moduly."
 msgid "Inspect the environment, configuration, logging, and modules."
 msgstr "Zkontroluje prostředí, konfiguraci, logování a moduly."
 
+#: cli/db.py
+msgid "Inspect the project's SQLite databases (they exist only when a module asks)."
+msgstr "Prozkoumat SQLite databáze projektu (existují, jen když je vyžádá modul)."
+
 #: cli/commands.py
 msgid "Instance and concurrency"
 msgstr "Instance a souběžnost"
@@ -485,6 +497,10 @@ msgstr "Seznam úloh, nejnovější první."
 #: modules/webhooks/module.py
 msgid "List the configured targets (URLs masked)."
 msgstr "Vypíše nastavené cíle (URL maskované)."
+
+#: cli/db.py
+msgid "List the databases with size and schema version."
+msgstr "Vypsat databáze s velikostí a verzí schématu."
 
 #: cli/language.py
 msgid "List the languages that have a catalogue, per message domain."
@@ -566,9 +582,17 @@ msgstr "Název modulu; bez něj všechny."
 msgid "Modules"
 msgstr "Moduly"
 
+#: cli/db.py
+msgid "Most rows to print [100]."
+msgstr "Nejvíce řádků k výpisu [100]."
+
 #: cli/jobs.py
 msgid "One JSON object per line."
 msgstr "Jeden objekt JSON na řádek."
+
+#: cli/db.py
+msgid "One statement, e.g. 'SELECT 1'."
+msgstr "Jeden příkaz, např. 'SELECT 1'."
 
 #: cli/commands.py
 msgid "One-line module description."
@@ -806,6 +830,10 @@ msgstr "Ohlásí, co by se zkopírovalo, bez zápisu."
 msgid "Root of the wiki to merge into."
 msgstr "Kořen wiki, do které se slučuje."
 
+#: cli/db.py
+msgid "Run ONE read-only SQL statement (SELECT, PRAGMA ...) and print the rows."
+msgstr "Spustit JEDEN SQL příkaz jen pro čtení (SELECT, PRAGMA ...) a vypsat řádky."
+
 #: cli/commands.py
 msgid "Run it as a job and print its output live; no timeout."
 msgstr "Spustí ho jako úlohu a vypisuje výstup živě; bez časového limitu."
@@ -869,6 +897,10 @@ msgstr "Název služby [korodexios-<projekt>]."
 #: cli/proposal.py
 msgid "Short title of the proposal."
 msgstr "Krátký název návrhu."
+
+#: cli/db.py
+msgid "Show a database's tables, columns and row counts."
+msgstr "Ukázat tabulky, sloupce a počty řádků databáze."
 
 #: cli/jobs.py
 msgid "Show one job's state and output."
@@ -989,6 +1021,10 @@ msgstr "Navrhne změnu jádra (projekty jádro nikdy neupravují)."
 #: cli/txn.py
 msgid "Take back a finished transaction (refused if its files changed since)."
 msgstr "Vrátí zpět dokončenou transakci (odmítne, pokud se její soubory mezitím změnily)."
+
+#: cli/db.py
+msgid "Target file (default: data/db/backups/NAME-<time>.sqlite3)."
+msgstr "Cílový soubor (výchozí: data/db/backups/NAME-<čas>.sqlite3)."
 
 #: modules/job_queue/module.py
 msgid "Task id (see 'kdx queue list')."
@@ -1218,6 +1254,10 @@ msgstr "prohlížeče"
 msgid "built-in default"
 msgstr "vestavěná výchozí hodnota"
 
+#: cli/db.py
+msgid "bytes"
+msgstr "bajty"
+
 #: modules/backup_engine/module.py
 msgid "cancelled after {copied} file(s); the partial copy stays at {target}"
 msgstr "zrušeno po {copied} souboru(ech); částečná kopie zůstává v {target}"
@@ -1261,6 +1301,10 @@ msgstr "nárokuje si"
 #: cli/commands.py
 msgid "cli-collision: module commands shadowed by another owner:"
 msgstr "cli-collision: příkazy modulu zastínil jiný vlastník:"
+
+#: cli/db.py
+msgid "columns"
+msgstr "sloupce"
 
 #: cli/commands.py
 msgid "command"
@@ -1337,6 +1381,10 @@ msgstr "pracovní adresář"
 #: cli/commands.py
 msgid "daemon"
 msgstr "démon"
+
+#: cli/db.py
+msgid "database {name} does not exist yet"
+msgstr "databáze {name} ještě neexistuje"
 
 #: cli/commands.py
 msgid "declared"
@@ -1474,6 +1522,10 @@ msgstr "sleduj ji: kdx jobs show {job_id} --follow"
 msgid "following events at {base_url} (Ctrl+C to stop)"
 msgstr "sleduji události na {base_url} (zastavíš Ctrl+C)"
 
+#: modules/web_console/module.py
+msgid "for browser tests: {setting}={value}"
+msgstr "pro testy v prohlížeči: {setting}={value}"
+
 #: modules/system_info/module.py
 msgid "free"
 msgstr "volné"
@@ -1589,6 +1641,10 @@ msgstr "druh"
 #: cli/commands.py
 msgid "known keys"
 msgstr "známé klíče"
+
+#: modules/web_console/module.py
+msgid "known limits"
+msgstr "známá omezení"
 
 #: cli/txn.py
 msgid "label"
@@ -1770,6 +1826,10 @@ msgstr "žádný démon neodpovídá; spusť ho přes 'kdx run'"
 msgid "no daemon is running and this command has no chassis"
 msgstr "neběží žádný démon a tento příkaz nemá šasi"
 
+#: cli/db.py
+msgid "no databases: no module has asked for one"
+msgstr "žádné databáze: žádný modul si ji nevyžádal"
+
 #: cli/commands.py
 msgid "no diagnostics findings"
 msgstr "žádné nálezy diagnostiky"
@@ -1821,6 +1881,10 @@ msgstr "návrh {number} neexistuje; viz 'kdx proposal list'"
 #: cli/proposal.py
 msgid "no proposals yet"
 msgstr "zatím žádné návrhy"
+
+#: cli/db.py
+msgid "no rows"
+msgstr "žádné řádky"
 
 #: modules/job_queue/module.py
 msgid "no such task"
@@ -2102,6 +2166,10 @@ msgstr "role"
 msgid "root"
 msgstr "kořen"
 
+#: cli/db.py
+msgid "rows"
+msgstr "řádky"
+
 #: modules/web_console/module.py
 msgid "rules"
 msgstr "pravidla"
@@ -2125,6 +2193,10 @@ msgstr "řekněte, co se stalo: kdx wiki log update \"co se změnilo\""
 #: cli/commands.py
 msgid "scheduled tasks"
 msgstr "naplánované úlohy"
+
+#: cli/db.py
+msgid "schema version"
+msgstr "verze schématu"
 
 #: modules/wiki/module.py
 msgid "scope"
@@ -2229,6 +2301,10 @@ msgstr "průběžně vypisuje nové řádky, dokud nestiskneš Ctrl-C"
 #: cli/commands.py
 msgid "subscriptions"
 msgstr "odběry"
+
+#: cli/db.py
+msgid "table"
+msgstr "tabulka"
 
 #: modules/wiki/module.py
 msgid "tags"
@@ -2593,6 +2669,10 @@ msgstr "{locale}: {added} nových, {stale} zastaralých"
 #: cli/language.py
 msgid "{locale}: {count} obsolete removed"
 msgstr "{locale}: odstraněno zastaralých: {count}"
+
+#: cli/db.py
+msgid "{name} backed up to {path}"
+msgstr "{name} zálohována do {path}"
 
 #: cli/limiter.py
 msgid "{name} cooldown ended"

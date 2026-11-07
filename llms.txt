@@ -541,6 +541,16 @@ project with `kdx init NAME --ui none|static|react [--pm npm|bun|pnpm]`, record 
 `doctor` reports a display. The `react` tier draws the same manifest as the built-in console,
 so a module's `[ui]` table needs no React; override a single panel with `overridePanel()`.
 
+**Known limits - read before you build.** `kdx ui guide --json` lists them under `notes`; they are
+also in the seeded `web/README.md`. In short: the `react` app only *reads* the saved layout
+(renaming, hiding and shortcut buttons are edited in the built-in console or with `kdx ui prefs
+patch`); npm is verified, bun and pnpm are not (run typecheck and tests first); a newer npm may
+block esbuild's install script (`npm install-scripts approve esbuild`); `<pm> run e2e` starts the
+project's daemon with `uv run`, so run `uv sync --extra dev` first; and the browser setting for
+Playwright comes from `kdx ui doctor` (`recommended`: `PW_CHANNEL=chrome|msedge`, or `npx
+playwright install chromium`, plus `PW_HEADED=1` only when a display exists). The `static` tier's
+`web/` is not served by the chassis itself.
+
 **What the person using the GUI can change** is stored per user on the daemon
 (`data/ui/prefs-<user>.json`, `GET/PUT/PATCH/DELETE /api/v1/ui/prefs`, `kdx ui prefs
 show|patch|reset`): relabel, hide or reorder a tab or panel (`nav`, `panels`), their own
@@ -1065,6 +1075,38 @@ task = queue.submit("render", {"id": 7}, max_attempts=3)
   list|show|submit|cancel|retry|purge` works against the same file. A process runs only the
   kinds it registered a handler for. This is separate from `kdx jobs`, which are in-memory
   background RPC commands that end with the daemon.
+
+### 16.4 Durable database - only when it earns its place
+
+A database is **opt-in**: `context.db(name="main")` returns a handle for `data/db/<name>.sqlite3`
+and creates nothing until a statement runs, so a project that never asks has no database.
+First decide whether it is needed (`kdx ui guide --json` lists this under `storage`):
+
+| The state is ... | Use |
+| --- | --- |
+| a setting an operator changes | a config key (`ConfigField`) in `kdx.yml` |
+| what a person chose in the GUI | the GUI preferences (`kdx ui prefs`) |
+| small, written by one process | a JSON file in `context.durable_module_dir(name)` |
+| work that must survive a restart | `context.job_queue()` |
+| relational or large: many rows, queries, several writers, history | `context.db(name)` |
+
+```python
+db = context.db()                                    # in start(), not at import time
+db.migrate([(1, "CREATE TABLE note (id INTEGER PRIMARY KEY, body TEXT NOT NULL)"),
+            (2, "ALTER TABLE note ADD COLUMN tag TEXT")])   # ordered, applied once, transactional
+db.insert("INSERT INTO note (body) VALUES (?)", ("hello",))   # -> new row id
+rows = db.query("SELECT * FROM note WHERE tag IS NULL", limit=50)   # read-only, list of dicts
+with db.transaction() as tx:                         # all or nothing
+    tx.execute("UPDATE note SET tag = ? WHERE id = ?", ("x", 1))
+```
+
+Rules: always use `?` parameters, never string-built SQL; never edit an applied migration, add
+the next version; a step that fails changes nothing (the database stays at the previous
+version). Every call opens its own connection (WAL, foreign keys on), so a handle is safe from
+any thread and nothing needs closing at shutdown. Inspect from the terminal with `kdx db
+list|show|query|backup` - `query` is read-only and takes exactly one statement, so an agent can
+look at state without being able to change it. Expose data to the GUI through a route and a
+`[ui]` panel, not by giving the browser the file.
 
 Exported from `korodexios_core` and `korodexios_core.kernel`: `NamedLock`,
 `NamedLockRegistry`, `TaskScheduler`, `ScheduledTask`, `IpcResponse`, `IpcStaticMount`,

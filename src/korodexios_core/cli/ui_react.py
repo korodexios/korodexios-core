@@ -996,6 +996,18 @@ Headless first. `kdx ui doctor --json` says whether this machine has a browser a
 `PW_CHANNEL=chrome` (or `msedge`) uses an installed browser instead of a Playwright download
 (`npx playwright install chromium`); `PW_HEADED=1` opens the window when there is a display.
 
+## Known limits (also in `kdx ui guide`)
+
+- Renaming, hiding, reordering and own shortcut buttons are edited in the built-in console
+  (`kdx ui`, Customize) or with `kdx ui prefs patch`; this app shows them and writes only
+  remembered form values, pinned defaults and the last tab.
+- npm is verified end to end; bun and pnpm use the same templates, so run
+  `@RUN@ typecheck && @RUN@ test` first.
+- A newer npm may block the esbuild install script. If vite fails with an esbuild error, run
+  `npm install-scripts approve esbuild` and install again.
+- `@RUN@ e2e` starts the daemon with `uv run @SCRIPT@ run`: run `uv sync --extra dev` in the
+  project root first.
+
 ## Extending
 
 - A new module needs no code here: declare `[ui]` panels and they appear.

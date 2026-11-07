@@ -523,6 +523,19 @@ command that never checks runs to its end. Only the job's owner or an admin may 
 Arguments after `--` reach the command exactly as typed - a path with dots, slashes, or
 spaces arrives whole.
 
+## Databases (`kdx db`)
+
+```bash
+kdx db list [--json]                       # databases under data/db with size and schema version
+kdx db show [NAME] [--json]                # tables, columns, row counts (default: main)
+kdx db query [NAME] "SELECT ..." [--json] [--limit N]   # ONE read-only statement
+kdx db backup [NAME] [--to FILE]           # SQLite online backup, safe while in use
+```
+
+A database exists only when a module asked for one (`context.db()`, `docs/AGENTS_GUIDE.md`
+section 16.4), so `kdx db list` is often empty. The commands are terminal-only and read-only
+apart from `backup`; schema changes are a module's migrations, never an ad-hoc command.
+
 ## Rate limiters (`kdx limiter`)
 
 ```bash

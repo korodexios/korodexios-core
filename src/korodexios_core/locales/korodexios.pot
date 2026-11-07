@@ -152,6 +152,10 @@ msgstr ""
 msgid "Control plane"
 msgstr ""
 
+#: cli/db.py
+msgid "Copy a database with SQLite's online backup (safe while it is in use)."
+msgstr ""
+
 #: modules/wiki/module.py
 msgid "Copy a source into raw/ and create its source page to fill in."
 msgstr ""
@@ -190,6 +194,10 @@ msgstr ""
 
 #: cli/proposal.py
 msgid "Create the issue on github.com/{repo}?"
+msgstr ""
+
+#: cli/db.py
+msgid "Database name (see 'kdx db list') [main]."
 msgstr ""
 
 #: cli/users.py
@@ -404,6 +412,10 @@ msgstr ""
 msgid "Inspect the environment, configuration, logging, and modules."
 msgstr ""
 
+#: cli/db.py
+msgid "Inspect the project's SQLite databases (they exist only when a module asks)."
+msgstr ""
+
 #: cli/commands.py
 msgid "Instance and concurrency"
 msgstr ""
@@ -482,6 +494,10 @@ msgstr ""
 
 #: modules/webhooks/module.py
 msgid "List the configured targets (URLs masked)."
+msgstr ""
+
+#: cli/db.py
+msgid "List the databases with size and schema version."
 msgstr ""
 
 #: cli/language.py
@@ -564,8 +580,16 @@ msgstr ""
 msgid "Modules"
 msgstr ""
 
+#: cli/db.py
+msgid "Most rows to print [100]."
+msgstr ""
+
 #: cli/jobs.py
 msgid "One JSON object per line."
+msgstr ""
+
+#: cli/db.py
+msgid "One statement, e.g. 'SELECT 1'."
 msgstr ""
 
 #: cli/commands.py
@@ -804,6 +828,10 @@ msgstr ""
 msgid "Root of the wiki to merge into."
 msgstr ""
 
+#: cli/db.py
+msgid "Run ONE read-only SQL statement (SELECT, PRAGMA ...) and print the rows."
+msgstr ""
+
 #: cli/commands.py
 msgid "Run it as a job and print its output live; no timeout."
 msgstr ""
@@ -866,6 +894,10 @@ msgstr ""
 
 #: cli/proposal.py
 msgid "Short title of the proposal."
+msgstr ""
+
+#: cli/db.py
+msgid "Show a database's tables, columns and row counts."
 msgstr ""
 
 #: cli/jobs.py
@@ -986,6 +1018,10 @@ msgstr ""
 
 #: cli/txn.py
 msgid "Take back a finished transaction (refused if its files changed since)."
+msgstr ""
+
+#: cli/db.py
+msgid "Target file (default: data/db/backups/NAME-<time>.sqlite3)."
 msgstr ""
 
 #: modules/job_queue/module.py
@@ -1216,6 +1252,10 @@ msgstr ""
 msgid "built-in default"
 msgstr ""
 
+#: cli/db.py
+msgid "bytes"
+msgstr ""
+
 #: modules/backup_engine/module.py
 msgid "cancelled after {copied} file(s); the partial copy stays at {target}"
 msgstr ""
@@ -1258,6 +1298,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "cli-collision: module commands shadowed by another owner:"
+msgstr ""
+
+#: cli/db.py
+msgid "columns"
 msgstr ""
 
 #: cli/commands.py
@@ -1334,6 +1378,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "daemon"
+msgstr ""
+
+#: cli/db.py
+msgid "database {name} does not exist yet"
 msgstr ""
 
 #: cli/commands.py
@@ -1472,6 +1520,10 @@ msgstr ""
 msgid "following events at {base_url} (Ctrl+C to stop)"
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "for browser tests: {setting}={value}"
+msgstr ""
+
 #: modules/system_info/module.py
 msgid "free"
 msgstr ""
@@ -1586,6 +1638,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "known keys"
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "known limits"
 msgstr ""
 
 #: cli/txn.py
@@ -1768,6 +1824,10 @@ msgstr ""
 msgid "no daemon is running and this command has no chassis"
 msgstr ""
 
+#: cli/db.py
+msgid "no databases: no module has asked for one"
+msgstr ""
+
 #: cli/commands.py
 msgid "no diagnostics findings"
 msgstr ""
@@ -1818,6 +1878,10 @@ msgstr ""
 
 #: cli/proposal.py
 msgid "no proposals yet"
+msgstr ""
+
+#: cli/db.py
+msgid "no rows"
 msgstr ""
 
 #: modules/job_queue/module.py
@@ -2100,6 +2164,10 @@ msgstr ""
 msgid "root"
 msgstr ""
 
+#: cli/db.py
+msgid "rows"
+msgstr ""
+
 #: modules/web_console/module.py
 msgid "rules"
 msgstr ""
@@ -2122,6 +2190,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "scheduled tasks"
+msgstr ""
+
+#: cli/db.py
+msgid "schema version"
 msgstr ""
 
 #: modules/wiki/module.py
@@ -2226,6 +2298,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "subscriptions"
+msgstr ""
+
+#: cli/db.py
+msgid "table"
 msgstr ""
 
 #: modules/wiki/module.py
@@ -2590,6 +2666,10 @@ msgstr ""
 
 #: cli/language.py
 msgid "{locale}: {count} obsolete removed"
+msgstr ""
+
+#: cli/db.py
+msgid "{name} backed up to {path}"
 msgstr ""
 
 #: cli/limiter.py
