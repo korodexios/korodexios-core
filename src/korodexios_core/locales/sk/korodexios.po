@@ -610,6 +610,10 @@ msgstr "Vypíše, a s --apply zmaže, jednorazové vývojové dáta."
 msgid "Logging"
 msgstr "Logovanie"
 
+#: modules/web_console/module.py
+msgid "Main surface in one pane (off) or two panes side by side or stacked."
+msgstr "Hlavná plocha v jednom paneli (off) alebo v dvoch vedľa seba alebo pod sebou."
+
 #: cli/users.py
 msgid "Manage named control-plane users and their roles."
 msgstr "Spravuje pomenovaných používateľov riadiacej roviny a ich role."
@@ -2171,8 +2175,8 @@ msgid "nothing found for {query}"
 msgstr "pre {query} sa nič nenašlo"
 
 #: modules/web_console/module.py
-msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
-msgstr "nie je čo meniť: zadaj --side, --bottom, --inspector, --hide, --show alebo --ribbon"
+msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show, --ribbon or --split"
+msgstr "nie je čo meniť: zadaj --side, --bottom, --inspector, --hide, --show, --ribbon alebo --split"
 
 #: cli/container_doctor.py
 msgid "nothing to fix: a rootless engine has the ids it needs"
@@ -3133,6 +3137,9 @@ msgstr "{verb}; tento token sa zobrazí iba teraz - odovzdaj ho súkromne"
 
 #~ msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
 #~ msgstr "nav, panels, buttons, values, defaults, settings; bez názvu sa myslia všetky okrem defaults."
+
+#~ msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
+#~ msgstr "nie je čo meniť: zadaj --side, --bottom, --inspector, --hide, --show alebo --ribbon"
 
 #~ msgid "python | fullstack"
 #~ msgstr "python | fullstack"

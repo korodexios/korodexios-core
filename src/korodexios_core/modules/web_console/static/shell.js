@@ -15,12 +15,21 @@
   const VARS = { side: "--side-w", bottom: "--bottom-h", inspector: "--inspector-w" };
   const SVG_NS = "http://www.w3.org/2000/svg";
   const ICONS = {
-    notes: "M6 3h9l4 4v14H6z|M14 3v5h5M9 13h7M9 17h5",
+    // A general vocabulary a module names in its [ui] `icon`; an unknown name draws `module`.
+    home: "M4 11l8-7 8 7|M6 10v10h12V10",
+    list: "M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01",
+    document: "M6 3h9l4 4v14H6z|M14 3v5h5M9 13h7M9 17h5",
+    folder: "M3 6h6l2 2h10v11H3z",
     search: "M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0z|M20 20l-4-4",
-    review: "M5 4h14v12H9l-4 4z|M9 9l2 2 4-4",
-    trust: "M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z",
-    models: "M7 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z|M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3",
-    health: "M3 12h4l3-7 4 14 3-7h4",
+    task: "M5 4h14v12H9l-4 4z|M9 9l2 2 4-4",
+    shield: "M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z",
+    chip: "M7 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z|M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3",
+    pulse: "M3 12h4l3-7 4 14 3-7h4",
+    chart: "M4 20V10M10 20V4M16 20v-8M22 20H2",
+    database: "M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3z|M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6",
+    bell: "M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z|M10 20a2 2 0 0 0 4 0",
+    user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z|M4 21a8 8 0 0 1 16 0",
+    play: "M7 4l13 8-13 8z",
     system: "M12 3l8 4.5v9L12 21l-8-4.5v-9z|M14.5 12a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z",
     settings: "M4 7h10M18 7h2M4 17h2M10 17h10|M18 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0z|M10 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0z",
     module: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
@@ -29,6 +38,7 @@
     "pane-side": "M4 5h16v14H4z|M10 5v14M4 10h6M4 14h6",
     "pane-bottom": "M4 5h16v14H4z|M4 14h16",
     "pane-inspector": "M4 5h16v14H4z|M14 5v14",
+    "pane-split": "M4 5h16v14H4z|M12 5v14M4 12h8",
     focus: "M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5",
     chevron: "M9 6l6 6-6 6",
     collapse: "M7 9l5-5 5 5M7 15l5 5 5-5",
@@ -38,10 +48,62 @@
   const state = {
     token: "", manifest: null, prefs: null, themes: null, status: null,
     catalog: [], me: null,
-    area: "", tabs: [], active: "", selected: null,
-    trees: {}, open: new Set(), badges: {}, timers: [], dockTimers: [],
+    area: "", tabs: [], active: "", activeB: "", focus: "a", selected: null,
+    trees: {}, open: new Set(), badges: {}, timers: [], timersB: [], dockTimers: [],
   };
   const $ = (id) => document.getElementById(id);
+
+  // ---- language ----------------------------------------------------------------
+  // The shell's own texts live in the daemon's catalogues (domain korodexios-web), the same
+  // ones the classic console uses. Static elements keep their English in data-en so a switch
+  // always translates from the source; text from the daemon (labels, rows) is never looked up.
+
+  const TRANSLATED_ATTRS = ["title", "aria-label", "placeholder"];
+  const LANGUAGE_NAMES = { en: "English", sk: "Slovenčina", cs: "Čeština", de: "Deutsch", es: "Español", fr: "Français", pl: "Polski" };
+  const KEEP_AS_IS = new Set(["state-pill", "toast", "app-name", "crumb-area", "crumb-item", "status-theme", "status-layout", "status-user"]);
+  const i18n = { locale: "en", messages: {} };
+
+  function t(text) {
+    const key = String(text);
+    return Object.prototype.hasOwnProperty.call(i18n.messages, key) ? i18n.messages[key] : key;
+  }
+
+  // a sentence with values in it: the sentence is translated, the values are filled in after
+  function tf(text, fields) {
+    return t(text).replace(/\{(\w+)\}/g, (match, name) => (name in fields ? String(fields[name]) : match));
+  }
+
+  const squash = (text) => text.replace(/\s+/g, " ").trim();
+
+  function markStatic() {
+    document.querySelectorAll("body *").forEach((node) => {
+      if (KEEP_AS_IS.has(node.id) || ["SCRIPT", "STYLE", "OPTION", "CODE", "PRE"].includes(node.tagName)) return;
+      if (node.children.length === 0 && node.childNodes.length === 1 && node.firstChild.nodeType === 3) {
+        const text = squash(node.textContent);
+        if (text) node.dataset.en = text;
+      }
+      TRANSLATED_ATTRS.forEach((attr) => { if (node.hasAttribute(attr)) node.setAttribute(`data-en-${attr}`, node.getAttribute(attr)); });
+    });
+  }
+
+  function applyStatic() {
+    document.documentElement.lang = i18n.locale;
+    document.querySelectorAll("[data-en]").forEach((node) => { node.textContent = t(node.dataset.en); });
+    TRANSLATED_ATTRS.forEach((attr) => {
+      document.querySelectorAll(`[data-en-${attr}]`).forEach((node) => node.setAttribute(attr, t(node.getAttribute(`data-en-${attr}`))));
+    });
+  }
+
+  async function loadI18n(requested) {
+    const query = requested ? `?locale=${encodeURIComponent(requested)}` : "";
+    const payload = await api(`/api/v1/ui/i18n${query}`);
+    i18n.locale = payload.locale || "en";
+    i18n.messages = payload.messages || {};
+    const select = $("lang");
+    select.replaceChildren(...(payload.locales || ["en"]).map((code) => el("option", { value: code, plain: LANGUAGE_NAMES[code] || code })));
+    select.value = i18n.locale;
+    applyStatic();
+  }
 
   // ---- helpers ---------------------------------------------------------------
 
@@ -49,7 +111,9 @@
     const node = document.createElement(tag);
     Object.entries(props || {}).forEach(([key, value]) => {
       if (value === undefined || value === null || value === false) return;
-      if (key === "text") node.textContent = String(value);
+      if (key === "text") node.textContent = t(value);
+      else if (key === "plain") node.textContent = String(value);
+      else if (TRANSLATED_ATTRS.includes(key)) node.setAttribute(key, t(value));
       else if (key === "class") node.className = value;
       else if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
       else node.setAttribute(key, value === true ? "" : value);
@@ -153,8 +217,8 @@
     clearTimeout(saveLayout.timer);
     saveLayout.timer = setTimeout(async () => {
       const body = pending; pending = null;
-      try { await api("/api/v1/ui/prefs", { method: "PATCH", body: { layout: body } }); $("status-layout").textContent = "layout saved"; }
-      catch (error) { toast(`layout not saved: ${error.message}`, true); }
+      try { await api("/api/v1/ui/prefs", { method: "PATCH", body: { layout: body } }); $("status-layout").textContent = t("layout saved"); }
+      catch (error) { toast(tf("layout not saved: {reason}", { reason: error.message }), true); }
     }, SAVE_DELAY_MS);
   }
 
@@ -167,6 +231,11 @@
     $("bottom").hidden = $("split-bottom").hidden = off.includes("bottom");
     $("inspector").hidden = $("split-inspector").hidden = off.includes("inspector");
     $("ribbon").classList.toggle("labels", layout().ribbon === "labels");
+    const mode = splitMode();
+    $("surfaces").className = `surfaces ${mode === "off" ? "" : mode}`;
+    $("surface-b").hidden = mode === "off";
+    const split = document.querySelector('[data-pane="split"]');
+    if (split) split.setAttribute("aria-pressed", String(mode !== "off"));
     PANES.forEach((pane) => {
       const button = document.querySelector(`[data-pane="${pane}"]`);
       if (button) button.setAttribute("aria-pressed", String(!off.includes(pane)));
@@ -183,6 +252,11 @@
   function togglePane(pane) {
     if (pane === "side" && narrow()) { $("app").classList.toggle("hide-side"); return; }
     if (pane === "inspector" && window.matchMedia("(max-width: 1099px)").matches) { $("app").classList.toggle("show-inspector"); return; }
+    if (pane === "split") {
+      const order = ["off", "vertical", "horizontal"];
+      setSplit(order[(order.indexOf(layout().split || "off") + 1) % order.length]);
+      return;
+    }
     const off = new Set(hidden());
     if (pane === "focus") setHidden(PANES.every((p) => off.has(p)) ? [] : PANES);
     else { if (off.has(pane)) off.delete(pane); else off.add(pane); setHidden([...off]); }
@@ -190,7 +264,8 @@
 
   function buildToggles() {
     const box = $("pane-toggles");
-    [["ribbon", "Ribbon"], ["side", "Side list"], ["bottom", "Bottom panel"], ["inspector", "Inspector"], ["focus", "Focus: hide or show all panels"]]
+    box.replaceChildren();
+    [["ribbon", "Ribbon"], ["side", "Side list"], ["bottom", "Bottom panel"], ["inspector", "Inspector"], ["split", "Split view (Ctrl+\\)"], ["focus", "Focus: hide or show all panels"]]
       .forEach(([pane, label]) => {
         const button = el("button", { type: "button", class: "toggle", "data-pane": pane, title: label, "aria-label": label, "aria-pressed": "true", onclick: () => togglePane(pane) });
         button.append(icon(pane === "focus" ? "focus" : `pane-${pane}`, 16));
@@ -255,9 +330,9 @@
       payload = await api(`/api/v1/ui/theme?name=${encodeURIComponent(dark ? payload.system.dark : payload.system.light)}`);
     }
     applyTokens(payload.tokens);
-    $("status-theme").textContent = `theme: ${state.themes.active}`;
+    $("status-theme").textContent = tf("theme: {name}", { name: state.themes.active });
     const select = $("theme-select");
-    select.replaceChildren(...state.themes.themes.map((theme) => el("option", { value: theme.name, text: theme.name })));
+    select.replaceChildren(...state.themes.themes.map((theme) => el("option", { value: theme.name, plain: theme.name })));
     select.value = state.themes.active;
     (payload.problems || []).forEach((problem) => toast(problem, true));
   }
@@ -275,8 +350,8 @@
       id: entry.module, title: entry.title || entry.module, icon: entry.icon, position: entry.position || "top", entry,
     }));
     return [...fromModules,
-      { id: "system", title: "System", icon: "system", position: "bottom", builtin: true },
-      { id: "settings", title: "Settings", icon: "settings", position: "bottom", builtin: true }];
+      { id: "system", title: t("System"), icon: "system", position: "bottom", builtin: true },
+      { id: "settings", title: t("Settings"), icon: "settings", position: "bottom", builtin: true }];
   }
 
   function currentArea() { return areas().find((area) => area.id === state.area) || areas()[0]; }
@@ -334,14 +409,14 @@
 
   function systemPanels() {
     return [
-      { id: "status", type: "data", title: "Status", source: "/api/v1/status", refresh: 5 },
-      { id: "config", type: "data", title: "Config", source: "/api/v1/ui/config", path: "entries" },
-      { id: "logs", type: "log", title: "Logs", source: "/api/v1/ui/logs?lines=200", path: "lines" },
+      { id: "status", type: "data", title: t("Status"), source: "/api/v1/status", refresh: 5 },
+      { id: "config", type: "data", title: t("Config"), source: "/api/v1/ui/config", path: "entries" },
+      { id: "logs", type: "log", title: t("Logs"), source: "/api/v1/ui/logs?lines=200", path: "lines" },
     ];
   }
 
   function settingsPanels() {
-    return [{ id: "appearance", type: "appearance", title: "Appearance" }, { id: "layout", type: "layout", title: "Layout" }];
+    return [{ id: "appearance", type: "appearance", title: t("Appearance") }, { id: "layout", type: "layout", title: t("Layout") }];
   }
 
   function panelsOf(area) {
@@ -431,8 +506,8 @@
         },
       });
       row.style.paddingLeft = `${8 + depth * 16}px`;
-      row.append(chevron(isOpen, !node.has_children), el("span", { class: "name", text: node.label }));
-      if (node.meta) row.append(el("span", { class: `meta${node.tone ? ` tone-${node.tone}` : ""}`, text: node.meta }));
+      row.append(chevron(isOpen, !node.has_children), el("span", { class: "name", plain: node.label }));
+      if (node.meta) row.append(el("span", { class: `meta${node.tone ? ` tone-${node.tone}` : ""}`, plain: node.meta }));
       rows.push(row);
       if (isOpen) rows.push(...levelRows(area, section, node.id, depth + 1));
     });
@@ -453,7 +528,7 @@
     const body = $("inspector-body");
     if (!pairs.length) { body.replaceChildren(el("div", { class: "side-note", text: "Select an item to see its properties." })); return; }
     const list = el("dl", { class: "kv" });
-    pairs.forEach(([key, value]) => list.append(el("dt", { text: key }), el("dd", { text: fmt(value) })));
+    pairs.forEach(([key, value]) => list.append(el("dt", { plain: key }), el("dd", { plain: fmt(value) })));
     body.replaceChildren(list);
   }
 
@@ -467,40 +542,64 @@
 
   function closeTab(key) {
     state.tabs = state.tabs.filter((tab) => tab.key !== key);
+    const last = state.tabs[state.tabs.length - 1];
+    if (state.activeB === key) state.activeB = last ? last.key : "";
     if (state.active === key) {
-      const next = state.tabs[state.tabs.length - 1];
-      if (next) activate(next.key); else { state.active = ""; renderTabs(); renderEmpty(); }
-    } else renderTabs();
+      if (last) { state.focus = "a"; activate(last.key); } else { state.active = ""; renderTabs(); renderPanes(); }
+    } else { renderTabs(); renderPanes(); }
   }
 
   function renderTabs() {
     $("tabs").replaceChildren(...state.tabs.map((tab) => {
-      const button = el("button", { type: "button", role: "tab", class: "tab", "aria-selected": String(tab.key === state.active), onclick: () => activate(tab.key) });
+      const button = el("button", { type: "button", role: "tab", class: "tab", "aria-selected": String(tab.key === (state.focus === "b" && splitMode() !== "off" ? state.activeB : state.active)), onclick: () => activate(tab.key) });
       button.append(el("span", { text: tab.title }),
-        el("span", { class: "muted", title: "Close", "aria-label": `Close ${tab.title}`, text: "×", onclick: (event) => { event.stopPropagation(); closeTab(tab.key); } }));
+        el("span", { class: "muted", title: "Close", "aria-label": tf("Close {title}", { title: tab.title }), text: "×", onclick: (event) => { event.stopPropagation(); closeTab(tab.key); } }));
       return button;
     }));
   }
 
-  function renderEmpty() {
-    $("surface").replaceChildren(el("p", { class: "empty", text: "Pick something in the side list. Every panel a module declares in its [ui] table appears here, with no GUI code." }));
-  }
+  function renderEmpty() { renderPanes(); }
 
   function clearTimers(list) { list.splice(0).forEach((id) => clearInterval(id)); }
 
+  const splitMode = () => (narrow() ? "off" : (layout().split || "off"));
+  const surfaceOf = (which) => $(which === "b" ? "surface-b" : "surface");
+
+  // a tab opens in the pane that has the focus; with the split off that is always the first
   function activate(key) {
-    state.active = key;
+    if (state.focus === "b" && splitMode() !== "off") state.activeB = key; else state.active = key;
     renderTabs();
     renderSide();
-    const tab = state.tabs.find((t) => t.key === key);
+    renderPanes();
+  }
+
+  function renderPanes() {
     clearTimers(state.timers);
-    const surface = $("surface");
+    clearTimers(state.timersB);
+    drawPane("a", state.active, state.timers);
+    if (splitMode() !== "off") drawPane("b", state.activeB, state.timersB);
+    $("surface").classList.toggle("focused", state.focus === "a");
+    $("surface-b").classList.toggle("focused", state.focus === "b");
+  }
+
+  function drawPane(which, key, timers) {
+    const surface = surfaceOf(which);
     surface.replaceChildren();
-    if (!tab) { renderEmpty(); return; }
+    const tab = state.tabs.find((t) => t.key === key);
+    if (!tab) { surface.append(el("p", { class: "empty", text: "Pick something in the side list. Every panel a module declares in its [ui] table appears here, with no GUI code." })); return; }
     const area = areas().find((a) => a.id === tab.area);
     surface.append(el("h1", { text: tab.title }));
     if (tab.panel.help) surface.append(el("p", { class: "muted", text: tab.panel.help }));
-    surface.append(panelCard(tab.panel, area, state.timers));
+    surface.append(panelCard(tab.panel, area, timers));
+  }
+
+  function setSplit(mode) {
+    saveLayout({ split: mode });
+    if (mode !== "off" && !state.activeB) state.activeB = state.active;
+    state.focus = "a";
+    applyLayout();
+    renderTabs();
+    renderPanes();
   }
 
   function renderDock() {
@@ -541,7 +640,7 @@
       case "keyvalue": {
         const data = dig(await api(panel.source), panel.path) || {};
         const list = el("dl", { class: "kv" });
-        Object.entries(data).forEach(([key, value]) => list.append(el("dt", { text: key }), el("dd", { text: fmt(value) })));
+        Object.entries(data).forEach(([key, value]) => list.append(el("dt", { plain: key }), el("dd", { plain: fmt(value) })));
         content.replaceChildren(list);
         return;
       }
@@ -556,13 +655,13 @@
       case "form": renderForm(content, panel, area); return;
       case "actions": renderActions(content, panel); return;
       case "settings": await renderSettings(content, panel, area); return;
-      default: content.replaceChildren(el("p", { class: "muted", text: `Unknown panel type ${panel.type}.` }));
+      default: content.replaceChildren(el("p", { class: "muted", text: tf("Unknown panel type {type}.", { type: panel.type }) }));
     }
   }
 
   function chip(text, tones) {
     const tone = (tones && tones[String(text).toLowerCase()]) || "";
-    return el("span", { class: `chip${tone ? ` tone-${tone}` : ""}`, text: fmt(text) });
+    return el("span", { class: `chip${tone ? ` tone-${tone}` : ""}`, plain: fmt(text) });
   }
 
   const TONE_WORDS = {
@@ -607,19 +706,19 @@
   }
 
   function cellNode(column, value) {
-    if (value === null || value === undefined) return el("td", { text: "-" });
+    if (value === null || value === undefined) return el("td", { plain: "-" });
     const text = fmt(value);
     switch (column.kind) {
-      case "chip": return el("td", {}, [el("span", { class: `chip tone-${toneOf(column, text)}`, text })]);
-      case "bytes": return el("td", { text: fmtBytes(value) });
-      case "duration": return el("td", { text: fmtDuration(value) });
-      case "time": return el("td", { text: fmtTime(value) });
-      case "code": return el("td", {}, [el("code", { text })]);
+      case "chip": return el("td", {}, [el("span", { class: `chip tone-${toneOf(column, text)}`, plain: text })]);
+      case "bytes": return el("td", { plain: fmtBytes(value) });
+      case "duration": return el("td", { plain: fmtDuration(value) });
+      case "time": return el("td", { plain: fmtTime(value) });
+      case "code": return el("td", {}, [el("code", { plain: text })]);
       case "link": {
         const href = safeHref(text);
-        return el("td", {}, [href ? el("a", { href, target: "_blank", rel: "noopener noreferrer", text }) : document.createTextNode(text)]);
+        return el("td", {}, [href ? el("a", { href, target: "_blank", rel: "noopener noreferrer", plain: text }) : document.createTextNode(text)]);
       }
-      default: return el("td", { text });
+      default: return el("td", { plain });
     }
   }
 
@@ -655,7 +754,7 @@
             const value = dig(await api(fillRow(panel.detail.source, row, true)), panel.detail.path);
             const pairs = value && typeof value === "object" ? Object.entries(value) : [["value", value]];
             const list2 = el("dl", { class: "kv" });
-            pairs.forEach(([k, v]) => list2.append(el("dt", { text: k }), el("dd", { text: fmt(v) })));
+            pairs.forEach(([k, v]) => list2.append(el("dt", { plain: k }), el("dd", { plain: fmt(v) })));
             detail.replaceChildren(list2, el("button", { type: "button", class: "plain", text: "Close", onclick: () => detail.replaceChildren() }));
           } catch (error) { toast(error.message, true); }
         } }));
@@ -808,7 +907,7 @@
 
   function renderForm(content, panel, area) {
     const command = commandEntry(panel.command);
-    if (!command) { content.replaceChildren(el("p", { class: "error", text: `unknown command: ${panel.command}` })); return; }
+    if (!command) { content.replaceChildren(el("p", { class: "error", text: tf("unknown command: {command}", { command: panel.command }) })); return; }
     const formKey = `${area.id}.${panel.id}`;
     const prefs = () => state.prefs;
     const fresh = () => Object.assign({}, panel.args, (prefs().defaults || {})[formKey] || {});
@@ -824,14 +923,14 @@
       const id = `f-${panel.id}-${arg.dest}`;
       if (arg.kind === "flag") input = el("input", { type: "checkbox", id });
       else if (spec.choices_from) { input = el("select", { id }, [el("option", { value: "", text: "(default)" })]); later.push({ input, arg, spec }); }
-      else if (arg.choices && arg.choices.length) input = el("select", { id }, [el("option", { value: "", text: "(default)" }), ...arg.choices.map((c) => el("option", { value: c, text: c }))]);
+      else if (arg.choices && arg.choices.length) input = el("select", { id }, [el("option", { value: "", text: "(default)" }), ...arg.choices.map((c) => el("option", { value: c, plain: c }))]);
       else if (spec.kind === "textarea") input = el("textarea", { id, rows: String(spec.rows || 4), placeholder: arg.metavar || "" });
       else if (numeric(arg) && (spec.kind === "slider" || spec.kind === "number" || arg.minimum != null || arg.maximum != null)) {
         const slide = spec.kind === "slider" && arg.minimum != null && arg.maximum != null;
         input = el("input", { id, type: slide ? "range" : "number", min: arg.minimum != null ? String(arg.minimum) : null, max: arg.maximum != null ? String(arg.maximum) : null,
-          step: arg.step != null ? String(arg.step) : (arg.kind === "float" ? "any" : "1"), placeholder: arg.default != null ? `default: ${arg.default}` : "" });
+          step: arg.step != null ? String(arg.step) : (arg.kind === "float" ? "any" : "1"), placeholder: arg.default != null ? tf("default: {value}", { value: arg.default }) : "" });
         if (slide) { const shown = el("output", { class: "muted", text: input.value }); input.addEventListener("input", () => { shown.textContent = input.value; }); extra = shown; }
-      } else input = el("input", { id, type: numeric(arg) ? "number" : "text", step: arg.kind === "float" ? "any" : null, placeholder: arg.default != null ? `default: ${arg.default}` : (arg.metavar || "") });
+      } else input = el("input", { id, type: numeric(arg) ? "number" : "text", step: arg.kind === "float" ? "any" : null, placeholder: arg.default != null ? tf("default: {value}", { value: arg.default }) : (arg.metavar || "") });
       inputs.set(arg.dest, { input, arg, spec });
       const hint = el("small", { class: "muted", text: arg.help || "" });
       return arg.kind === "flag"
@@ -845,7 +944,7 @@
         const value = spec.value ? dig(item, spec.value) : item;
         const text = spec.label ? dig(item, spec.label) : value;
         if (value === null || value === undefined || typeof value === "object") return;
-        input.append(el("option", { value: String(value), text: text === null || text === undefined ? String(value) : String(text) }));
+        input.append(el("option", { value: String(value), plain: text === null || text === undefined ? String(value) : String(text) }));
       });
       if (wanted !== undefined && wanted !== null) input.value = String(wanted);
     }).catch((error) => toast(error.message, true)));
@@ -894,13 +993,13 @@
       const id = `s-${item.key}`;
       let input;
       if (item.type === "bool") { input = el("input", { id, type: "checkbox" }); input.checked = item.value === true; }
-      else if (item.choices && item.choices.length) { input = el("select", { id }, item.choices.map((c) => el("option", { value: c, text: c }))); input.value = item.value == null ? "" : String(item.value); }
+      else if (item.choices && item.choices.length) { input = el("select", { id }, item.choices.map((c) => el("option", { value: c, plain: c }))); input.value = item.value == null ? "" : String(item.value); }
       else if (item.type === "int" || item.type === "float") { input = el("input", { id, type: "number", step: item.type === "float" ? "any" : "1", min: item.minimum != null ? String(item.minimum) : null, max: item.maximum != null ? String(item.maximum) : null }); input.value = item.value == null ? "" : String(item.value); }
       else { input = el("input", { id, type: "text" }); input.value = Array.isArray(item.value) ? item.value.join(", ") : (item.value == null ? "" : String(item.value)); }
       input.disabled = !mayEdit || !item.editable;
       inputs.set(item.key, { input, item });
       const badges = el("span", { class: "row" }, [
-        el("span", { class: "chip", text: item.layer }),
+        el("span", { class: "chip", plain: item.layer }),
         el("span", { class: `chip tone-${item.live ? "ok" : "warn"}`, text: item.live ? "applies live" : "needs restart" }),
         ...(item.overridden ? [el("span", { class: "chip tone-bad", text: "overridden by environment or CLI" })] : []),
         ...(item.secret ? [el("span", { class: "chip tone-bad", text: "secret: set it in .env" })] : []),
@@ -926,7 +1025,7 @@
       const { ok, payload: answer } = await call("/api/v1/ui/config/edit", { method: "POST", body: { set, unset } });
       if (!ok) { result.replaceChildren(el("p", { class: "error", text: [answer.error, answer.hint].filter(Boolean).join(" - ") })); return; }
       const words = { live: "applied now", restart: "saved; needs a restart", shadowed: "saved, but a higher layer still wins", saved: "saved" };
-      const lines = answer.keys.map((row) => el("p", { class: row.applied === "shadowed" ? "error" : "muted", text: `${row.key}: ${words[row.applied] || row.applied}` }));
+      const lines = answer.keys.map((row) => el("p", { class: row.applied === "shadowed" ? "error" : "muted", plain: `${row.key}: ${t(words[row.applied] || row.applied)}` }));
       toast("Settings saved");
       await renderSettings(content, panel, area);
       content.append(...lines);
@@ -948,7 +1047,7 @@
     const scalars = Object.entries(data).filter(([, value]) => typeof value !== "object" || value === null);
     if (scalars.length) {
       const list = el("dl", { class: "kv" });
-      scalars.forEach(([key, value]) => list.append(el("dt", { text: key }), el("dd", { text: fmt(value) })));
+      scalars.forEach(([key, value]) => list.append(el("dt", { plain: key }), el("dd", { plain: fmt(value) })));
       parts.push(list);
     }
     Object.entries(data).forEach(([key, value]) => {
@@ -958,7 +1057,7 @@
         parts.push(el("h2", { text: key }), holder);
       } else if (value && typeof value === "object" && !Array.isArray(value)) {
         const list = el("dl", { class: "kv" });
-        Object.entries(value).forEach(([k, v]) => list.append(el("dt", { text: k }), el("dd", { text: fmt(v) })));
+        Object.entries(value).forEach(([k, v]) => list.append(el("dt", { plain: k }), el("dd", { plain: fmt(v) })));
         parts.push(el("h2", { text: key }), list);
       }
     });
@@ -978,9 +1077,9 @@
 
   function renderLayoutSettings(content) {
     const rows = Object.keys(LIMITS).map((key) => {
-      const input = el("input", { id: `size-${key}`, type: "number", min: LIMITS[key][0], max: LIMITS[key][1], value: String(sizeOf(key)), "aria-label": `${key} size` });
+      const input = el("input", { id: `size-${key}`, type: "number", min: LIMITS[key][0], max: LIMITS[key][1], value: String(sizeOf(key)), "aria-label": tf("{pane} size", { pane: t(key) }) });
       input.addEventListener("change", () => { input.value = String(setSize(key, Number(input.value) || LIMITS[key][2], true)); });
-      return el("div", { class: "setting" }, [el("label", { for: `size-${key}`, text: `${key} (px)` }), input]);
+      return el("div", { class: "setting" }, [el("label", { for: `size-${key}`, text: tf("{pane} (px)", { pane: t(key) }) }), input]);
     });
     const reset = el("button", { type: "button", class: "plain", text: "Reset layout", onclick: async () => {
       await api("/api/v1/ui/prefs?section=layout", { method: "DELETE" }).catch((e) => toast(e.message, true));
@@ -1019,15 +1118,17 @@
 
   async function boot() {
     try {
-      const [manifest, prefs] = await Promise.all([api("/api/v1/ui/manifest"), api("/api/v1/ui/prefs")]);
-      state.manifest = manifest;
+      const prefs = await api("/api/v1/ui/prefs");
+      await loadI18n((prefs.settings || {}).locale);
+      buildToggles(); // built again now that the texts are translated
+      state.manifest = await api(`/api/v1/ui/manifest?locale=${encodeURIComponent(i18n.locale)}`);
       state.prefs = prefs;
       state.prefs.layout = prefs.layout || {};
       await loadTheme();
       state.catalog = (await api("/api/v1/ui/catalog").catch(() => ({}))).commands || [];
       const me = await api("/api/v1/whoami").catch(() => ({}));
       state.me = me.name ? me : null;
-      $("status-user").textContent = state.me ? `${state.me.name} · ${state.me.role}` : "anonymous";
+      $("status-user").textContent = state.me ? `${state.me.name} · ${state.me.role}` : t("anonymous");
       $("token-gate").hidden = true;
     } catch (error) {
       if (error instanceof AuthError) showGate(error.message); else toast(error.message, true);
@@ -1045,14 +1146,121 @@
     setInterval(() => { refreshStatus().catch(() => {}); refreshBadges().catch(() => {}); }, BADGE_MS);
   }
 
+  // ---- command palette and shortcut sheet --------------------------------------------------
+
+  const palette = { items: [], shown: [], index: 0, returnTo: null };
+  const SHORTCUTS = [
+    ["Ctrl+K", "Command palette"], ["Ctrl+B", "Show or hide the side list"], ["Ctrl+Alt+B", "Show or hide the inspector"],
+    ["Ctrl+J", "Show or hide the bottom panel"], ["Ctrl+\\", "Split the main surface: off, side by side, stacked"],
+    ["?", "This list"], ["Esc", "Close the palette or this list"], ["Arrow keys", "Resize a focused splitter by 12 px"],
+  ];
+
+  function paletteItems() {
+    const items = [];
+    areas().forEach((area) => {
+      items.push({ kind: "Area", label: area.title, run: () => selectArea(area.id) });
+      panelsOf(area).forEach((panel) => items.push({
+        kind: "Panel", label: `${area.title} / ${panel.title || panel.id}`,
+        run: () => { if (state.area !== area.id) selectArea(area.id); openPanel(area, panel); },
+      }));
+    });
+    [["ribbon", "Show or hide the ribbon"], ["side", "Show or hide the side list"], ["bottom", "Show or hide the bottom panel"], ["inspector", "Show or hide the inspector"]]
+      .forEach(([pane, label]) => items.push({ kind: "View", label, run: () => togglePane(pane) }));
+    items.forEach((item) => { if (item.kind === "View") item.translated = true; });
+    items.push({ kind: "View", translated: true, label: "Focus: hide or show all panels", run: () => togglePane("focus") },
+      { kind: "View", translated: true, label: "Split view: off, side by side, stacked", run: () => togglePane("split") });
+    ((state.themes && state.themes.themes) || []).forEach((theme) => items.push({ kind: "Theme", label: tf("Theme: {name}", { name: theme.name }), run: () => chooseTheme(theme.name).catch((e) => toast(e.message, true)) }));
+    items.push({ kind: "Help", translated: true, label: "Keyboard shortcuts", run: openShortcuts }, { kind: "Help", translated: true, label: "Classic console", run: () => { location.href = "./"; } });
+    return items;
+  }
+
+  function renderPalette() {
+    const words = $("palette-input").value.toLowerCase().split(/\s+/).filter(Boolean);
+    palette.shown = palette.items.filter((item) => words.every((word) => `${item.kind} ${item.label}`.toLowerCase().includes(word))).slice(0, 50);
+    palette.index = Math.min(palette.index, Math.max(0, palette.shown.length - 1));
+    const list = $("palette-list");
+    list.replaceChildren(...(palette.shown.length ? palette.shown.map((item, index) => {
+      const row = el("li", { id: `palette-item-${index}`, role: "option", "aria-selected": String(index === palette.index), onclick: () => runPalette(index) },
+        [el("span", { class: "kind", text: item.kind }), el("span", { plain: item.translated ? t(item.label) : item.label })]);
+      return row;
+    }) : [el("li", { class: "muted", text: "Nothing matches." })]));
+    $("palette-input").setAttribute("aria-activedescendant", palette.shown.length ? `palette-item-${palette.index}` : "");
+    const chosen = $(`palette-item-${palette.index}`);
+    if (chosen) chosen.scrollIntoView({ block: "nearest" });
+  }
+
+  function openPalette() {
+    if (!state.manifest) return;
+    palette.returnTo = document.activeElement;
+    palette.items = paletteItems();
+    palette.index = 0;
+    $("palette-input").value = "";
+    $("palette").hidden = false;
+    renderPalette();
+    $("palette-input").focus();
+  }
+
+  function closePalette() {
+    $("palette").hidden = true;
+    if (palette.returnTo && palette.returnTo.focus) palette.returnTo.focus();
+  }
+
+  function runPalette(index) {
+    const item = palette.shown[index];
+    closePalette();
+    if (item) item.run();
+  }
+
+  function openShortcuts() {
+    palette.returnTo = document.activeElement;
+    $("shortcuts-list").replaceChildren(...SHORTCUTS.flatMap(([keys, what]) => [el("dt", {}, [el("kbd", { text: keys })]), el("dd", { text: what })]));
+    $("shortcuts").hidden = false;
+    $("shortcuts-close").focus();
+  }
+
+  function closeShortcuts() {
+    $("shortcuts").hidden = true;
+    if (palette.returnTo && palette.returnTo.focus) palette.returnTo.focus();
+  }
+
   function shortcuts(event) {
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((event.target && event.target.tagName) || "");
+    if (event.key === "Escape") {
+      if (!$("palette").hidden) closePalette(); else if (!$("shortcuts").hidden) closeShortcuts();
+      return;
+    }
+    if (event.key === "?" && !typing && !event.ctrlKey && !event.metaKey && !event.altKey) { event.preventDefault(); openShortcuts(); return; }
     if (!(event.ctrlKey || event.metaKey) || event.shiftKey) return;
     const key = event.key.toLowerCase();
+    if (key === "k") { event.preventDefault(); if ($("palette").hidden) openPalette(); else closePalette(); return; }
+    if (key === "\\") { event.preventDefault(); togglePane("split"); return; }
     const pane = key === "b" ? (event.altKey ? "inspector" : "side") : (key === "j" && !event.altKey ? "bottom" : "");
     if (!pane) return;
     event.preventDefault();
     togglePane(pane);
   }
+
+  $("btn-palette").addEventListener("click", openPalette);
+  $("palette-icon").append(icon("search", 14));
+  $("palette-input").addEventListener("input", () => { palette.index = 0; renderPalette(); });
+  $("palette-input").addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const count = palette.shown.length;
+      if (count) palette.index = (palette.index + (event.key === "ArrowDown" ? 1 : count - 1)) % count;
+      renderPalette();
+    } else if (event.key === "Enter") { event.preventDefault(); runPalette(palette.index); }
+  });
+  $("palette").addEventListener("mousedown", (event) => { if (event.target === $("palette")) closePalette(); });
+  $("shortcuts").addEventListener("mousedown", (event) => { if (event.target === $("shortcuts")) closeShortcuts(); });
+  $("shortcuts-close").addEventListener("click", closeShortcuts);
+  ["a", "b"].forEach((which) => surfaceOf(which).addEventListener("mousedown", () => {
+    if (state.focus === which) return;
+    state.focus = which;
+    $("surface").classList.toggle("focused", which === "a");
+    $("surface-b").classList.toggle("focused", which === "b");
+    renderTabs();
+  }));
 
   $("token-form").addEventListener("submit", (event) => {
     event.preventDefault();
@@ -1069,7 +1277,11 @@
     renderSide();
   });
   $("brand-logo").append(icon("logo", 20));
+  markStatic();
   buildToggles();
+  $("lang").addEventListener("change", (event) => {
+    api("/api/v1/ui/prefs", { method: "PATCH", body: { settings: { locale: event.target.value } } }).then(() => location.reload()).catch((e) => toast(e.message, true));
+  });
   splitter($("split-side"), "side", "x", 1);
   splitter($("split-bottom"), "bottom", "y", -1);
   splitter($("split-inspector"), "inspector", "x", -1);

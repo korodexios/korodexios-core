@@ -1,345 +1,743 @@
+# Translation of the korodexios-web domain into de.
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
+"Language: de
+"
+"Content-Type: text/plain; charset=UTF-8
+"
 
+#: static/index.html
 msgid "Audit"
 msgstr "Audit"
 
+#: static/index.html
 msgid "Cancel"
 msgstr "Abbrechen"
 
+#: static/index.html
 msgid "Commands"
 msgstr "Befehle"
 
+#: static/index.html
 msgid "Config"
 msgstr "Konfiguration"
 
+#: static/index.html
 msgid "Connect"
 msgstr "Verbinden"
 
+#: static/index.html
 msgid "Diagnostics"
 msgstr "Diagnose"
 
+#: static/index.html
 msgid "Events"
 msgstr "Ereignisse"
 
+#: static/index.html
 msgid "Language"
 msgstr "Sprache"
 
+#: static/index.html
 msgid "Logs"
 msgstr "Logs"
 
+#: static/index.html
 msgid "Modules"
 msgstr "Module"
 
+#: static/index.html
 msgid "No records yet."
 msgstr "Noch keine Einträge."
 
+#: static/index.html
 msgid "Overview"
 msgstr "Übersicht"
 
+#: static/index.html
 msgid "Pick a command on the left. Every module command appears here automatically, with a form built from its declared arguments."
 msgstr "Wähle links einen Befehl. Jeder Modulbefehl erscheint hier automatisch, mit einem Formular aus seinen deklarierten Argumenten."
 
+#: static/index.html
 msgid "Re-read configuration (kdx reload)"
 msgstr "Konfiguration neu laden (kdx reload)"
 
+#: static/index.html
 msgid "Refresh"
 msgstr "Aktualisieren"
 
+#: static/index.html
 msgid "Refresh everything"
 msgstr "Alles aktualisieren"
 
+#: static/index.html
 msgid "Reload config"
 msgstr "Konfiguration laden"
 
+#: static/index.html
 msgid "Run"
 msgstr "Ausführen"
 
+#: static/index.html
 msgid "Scheduled tasks"
 msgstr "Geplante Aufgaben"
 
+#: static/index.html
 msgid "Session token needed"
 msgstr "Sitzungstoken erforderlich"
 
+#: static/index.html
 msgid "Stop daemon"
 msgstr "Daemon beenden"
 
+#: static/index.html
 msgid "Stop the daemon (exit 0)"
 msgstr "Daemon beenden (exit 0)"
 
+#: static/index.html
 msgid "action"
 msgstr "Aktion"
 
+#: static/index.html
 msgid "changes"
 msgstr "ändert"
 
+#: static/index.html
 msgid "command"
 msgstr "Befehl"
 
+#: static/index.html
 msgid "commands"
 msgstr "Befehle"
 
+#: static/index.html
 msgid "connecting…"
 msgstr "Verbindung wird hergestellt…"
 
+#: static/index.html
 msgid "daemon is stopping"
 msgstr "Daemon wird beendet"
 
+#: static/index.html
 msgid "description"
 msgstr "Beschreibung"
 
+#: static/index.html
 msgid "event"
 msgstr "Ereignis"
 
+#: static/index.html
 msgid "failures"
 msgstr "Fehler"
 
+#: static/index.html
 msgid "filter"
 msgstr "Filter"
 
+#: static/index.html
 msgid "filter audit"
 msgstr "Audit filtern"
 
+#: static/index.html
 msgid "filter by user, action, command"
 msgstr "nach Benutzer, Aktion, Befehl filtern"
 
+#: static/index.html
 msgid "filter commands"
 msgstr "Befehle filtern"
 
+#: static/index.html
 msgid "filter events"
 msgstr "Ereignisse filtern"
 
+#: static/index.html
 msgid "filter keys"
 msgstr "Schlüssel filtern"
 
+#: static/index.html
 msgid "filter keys, e.g. core.ipc."
 msgstr "Schlüssel filtern, z. B. core.ipc."
 
+#: static/index.html
 msgid "filter log lines"
 msgstr "Logzeilen filtern"
 
+#: static/index.html
 msgid "follow"
 msgstr "folgen"
 
+#: static/index.html
 msgid "from"
 msgstr "von"
 
+#: static/index.html
 msgid "interval"
 msgstr "Intervall"
 
+#: static/index.html
 msgid "key"
 msgstr "Schlüssel"
 
+#: static/index.html
 msgid "last error"
 msgstr "letzter Fehler"
 
+#: static/index.html
 msgid "lines"
 msgstr "Zeilen"
 
+#: static/index.html
 msgid "module"
 msgstr "Modul"
 
+#: static/index.html
 msgid "name"
 msgstr "Name"
 
+#: static/index.html
 msgid "no module commands"
 msgstr "keine Modulbefehle"
 
+#: static/index.html
 msgid "offline"
 msgstr "offline"
 
+#: static/index.html
 msgid "origin"
 msgstr "Herkunft"
 
+#: static/index.html
 msgid "outcome"
 msgstr "Ergebnis"
 
+#: static/index.html
 msgid "pause"
 msgstr "pausieren"
 
+#: static/index.html
 msgid "payload"
 msgstr "Nutzdaten"
 
+#: static/index.html
 msgid "precedence: CLI > environment > kdx.local.yml > kdx.yml > defaults; secrets are masked"
 msgstr "Vorrang: CLI > Umgebung > kdx.local.yml > kdx.yml > Standardwerte; Geheimnisse sind maskiert"
 
+#: static/index.html
 msgid "reloaded: nothing changed"
 msgstr "neu geladen: nichts geändert"
 
+#: static/index.html
 msgid "running"
 msgstr "läuft"
 
+#: static/index.html
 msgid "runs"
 msgstr "Läufe"
 
+#: static/index.html
 msgid "show routine (tick, heartbeat, tasks)"
 msgstr "Routine anzeigen (Tick, Heartbeat, Aufgaben)"
 
+#: static/index.html
 msgid "source"
 msgstr "Quelle"
 
+#: static/index.html
 msgid "starting…"
 msgstr "startet…"
 
+#: static/index.html
 msgid "state"
 msgstr "Status"
 
+#: static/index.html
 msgid "task"
 msgstr "Aufgabe"
 
+#: static/index.html
 msgid "terminal"
 msgstr "Terminal"
 
+#: static/index.html
 msgid "time"
 msgstr "Zeit"
 
+#: static/index.html
 msgid "token"
 msgstr "Token"
 
+#: static/index.html
 msgid "user"
 msgstr "Benutzer"
 
+#: static/index.html
 msgid "value"
 msgstr "Wert"
 
+#: static/index.html
 msgid "version"
 msgstr "Version"
 
+#: static/index.html
 msgid "who this token belongs to"
 msgstr "wem dieser Token gehört"
 
+#: static/modules.js static/index.html
 msgid "Customize"
 msgstr "Anpassen"
 
+#: static/modules.js static/index.html
 msgid "Rename, hide and reorder tabs and panels; add your own buttons"
 msgstr "Tabs und Panels umbenennen, ausblenden und neu ordnen; eigene Schaltflächen hinzufügen"
 
+#: static/modules.js static/index.html
 msgid "Shortcuts"
 msgstr "Verknüpfungen"
 
+#: static/modules.js static/index.html
 msgid "Your shortcuts"
 msgstr "Deine Verknüpfungen"
 
+#: static/modules.js static/index.html
 msgid "Add a shortcut"
 msgstr "Verknüpfung hinzufügen"
 
+#: static/modules.js static/index.html
 msgid "button label"
 msgstr "Beschriftung der Schaltfläche"
 
+#: static/modules.js static/index.html
 msgid "arguments, e.g. days=30, dry_run=true"
 msgstr "Argumente, z. B. days=30, dry_run=true"
 
+#: static/modules.js static/index.html
 msgid "Ask before running"
 msgstr "Vor dem Ausführen nachfragen"
 
+#: static/modules.js static/index.html
 msgid "Add"
 msgstr "Hinzufügen"
 
+#: static/modules.js static/index.html
 msgid "Pinned defaults"
 msgstr "Fixierte Standardwerte"
 
+#: static/modules.js static/index.html
 msgid "Reset layout"
 msgstr "Layout zurücksetzen"
 
+#: static/modules.js static/index.html
 msgid "Forget the remembered layout, labels, shortcuts and form values (pinned defaults stay)"
 msgstr "Gemerktes Layout, Beschriftungen, Verknüpfungen und Formularwerte vergessen (fixierte Standardwerte bleiben)"
 
+#: static/modules.js static/index.html
 msgid "Up"
 msgstr "Nach oben"
 
+#: static/modules.js static/index.html
 msgid "Down"
 msgstr "Nach unten"
 
+#: static/modules.js static/index.html
 msgid "Show"
 msgstr "Einblenden"
 
+#: static/modules.js static/index.html
 msgid "Hide"
 msgstr "Ausblenden"
 
+#: static/modules.js static/index.html
 msgid "Remove"
 msgstr "Entfernen"
 
+#: static/modules.js static/index.html
 msgid "Save as default"
 msgstr "Als Standard speichern"
 
+#: static/modules.js static/index.html
 msgid "Restore defaults"
 msgstr "Standardwerte wiederherstellen"
 
+#: static/modules.js static/index.html
 msgid "Clear default"
 msgstr "Standard löschen"
 
+#: static/modules.js static/index.html
 msgid "Nothing to show."
 msgstr "Nichts anzuzeigen."
 
+#: static/modules.js static/index.html
 msgid "No shortcuts yet. Use Customize, then add one below."
 msgstr "Noch keine Verknüpfungen. Wähle Anpassen und füge unten eine hinzu."
 
+#: static/modules.js static/index.html
 msgid "No pinned defaults."
 msgstr "Keine fixierten Standardwerte."
 
+#: static/modules.js static/index.html
 msgid "Default saved"
 msgstr "Standard gespeichert"
 
+#: static/modules.js static/index.html
 msgid "Layout reset"
 msgstr "Layout zurückgesetzt"
 
+#: static/modules.js static/index.html
 msgid "Click again to run"
 msgstr "Zum Ausführen erneut klicken"
 
+#: static/modules.js static/index.html
 msgid "Click again to reset"
 msgstr "Zum Zurücksetzen erneut klicken"
 
+#: static/modules.js static/index.html
 msgid "this command is not available to you here"
 msgstr "dieser Befehl steht dir hier nicht zur Verfügung"
 
+#: static/modules.js static/index.html
 msgid "unknown command"
 msgstr "unbekannter Befehl"
 
+#: static/modules.js
 msgid "Details"
 msgstr "Details"
 
+#: static/modules.js
 msgid "Close"
 msgstr "Schließen"
 
+#: static/modules.js
 msgid "Reset"
 msgstr "Zurücksetzen"
 
+#: static/modules.js
 msgid "Save changes"
 msgstr "Änderungen speichern"
 
+#: static/modules.js
 msgid "Nothing changed"
 msgstr "Nichts geändert"
 
+#: static/modules.js
 msgid "Settings saved"
 msgstr "Einstellungen gespeichert"
 
+#: static/modules.js
 msgid "applies live"
 msgstr "wirkt sofort"
 
+#: static/modules.js
 msgid "needs restart"
 msgstr "braucht Neustart"
 
+#: static/modules.js
 msgid "overridden by environment or CLI"
 msgstr "von Umgebung oder CLI überschrieben"
 
+#: static/modules.js
 msgid "secret: set it in .env"
 msgstr "geheim: in .env setzen"
 
+#: static/modules.js
 msgid "applied now"
 msgstr "sofort angewendet"
 
+#: static/modules.js
 msgid "saved; needs a restart"
 msgstr "gespeichert; Neustart nötig"
 
+#: static/modules.js
 msgid "saved, but a higher layer still wins"
 msgstr "gespeichert, aber eine höhere Ebene gewinnt weiterhin"
 
+#: static/modules.js
 msgid "saved"
 msgstr "gespeichert"
 
+#: static/modules.js
 msgid "No declared settings."
 msgstr "Keine deklarierten Einstellungen."
 
+#: static/modules.js
 msgid "Saving needs the admin role."
 msgstr "Speichern erfordert die Rolle admin."
+
+#: static/shell.js
+msgid "Search"
+msgstr "Suchen"
+
+#: static/shell.js
+msgid "Command palette"
+msgstr "Befehlspalette"
+
+#: static/shell.js
+msgid "Command palette (Ctrl+K)"
+msgstr "Befehlspalette (Strg+K)"
+
+#: static/shell.js
+msgid "Show or hide panels"
+msgstr "Panels ein- oder ausblenden"
+
+#: static/shell.js
+msgid "Theme"
+msgstr "Theme"
+
+#: static/shell.js
+msgid "Classic console"
+msgstr "Klassische Konsole"
+
+#: static/shell.js
+msgid "The classic console: commands, logs, config, events"
+msgstr "Die klassische Konsole: Befehle, Logs, Konfiguration, Ereignisse"
+
+#: static/shell.js
+msgid "Areas"
+msgstr "Bereiche"
+
+#: static/shell.js
+msgid "Side list"
+msgstr "Seitenliste"
+
+#: static/shell.js
+msgid "Collapse all"
+msgstr "Alle einklappen"
+
+#: static/shell.js
+msgid "Resize side list. Arrow keys change the width, double click resets"
+msgstr "Seitenliste in der Größe ändern. Pfeiltasten ändern die Breite, Doppelklick setzt zurück"
+
+#: static/shell.js
+msgid "Main surface"
+msgstr "Hauptfläche"
+
+#: static/shell.js
+msgid "Resize bottom panel. Arrow keys change the height, double click resets"
+msgstr "Unteres Panel in der Größe ändern. Pfeiltasten ändern die Höhe, Doppelklick setzt zurück"
+
+#: static/shell.js
+msgid "Bottom panel"
+msgstr "Unteres Panel"
+
+#: static/shell.js
+msgid "Docked"
+msgstr "Angedockt"
+
+#: static/shell.js
+msgid "Resize inspector. Arrow keys change the width, double click resets"
+msgstr "Inspektor in der Größe ändern. Pfeiltasten ändern die Breite, Doppelklick setzt zurück"
+
+#: static/shell.js
+msgid "Inspector"
+msgstr "Inspektor"
+
+#: static/shell.js
+msgid "Open the shell with \"kdx ui --shell\", or paste a token."
+msgstr "Öffne die Shell mit \"kdx ui --shell\" oder füge einen Token ein."
+
+#: static/shell.js
+msgid "Type to find an area, a panel or an action"
+msgstr "Tippen, um einen Bereich, ein Panel oder eine Aktion zu finden"
+
+#: static/shell.js
+msgid "Keyboard shortcuts"
+msgstr "Tastenkürzel"
+
+#: static/shell.js
+msgid "Ribbon"
+msgstr "Symbolleiste"
+
+#: static/shell.js
+msgid "Split view (Ctrl+\\)"
+msgstr "Geteilte Ansicht (Strg+\\)"
+
+#: static/shell.js
+msgid "Focus: hide or show all panels"
+msgstr "Fokus: alle Panels aus- oder einblenden"
+
+#: static/shell.js
+msgid "Expand or shrink the ribbon"
+msgstr "Symbolleiste erweitern oder verkleinern"
+
+#: static/shell.js
+msgid "Panels"
+msgstr "Panels"
+
+#: static/shell.js
+msgid "Classic console (commands, events, audit)"
+msgstr "Klassische Konsole (Befehle, Ereignisse, Audit)"
+
+#: static/shell.js
+msgid "This area declares nothing to list."
+msgstr "Dieser Bereich deklariert nichts zum Auflisten."
+
+#: static/shell.js
+msgid "Loading…"
+msgstr "Wird geladen…"
+
+#: static/shell.js
+msgid "Nothing here."
+msgstr "Hier ist nichts."
+
+#: static/shell.js
+msgid "Select an item to see its properties."
+msgstr "Wähle ein Element, um seine Eigenschaften zu sehen."
+
+#: static/shell.js
+msgid "Close {title}"
+msgstr "{title} schließen"
+
+#: static/shell.js
+msgid "Pick something in the side list. Every panel a module declares in its [ui] table appears here, with no GUI code."
+msgstr "Wähle etwas in der Seitenliste. Jedes Panel, das ein Modul in seiner [ui]-Tabelle deklariert, erscheint hier, ohne GUI-Code."
+
+#: static/shell.js
+msgid "Nothing is docked in this area. A module can dock a panel here with dock = \"bottom\"."
+msgstr "In diesem Bereich ist nichts angedockt. Ein Modul kann hier mit dock = \"bottom\" ein Panel andocken."
+
+#: static/shell.js
+msgid "Unknown panel type {type}."
+msgstr "Unbekannter Panel-Typ {type}."
+
+#: static/shell.js
+msgid "Click again to cancel"
+msgstr "Zum Abbrechen erneut klicken"
+
+#: static/shell.js
+msgid "unknown command: {command}"
+msgstr "unbekannter Befehl: {command}"
+
+#: static/shell.js
+msgid "(default)"
+msgstr "(Standard)"
+
+#: static/shell.js
+msgid "default: {value}"
+msgstr "Standard: {value}"
+
+#: static/shell.js
+msgid "Themes are CSS token files: built in, <project>/themes/ and data/ui/themes/. In the terminal: kdx ui theme list | set | check."
+msgstr "Themes sind CSS-Token-Dateien: eingebaut, <project>/themes/ und data/ui/themes/. Im Terminal: kdx ui theme list | set | check."
+
+#: static/shell.js
+msgid "Drag a splitter, or focus it and use the arrow keys. In the terminal: kdx ui layout show | set | reset."
+msgstr "Ziehe einen Teiler oder fokussiere ihn und nutze die Pfeiltasten. Im Terminal: kdx ui layout show | set | reset."
+
+#: static/shell.js
+msgid "{pane} (px)"
+msgstr "{pane} (px)"
+
+#: static/shell.js
+msgid "{pane} size"
+msgstr "Größe: {pane}"
+
+#: static/shell.js
+msgid "side"
+msgstr "Seitenliste"
+
+#: static/shell.js
+msgid "bottom"
+msgstr "unteres Panel"
+
+#: static/shell.js
+msgid "inspector"
+msgstr "Inspektor"
+
+#: static/shell.js
+msgid "Area"
+msgstr "Bereich"
+
+#: static/shell.js
+msgid "Panel"
+msgstr "Panel"
+
+#: static/shell.js
+msgid "View"
+msgstr "Ansicht"
+
+#: static/shell.js
+msgid "Help"
+msgstr "Hilfe"
+
+#: static/shell.js
+msgid "Show or hide the ribbon"
+msgstr "Symbolleiste ein- oder ausblenden"
+
+#: static/shell.js
+msgid "Show or hide the side list"
+msgstr "Seitenliste ein- oder ausblenden"
+
+#: static/shell.js
+msgid "Show or hide the bottom panel"
+msgstr "Unteres Panel ein- oder ausblenden"
+
+#: static/shell.js
+msgid "Show or hide the inspector"
+msgstr "Inspektor ein- oder ausblenden"
+
+#: static/shell.js
+msgid "Split view: off, side by side, stacked"
+msgstr "Geteilte Ansicht: aus, nebeneinander, untereinander"
+
+#: static/shell.js
+msgid "Theme: {name}"
+msgstr "Theme: {name}"
+
+#: static/shell.js
+msgid "Nothing matches."
+msgstr "Nichts passt."
+
+#: static/shell.js
+msgid "Split the main surface: off, side by side, stacked"
+msgstr "Hauptfläche teilen: aus, nebeneinander, untereinander"
+
+#: static/shell.js
+msgid "This list"
+msgstr "Diese Liste"
+
+#: static/shell.js
+msgid "Close the palette or this list"
+msgstr "Palette oder diese Liste schließen"
+
+#: static/shell.js
+msgid "Resize a focused splitter by 12 px"
+msgstr "Einen fokussierten Teiler um 12 px ändern"
+
+#: static/shell.js
+msgid "Arrow keys"
+msgstr "Pfeiltasten"
+
+#: static/shell.js
+msgid "layout not saved: {reason}"
+msgstr "Layout nicht gespeichert: {reason}"
+
+#: static/shell.js
+msgid "layout saved"
+msgstr "Layout gespeichert"
+
+#: static/shell.js
+msgid "theme: {name}"
+msgstr "Theme: {name}"
+
+#: static/shell.js
+msgid "anonymous"
+msgstr "anonym"
+
+#: static/shell.js
+msgid "System"
+msgstr "System"
+
+#: static/shell.js
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: static/shell.js
+msgid "Status"
+msgstr "Status"
+
+#: static/shell.js
+msgid "Appearance"
+msgstr "Darstellung"
+
+#: static/shell.js
+msgid "Layout"
+msgstr "Layout"

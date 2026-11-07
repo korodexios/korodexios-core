@@ -40,7 +40,8 @@ SECTIONS = ("nav", "panels", "buttons", "values", "defaults", "settings", "layou
 PANES = ("ribbon", "side", "bottom", "inspector")
 PANE_LIMITS = {"side": (120, 600), "bottom": (60, 800), "inspector": (160, 700)}
 RIBBON_MODES = ("icons", "labels")
-LAYOUT_KEYS = ("sizes", "hidden", "ribbon", "open", "area")
+SPLIT_MODES = ("off", "vertical", "horizontal")
+LAYOUT_KEYS = ("sizes", "hidden", "ribbon", "split", "open", "area")
 MAX_OPEN_NODES = 200
 MAX_BYTES = 64 * 1024
 MAX_ITEMS = 200
@@ -349,6 +350,11 @@ def _layout(value: Any) -> dict[str, Any]:
         if ribbon not in RIBBON_MODES:
             raise PrefsError(f"layout.ribbon must be one of: {', '.join(RIBBON_MODES)}")
         result["ribbon"] = ribbon
+    split = value.get("split")
+    if split not in (None, ""):
+        if split not in SPLIT_MODES:
+            raise PrefsError(f"layout.split must be one of: {', '.join(SPLIT_MODES)}")
+        result["split"] = split
     opened = value.get("open")
     if opened not in (None, []):
         if (

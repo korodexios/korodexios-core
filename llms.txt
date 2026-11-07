@@ -650,11 +650,17 @@ declare `[[ui.sections]]` (`id`, `title`, `tree` route, `empty` text: one collap
 in the side list), and mark a panel `dock = "bottom"` or `locked = true`. A tree route answers
 `{"nodes": [...]}` built with `kernel/ui_tree.py` (`id`, `label`, `meta`, `tone`,
 `has_children`, `opens`); a node with `has_children` is asked again with `?parent=<id>`. The
-person's window shape lives in prefs `layout` (`sizes`, `hidden`, `ribbon`, `open`, `area`;
+person's window shape lives in prefs `layout` (`sizes`, `hidden`, `ribbon`, `split`, `open`, `area`;
 `kdx ui layout show|set|reset`). Colours are one token set: `GET /api/v1/ui/theme` returns the
 active theme's tokens and a `:root` rule with `--kdx-*` variables plus the older aliases
 (`--fg`, `--muted`, `--acc` ...); a theme is a `.css` or `.json` file in `<root>/themes/` or
-`data/ui/themes/` (`kdx ui theme list|show|set|check`, contrast AA 4.5:1 or AAA 7:1).
+`data/ui/themes/` (`kdx ui theme list|show|set|check`, contrast AA 4.5:1 or AAA 7:1). The ribbon
+icon is a name from a general set a module puts in `[ui] icon` (`home`, `list`, `document`,
+`folder`, `search`, `task`, `shield`, `chip`, `pulse`, `chart`, `database`, `bell`, `user`,
+`play`; an unknown name draws a neutral one). The shell has a command palette (`Ctrl+K`), a
+shortcut sheet (`?`), a split main surface (the backslash key with `Ctrl`) and a language selector; its texts come
+from the `korodexios-web` catalogue. The core names no project: a project adapts the shell
+through its own `[ui]`, themes and layout.
 
 ## 9. Configuration Precedence and Discovery
 

@@ -212,3 +212,27 @@ button.danger { color: var(--kdx-bad); border-color: var(--kdx-bad); }
 .run pre.log { padding: 6px 0; max-height: 240px; }
 .detail { margin-top: 12px; }
 .field input[type="checkbox"] { align-self: flex-start; }
+
+/* split panes */
+.surfaces { flex: 1; min-height: 0; display: flex; }
+.surfaces.horizontal { flex-direction: column; }
+.surfaces .surface { flex: 1; min-width: 0; min-height: 0; }
+.surfaces.vertical #surface, .surfaces.horizontal #surface { border-right: 0; }
+.surfaces.vertical #surface { border-right: 1px solid var(--kdx-line); }
+.surfaces.horizontal #surface { border-bottom: 1px solid var(--kdx-line); }
+.surfaces.vertical .surface.focused, .surfaces.horizontal .surface.focused { box-shadow: inset 0 2px 0 var(--kdx-accent); }
+
+/* palette and shortcut sheet */
+.palette-button { display: flex; align-items: center; gap: 8px; width: 260px; height: 28px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--kdx-line); background: var(--kdx-bg); color: var(--kdx-muted); font-size: 13px; }
+.palette-button span:nth-child(2) { flex: 1; text-align: left; }
+kbd { font: 12px var(--mono); padding: 1px 5px; border: 1px solid var(--kdx-line); border-radius: 4px; color: var(--kdx-muted); }
+.overlay { position: fixed; inset: 0; z-index: 30; display: flex; justify-content: center; align-items: flex-start; padding-top: 12vh; background: rgba(0, 0, 0, .45); }
+.dialog { width: min(560px, 92vw); max-height: 70vh; overflow: auto; border: 1px solid var(--kdx-line); border-radius: 10px; background: var(--kdx-panel); padding: 12px; box-shadow: 0 16px 48px rgba(0, 0, 0, .5); }
+.dialog input { width: 100%; height: 36px; font-size: 15px; }
+.palette-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.palette-list li { display: flex; gap: 10px; align-items: center; padding: 7px 10px; border-radius: 6px; cursor: pointer; }
+.palette-list li[aria-selected="true"] { background: var(--kdx-sel); color: var(--kdx-accent); }
+.palette-list .kind { flex: none; width: 64px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--kdx-muted); }
+
+@media (max-width: 1099px) { .palette-button { width: 36px; } .palette-button span:nth-child(n+2) { display: none; } }
+@media (max-width: 699px) { #surface-b, .toggle[data-pane="split"] { display: none !important; } .surfaces { flex-direction: column; } }

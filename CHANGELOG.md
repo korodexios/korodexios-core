@@ -5,6 +5,19 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Added
+
+- Shell: command palette (`Ctrl+K`: areas, panels, view toggles, themes), shortcut sheet (`?`),
+  split main surface (off, side by side, stacked; prefs `layout.split`, `kdx ui layout set
+  --split`), language selector, and every shell text in the `korodexios-web` catalogue (sk, cs, de,
+  es, fr, pl; machine translations, not reviewed by a native speaker).
+
+### Changed
+
+- The shell's icon names are a general set (`home`, `list`, `document`, `folder`, `task`, `shield`,
+  `chip`, `pulse`, `chart`, `database`, `bell`, `user`, `play`, `search`); the core names no
+  project, and a test keeps the shell files free of project names.
+
 ## [0.6.4] - 2026-11-07
 
 ### Added

@@ -610,6 +610,10 @@ msgstr "Liste, et avec --apply supprime, les données de développement jetables
 msgid "Logging"
 msgstr "Journalisation"
 
+#: modules/web_console/module.py
+msgid "Main surface in one pane (off) or two panes side by side or stacked."
+msgstr "Zone principale en un seul volet (off) ou en deux, côte à côte ou empilés."
+
 #: cli/users.py
 msgid "Manage named control-plane users and their roles."
 msgstr "Gère les utilisateurs nommés du plan de contrôle et leurs rôles."
@@ -2171,8 +2175,8 @@ msgid "nothing found for {query}"
 msgstr "rien trouvé pour {query}"
 
 #: modules/web_console/module.py
-msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
-msgstr "rien à changer : donne --side, --bottom, --inspector, --hide, --show ou --ribbon"
+msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show, --ribbon or --split"
+msgstr "rien à changer : donne --side, --bottom, --inspector, --hide, --show, --ribbon ou --split"
 
 #: cli/container_doctor.py
 msgid "nothing to fix: a rootless engine has the ids it needs"
@@ -3133,6 +3137,9 @@ msgstr "{verb} ; ce jeton n'est affiché qu'une fois - transmettez-le en privé"
 
 #~ msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
 #~ msgstr "nav, panels, buttons, values, defaults, settings ; sans argument : tout sauf defaults."
+
+#~ msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
+#~ msgstr "rien à changer : donne --side, --bottom, --inspector, --hide, --show ou --ribbon"
 
 #~ msgid "python | fullstack"
 #~ msgstr "python | fullstack"

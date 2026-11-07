@@ -705,7 +705,7 @@ kdx ui prefs show [--user NAME] [--json]     # what a person changed in the inte
 kdx ui prefs patch '{"settings":{"theme":"dark"}}' [--user NAME]
 kdx ui prefs reset [SECTION ...] [--user NAME]   # no section: all but pinned defaults
 kdx ui layout show [--user NAME] [--json]        # pane sizes, hidden panes, ribbon mode
-kdx ui layout set [--side PX] [--bottom PX] [--inspector PX] [--hide PANES] [--show PANES]
+kdx ui layout set [--side PX] [--bottom PX] [--inspector PX] [--hide PANES] [--show PANES] [--split off|vertical|horizontal]
                   [--ribbon icons|labels] [--user NAME]   # PANES: ribbon,side,bottom,inspector,all
 kdx ui layout reset [--user NAME]
 kdx ui theme list|show [NAME] [--css]|set NAME [--user NAME]   # built in + themes/ + per user

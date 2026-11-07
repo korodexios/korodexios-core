@@ -68,9 +68,9 @@ def test_layout_refuses_nonsense(layout: object) -> None:
 
 def test_layout_keeps_open_nodes_unique_and_hidden_in_pane_order() -> None:
     clean = validate_prefs(
-        {"layout": {"open": ["a", "b", "a"], "hidden": ["inspector", "ribbon"], "area": "review"}}
+        {"layout": {"open": ["a", "b", "a"], "hidden": ["inspector", "ribbon"], "area": "items"}}
     )["layout"]
-    assert clean == {"open": ["a", "b"], "hidden": ["ribbon", "inspector"], "area": "review"}
+    assert clean == {"open": ["a", "b"], "hidden": ["ribbon", "inspector"], "area": "items"}
 
 
 def test_pane_list_understands_all_and_rejects_unknown() -> None:
@@ -93,13 +93,13 @@ def test_manifest_carries_position_badge_sections_and_dock() -> None:
     manifest = build_manifest(
         [
             (
-                "review",
+                "items",
                 {
                     "position": "bottom",
                     "badge": "/api/v1/x/count",
                     "sections": [
-                        {"id": "cases", "title": "Cases", "tree": "/api/v1/x/tree"},
-                        {"id": "tiers", "tree": "/api/v1/x/tiers", "empty": "None"},
+                        {"id": "groups", "title": "Groups", "tree": "/api/v1/x/tree"},
+                        {"id": "labels", "tree": "/api/v1/x/labels", "empty": "None"},
                     ],
                     "panels": [
                         {"id": "player", "type": "text", "text": "x", "dock": "bottom",
@@ -112,8 +112,8 @@ def test_manifest_carries_position_badge_sections_and_dock() -> None:
     )
     entry = manifest["modules"][0]
     assert entry["position"] == "bottom" and entry["badge"] == "/api/v1/x/count"
-    assert [s["id"] for s in entry["sections"]] == ["cases", "tiers"]
-    assert entry["sections"][1]["title"] == "tiers" and entry["sections"][1]["empty"] == "None"
+    assert [s["id"] for s in entry["sections"]] == ["groups", "labels"]
+    assert entry["sections"][1]["title"] == "labels" and entry["sections"][1]["empty"] == "None"
     player, plain = entry["panels"]
     assert player["dock"] == "bottom" and player["locked"] is True
     assert "dock" not in plain and "locked" not in plain
@@ -171,16 +171,16 @@ def test_bad_dock_is_reported_and_ignored() -> None:
 def test_tree_nodes_are_checked_and_unique() -> None:
     payload = nodes_payload(
         [
-            {"id": "c1", "label": "Case 1", "meta": "review", "tone": "warn",
-             "has_children": True, "opens": "case-detail"},
-            {"id": "c2", "label": "Case 2"},
+            {"id": "c1", "label": "Item 1", "meta": "pending", "tone": "warn",
+             "has_children": True, "opens": "item-detail"},
+            {"id": "c2", "label": "Item 2"},
         ]
     )
     assert payload["nodes"][0] == {
-        "id": "c1", "label": "Case 1", "meta": "review", "tone": "warn",
-        "has_children": True, "opens": "case-detail",
+        "id": "c1", "label": "Item 1", "meta": "pending", "tone": "warn",
+        "has_children": True, "opens": "item-detail",
     }
-    assert payload["nodes"][1] == {"id": "c2", "label": "Case 2"}
+    assert payload["nodes"][1] == {"id": "c2", "label": "Item 2"}
     for bad in (
         lambda: node("a b", "x"),
         lambda: node("a", ""),
@@ -358,3 +358,32 @@ def test_console_url_can_point_at_the_shell() -> None:
     )
     assert console_url(discovery).endswith("/ui/#token=tok")
     assert console_url(discovery, SHELL_PAGE).endswith("/ui/shell.html#token=tok")
+
+
+def test_split_layout_is_validated_and_set_from_the_terminal(project_root, capsys) -> None:
+    assert validate_prefs({"layout": {"split": "vertical"}})["layout"] == {"split": "vertical"}
+    for bad in ("diagonal", 3):
+        with pytest.raises(PrefsError):
+            validate_prefs({"layout": {"split": bad}})
+    base = [*base_args(project_root), "ui", "layout"]
+    assert main([*base, "set", "--split", "horizontal", "--user", "t"]) == 0
+    capsys.readouterr()
+    assert main([*base, "show", "--user", "t", "--json"]) == 0
+    assert json.loads(capsys.readouterr().out) == {"split": "horizontal"}
+    assert main([*base, "reset", "--user", "t"]) == 0
+
+
+def test_shell_files_stay_project_neutral_and_have_palette_split_and_language() -> None:
+    from korodexios_core.modules.web_console.module import STATIC_DIR
+
+    page = (STATIC_DIR / "shell.html").read_text(encoding="utf-8")
+    script = (STATIC_DIR / "shell.js").read_text(encoding="utf-8")
+    for needle in ("palette", "shortcuts", "surface-b", 'id="lang"'):
+        assert needle in page, needle
+    for needle in ("openPalette", "setSplit", "loadI18n", "/api/v1/ui/i18n"):
+        assert needle in script, needle
+    # the core ships tools; it names no project that uses them
+    for name in ("shell.html", "shell.js", "shell.css"):
+        text = (STATIC_DIR / name).read_text(encoding="utf-8").lower()
+        for word in ("assay", "sonus", "dosage"):
+            assert word not in text, (name, word)

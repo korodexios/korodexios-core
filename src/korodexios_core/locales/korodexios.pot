@@ -608,6 +608,10 @@ msgstr ""
 msgid "Logging"
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Main surface in one pane (off) or two panes side by side or stacked."
+msgstr ""
+
 #: cli/users.py
 msgid "Manage named control-plane users and their roles."
 msgstr ""
@@ -2169,7 +2173,7 @@ msgid "nothing found for {query}"
 msgstr ""
 
 #: modules/web_console/module.py
-msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
+msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show, --ribbon or --split"
 msgstr ""
 
 #: cli/container_doctor.py

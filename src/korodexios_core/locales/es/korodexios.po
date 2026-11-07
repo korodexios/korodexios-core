@@ -610,6 +610,10 @@ msgstr "Lista y, con --apply, elimina los datos de desarrollo desechables."
 msgid "Logging"
 msgstr "Registro"
 
+#: modules/web_console/module.py
+msgid "Main surface in one pane (off) or two panes side by side or stacked."
+msgstr "Superficie principal en un panel (off) o en dos, lado a lado o apilados."
+
 #: cli/users.py
 msgid "Manage named control-plane users and their roles."
 msgstr "Gestiona los usuarios con nombre del plano de control y sus roles."
@@ -2171,8 +2175,8 @@ msgid "nothing found for {query}"
 msgstr "nada encontrado para {query}"
 
 #: modules/web_console/module.py
-msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
-msgstr "nada que cambiar: indica --side, --bottom, --inspector, --hide, --show o --ribbon"
+msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show, --ribbon or --split"
+msgstr "nada que cambiar: indica --side, --bottom, --inspector, --hide, --show, --ribbon o --split"
 
 #: cli/container_doctor.py
 msgid "nothing to fix: a rootless engine has the ids it needs"
@@ -3133,6 +3137,9 @@ msgstr "{verb}; este token solo se muestra ahora - entrégalo en privado"
 
 #~ msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
 #~ msgstr "nav, panels, buttons, values, defaults, settings; sin indicar, todo menos defaults."
+
+#~ msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
+#~ msgstr "nada que cambiar: indica --side, --bottom, --inspector, --hide, --show o --ribbon"
 
 #~ msgid "python | fullstack"
 #~ msgstr "python | fullstack"

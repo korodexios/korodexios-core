@@ -1,345 +1,743 @@
+# Translation of the korodexios-web domain into sk.
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
+"Language: sk
+"
+"Content-Type: text/plain; charset=UTF-8
+"
 
+#: static/index.html
 msgid "Audit"
 msgstr "Audit"
 
+#: static/index.html
 msgid "Cancel"
 msgstr "Zrušiť"
 
+#: static/index.html
 msgid "Commands"
 msgstr "Príkazy"
 
+#: static/index.html
 msgid "Config"
 msgstr "Konfigurácia"
 
+#: static/index.html
 msgid "Connect"
 msgstr "Pripojiť"
 
+#: static/index.html
 msgid "Diagnostics"
 msgstr "Diagnostika"
 
+#: static/index.html
 msgid "Events"
 msgstr "Udalosti"
 
+#: static/index.html
 msgid "Language"
 msgstr "Jazyk"
 
+#: static/index.html
 msgid "Logs"
 msgstr "Logy"
 
+#: static/index.html
 msgid "Modules"
 msgstr "Moduly"
 
+#: static/index.html
 msgid "No records yet."
 msgstr "Zatiaľ žiadne záznamy."
 
+#: static/index.html
 msgid "Overview"
 msgstr "Prehľad"
 
+#: static/index.html
 msgid "Pick a command on the left. Every module command appears here automatically, with a form built from its declared arguments."
 msgstr "Vyberte príkaz vľavo. Každý príkaz modulu sa tu objaví automaticky s formulárom zostaveným z jeho argumentov."
 
+#: static/index.html
 msgid "Re-read configuration (kdx reload)"
 msgstr "Znova načítať konfiguráciu (kdx reload)"
 
+#: static/index.html
 msgid "Refresh"
 msgstr "Obnoviť"
 
+#: static/index.html
 msgid "Refresh everything"
 msgstr "Obnoviť všetko"
 
+#: static/index.html
 msgid "Reload config"
 msgstr "Načítať konfiguráciu"
 
+#: static/index.html
 msgid "Run"
 msgstr "Spustiť"
 
+#: static/index.html
 msgid "Scheduled tasks"
 msgstr "Plánované úlohy"
 
+#: static/index.html
 msgid "Session token needed"
 msgstr "Treba token relácie"
 
+#: static/index.html
 msgid "Stop daemon"
 msgstr "Zastaviť démona"
 
+#: static/index.html
 msgid "Stop the daemon (exit 0)"
 msgstr "Zastaviť démona (exit 0)"
 
+#: static/index.html
 msgid "action"
 msgstr "akcia"
 
+#: static/index.html
 msgid "changes"
 msgstr "mení"
 
+#: static/index.html
 msgid "command"
 msgstr "príkaz"
 
+#: static/index.html
 msgid "commands"
 msgstr "príkazy"
 
+#: static/index.html
 msgid "connecting…"
 msgstr "pripájanie…"
 
+#: static/index.html
 msgid "daemon is stopping"
 msgstr "démon sa zastavuje"
 
+#: static/index.html
 msgid "description"
 msgstr "popis"
 
+#: static/index.html
 msgid "event"
 msgstr "udalosť"
 
+#: static/index.html
 msgid "failures"
 msgstr "zlyhania"
 
+#: static/index.html
 msgid "filter"
 msgstr "filter"
 
+#: static/index.html
 msgid "filter audit"
 msgstr "filtrovať audit"
 
+#: static/index.html
 msgid "filter by user, action, command"
 msgstr "filtrovať podľa používateľa, akcie, príkazu"
 
+#: static/index.html
 msgid "filter commands"
 msgstr "filtrovať príkazy"
 
+#: static/index.html
 msgid "filter events"
 msgstr "filtrovať udalosti"
 
+#: static/index.html
 msgid "filter keys"
 msgstr "filtrovať kľúče"
 
+#: static/index.html
 msgid "filter keys, e.g. core.ipc."
 msgstr "filtrovať kľúče, napr. core.ipc."
 
+#: static/index.html
 msgid "filter log lines"
 msgstr "filtrovať riadky logu"
 
+#: static/index.html
 msgid "follow"
 msgstr "sledovať"
 
+#: static/index.html
 msgid "from"
 msgstr "odkiaľ"
 
+#: static/index.html
 msgid "interval"
 msgstr "interval"
 
+#: static/index.html
 msgid "key"
 msgstr "kľúč"
 
+#: static/index.html
 msgid "last error"
 msgstr "posledná chyba"
 
+#: static/index.html
 msgid "lines"
 msgstr "riadky"
 
+#: static/index.html
 msgid "module"
 msgstr "modul"
 
+#: static/index.html
 msgid "name"
 msgstr "názov"
 
+#: static/index.html
 msgid "no module commands"
 msgstr "žiadne príkazy modulov"
 
+#: static/index.html
 msgid "offline"
 msgstr "offline"
 
+#: static/index.html
 msgid "origin"
 msgstr "pôvod"
 
+#: static/index.html
 msgid "outcome"
 msgstr "výsledok"
 
+#: static/index.html
 msgid "pause"
 msgstr "pozastaviť"
 
+#: static/index.html
 msgid "payload"
 msgstr "dáta"
 
+#: static/index.html
 msgid "precedence: CLI > environment > kdx.local.yml > kdx.yml > defaults; secrets are masked"
 msgstr "poradie: CLI > prostredie > kdx.local.yml > kdx.yml > predvolené; tajné hodnoty sú zamaskované"
 
+#: static/index.html
 msgid "reloaded: nothing changed"
 msgstr "načítané znova: nič sa nezmenilo"
 
+#: static/index.html
 msgid "running"
 msgstr "beží"
 
+#: static/index.html
 msgid "runs"
 msgstr "behy"
 
+#: static/index.html
 msgid "show routine (tick, heartbeat, tasks)"
 msgstr "zobraziť rutinné (tick, heartbeat, úlohy)"
 
+#: static/index.html
 msgid "source"
 msgstr "zdroj"
 
+#: static/index.html
 msgid "starting…"
 msgstr "spúšťa sa…"
 
+#: static/index.html
 msgid "state"
 msgstr "stav"
 
+#: static/index.html
 msgid "task"
 msgstr "úloha"
 
+#: static/index.html
 msgid "terminal"
 msgstr "terminál"
 
+#: static/index.html
 msgid "time"
 msgstr "čas"
 
+#: static/index.html
 msgid "token"
 msgstr "token"
 
+#: static/index.html
 msgid "user"
 msgstr "používateľ"
 
+#: static/index.html
 msgid "value"
 msgstr "hodnota"
 
+#: static/index.html
 msgid "version"
 msgstr "verzia"
 
+#: static/index.html
 msgid "who this token belongs to"
 msgstr "komu patrí tento token"
 
+#: static/modules.js static/index.html
 msgid "Customize"
 msgstr "Prispôsobiť"
 
+#: static/modules.js static/index.html
 msgid "Rename, hide and reorder tabs and panels; add your own buttons"
 msgstr "Premenovať, skryť a preusporiadať karty a panely; pridať vlastné tlačidlá"
 
+#: static/modules.js static/index.html
 msgid "Shortcuts"
 msgstr "Skratky"
 
+#: static/modules.js static/index.html
 msgid "Your shortcuts"
 msgstr "Tvoje skratky"
 
+#: static/modules.js static/index.html
 msgid "Add a shortcut"
 msgstr "Pridať skratku"
 
+#: static/modules.js static/index.html
 msgid "button label"
 msgstr "názov tlačidla"
 
+#: static/modules.js static/index.html
 msgid "arguments, e.g. days=30, dry_run=true"
 msgstr "argumenty, napr. days=30, dry_run=true"
 
+#: static/modules.js static/index.html
 msgid "Ask before running"
 msgstr "Opýtať sa pred spustením"
 
+#: static/modules.js static/index.html
 msgid "Add"
 msgstr "Pridať"
 
+#: static/modules.js static/index.html
 msgid "Pinned defaults"
 msgstr "Pripnuté predvolené hodnoty"
 
+#: static/modules.js static/index.html
 msgid "Reset layout"
 msgstr "Obnoviť rozloženie"
 
+#: static/modules.js static/index.html
 msgid "Forget the remembered layout, labels, shortcuts and form values (pinned defaults stay)"
 msgstr "Zabudnúť zapamätané rozloženie, názvy, skratky a hodnoty formulárov (pripnuté predvolené hodnoty ostanú)"
 
+#: static/modules.js static/index.html
 msgid "Up"
 msgstr "Hore"
 
+#: static/modules.js static/index.html
 msgid "Down"
 msgstr "Dole"
 
+#: static/modules.js static/index.html
 msgid "Show"
 msgstr "Zobraziť"
 
+#: static/modules.js static/index.html
 msgid "Hide"
 msgstr "Skryť"
 
+#: static/modules.js static/index.html
 msgid "Remove"
 msgstr "Odstrániť"
 
+#: static/modules.js static/index.html
 msgid "Save as default"
 msgstr "Uložiť ako predvolené"
 
+#: static/modules.js static/index.html
 msgid "Restore defaults"
 msgstr "Obnoviť predvolené"
 
+#: static/modules.js static/index.html
 msgid "Clear default"
 msgstr "Zrušiť predvolené"
 
+#: static/modules.js static/index.html
 msgid "Nothing to show."
 msgstr "Nie je čo zobraziť."
 
+#: static/modules.js static/index.html
 msgid "No shortcuts yet. Use Customize, then add one below."
 msgstr "Zatiaľ žiadne skratky. Zapni Prispôsobiť a pridaj ju nižšie."
 
+#: static/modules.js static/index.html
 msgid "No pinned defaults."
 msgstr "Žiadne pripnuté predvolené hodnoty."
 
+#: static/modules.js static/index.html
 msgid "Default saved"
 msgstr "Predvolené uložené"
 
+#: static/modules.js static/index.html
 msgid "Layout reset"
 msgstr "Rozloženie obnovené"
 
+#: static/modules.js static/index.html
 msgid "Click again to run"
 msgstr "Klikni znova na spustenie"
 
+#: static/modules.js static/index.html
 msgid "Click again to reset"
 msgstr "Klikni znova na obnovenie"
 
+#: static/modules.js static/index.html
 msgid "this command is not available to you here"
 msgstr "tento príkaz tu nie je pre teba dostupný"
 
+#: static/modules.js static/index.html
 msgid "unknown command"
 msgstr "neznámy príkaz"
 
+#: static/modules.js
 msgid "Details"
 msgstr "Podrobnosti"
 
+#: static/modules.js
 msgid "Close"
 msgstr "Zavrieť"
 
+#: static/modules.js
 msgid "Reset"
 msgstr "Obnoviť pôvodné"
 
+#: static/modules.js
 msgid "Save changes"
 msgstr "Uložiť zmeny"
 
+#: static/modules.js
 msgid "Nothing changed"
 msgstr "Nič sa nezmenilo"
 
+#: static/modules.js
 msgid "Settings saved"
 msgstr "Nastavenia uložené"
 
+#: static/modules.js
 msgid "applies live"
 msgstr "platí hneď"
 
+#: static/modules.js
 msgid "needs restart"
 msgstr "vyžaduje reštart"
 
+#: static/modules.js
 msgid "overridden by environment or CLI"
 msgstr "prepísané prostredím alebo CLI"
 
+#: static/modules.js
 msgid "secret: set it in .env"
 msgstr "tajné: nastav v .env"
 
+#: static/modules.js
 msgid "applied now"
 msgstr "použité hneď"
 
+#: static/modules.js
 msgid "saved; needs a restart"
 msgstr "uložené; vyžaduje reštart"
 
+#: static/modules.js
 msgid "saved, but a higher layer still wins"
 msgstr "uložené, ale vyššia vrstva stále víťazí"
 
+#: static/modules.js
 msgid "saved"
 msgstr "uložené"
 
+#: static/modules.js
 msgid "No declared settings."
 msgstr "Žiadne deklarované nastavenia."
 
+#: static/modules.js
 msgid "Saving needs the admin role."
 msgstr "Ukladanie vyžaduje rolu admin."
+
+#: static/shell.js
+msgid "Search"
+msgstr "Hľadať"
+
+#: static/shell.js
+msgid "Command palette"
+msgstr "Paleta príkazov"
+
+#: static/shell.js
+msgid "Command palette (Ctrl+K)"
+msgstr "Paleta príkazov (Ctrl+K)"
+
+#: static/shell.js
+msgid "Show or hide panels"
+msgstr "Zobraziť alebo skryť panely"
+
+#: static/shell.js
+msgid "Theme"
+msgstr "Téma"
+
+#: static/shell.js
+msgid "Classic console"
+msgstr "Klasická konzola"
+
+#: static/shell.js
+msgid "The classic console: commands, logs, config, events"
+msgstr "Klasická konzola: príkazy, logy, konfigurácia, udalosti"
+
+#: static/shell.js
+msgid "Areas"
+msgstr "Oblasti"
+
+#: static/shell.js
+msgid "Side list"
+msgstr "Bočný zoznam"
+
+#: static/shell.js
+msgid "Collapse all"
+msgstr "Zbaliť všetko"
+
+#: static/shell.js
+msgid "Resize side list. Arrow keys change the width, double click resets"
+msgstr "Zmeniť veľkosť bočného zoznamu. Šípky menia šírku, dvojklik vráti pôvodnú"
+
+#: static/shell.js
+msgid "Main surface"
+msgstr "Hlavná plocha"
+
+#: static/shell.js
+msgid "Resize bottom panel. Arrow keys change the height, double click resets"
+msgstr "Zmeniť veľkosť spodného panela. Šípky menia výšku, dvojklik vráti pôvodnú"
+
+#: static/shell.js
+msgid "Bottom panel"
+msgstr "Spodný panel"
+
+#: static/shell.js
+msgid "Docked"
+msgstr "Pripnuté"
+
+#: static/shell.js
+msgid "Resize inspector. Arrow keys change the width, double click resets"
+msgstr "Zmeniť veľkosť inspektora. Šípky menia šírku, dvojklik vráti pôvodnú"
+
+#: static/shell.js
+msgid "Inspector"
+msgstr "Inspektor"
+
+#: static/shell.js
+msgid "Open the shell with \"kdx ui --shell\", or paste a token."
+msgstr "Otvor shell príkazom \"kdx ui --shell\" alebo vlož token."
+
+#: static/shell.js
+msgid "Type to find an area, a panel or an action"
+msgstr "Píš a nájdi oblasť, panel alebo akciu"
+
+#: static/shell.js
+msgid "Keyboard shortcuts"
+msgstr "Klávesové skratky"
+
+#: static/shell.js
+msgid "Ribbon"
+msgstr "Ikonový pruh"
+
+#: static/shell.js
+msgid "Split view (Ctrl+\\)"
+msgstr "Rozdelené zobrazenie (Ctrl+\\)"
+
+#: static/shell.js
+msgid "Focus: hide or show all panels"
+msgstr "Sústredenie: skryť alebo zobraziť všetky panely"
+
+#: static/shell.js
+msgid "Expand or shrink the ribbon"
+msgstr "Rozbaliť alebo zbaliť ikonový pruh"
+
+#: static/shell.js
+msgid "Panels"
+msgstr "Panely"
+
+#: static/shell.js
+msgid "Classic console (commands, events, audit)"
+msgstr "Klasická konzola (príkazy, udalosti, audit)"
+
+#: static/shell.js
+msgid "This area declares nothing to list."
+msgstr "Táto oblasť nedeklaruje nič na vypísanie."
+
+#: static/shell.js
+msgid "Loading…"
+msgstr "Načítava sa…"
+
+#: static/shell.js
+msgid "Nothing here."
+msgstr "Tu nič nie je."
+
+#: static/shell.js
+msgid "Select an item to see its properties."
+msgstr "Vyber položku a uvidíš jej vlastnosti."
+
+#: static/shell.js
+msgid "Close {title}"
+msgstr "Zavrieť {title}"
+
+#: static/shell.js
+msgid "Pick something in the side list. Every panel a module declares in its [ui] table appears here, with no GUI code."
+msgstr "Vyber niečo v bočnom zozname. Každý panel, ktorý modul deklaruje v tabuľke [ui], sa objaví tu, bez GUI kódu."
+
+#: static/shell.js
+msgid "Nothing is docked in this area. A module can dock a panel here with dock = \"bottom\"."
+msgstr "V tejto oblasti nie je nič pripnuté. Modul tu môže pripnúť panel cez dock = \"bottom\"."
+
+#: static/shell.js
+msgid "Unknown panel type {type}."
+msgstr "Neznámy typ panela {type}."
+
+#: static/shell.js
+msgid "Click again to cancel"
+msgstr "Klikni znova pre zrušenie"
+
+#: static/shell.js
+msgid "unknown command: {command}"
+msgstr "neznámy príkaz: {command}"
+
+#: static/shell.js
+msgid "(default)"
+msgstr "(predvolené)"
+
+#: static/shell.js
+msgid "default: {value}"
+msgstr "predvolené: {value}"
+
+#: static/shell.js
+msgid "Themes are CSS token files: built in, <project>/themes/ and data/ui/themes/. In the terminal: kdx ui theme list | set | check."
+msgstr "Témy sú súbory CSS tokenov: zabudované, <project>/themes/ a data/ui/themes/. V termináli: kdx ui theme list | set | check."
+
+#: static/shell.js
+msgid "Drag a splitter, or focus it and use the arrow keys. In the terminal: kdx ui layout show | set | reset."
+msgstr "Potiahni oddeľovač, alebo ho zaostri a použi šípky. V termináli: kdx ui layout show | set | reset."
+
+#: static/shell.js
+msgid "{pane} (px)"
+msgstr "{pane} (px)"
+
+#: static/shell.js
+msgid "{pane} size"
+msgstr "veľkosť: {pane}"
+
+#: static/shell.js
+msgid "side"
+msgstr "bočný zoznam"
+
+#: static/shell.js
+msgid "bottom"
+msgstr "spodný panel"
+
+#: static/shell.js
+msgid "inspector"
+msgstr "inspektor"
+
+#: static/shell.js
+msgid "Area"
+msgstr "Oblasť"
+
+#: static/shell.js
+msgid "Panel"
+msgstr "Panel"
+
+#: static/shell.js
+msgid "View"
+msgstr "Zobrazenie"
+
+#: static/shell.js
+msgid "Help"
+msgstr "Pomoc"
+
+#: static/shell.js
+msgid "Show or hide the ribbon"
+msgstr "Zobraziť alebo skryť ikonový pruh"
+
+#: static/shell.js
+msgid "Show or hide the side list"
+msgstr "Zobraziť alebo skryť bočný zoznam"
+
+#: static/shell.js
+msgid "Show or hide the bottom panel"
+msgstr "Zobraziť alebo skryť spodný panel"
+
+#: static/shell.js
+msgid "Show or hide the inspector"
+msgstr "Zobraziť alebo skryť inspektor"
+
+#: static/shell.js
+msgid "Split view: off, side by side, stacked"
+msgstr "Rozdelené zobrazenie: vypnuté, vedľa seba, pod sebou"
+
+#: static/shell.js
+msgid "Theme: {name}"
+msgstr "Téma: {name}"
+
+#: static/shell.js
+msgid "Nothing matches."
+msgstr "Nič nevyhovuje."
+
+#: static/shell.js
+msgid "Split the main surface: off, side by side, stacked"
+msgstr "Rozdeliť hlavnú plochu: vypnuté, vedľa seba, pod sebou"
+
+#: static/shell.js
+msgid "This list"
+msgstr "Tento zoznam"
+
+#: static/shell.js
+msgid "Close the palette or this list"
+msgstr "Zavrieť paletu alebo tento zoznam"
+
+#: static/shell.js
+msgid "Resize a focused splitter by 12 px"
+msgstr "Zmeniť veľkosť zaostreného oddeľovača o 12 px"
+
+#: static/shell.js
+msgid "Arrow keys"
+msgstr "Šípky"
+
+#: static/shell.js
+msgid "layout not saved: {reason}"
+msgstr "rozloženie sa neuložilo: {reason}"
+
+#: static/shell.js
+msgid "layout saved"
+msgstr "rozloženie uložené"
+
+#: static/shell.js
+msgid "theme: {name}"
+msgstr "téma: {name}"
+
+#: static/shell.js
+msgid "anonymous"
+msgstr "anonymný"
+
+#: static/shell.js
+msgid "System"
+msgstr "Systém"
+
+#: static/shell.js
+msgid "Settings"
+msgstr "Nastavenia"
+
+#: static/shell.js
+msgid "Status"
+msgstr "Stav"
+
+#: static/shell.js
+msgid "Appearance"
+msgstr "Vzhľad"
+
+#: static/shell.js
+msgid "Layout"
+msgstr "Rozloženie"

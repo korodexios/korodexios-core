@@ -57,9 +57,9 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
   `<root>/themes/` and `data/ui/themes/`, WCAG check), `kernel/ui_tree.py` (node shape of a tree
   route), prefs `layout`, manifest `position`/`badge`/`[[ui.sections]]`/`dock`/`locked`; CLI
   `kdx ui layout|theme|--shell`. Front end: `modules/web_console/static/shell.{html,js,css}`
-  draws every panel type (the classic console stays at `/ui/`). Not done: split panes, command
-  palette, shortcut sheet, translated shell texts (English only); never tried against a real
-  downstream project, only a demo module.
+  draws every panel type (the classic console stays at `/ui/`); later added: command palette,
+  shortcut sheet, split panes, translated texts. Principle: the core ships universal tools and names
+  no project; projects adapt it themselves. Never tried against a real project, only a demo module.
 - v0.6.3 (tagged): settings editor (`kdx config set|unset|schema`, `config/editor.py`,
   `cli/config_edit.py`, `/api/v1/ui/config/schema` and `/edit`, `settings` panel), table typed
   cells / row actions / detail, form `fields` (`choices_from`, textarea, slider). From a proposal

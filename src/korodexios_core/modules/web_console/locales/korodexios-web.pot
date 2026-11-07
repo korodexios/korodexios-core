@@ -459,3 +459,283 @@ msgstr ""
 #: static/modules.js
 msgid "Saving needs the admin role."
 msgstr ""
+
+#: static/shell.js
+msgid "Search"
+msgstr ""
+
+#: static/shell.js
+msgid "Command palette"
+msgstr ""
+
+#: static/shell.js
+msgid "Command palette (Ctrl+K)"
+msgstr ""
+
+#: static/shell.js
+msgid "Show or hide panels"
+msgstr ""
+
+#: static/shell.js
+msgid "Theme"
+msgstr ""
+
+#: static/shell.js
+msgid "Classic console"
+msgstr ""
+
+#: static/shell.js
+msgid "The classic console: commands, logs, config, events"
+msgstr ""
+
+#: static/shell.js
+msgid "Areas"
+msgstr ""
+
+#: static/shell.js
+msgid "Side list"
+msgstr ""
+
+#: static/shell.js
+msgid "Collapse all"
+msgstr ""
+
+#: static/shell.js
+msgid "Resize side list. Arrow keys change the width, double click resets"
+msgstr ""
+
+#: static/shell.js
+msgid "Main surface"
+msgstr ""
+
+#: static/shell.js
+msgid "Resize bottom panel. Arrow keys change the height, double click resets"
+msgstr ""
+
+#: static/shell.js
+msgid "Bottom panel"
+msgstr ""
+
+#: static/shell.js
+msgid "Docked"
+msgstr ""
+
+#: static/shell.js
+msgid "Resize inspector. Arrow keys change the width, double click resets"
+msgstr ""
+
+#: static/shell.js
+msgid "Inspector"
+msgstr ""
+
+#: static/shell.js
+msgid "Open the shell with \"kdx ui --shell\", or paste a token."
+msgstr ""
+
+#: static/shell.js
+msgid "Type to find an area, a panel or an action"
+msgstr ""
+
+#: static/shell.js
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: static/shell.js
+msgid "Ribbon"
+msgstr ""
+
+#: static/shell.js
+msgid "Split view (Ctrl+\\)"
+msgstr ""
+
+#: static/shell.js
+msgid "Focus: hide or show all panels"
+msgstr ""
+
+#: static/shell.js
+msgid "Expand or shrink the ribbon"
+msgstr ""
+
+#: static/shell.js
+msgid "Panels"
+msgstr ""
+
+#: static/shell.js
+msgid "Classic console (commands, events, audit)"
+msgstr ""
+
+#: static/shell.js
+msgid "This area declares nothing to list."
+msgstr ""
+
+#: static/shell.js
+msgid "Loading…"
+msgstr ""
+
+#: static/shell.js
+msgid "Nothing here."
+msgstr ""
+
+#: static/shell.js
+msgid "Select an item to see its properties."
+msgstr ""
+
+#: static/shell.js
+msgid "Close {title}"
+msgstr ""
+
+#: static/shell.js
+msgid "Pick something in the side list. Every panel a module declares in its [ui] table appears here, with no GUI code."
+msgstr ""
+
+#: static/shell.js
+msgid "Nothing is docked in this area. A module can dock a panel here with dock = \"bottom\"."
+msgstr ""
+
+#: static/shell.js
+msgid "Unknown panel type {type}."
+msgstr ""
+
+#: static/shell.js
+msgid "Click again to cancel"
+msgstr ""
+
+#: static/shell.js
+msgid "unknown command: {command}"
+msgstr ""
+
+#: static/shell.js
+msgid "(default)"
+msgstr ""
+
+#: static/shell.js
+msgid "default: {value}"
+msgstr ""
+
+#: static/shell.js
+msgid "Themes are CSS token files: built in, <project>/themes/ and data/ui/themes/. In the terminal: kdx ui theme list | set | check."
+msgstr ""
+
+#: static/shell.js
+msgid "Drag a splitter, or focus it and use the arrow keys. In the terminal: kdx ui layout show | set | reset."
+msgstr ""
+
+#: static/shell.js
+msgid "{pane} (px)"
+msgstr ""
+
+#: static/shell.js
+msgid "{pane} size"
+msgstr ""
+
+#: static/shell.js
+msgid "side"
+msgstr ""
+
+#: static/shell.js
+msgid "bottom"
+msgstr ""
+
+#: static/shell.js
+msgid "inspector"
+msgstr ""
+
+#: static/shell.js
+msgid "Area"
+msgstr ""
+
+#: static/shell.js
+msgid "Panel"
+msgstr ""
+
+#: static/shell.js
+msgid "View"
+msgstr ""
+
+#: static/shell.js
+msgid "Help"
+msgstr ""
+
+#: static/shell.js
+msgid "Show or hide the ribbon"
+msgstr ""
+
+#: static/shell.js
+msgid "Show or hide the side list"
+msgstr ""
+
+#: static/shell.js
+msgid "Show or hide the bottom panel"
+msgstr ""
+
+#: static/shell.js
+msgid "Show or hide the inspector"
+msgstr ""
+
+#: static/shell.js
+msgid "Split view: off, side by side, stacked"
+msgstr ""
+
+#: static/shell.js
+msgid "Theme: {name}"
+msgstr ""
+
+#: static/shell.js
+msgid "Nothing matches."
+msgstr ""
+
+#: static/shell.js
+msgid "Split the main surface: off, side by side, stacked"
+msgstr ""
+
+#: static/shell.js
+msgid "This list"
+msgstr ""
+
+#: static/shell.js
+msgid "Close the palette or this list"
+msgstr ""
+
+#: static/shell.js
+msgid "Resize a focused splitter by 12 px"
+msgstr ""
+
+#: static/shell.js
+msgid "Arrow keys"
+msgstr ""
+
+#: static/shell.js
+msgid "layout not saved: {reason}"
+msgstr ""
+
+#: static/shell.js
+msgid "layout saved"
+msgstr ""
+
+#: static/shell.js
+msgid "theme: {name}"
+msgstr ""
+
+#: static/shell.js
+msgid "anonymous"
+msgstr ""
+
+#: static/shell.js
+msgid "System"
+msgstr ""
+
+#: static/shell.js
+msgid "Settings"
+msgstr ""
+
+#: static/shell.js
+msgid "Status"
+msgstr ""
+
+#: static/shell.js
+msgid "Appearance"
+msgstr ""
+
+#: static/shell.js
+msgid "Layout"
+msgstr ""

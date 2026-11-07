@@ -54,7 +54,14 @@ from ...kernel.ipc import (
     IpcStream,
 )
 from ...kernel.ui_manifest import build_manifest
-from ...kernel.ui_prefs import PANE_LIMITS, PANES, RIBBON_MODES, PrefsError, PrefsStore
+from ...kernel.ui_prefs import (
+    PANE_LIMITS,
+    PANES,
+    RIBBON_MODES,
+    SPLIT_MODES,
+    PrefsError,
+    PrefsStore,
+)
 from ...kernel.ui_theme import (
     DEFAULT_THEME,
     HIGH_CONTRAST,
@@ -410,6 +417,10 @@ class WebConsoleModule(Module):
                                     CliArgument(("--ribbon",), dest="ribbon",
                                                 choices=RIBBON_MODES,
                                                 help="Ribbon with icons only or with labels."),
+                                    CliArgument(("--split",), dest="split",
+                                                choices=SPLIT_MODES,
+                                                help="Main surface in one pane (off) or two "
+                                                "panes side by side or stacked."),
                                     *_PREFS_ARGS,
                                 ),
                             ),
@@ -670,9 +681,11 @@ class WebConsoleModule(Module):
                 ]
             if request.option("ribbon"):
                 change["ribbon"] = str(request.option("ribbon"))
+            if request.option("split"):
+                change["split"] = str(request.option("split"))
             if not change:
                 write_line(f"{TAG_ERROR} nothing to change: give --side, --bottom, --inspector, "
-                           "--hide, --show or --ribbon")
+                           "--hide, --show, --ribbon or --split")
                 return int(ExitCode.USAGE_ERROR)
             prefs = self.prefs.patch(user, {"layout": change})
         except (ValueError, PrefsError) as exc:

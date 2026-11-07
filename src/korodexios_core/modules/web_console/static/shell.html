@@ -15,8 +15,10 @@
       <span class="brand"><span id="brand-logo" aria-hidden="true"></span><span id="app-name">korodexios</span></span>
       <span class="crumbs"><span id="crumb-area"></span><span id="crumb-item" class="muted"></span></span>
       <span class="grow"></span>
+      <button id="btn-palette" type="button" class="palette-button" title="Command palette (Ctrl+K)" aria-label="Command palette"><span id="palette-icon"></span><span>Search</span><kbd>Ctrl+K</kbd></button>
       <div id="pane-toggles" class="toggles" role="group" aria-label="Show or hide panels"></div>
       <select id="theme-select" aria-label="Theme" title="Theme"></select>
+      <select id="lang" aria-label="Language" title="Language"><option value="en">English</option></select>
       <span id="state-pill" class="pill">offline</span>
       <a class="link-button" href="./" title="The classic console: commands, logs, config, events">Classic console</a>
     </header>
@@ -36,7 +38,10 @@
       <div class="center">
         <main class="main" aria-label="Main surface">
           <div id="tabs" class="tabs" role="tablist"></div>
-          <div id="surface" class="surface"></div>
+          <div id="surfaces" class="surfaces">
+            <div id="surface" class="surface" data-surface="a"></div>
+            <div id="surface-b" class="surface" data-surface="b" hidden></div>
+          </div>
         </main>
         <button id="split-bottom" type="button" class="splitter horizontal" aria-label="Resize bottom panel. Arrow keys change the height, double click resets"></button>
         <section id="bottom" class="bottom" aria-label="Bottom panel">
@@ -57,13 +62,28 @@
 
   <section id="token-gate" class="gate" hidden>
     <h2>Session token needed</h2>
-    <p>Open the shell with <code>kdx ui --shell</code>, or paste a token.</p>
+    <p>Open the shell with "kdx ui --shell", or paste a token.</p>
     <form id="token-form" class="row">
       <input id="token-input" type="password" autocomplete="off" placeholder="token" aria-label="token">
       <button type="submit">Connect</button>
     </form>
     <p id="token-error" class="error" hidden></p>
   </section>
+
+  <div id="palette" class="overlay" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-label="Command palette">
+      <input id="palette-input" type="text" role="combobox" aria-expanded="true" aria-controls="palette-list" autocomplete="off" placeholder="Type to find an area, a panel or an action" aria-label="Command palette">
+      <ul id="palette-list" class="palette-list" role="listbox"></ul>
+    </div>
+  </div>
+
+  <div id="shortcuts" class="overlay" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title">
+      <div class="row"><h2 id="shortcuts-title">Keyboard shortcuts</h2><span class="grow"></span>
+        <button id="shortcuts-close" type="button" class="plain">Close</button></div>
+      <dl id="shortcuts-list" class="kv"></dl>
+    </div>
+  </div>
 
   <div id="toast" class="toast" role="status" hidden></div>
   <script src="shell.js"></script>
