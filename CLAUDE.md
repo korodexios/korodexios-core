@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.4.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.5.
 
 ## Working preferences
 
@@ -52,7 +52,7 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 
 ## Current state (2026-11-07)
 
-- v0.6.4 (the owner asked for version, tag and push): the one-window shell. Backend:
+- v0.6.5 (owner asked for version, tag and push): shell completed (palette, shortcut sheet, split panes, language, neutral icons). v0.6.4 (pushed): the one-window shell. Backend:
   `kernel/ui_theme.py` (`--kdx-*` tokens, aliases for older names, `.css`/`.json` themes from
   `<root>/themes/` and `data/ui/themes/`, WCAG check), `kernel/ui_tree.py` (node shape of a tree
   route), prefs `layout`, manifest `position`/`badge`/`[[ui.sections]]`/`dock`/`locked`; CLI

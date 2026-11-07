@@ -5,6 +5,8 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.6.5] - 2026-11-07
+
 ### Added
 
 - Shell: command palette (`Ctrl+K`: areas, panels, view toggles, themes), shortcut sheet (`?`),
