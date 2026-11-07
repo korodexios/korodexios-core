@@ -15,7 +15,7 @@
 
 set -eu
 
-RELEASE_SOURCE="korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.5.6"
+RELEASE_SOURCE="korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.2"
 SOURCE=""
 LANGUAGE=""
 YES=0
@@ -201,7 +201,7 @@ fi
 
 # Rootless Podman needs subordinate user ids; 'kdx container doctor' only reads the system.
 # The fix itself is never run silently: kdx asks, explains the sudo, and sudo asks for the password.
-if [ "$DRY" -eq 0 ] && command -v podman >/dev/null 2>&1; then
+if [ "$DRY" -eq 0 ] && command -v podman >/dev/null 2>&1 && kdx container --help >/dev/null 2>&1; then
   scratch=$(mktemp -d)
   if ! (cd "$scratch" && kdx --no-log-file --home "$scratch" container doctor >/dev/null 2>&1); then
     if [ "$YES" -eq 0 ] && [ -t 0 ] && confirm "$(msg ctask)"; then

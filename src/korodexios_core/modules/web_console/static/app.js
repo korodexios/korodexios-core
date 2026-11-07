@@ -704,12 +704,21 @@
     try { localStorage.setItem(LOCALE_KEY, code); } catch (e) { /* private mode */ }
     guarded(async () => {
       await loadI18n(code);
-      if (window.kdxModules) await window.kdxModules.load();
+      await loadModulePanels();
     });
   });
 
   function savedLocale() {
     try { return localStorage.getItem(LOCALE_KEY) || ""; } catch (e) { return ""; }
+  }
+
+  // The module tabs are an extra: a failing manifest must not stop the rest of the page.
+  async function loadModulePanels() {
+    if (!window.kdxModules) return;
+    try { await window.kdxModules.load(); } catch (error) {
+      if (error instanceof AuthError) throw error;
+      toast(`module panels: ${error.message}`, true);
+    }
   }
 
   function refreshAll() {
@@ -718,7 +727,7 @@
       await loadMe();
       await loadStatus();
       await loadCatalog();
-      if (window.kdxModules) await window.kdxModules.load();
+      await loadModulePanels();
       await loadJobs();
       streamEvents();
       if ($("tab-logs").classList.contains("active")) await loadLogs();

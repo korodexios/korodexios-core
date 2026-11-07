@@ -264,3 +264,39 @@ def test_the_page_loads_modules_js_and_never_writes_html() -> None:
     script = (STATIC_DIR / "modules.js").read_text(encoding="utf-8")
     assert "innerHTML" not in script
     assert "eval(" not in script
+
+
+def test_the_prefs_store_is_shared_so_concurrent_changes_are_not_lost(project_root) -> None:
+    import threading
+
+    chassis = ipc_chassis(project_root)
+    chassis.initialize()
+    try:
+        console = console_of(chassis)
+        assert console.prefs is console.prefs  # one store, one lock
+
+        def patch(index: int) -> None:
+            console.prefs.patch("ann", {"values": {f"form.f{index}": {"a": index}}})
+
+        threads = [threading.Thread(target=patch, args=(i,)) for i in range(12)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        assert len(console.prefs.load("ann")["values"]) == 12  # no update overwrote another
+        assert not list((project_root / "data" / "ui").glob("*.tmp"))
+    finally:
+        chassis.shutdown()
+
+
+def test_a_module_without_a_ui_spec_hook_is_skipped_not_reported(project_root, monkeypatch) -> None:
+    from korodexios_core.kernel.contract import Module
+
+    chassis = ipc_chassis(project_root)
+    chassis.initialize()
+    try:
+        monkeypatch.delattr(Module, "ui_spec")  # a module that only satisfies ModuleProtocol
+        manifest = console_of(chassis).manifest()
+        assert [i for i in manifest["issues"] if "ui_spec" in i["message"]] == []
+    finally:
+        chassis.shutdown()

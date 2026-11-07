@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.1.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.2.
 
 ## Working preferences
 
@@ -50,9 +50,22 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 - Never commit control-plane users or the audit log (see commit f78f747); keep
   `var/` and runtime state out of git.
 
-## Current state (2026-11-06)
+## Current state (2026-11-07)
 
-- `main` is at v0.6.1 (tagged, pushed): v0.6.0 plus the Linux mypy fix and the wiki in the
+- `main` is at v0.6.2 (the owner asked for merge, tag and push): the GUI manifest (`[ui]` in
+  `kdx_module.toml`, `/api/v1/ui/manifest`) with per-user remembered choices (`kdx ui prefs`), GUI tiers
+  (`kdx ui guide|doctor|test`, `kdx init --ui none|static|react --pm`), the opt-in database
+  (`context.db`, `kdx db`), containers (`kdx init --container`, `kdx container doctor|fix|env`,
+  `scripts/distro-check.sh`, CI `distros` job) and README/agent setup docs. Verified on the Linux
+  test host (see memory `test-container-198`): Docker, rootless Podman in the LXC, seven distribution
+  images; Windows containers are not supported (Docker Desktop here has them disabled). CI on GitHub
+  was not run for the new `distros` job before the tag.
+- Working rules learned: never kill processes or containers on the test host (only your own);
+  `kdx container fix` is the only thing that touches system ids and it always asks first.
+
+## Earlier on 2026-11-06 (v0.6.1)
+
+- v0.6.1 (tagged, pushed): v0.6.0 plus the Linux mypy fix and the wiki in the
   LLM-wiki layout (`raw/`, `SCHEMA.md`, `index.md`, `log.md`, `[[wikilinks]]`, `kdx wiki ingest|log`,
   `kdx wiki export` into a user's own wiki). Tag `v0.6.0` points at a commit whose CI failed
   (no release from it). Linux test host: see memory `test-container-198`.

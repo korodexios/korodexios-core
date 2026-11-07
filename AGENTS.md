@@ -3,6 +3,12 @@
 Working agreement for anyone editing this chassis repository. The chassis is a
 foundation, not an application: every line here protects that role.
 
+## Setting a project up (not editing the chassis)
+
+If you were asked to install the chassis or seed a project, read `docs/AGENTS_GUIDE.md` section 0.1
+and the README section "Installed and configured by an AI agent": read the machine with the `kdx
+... doctor --json` commands first, never change system files or ids without an explicit answer.
+
 ## Commands
 
 Bootstrap with uv (Astral): `uv venv --python 3.13`, then `uv sync --extra dev`, then run

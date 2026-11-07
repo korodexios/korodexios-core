@@ -12,7 +12,7 @@ clients that talk to the same core and never reimplement it.
 - **Bootstrap:** uv (Astral) owns the environment - `uv venv`, `uv sync --extra dev`,
   `uv run kdx ...`, `uv tool install korodexios-core`, `uv lock` for a consumer's own pins
 - **Dependencies:** `pyyaml` (config files), `rich` (the wizard layer)
-- **Release:** `v0.6.1`, core API frozen at `v2`
+- **Release:** `v0.6.2`, core API frozen at `v2`
 
 **Install in one go:** `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) - a guided,
 coloured installer in English or Slovak (`--dry-run` shows the steps without running them).
@@ -76,7 +76,7 @@ Pin the chassis the way a consumer project does, entirely with uv:
 
 ```bash
 uv tool install korodexios-core   # a global kdx on PATH, no project involved
-uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.1"
+uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.2"
 uv lock                          # and 'uv add' for this project's own pinned dependencies
 ```
 
@@ -191,6 +191,46 @@ publish; `kdx init --chassis-source index` switches the pin to the index. A git 
 network and uv at install time - that is the one thing `--chassis-source git` asks for. The project owns its user-facing language through
 `i18n.translate()` (stdlib gettext, source strings as the fallback), so the chassis
 stays locale-neutral and English logs and IPC payloads stay machine-readable.
+
+## GUI, database and containers
+
+Everything below works from the terminal first; the web console is only an add-on layer.
+
+- **GUI from the modules.** A module declares a `[ui]` table in its `kdx_module.toml` and the web
+  console (`kdx ui`) draws a tab for it - no HTML or JavaScript. A person can rename, hide and
+  reorder tabs, add their own shortcut buttons and keep form values and defaults; it is stored per
+  user on the daemon (`kdx ui prefs`). `kdx ui manifest --json` shows exactly what the browser gets.
+- **Choosing a GUI.** `kdx ui guide` explains the tiers (`none`, `static`, `react`) and when to pick
+  each; `kdx ui doctor` reports what this machine can run (Node, Bun, browsers, a display, a
+  container engine). `kdx init NAME --ui none|static|react [--pm npm|bun|pnpm]` creates the project;
+  `kdx ui test [--headed]` runs the GUI tests, headless first.
+- **A database only when needed.** `context.db()` is an opt-in SQLite file with migrations;
+  nothing is created unless a module asks. `kdx db list|show|query|backup` looks inside, read-only.
+- **Containers.** `kdx init NAME --container` adds a `Dockerfile`, `compose.yaml` and
+  `.dockerignore` (Docker and Podman). Ids are read, never assumed: `kdx container doctor` reports
+  the user and id mapping and `kdx container fix` sets up rootless Podman after explaining why `sudo`
+  is needed and asking - the chassis never sees your password. Verified on Debian, Ubuntu, Fedora,
+  Alpine and Arch images (`scripts/distro-check.sh`).
+
+## Installed and configured by an AI agent
+
+The chassis expects an AI agent to install and set it up, so every decision is available as data
+(`--json`) and nothing system-wide changes without an explicit answer. In this order:
+
+```bash
+./install.sh                      # or: uv tool install korodexios-core   (asks before it installs anything)
+kdx doctor --json                 # environment, configuration provenance, modules
+kdx playbook                      # the working guide for the agent (also docs/AGENTS_GUIDE.md, llms.txt)
+kdx ui doctor --json              # what can run here: Node/Bun, browsers, display, container engines
+kdx ui guide --json               # the GUI tiers, known limits and where each kind of state belongs
+kdx container doctor --json       # only if containers are wanted: uid/gid, id mapping, rootless readiness
+kdx init my_service --ui none     # add --ui react / --container as the project needs
+```
+
+Rules for the agent: read the machine with the `doctor` commands before choosing; never hard-code a
+uid or edit `/etc/subuid`, `/etc/passwd` or an existing account (`kdx container fix` proposes and asks);
+say which steps were skipped (`kdx ui test` reports `skipped` with a reason); and keep the choice in
+`docs/BRIEF.md`. A person reading this can use the same commands - they are plain CLI.
 
 ## Core API freeze
 

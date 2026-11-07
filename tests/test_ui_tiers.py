@@ -229,3 +229,24 @@ def test_known_limits_are_published_for_agents_and_in_the_seeded_readme() -> Non
     readme = build_files(project_from_inputs("demo_app", ui="react", pm="pnpm"))["web/README.md"]
     assert "Known limits" in readme and "pnpm run typecheck && pnpm run test" in readme
     assert "@" not in readme.replace("@types", "")
+
+
+def test_the_react_e2e_pins_the_daemon_port_and_forms_wait_for_prefs() -> None:
+    from korodexios_core.cli.init_project import build_files
+
+    files = build_files(project_from_inputs("demo_app", ui="react"))
+    config = files["web/playwright.config.ts"]
+    assert 'KDX_CORE__IPC__PORT: "18123"' in config  # kdx.yml has the ephemeral port 0
+    assert "127.0.0.1:18123/health" in config
+    assert "ready ? <FormFields" in files["web/src/panels.tsx"]
+    assert "Promise.all([prefsLoaded, catalogLoaded])" in files["web/src/state.tsx"]
+
+
+def test_installers_and_ignore_rules_follow_the_release() -> None:
+    from korodexios_core.version import __version__
+
+    root = Path(__file__).resolve().parents[1]
+    for name in ("install.sh", "install.ps1"):
+        assert f"korodexios-core.git@v{__version__}" in (root / name).read_text(encoding="utf-8")
+    ignore = (root / ".gitignore").read_text(encoding="utf-8").splitlines()
+    assert "data/ui/" in ignore and "data/db/" in ignore  # runtime state stays out of git

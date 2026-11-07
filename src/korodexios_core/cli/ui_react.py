@@ -118,7 +118,8 @@ export default defineConfig({
       cwd: "..",
       url: "http://127.0.0.1:18123/health",
       reuseExistingServer: true,
-      env: { KDX_CORE__IPC__TOKEN: token },
+      // kdx.yml has port 0 (ephemeral); the health check and the vite proxy expect 18123
+      env: { KDX_CORE__IPC__TOKEN: token, KDX_CORE__IPC__PORT: "18123" },
       timeout: 60_000,
     },
     {
@@ -400,6 +401,7 @@ import { emptyPrefs } from "./types";
 import type { CommandSpec, Prefs } from "./types";
 
 interface Ctx {
+  ready: boolean;
   prefs: Prefs;
   save: (changes: Record<string, unknown>) => Promise<void>;
   commands: CommandSpec[];
@@ -407,6 +409,7 @@ interface Ctx {
 }
 
 const AppState = createContext<Ctx>({
+  ready: true,
   prefs: emptyPrefs(),
   save: async () => undefined,
   commands: [],
@@ -425,14 +428,17 @@ export function AppProvider({ children, locale }: { children: ReactNode; locale:
   const [prefs, setPrefs] = useState<Prefs>(emptyPrefs());
   const [commands, setCommands] = useState<CommandSpec[]>([]);
   const [messages, setMessages] = useState<Record<string, string>>({});
+  const [ready, setReady] = useState(false);
 
+  // Forms read the remembered values once, when they mount: wait until both answers are in.
   useEffect(() => {
-    api<Prefs>("/api/v1/ui/prefs")
+    const prefsLoaded = api<Prefs>("/api/v1/ui/prefs")
       .then((loaded) => setPrefs({ ...emptyPrefs(), ...loaded }))
       .catch(() => undefined);
-    api<{ commands: CommandSpec[] }>("/api/v1/ui/catalog")
+    const catalogLoaded = api<{ commands: CommandSpec[] }>("/api/v1/ui/catalog")
       .then((loaded) => setCommands(loaded.commands))
       .catch(() => undefined);
+    void Promise.all([prefsLoaded, catalogLoaded]).then(() => setReady(true));
   }, []);
 
   useEffect(() => {
@@ -448,7 +454,10 @@ export function AppProvider({ children, locale }: { children: ReactNode; locale:
     setPrefs({ ...emptyPrefs(), ...next });
   }, []);
 
-  const value = useMemo(() => ({ prefs, save, commands, messages }), [prefs, save, commands, messages]);
+  const value = useMemo(
+    () => ({ ready, prefs, save, commands, messages }),
+    [ready, prefs, save, commands, messages],
+  );
   return <AppState.Provider value={value}>{children}</AppState.Provider>;
 }
 """
@@ -591,7 +600,12 @@ function Output({ text }: { text: string }) {
   return text ? <pre className="terminal">{text}</pre> : null;
 }
 
-function FormPanel({ module, panel }: PanelProps) {
+function FormPanel(props: PanelProps) {
+  const { ready } = useApp();
+  return ready ? <FormFields {...props} /> : null;
+}
+
+function FormFields({ module, panel }: PanelProps) {
   const t = useT();
   const { commands, prefs, save } = useApp();
   const command = commands.find((item) => item.path === panel.command);

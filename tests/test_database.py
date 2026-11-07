@@ -176,3 +176,56 @@ def test_the_guide_says_when_a_database_is_worth_it() -> None:
     storage = guide()["storage"]
     assert any("context.db" in item["use"] for item in storage)
     assert any("no database" in item["use"].lower() or "kdx.yml" in item["use"] for item in storage)
+
+
+def test_concurrent_migrations_apply_each_step_once_and_none_fails(tmp_path: Path) -> None:
+    import threading
+
+    steps = [(1, NOTE), (2, "ALTER TABLE note ADD COLUMN tag TEXT")]
+    errors: list[BaseException] = []
+    applied: list[list[int]] = []
+
+    def worker() -> None:
+        try:
+            applied.append(Database(tmp_path / "db" / "main.sqlite3").migrate(steps))
+        except BaseException as exc:
+            errors.append(exc)
+
+    threads = [threading.Thread(target=worker) for _ in range(6)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert errors == []  # a migration another process applied meanwhile is skipped, not an error
+    assert sorted(v for ran in applied for v in ran) == [1, 2]  # each step ran exactly once
+    assert Database(tmp_path / "db" / "main.sqlite3").schema_version() == 2
+
+
+def test_a_rollback_that_sqlite_already_did_does_not_hide_the_real_error(tmp_path: Path) -> None:
+    db = make(tmp_path)
+    db.migrate([(1, NOTE)])
+    with pytest.raises(RuntimeError, match="real cause"), db.transaction() as tx:
+        tx.execute("INSERT INTO note (body) VALUES ('x')")
+        tx._connection.execute("ROLLBACK")  # SQLite ended the transaction itself
+        raise RuntimeError("real cause")
+
+
+def test_query_is_read_only_at_the_file_level_and_cannot_write_files(tmp_path: Path) -> None:
+    db = make(tmp_path)
+    db.migrate([(1, NOTE)])
+    db.insert("INSERT INTO note (body) VALUES ('x')")
+    assert db.query("PRAGMA table_info(note)")[1]["name"] == "body"  # inspection still works
+    before = sorted(p.name for p in tmp_path.rglob("*"))
+    target = (tmp_path / "copy.sqlite3").as_posix()
+    for sql in (
+        f"VACUUM INTO '{target}'",
+        f"ATTACH DATABASE '{(tmp_path / 'a.sqlite3').as_posix()}' AS a",
+        "PRAGMA query_only=OFF",
+        "PRAGMA journal_mode=DELETE",
+        "DELETE FROM note",
+        "DROP TABLE note",
+    ):
+        with pytest.raises(sqlite3.Error):
+            db.query(sql)
+    assert sorted(p.name for p in tmp_path.rglob("*")) == before  # no file was created
+    assert db.query("SELECT COUNT(*) AS n FROM note") == [{"n": 1}]

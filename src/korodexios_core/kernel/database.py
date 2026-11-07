@@ -74,6 +74,44 @@ def split_statements(script: str) -> list[str]:
     return [statement for statement in statements if statement.rstrip("; \n")]
 
 
+_READ_PRAGMAS = frozenset({
+    "table_info", "table_xinfo", "table_list", "index_list", "index_info", "index_xinfo",
+    "foreign_key_list", "database_list", "schema_version", "user_version", "integrity_check",
+    "quick_check", "page_count", "page_size", "freelist_count", "compile_options",
+    "collation_list", "function_list", "foreign_keys",
+})
+_ALLOWED_ACTIONS = frozenset({
+    sqlite3.SQLITE_SELECT, sqlite3.SQLITE_READ, sqlite3.SQLITE_FUNCTION, sqlite3.SQLITE_RECURSIVE,
+})
+
+
+def _enable_wal(connection: sqlite3.Connection) -> None:
+    """Switch to WAL once; switching needs an exclusive lock and ignores the busy timeout.
+
+    Several first connections opening a new file at the same moment would otherwise fail
+    with 'database is locked', so the mode is only set when it is not WAL yet, and a lost
+    race is retried briefly (whoever won has already switched it).
+    """
+    for _ in range(100):
+        if str(connection.execute("PRAGMA journal_mode").fetchone()[0]).lower() == "wal":
+            return
+        try:
+            connection.execute("PRAGMA journal_mode=WAL")
+            return
+        except sqlite3.OperationalError:
+            time.sleep(0.02)
+    connection.execute("PRAGMA journal_mode=WAL")  # still busy after ~2s: raise the real error
+
+
+def _read_only_authorizer(action: int, arg1: Any, arg2: Any, db_name: Any, source: Any) -> int:
+    """Allow reads and a short list of inspection PRAGMAs; deny everything else."""
+    if action in _ALLOWED_ACTIONS:
+        return sqlite3.SQLITE_OK
+    if action == sqlite3.SQLITE_PRAGMA and str(arg1).lower() in _READ_PRAGMAS:
+        return sqlite3.SQLITE_OK
+    return sqlite3.SQLITE_DENY
+
+
 class Database:
     """One SQLite file with ordered migrations; a connection is opened per call."""
 
@@ -102,14 +140,22 @@ class Database:
                 f"database {self.name!r} does not exist yet",
                 hint="a module creates it with context.db().migrate(...)",
             )
-        connection = sqlite3.connect(self._path, timeout=30.0, isolation_level=None)
+        if readonly:
+            # opened read-only at the file level, plus an authorizer: no write, ATTACH or
+            # file-creating statement (VACUUM INTO) gets through, whatever the SQL says
+            connection = sqlite3.connect(
+                f"{self._path.resolve().as_uri()}?mode=ro", uri=True, timeout=30.0,
+                isolation_level=None,
+            )
+        else:
+            connection = sqlite3.connect(self._path, timeout=30.0, isolation_level=None)
         connection.row_factory = sqlite3.Row
         try:
             connection.execute("PRAGMA foreign_keys=ON")
             if readonly:
-                connection.execute("PRAGMA query_only=ON")
+                connection.set_authorizer(_read_only_authorizer)  # after our own PRAGMA above
             else:
-                connection.execute("PRAGMA journal_mode=WAL")
+                _enable_wal(connection)
             yield connection
         finally:
             connection.close()
@@ -122,7 +168,10 @@ class Database:
             try:
                 yield _Transaction(connection)
             except BaseException:
-                connection.execute("ROLLBACK")
+                # SQLite may already have ended the transaction (disk full, I/O error): the
+                # ROLLBACK error must not replace the real one
+                with contextlib.suppress(sqlite3.Error):
+                    connection.execute("ROLLBACK")
                 raise
             connection.execute("COMMIT")
 
@@ -183,6 +232,9 @@ class Database:
                 continue
             try:
                 with self.transaction() as tx:
+                    # another process may have applied this step since the list was read
+                    if tx.query(f"SELECT 1 FROM {_MIGRATIONS_TABLE} WHERE version = ?", (version,)):
+                        continue
                     for statement in split_statements(sql):
                         tx.execute(statement)
                     tx.execute(

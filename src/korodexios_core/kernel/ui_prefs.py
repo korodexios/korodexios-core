@@ -69,6 +69,11 @@ class PrefsStore:
         self._directory = Path(directory)
         self._lock = threading.Lock()
 
+    @property
+    def directory(self) -> Path:
+        """Return the directory that holds the per-user files."""
+        return self._directory
+
     def path_for(self, user: str | None) -> Path:
         """Return the file that holds *user*'s preferences."""
         name = _SAFE_NAME.sub("_", user or DEFAULT_USER)[:64].strip(".") or DEFAULT_USER
@@ -164,7 +169,8 @@ class PrefsStore:
         path = self.path_for(user)
         path.parent.mkdir(parents=True, exist_ok=True)
         text = json.dumps(prefs, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
-        temporary = path.with_suffix(".tmp")
+        # a name of its own per writer: another process must never share this file
+        temporary = path.with_suffix(f".{os.getpid()}.{threading.get_ident()}.tmp")
         temporary.write_text(text, encoding="utf-8", newline="\n")
         os.replace(temporary, path)
 

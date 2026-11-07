@@ -5,6 +5,8 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-11-07
+
 ### Added
 
 - GUI manifest: a module declares a `[ui]` table (or `Module.ui_spec()`) and the web console draws a

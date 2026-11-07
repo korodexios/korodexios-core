@@ -99,6 +99,7 @@ class WebConsoleModule(Module):
     def __init__(self) -> None:
         super().__init__()
         self.opener: BrowserOpener | None = None
+        self._prefs_store: PrefsStore | None = None
         self._closing = threading.Event()
         self._feeds: set[queue.Queue[Event | None]] = set()
         self._feeds_lock = threading.Lock()
@@ -518,8 +519,12 @@ class WebConsoleModule(Module):
         for record in registry.active() if registry is not None else []:
             declared = record.spec.metadata.get("ui")
             if declared is None:
+                # a module may satisfy the structural ModuleProtocol without subclassing Module
+                spec_hook = getattr(record.module, "ui_spec", None)
+                if spec_hook is None:
+                    continue
                 try:
-                    declared = record.module.ui_spec()
+                    declared = spec_hook()
                 except Exception as exc:  # a module's bug must not take the GUI down
                     failures.append(
                         {"module": record.spec.name, "message": f"ui_spec() raised: {exc}"}
@@ -542,8 +547,12 @@ class WebConsoleModule(Module):
 
     @property
     def prefs(self) -> PrefsStore:
-        """Return the preference store under ``data/ui/``."""
-        return PrefsStore(self.require_context().paths.durable_dir / "ui")
+        """Return the preference store under ``data/ui/`` (one instance, so one shared lock)."""
+        directory = self.require_context().paths.durable_dir / "ui"
+        store = self._prefs_store
+        if store is None or store.directory != directory:
+            store = self._prefs_store = PrefsStore(directory)
+        return store
 
     def _prefs_route(self, request: IpcRequest) -> Any:
         """Read, replace, merge or reset the caller's own preferences."""

@@ -13,7 +13,7 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 | Distribution | `korodexios-core` |
 | Import root | `korodexios_core` |
 | Console scripts | `kdx` (primary short alias), `korodexios` (canonical) |
-| Version | `0.6.1` (production), core API frozen at `v2` (additive changes only inside v2) |
+| Version | `0.6.2` (production), core API frozen at `v2` (additive changes only inside v2) |
 | Runtime | CPython 3.11+, stdlib first (PyYAML for config, rich for the CLI surface) |
 | Config file | `kdx.yml` / `kdx.yaml` / `kdx.json` (then `korodexios.*`) |
 | Env prefix | `KDX_` primary; `KORODEXIOS_` is the canonical long prefix |
@@ -34,6 +34,18 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 | Periodic tasks | `context.schedule(interval_seconds, callback)`: the chassis clock runs them and stops them inside `stop_timeout`; a stop that overruns names the task it is still waiting for |
 | Hook ordering | the declarative hooks are read at registration and collected again after `init(context)`; inspection commands initialize discovered modules first |
 | Public surface | the package root `__all__`; anything deeper is importable but internal |
+
+### 0.1 Installing and setting up (the agent that does it)
+
+You are expected to install and configure this chassis yourself, so decide from facts, not guesses:
+`kdx doctor --json` (environment), `kdx ui doctor --json` (Node, Bun, browsers, display, container
+engines), `kdx ui guide --json` (tiers, limits, where each kind of state belongs) and, when
+containers are wanted, `kdx container doctor --json`. Then `kdx init NAME --ui none|static|react
+[--pm ...] [--container]`. Anything that changes the system outside the project (installing
+packages, `/etc/subuid`, sudo) needs an explicit answer from the person: show them the command and
+why, let `kdx container fix` ask, never run it for them, and never handle their password. Say what
+was skipped or could not be verified. `AGENTS.md` in a repository is the working agreement for the
+people and agents *editing* that repository; this guide is the contract for *using* the chassis.
 
 ## 1. Golden Rules of the Chassis
 

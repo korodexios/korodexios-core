@@ -39,6 +39,8 @@ data/audit.jsonl.1
 # Queue and limiter state: per-host runtime state, not source
 data/jobs/
 data/limiters/
+data/ui/
+data/db/
 
 # Internal notes (Slovak, owner only; never published)
 docs-dev/
