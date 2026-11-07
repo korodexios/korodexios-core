@@ -334,6 +334,10 @@ msgstr "Folder w celu [nazwa projektu]."
 msgid "Follow the daemon's live events (Ctrl+C to stop)."
 msgstr "Śledź zdarzenia demona na żywo (Ctrl+C kończy)."
 
+#: modules/web_console/module.py
+msgid "Forget the remembered choices (defaults stay unless named)."
+msgstr "Zapomnij zapamiętane wybory (wartości domyślne zostają, chyba że je wskażesz)."
+
 #: modules/job_queue/module.py
 msgid "Handler kind."
 msgstr "Rodzaj handlera."
@@ -522,6 +526,10 @@ msgstr "Zarządzaj nazwanymi użytkownikami płaszczyzny sterowania i ich rolami
 msgid "Memory"
 msgstr "Pamięć"
 
+#: modules/web_console/module.py
+msgid "Merge a JSON object into the preferences (a null value deletes that key)."
+msgstr "Scal obiekt JSON z ustawieniami (wartość null usuwa klucz)."
+
 #: modules/wiki/module.py
 msgid "Merge this wiki into another one (an LLM-wiki, Obsidian, a git wiki), or print it as JSON."
 msgstr "Scala to wiki z innym (LLM-wiki, Obsidian, wiki git) albo wypisuje je jako JSON."
@@ -673,6 +681,10 @@ msgstr "Wypisuje jedną stronę (w języku domyślnym, gdy brak LANG)."
 #: cli/proposal.py
 msgid "Print one proposal note."
 msgstr "Wypisuje jedną propozycję."
+
+#: modules/web_console/module.py
+msgid "Print the GUI every loaded module declares (what the browser gets)."
+msgstr "Wypisz GUI deklarowane przez każdy załadowany moduł (to, co dostaje przeglądarka)."
 
 #: cli/language.py
 msgid "Print the active language and where the choice came from."
@@ -878,6 +890,10 @@ msgstr "Pokazuje pomiary (z działającego demona, jeśli jest)."
 msgid "Show the plan; write nothing."
 msgstr "Pokazuje plan; niczego nie zapisuje."
 
+#: modules/web_console/module.py
+msgid "Show the stored GUI preferences."
+msgstr "Pokaż zapisane ustawienia GUI."
+
 #: modules/wiki/module.py
 msgid "Show the wiki log, or append one entry to it."
 msgstr "Pokazuje log wiki albo dodaje do niego wpis."
@@ -885,6 +901,10 @@ msgstr "Pokazuje log wiki albo dodaje do niego wpis."
 #: cli/users.py
 msgid "Show who acted over the control plane (commands, jobs, reloads, stops)."
 msgstr "Pokaż, kto działał przez płaszczyznę sterowania (polecenia, zadania, przeładowania, zatrzymania)."
+
+#: modules/web_console/module.py
+msgid "Show, change or reset the remembered GUI choices."
+msgstr "Pokaż, zmień lub zresetuj zapamiętane wybory GUI."
 
 #: cli/language.py
 msgid "Show, choose, and verify the language (message catalogues)."
@@ -1025,6 +1045,10 @@ msgstr "Które wiki [all]."
 #: cli/brief.py
 msgid "Who uses it, and how (terminal, web page, other programs)?"
 msgstr "Kto jej używa i jak (terminal, strona www, inne programy)?"
+
+#: modules/web_console/module.py
+msgid "Whose preferences (default: the signed-in user, else 'default')."
+msgstr "Czyje ustawienia (domyślnie zalogowany użytkownik, w przeciwnym razie 'default')."
 
 #: cli/limiter.py
 msgid "Why, shown in doctor."
@@ -1354,6 +1378,10 @@ msgstr "próba: niczego nie zapisano"
 msgid "durable, never touched: {root}"
 msgstr "trwałe, nigdy nie ruszane: {root}"
 
+#: modules/web_console/module.py
+msgid "e.g. '{\"defaults\": {\"job_queue.submit\":{\"kind\": \"demo\"}}}'."
+msgstr "np. '{\"defaults\": {\"job_queue.submit\": {\"kind\": \"demo\"}}}'."
+
 #: cli/commands.py
 msgid "ecosystem"
 msgstr "ekosystem"
@@ -1638,6 +1666,10 @@ msgstr "podaj wiki docelowe: kdx wiki export DIR"
 msgid "named locks"
 msgstr "nazwane blokady"
 
+#: modules/web_console/module.py
+msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
+msgstr "nav, panels, buttons, values, defaults, settings; bez wskazania: wszystko oprócz defaults."
+
 #: cli/commands.py
 msgid "next: cd {root} && uv sync --extra dev && uv run {script} run"
 msgstr "dalej: cd {root} && uv sync --extra dev && uv run {script} run"
@@ -1713,6 +1745,10 @@ msgstr "brak ustaleń diagnostyki"
 #: cli/limiter.py
 msgid "no limiters recorded"
 msgstr "brak zapisanych limiterów"
+
+#: modules/web_console/module.py
+msgid "no loaded module declares a [ui] table"
+msgstr "żaden załadowany moduł nie deklaruje tabeli [ui]"
 
 #: cli/commands.py
 msgid "no log file found at {log_path}"
@@ -1861,6 +1897,10 @@ msgstr "pakiet"
 #: modules/wiki/module.py
 msgid "page"
 msgstr "strona"
+
+#: modules/web_console/module.py
+msgid "panel"
+msgstr "panel"
 
 #: modules/backup_engine/module.py
 msgid "pass --force to copy anyway"
@@ -2078,6 +2118,10 @@ msgstr "wolne handlery"
 msgid "source"
 msgstr "źródło"
 
+#: modules/web_console/module.py
+msgid "source / command"
+msgstr "źródło / polecenie"
+
 #: cli/agents.py
 msgid "stale"
 msgstr "nieaktualny"
@@ -2294,7 +2338,7 @@ msgstr "czas"
 msgid "timings"
 msgstr "czasy"
 
-#: modules/wiki/module.py
+#: modules/web_console/module.py
 msgid "title"
 msgstr "tytuł"
 
@@ -2314,7 +2358,7 @@ msgstr "razem"
 msgid "truncate the log file (asks first)"
 msgstr "obetnij plik logu (najpierw zapyta)"
 
-#: modules/wiki/module.py
+#: modules/web_console/module.py
 msgid "type"
 msgstr "typ"
 

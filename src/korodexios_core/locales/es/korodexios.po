@@ -334,6 +334,10 @@ msgstr "Carpeta en el destino [el nombre del proyecto]."
 msgid "Follow the daemon's live events (Ctrl+C to stop)."
 msgstr "Sigue los eventos en vivo del demonio (Ctrl+C para detener)."
 
+#: modules/web_console/module.py
+msgid "Forget the remembered choices (defaults stay unless named)."
+msgstr "Olvidar las opciones recordadas (los valores predeterminados se conservan salvo que se nombren)."
+
 #: modules/job_queue/module.py
 msgid "Handler kind."
 msgstr "Tipo de manejador."
@@ -522,6 +526,10 @@ msgstr "Gestiona los usuarios con nombre del plano de control y sus roles."
 msgid "Memory"
 msgstr "Memoria"
 
+#: modules/web_console/module.py
+msgid "Merge a JSON object into the preferences (a null value deletes that key)."
+msgstr "Combinar un objeto JSON con las preferencias (un valor null borra esa clave)."
+
 #: modules/wiki/module.py
 msgid "Merge this wiki into another one (an LLM-wiki, Obsidian, a git wiki), or print it as JSON."
 msgstr "Fusiona este wiki con otro (un LLM-wiki, Obsidian, un wiki git) o lo imprime como JSON."
@@ -673,6 +681,10 @@ msgstr "Muestra una página (en el idioma por defecto si falta LANG)."
 #: cli/proposal.py
 msgid "Print one proposal note."
 msgstr "Muestra una propuesta."
+
+#: modules/web_console/module.py
+msgid "Print the GUI every loaded module declares (what the browser gets)."
+msgstr "Mostrar la GUI que declara cada módulo cargado (lo que recibe el navegador)."
 
 #: cli/language.py
 msgid "Print the active language and where the choice came from."
@@ -878,6 +890,10 @@ msgstr "Muestra las mediciones (del daemon en marcha si lo hay)."
 msgid "Show the plan; write nothing."
 msgstr "Muestra el plan; no escribe nada."
 
+#: modules/web_console/module.py
+msgid "Show the stored GUI preferences."
+msgstr "Mostrar las preferencias guardadas de la GUI."
+
 #: modules/wiki/module.py
 msgid "Show the wiki log, or append one entry to it."
 msgstr "Muestra el log del wiki o le añade una entrada."
@@ -885,6 +901,10 @@ msgstr "Muestra el log del wiki o le añade una entrada."
 #: cli/users.py
 msgid "Show who acted over the control plane (commands, jobs, reloads, stops)."
 msgstr "Muestra quién actuó a través del plano de control (comandos, trabajos, recargas, paradas)."
+
+#: modules/web_console/module.py
+msgid "Show, change or reset the remembered GUI choices."
+msgstr "Mostrar, cambiar o restablecer las opciones recordadas de la GUI."
 
 #: cli/language.py
 msgid "Show, choose, and verify the language (message catalogues)."
@@ -1025,6 +1045,10 @@ msgstr "Qué wiki [all]."
 #: cli/brief.py
 msgid "Who uses it, and how (terminal, web page, other programs)?"
 msgstr "¿Quién la usa y cómo (terminal, página web, otros programas)?"
+
+#: modules/web_console/module.py
+msgid "Whose preferences (default: the signed-in user, else 'default')."
+msgstr "De quién son las preferencias (por defecto el usuario con sesión, si no 'default')."
 
 #: cli/limiter.py
 msgid "Why, shown in doctor."
@@ -1354,6 +1378,10 @@ msgstr "simulación: no se escribió nada"
 msgid "durable, never touched: {root}"
 msgstr "duradero, nunca se toca: {root}"
 
+#: modules/web_console/module.py
+msgid "e.g. '{\"defaults\": {\"job_queue.submit\":{\"kind\": \"demo\"}}}'."
+msgstr "p. ej. '{\"defaults\": {\"job_queue.submit\": {\"kind\": \"demo\"}}}'."
+
 #: cli/commands.py
 msgid "ecosystem"
 msgstr "ecosistema"
@@ -1638,6 +1666,10 @@ msgstr "indique el wiki destino: kdx wiki export DIR"
 msgid "named locks"
 msgstr "bloqueos con nombre"
 
+#: modules/web_console/module.py
+msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
+msgstr "nav, panels, buttons, values, defaults, settings; sin indicar, todo menos defaults."
+
 #: cli/commands.py
 msgid "next: cd {root} && uv sync --extra dev && uv run {script} run"
 msgstr "siguiente: cd {root} && uv sync --extra dev && uv run {script} run"
@@ -1713,6 +1745,10 @@ msgstr "sin hallazgos de diagnóstico"
 #: cli/limiter.py
 msgid "no limiters recorded"
 msgstr "no hay limitadores registrados"
+
+#: modules/web_console/module.py
+msgid "no loaded module declares a [ui] table"
+msgstr "ningún módulo cargado declara una tabla [ui]"
 
 #: cli/commands.py
 msgid "no log file found at {log_path}"
@@ -1861,6 +1897,10 @@ msgstr "paquete"
 #: modules/wiki/module.py
 msgid "page"
 msgstr "página"
+
+#: modules/web_console/module.py
+msgid "panel"
+msgstr "panel"
 
 #: modules/backup_engine/module.py
 msgid "pass --force to copy anyway"
@@ -2078,6 +2118,10 @@ msgstr "manejadores lentos"
 msgid "source"
 msgstr "fuente"
 
+#: modules/web_console/module.py
+msgid "source / command"
+msgstr "origen / comando"
+
 #: cli/agents.py
 msgid "stale"
 msgstr "desactualizado"
@@ -2294,7 +2338,7 @@ msgstr "hora"
 msgid "timings"
 msgstr "tiempos"
 
-#: modules/wiki/module.py
+#: modules/web_console/module.py
 msgid "title"
 msgstr "título"
 
@@ -2314,7 +2358,7 @@ msgstr "total"
 msgid "truncate the log file (asks first)"
 msgstr "trunca el archivo de registro (pregunta antes)"
 
-#: modules/wiki/module.py
+#: modules/web_console/module.py
 msgid "type"
 msgstr "tipo"
 

@@ -16,11 +16,21 @@ of its own. Built-in; discovered from `korodexios_core/modules/web_console/`.
   - `GET /api/v1/ui/config` - every resolved key with its layer; secrets masked.
   - `GET /api/v1/ui/events` - bus events as server-sent events (`IpcStream`); the page
     reads it with `fetch`, so the token travels in a header, never in a URL.
+- Module panels: `GET /api/v1/ui/manifest?locale=` returns the GUI every loaded module
+  declares in its `[ui]` table (or `Module.ui_spec()`), validated by
+  `kernel/ui_manifest.py`; `static/modules.js` draws one tab per module (table, keyvalue,
+  log, text, form, actions panels) with no per-module code. Bad panels are dropped and
+  listed under `issues`.
+- Preferences: `GET|PUT|PATCH|DELETE /api/v1/ui/prefs` keeps the caller's own choices
+  (rename/hide/reorder, own shortcut buttons, remembered and pinned form values, last tab) in
+  `data/ui/prefs-<user>.json` (`kernel/ui_prefs.py`), edited from the terminal with
+  `kdx ui prefs show|patch|reset`.
 - Commands run as background jobs (`"background": true` on `/api/v1/rpc`, then
   `GET /api/v1/jobs?id=`), so output appears while it grows. The catalog carries each
   command's `remote` and `danger` flags: a `danger` command needs a second click, a
   `remote=False` one is shown as terminal-only.
-- CLI contributed: `kdx ui [--no-browser]`. With a live daemon it opens the console; with
+- CLI contributed: `kdx ui [--no-browser]`, `kdx ui manifest [--json]`,
+  `kdx ui prefs show|patch|reset`. With a live daemon it opens the console; with
   none it boots the chassis in the foreground and opens the console once the control plane
   is up. The token rides in the URL fragment (`/ui/#token=...`), which a browser never
   sends to a server; the page moves it into `sessionStorage` and clears the address bar.

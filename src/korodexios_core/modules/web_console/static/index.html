@@ -23,6 +23,7 @@
     </div>
     <div class="actions">
       <select id="lang" title="Language" aria-label="Language"><option value="en">English</option></select>
+      <button id="btn-customize" type="button" title="Rename, hide and reorder tabs and panels; add your own buttons">Customize</button>
       <button id="btn-refresh" type="button" title="Refresh everything">Refresh</button>
       <button id="btn-reload" type="button" title="Re-read configuration (kdx reload)">Reload config</button>
       <button id="btn-stop" type="button" class="danger" title="Stop the daemon (exit 0)">Stop daemon</button>
@@ -36,6 +37,7 @@
     <button type="button" role="tab" data-tab="config">Config</button>
     <button type="button" role="tab" data-tab="events">Events</button>
     <button type="button" role="tab" data-tab="diagnostics">Diagnostics</button>
+    <button type="button" role="tab" data-tab="shortcuts" id="tab-button-shortcuts">Shortcuts</button>
     <button type="button" role="tab" data-tab="audit" id="tab-button-audit" hidden>Audit</button>
   </nav>
 
@@ -133,6 +135,26 @@
       <div id="diag-summary" class="tiles"></div>
       <ul id="diagnostics" class="checks"></ul>
     </section>
+    <section id="tab-shortcuts" class="tab">
+      <h2>Your shortcuts</h2>
+      <div id="shortcut-list"></div>
+      <div id="shortcut-runs"></div>
+      <div id="shortcut-editor" hidden>
+        <h2>Add a shortcut</h2>
+        <form id="shortcut-form" class="row">
+          <input id="shortcut-label" type="text" maxlength="100" placeholder="button label" aria-label="button label" required>
+          <select id="shortcut-command" aria-label="command"></select>
+          <input id="shortcut-args" type="text" placeholder="arguments, e.g. days=30, dry_run=true" aria-label="arguments, e.g. days=30, dry_run=true">
+          <label class="check"><input id="shortcut-confirm" type="checkbox"> <span>Ask before running</span></label>
+          <button type="submit" class="primary">Add</button>
+        </form>
+      </div>
+      <h2>Pinned defaults</h2>
+      <div id="default-list"></div>
+      <div class="row toolbar">
+        <button id="btn-reset-layout" type="button" title="Forget the remembered layout, labels, shortcuts and form values (pinned defaults stay)">Reset layout</button>
+      </div>
+    </section>
     <section id="tab-audit" class="tab">
       <div class="row toolbar">
         <input id="audit-filter" type="search" placeholder="filter by user, action, command" aria-label="filter audit">
@@ -148,5 +170,6 @@
 
   <div id="toast" class="toast" role="status" hidden></div>
   <script src="app.js"></script>
+  <script src="modules.js"></script>
 </body>
 </html>

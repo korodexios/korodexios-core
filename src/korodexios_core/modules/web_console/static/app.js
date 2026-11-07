@@ -201,14 +201,17 @@
 
   // ---- tabs ----------------------------------------------------------------
 
+  function activateTab(name) {
+    document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+    document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab.id === `tab-${name}`));
+    if (name === "logs") guarded(loadLogs);
+    if (name === "config") guarded(loadConfig);
+    if (name === "audit") guarded(loadAudit);
+    document.dispatchEvent(new CustomEvent("kdx-tab", { detail: name }));
+  }
+
   document.querySelectorAll(".tabs button").forEach((button) => {
-    button.addEventListener("click", () => {
-      document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("active", b === button));
-      document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab.id === `tab-${button.dataset.tab}`));
-      if (button.dataset.tab === "logs") guarded(loadLogs);
-      if (button.dataset.tab === "config") guarded(loadConfig);
-      if (button.dataset.tab === "audit") guarded(loadAudit);
-    });
+    button.addEventListener("click", () => activateTab(button.dataset.tab));
   });
 
   // ---- overview and diagnostics -------------------------------------------
@@ -449,7 +452,23 @@
     followJob(payload.job.id, card);
   }
 
-  function runCard(line) {
+  // Run one catalogue command as a background job and show its output in *host*.
+  async function runIn(host, commandPath, argv) {
+    const line = ["kdx", ...commandPath.split(" "), ...argv].map(shellQuote).join(" ");
+    const card = runCard(line, host);
+    const { status, payload } = await api("/api/v1/rpc", {
+      method: "POST",
+      body: { command: commandPath, args: { argv }, background: true },
+      allowError: true,
+    });
+    if (!payload.ok) {
+      finishCard(card, payload.error || `HTTP ${status}`, `refused · HTTP ${status}`, true);
+      return;
+    }
+    followJob(payload.job.id, card);
+  }
+
+  function runCard(line, host) {
     const output = el("pre", { class: "terminal", text: "starting…" });
     const meta = el("div", { class: "run-meta muted", text: "running" });
     const cancel = el("button", { type: "button", class: "run-cancel", hidden: true, text: "Cancel" });
@@ -458,8 +477,9 @@
     card.output = output;
     card.meta = meta;
     card.cancel = cancel;
-    $("runs").prepend(card);
-    while ($("runs").children.length > 20) $("runs").lastChild.remove();
+    const where = host || $("runs");
+    where.prepend(card);
+    while (where.children.length > 20) where.lastChild.remove();
     return card;
   }
 
@@ -682,7 +702,10 @@
   $("lang").addEventListener("change", () => {
     const code = $("lang").value;
     try { localStorage.setItem(LOCALE_KEY, code); } catch (e) { /* private mode */ }
-    guarded(() => loadI18n(code));
+    guarded(async () => {
+      await loadI18n(code);
+      if (window.kdxModules) await window.kdxModules.load();
+    });
   });
 
   function savedLocale() {
@@ -695,12 +718,19 @@
       await loadMe();
       await loadStatus();
       await loadCatalog();
+      if (window.kdxModules) await window.kdxModules.load();
       await loadJobs();
       streamEvents();
       if ($("tab-logs").classList.contains("active")) await loadLogs();
       if ($("tab-config").classList.contains("active")) await loadConfig();
     });
   }
+
+  // What the module panels (modules.js) may use; nothing else of this file is shared.
+  window.kdxConsole = {
+    api, el, t, toast, guarded, armed, state, can, shellQuote, activateTab, runIn,
+    locale: () => i18n.locale,
+  };
 
   markStatic();
   state.token = readToken();

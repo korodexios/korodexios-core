@@ -208,3 +208,90 @@ msgstr "verzia"
 
 msgid "who this token belongs to"
 msgstr "komu patrí tento token"
+
+msgid "Customize"
+msgstr "Prispôsobiť"
+
+msgid "Rename, hide and reorder tabs and panels; add your own buttons"
+msgstr "Premenovať, skryť a preusporiadať karty a panely; pridať vlastné tlačidlá"
+
+msgid "Shortcuts"
+msgstr "Skratky"
+
+msgid "Your shortcuts"
+msgstr "Tvoje skratky"
+
+msgid "Add a shortcut"
+msgstr "Pridať skratku"
+
+msgid "button label"
+msgstr "názov tlačidla"
+
+msgid "arguments, e.g. days=30, dry_run=true"
+msgstr "argumenty, napr. days=30, dry_run=true"
+
+msgid "Ask before running"
+msgstr "Opýtať sa pred spustením"
+
+msgid "Add"
+msgstr "Pridať"
+
+msgid "Pinned defaults"
+msgstr "Pripnuté predvolené hodnoty"
+
+msgid "Reset layout"
+msgstr "Obnoviť rozloženie"
+
+msgid "Forget the remembered layout, labels, shortcuts and form values (pinned defaults stay)"
+msgstr "Zabudnúť zapamätané rozloženie, názvy, skratky a hodnoty formulárov (pripnuté predvolené hodnoty ostanú)"
+
+msgid "Up"
+msgstr "Hore"
+
+msgid "Down"
+msgstr "Dole"
+
+msgid "Show"
+msgstr "Zobraziť"
+
+msgid "Hide"
+msgstr "Skryť"
+
+msgid "Remove"
+msgstr "Odstrániť"
+
+msgid "Save as default"
+msgstr "Uložiť ako predvolené"
+
+msgid "Restore defaults"
+msgstr "Obnoviť predvolené"
+
+msgid "Clear default"
+msgstr "Zrušiť predvolené"
+
+msgid "Nothing to show."
+msgstr "Nie je čo zobraziť."
+
+msgid "No shortcuts yet. Use Customize, then add one below."
+msgstr "Zatiaľ žiadne skratky. Zapni Prispôsobiť a pridaj ju nižšie."
+
+msgid "No pinned defaults."
+msgstr "Žiadne pripnuté predvolené hodnoty."
+
+msgid "Default saved"
+msgstr "Predvolené uložené"
+
+msgid "Layout reset"
+msgstr "Rozloženie obnovené"
+
+msgid "Click again to run"
+msgstr "Klikni znova na spustenie"
+
+msgid "Click again to reset"
+msgstr "Klikni znova na obnovenie"
+
+msgid "this command is not available to you here"
+msgstr "tento príkaz tu nie je pre teba dostupný"
+
+msgid "unknown command"
+msgstr "neznámy príkaz"

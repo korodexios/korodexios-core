@@ -610,6 +610,27 @@ streams bus events live (routine ticks hidden by default). `kdx ui` passes the t
 `sessionStorage` only. Disable the console with `--disable-module web_console`, or keep it
 from opening a browser with `modules.web_console.open_browser: false`.
 
+### Module panels and remembered choices
+
+Modules describe their own part of the GUI in a `[ui]` table (see `docs/AGENTS_GUIDE.md`
+section 8.1), so a loaded module gets a tab with no GUI code. Everything the page does is
+available in the terminal:
+
+```bash
+kdx ui manifest [--json]                     # the GUI every loaded module declares
+kdx ui prefs show [--user NAME] [--json]     # what a person changed in the interface
+kdx ui prefs patch '{"settings":{"theme":"dark"}}' [--user NAME]
+kdx ui prefs reset [SECTION ...] [--user NAME]   # no section: all but pinned defaults
+```
+
+The **Customize** button lets a person rename, hide and reorder tabs and panels and add
+their own **Shortcuts** (a label that runs a known command with fixed arguments). Form
+values are remembered per form, a form can **Save as default** and **Restore defaults**, and
+the last open tab is restored. All of it is stored on the daemon in `data/ui/prefs-<user>.json`
+(the same file `kdx ui prefs` edits) with a copy in the browser as a fallback; the control
+plane serves it at `/api/v1/ui/prefs` (`GET`, `PUT`, `PATCH`, `DELETE`) to the signed-in
+caller only. `--locale` (global) picks the language of the manifest titles.
+
 ## Agent guides (`kdx playbook`, `kdx conventions`)
 
 | Command | Effect |

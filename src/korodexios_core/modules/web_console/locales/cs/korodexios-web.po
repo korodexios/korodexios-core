@@ -208,3 +208,90 @@ msgstr "verze"
 
 msgid "who this token belongs to"
 msgstr "komu patří tento token"
+
+msgid "Customize"
+msgstr "Přizpůsobit"
+
+msgid "Rename, hide and reorder tabs and panels; add your own buttons"
+msgstr "Přejmenovat, skrýt a přeuspořádat karty a panely; přidat vlastní tlačítka"
+
+msgid "Shortcuts"
+msgstr "Zkratky"
+
+msgid "Your shortcuts"
+msgstr "Tvoje zkratky"
+
+msgid "Add a shortcut"
+msgstr "Přidat zkratku"
+
+msgid "button label"
+msgstr "název tlačítka"
+
+msgid "arguments, e.g. days=30, dry_run=true"
+msgstr "argumenty, např. days=30, dry_run=true"
+
+msgid "Ask before running"
+msgstr "Zeptat se před spuštěním"
+
+msgid "Add"
+msgstr "Přidat"
+
+msgid "Pinned defaults"
+msgstr "Připnuté výchozí hodnoty"
+
+msgid "Reset layout"
+msgstr "Obnovit rozložení"
+
+msgid "Forget the remembered layout, labels, shortcuts and form values (pinned defaults stay)"
+msgstr "Zapomenout zapamatované rozložení, názvy, zkratky a hodnoty formulářů (připnuté výchozí hodnoty zůstanou)"
+
+msgid "Up"
+msgstr "Nahoru"
+
+msgid "Down"
+msgstr "Dolů"
+
+msgid "Show"
+msgstr "Zobrazit"
+
+msgid "Hide"
+msgstr "Skrýt"
+
+msgid "Remove"
+msgstr "Odstranit"
+
+msgid "Save as default"
+msgstr "Uložit jako výchozí"
+
+msgid "Restore defaults"
+msgstr "Obnovit výchozí"
+
+msgid "Clear default"
+msgstr "Zrušit výchozí"
+
+msgid "Nothing to show."
+msgstr "Není co zobrazit."
+
+msgid "No shortcuts yet. Use Customize, then add one below."
+msgstr "Zatím žádné zkratky. Zapni Přizpůsobit a přidej ji níže."
+
+msgid "No pinned defaults."
+msgstr "Žádné připnuté výchozí hodnoty."
+
+msgid "Default saved"
+msgstr "Výchozí uloženo"
+
+msgid "Layout reset"
+msgstr "Rozložení obnoveno"
+
+msgid "Click again to run"
+msgstr "Klikni znovu pro spuštění"
+
+msgid "Click again to reset"
+msgstr "Klikni znovu pro obnovení"
+
+msgid "this command is not available to you here"
+msgstr "tento příkaz zde pro tebe není dostupný"
+
+msgid "unknown command"
+msgstr "neznámý příkaz"

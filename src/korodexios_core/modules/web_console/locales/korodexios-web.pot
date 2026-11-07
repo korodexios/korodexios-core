@@ -279,3 +279,119 @@ msgstr ""
 #: static/index.html
 msgid "who this token belongs to"
 msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Customize"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Rename, hide and reorder tabs and panels; add your own buttons"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Shortcuts"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Your shortcuts"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Add a shortcut"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "button label"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "arguments, e.g. days=30, dry_run=true"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Ask before running"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Add"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Pinned defaults"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Reset layout"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Forget the remembered layout, labels, shortcuts and form values (pinned defaults stay)"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Up"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Down"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Show"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Hide"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Remove"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Save as default"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Restore defaults"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Clear default"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Nothing to show."
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "No shortcuts yet. Use Customize, then add one below."
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "No pinned defaults."
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Default saved"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Layout reset"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Click again to run"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "Click again to reset"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "this command is not available to you here"
+msgstr ""
+
+#: static/modules.js static/index.html
+msgid "unknown command"
+msgstr ""

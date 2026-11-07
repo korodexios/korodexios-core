@@ -208,3 +208,90 @@ msgstr "wersja"
 
 msgid "who this token belongs to"
 msgstr "do kogo należy ten token"
+
+msgid "Customize"
+msgstr "Dostosuj"
+
+msgid "Rename, hide and reorder tabs and panels; add your own buttons"
+msgstr "Zmień nazwy, ukryj i uporządkuj karty i panele; dodaj własne przyciski"
+
+msgid "Shortcuts"
+msgstr "Skróty"
+
+msgid "Your shortcuts"
+msgstr "Twoje skróty"
+
+msgid "Add a shortcut"
+msgstr "Dodaj skrót"
+
+msgid "button label"
+msgstr "etykieta przycisku"
+
+msgid "arguments, e.g. days=30, dry_run=true"
+msgstr "argumenty, np. days=30, dry_run=true"
+
+msgid "Ask before running"
+msgstr "Zapytaj przed uruchomieniem"
+
+msgid "Add"
+msgstr "Dodaj"
+
+msgid "Pinned defaults"
+msgstr "Przypięte wartości domyślne"
+
+msgid "Reset layout"
+msgstr "Zresetuj układ"
+
+msgid "Forget the remembered layout, labels, shortcuts and form values (pinned defaults stay)"
+msgstr "Zapomnij zapamiętany układ, etykiety, skróty i wartości formularzy (przypięte wartości domyślne zostają)"
+
+msgid "Up"
+msgstr "W górę"
+
+msgid "Down"
+msgstr "W dół"
+
+msgid "Show"
+msgstr "Pokaż"
+
+msgid "Hide"
+msgstr "Ukryj"
+
+msgid "Remove"
+msgstr "Usuń"
+
+msgid "Save as default"
+msgstr "Zapisz jako domyślne"
+
+msgid "Restore defaults"
+msgstr "Przywróć domyślne"
+
+msgid "Clear default"
+msgstr "Usuń domyślne"
+
+msgid "Nothing to show."
+msgstr "Brak danych do pokazania."
+
+msgid "No shortcuts yet. Use Customize, then add one below."
+msgstr "Brak skrótów. Włącz Dostosuj i dodaj skrót poniżej."
+
+msgid "No pinned defaults."
+msgstr "Brak przypiętych wartości domyślnych."
+
+msgid "Default saved"
+msgstr "Zapisano domyślne"
+
+msgid "Layout reset"
+msgstr "Układ zresetowany"
+
+msgid "Click again to run"
+msgstr "Kliknij ponownie, aby uruchomić"
+
+msgid "Click again to reset"
+msgstr "Kliknij ponownie, aby zresetować"
+
+msgid "this command is not available to you here"
+msgstr "to polecenie nie jest tu dla ciebie dostępne"
+
+msgid "unknown command"
+msgstr "nieznane polecenie"

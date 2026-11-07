@@ -25,10 +25,16 @@ from collections.abc import Callable, Iterator
 from pathlib import Path
 from typing import Any
 
-from ...cli.render import print_key_values, write_line
+from ...cli.render import (
+    dump_json,
+    print_key_values,
+    print_section,
+    print_table,
+    write_line,
+)
 from ...config.layered import is_secret_key, redact_for_display
 from ...config.schema import ConfigField, ConfigKind, ConfigSchema
-from ...constants import TAG_ERROR, TAG_NOTE, TAG_OK
+from ...constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
 from ...events.bus import Event
 from ...kernel.audit import read_audit
 from ...kernel.cli_contract import CliArgument, CliCommand, CliRequest, CliSurface
@@ -43,6 +49,8 @@ from ...kernel.ipc import (
     IpcStaticMount,
     IpcStream,
 )
+from ...kernel.ui_manifest import build_manifest
+from ...kernel.ui_prefs import PrefsError, PrefsStore
 from ...kernel.users import current_caller, role_rank
 from ...logging.engine import tail_lines
 
@@ -53,6 +61,8 @@ CONFIG_PATH = "/api/v1/ui/config"
 EVENTS_PATH = "/api/v1/ui/events"
 AUDIT_PATH = "/api/v1/ui/audit"
 I18N_PATH = "/api/v1/ui/i18n"
+MANIFEST_PATH = "/api/v1/ui/manifest"
+PREFS_PATH = "/api/v1/ui/prefs"
 WEB_DOMAIN = "korodexios-web"
 WEB_LOCALES_DIR = Path(__file__).resolve().parent / "locales"
 EVENT_QUEUE_SIZE = 500
@@ -64,6 +74,16 @@ READY_WAIT_SECONDS = 30.0
 READY_POLL_SECONDS = 0.1
 
 BrowserOpener = Callable[[str], Any]
+
+_PREFS_ARGS = (
+    CliArgument(("--json",), dest="as_json", action="store_true", help="Emit JSON."),
+    CliArgument(
+        ("--user",),
+        dest="user",
+        metavar="NAME",
+        help="Whose preferences (default: the signed-in user, else 'default').",
+    ),
+)
 
 
 class WebConsoleModule(Module):
@@ -146,6 +166,21 @@ class WebConsoleModule(Module):
                 summary="the page's messages in a language ('?locale=de'; default core.locale)",
             ),
             IpcRoute(
+                path=MANIFEST_PATH,
+                handler=self._manifest_route,
+                module=self.name,
+                role="viewer",
+                summary="the GUI every loaded module declares ('?locale=de')",
+            ),
+            IpcRoute(
+                path=PREFS_PATH,
+                handler=self._prefs_route,
+                methods=("GET", "PUT", "PATCH", "DELETE"),
+                module=self.name,
+                role="viewer",
+                summary="the caller's own GUI preferences: read, replace, merge, reset",
+            ),
+            IpcRoute(
                 path=AUDIT_PATH,
                 handler=self._audit_route,
                 module=self.name,
@@ -177,8 +212,120 @@ class WebConsoleModule(Module):
                         help="Print the console URL instead of opening a browser.",
                     ),
                 ),
+                subcommands=(
+                    CliCommand(
+                        name="manifest",
+                        help="Print the GUI every loaded module declares (what the browser gets).",
+                        module_name=self.name,
+                        handler=self._manifest_command,
+                        show_in_wizard=False,
+                        args=(
+                            CliArgument(("--json",), dest="as_json", action="store_true",
+                                        help="Emit JSON."),
+                        ),
+                    ),
+                    CliCommand(
+                        name="prefs",
+                        help="Show, change or reset the remembered GUI choices.",
+                        module_name=self.name,
+                        show_in_wizard=False,
+                        subcommands=(
+                            CliCommand(
+                                name="show",
+                                help="Show the stored GUI preferences.",
+                                module_name=self.name,
+                                handler=self._prefs_show,
+                                show_in_wizard=False,
+                                args=_PREFS_ARGS,
+                            ),
+                            CliCommand(
+                                name="patch",
+                                help="Merge a JSON object into the preferences "
+                                "(a null value deletes that key).",
+                                module_name=self.name,
+                                handler=self._prefs_patch,
+                                show_in_wizard=False,
+                                args=(
+                                    CliArgument(("changes",), metavar="JSON",
+                                                help="e.g. '{\"defaults\": {\"job_queue.submit\":"
+                                                "{\"kind\": \"demo\"}}}'."),
+                                    *_PREFS_ARGS,
+                                ),
+                            ),
+                            CliCommand(
+                                name="reset",
+                                help="Forget the remembered choices (defaults stay unless "
+                                "named).",
+                                module_name=self.name,
+                                handler=self._prefs_reset,
+                                show_in_wizard=False,
+                                args=(
+                                    CliArgument(("sections",), metavar="SECTION", nargs="*",
+                                                help="nav, panels, buttons, values, defaults, "
+                                                "settings; none means all but defaults."),
+                                    *_PREFS_ARGS,
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
             )
         )
+
+    def _manifest_command(self, request: CliRequest) -> int:
+        manifest = self.manifest()  # the language is the chassis' own: kdx --locale de ...
+        if request.flag("as_json"):
+            dump_json(manifest)
+            return int(ExitCode.SUCCESS)
+        for entry in manifest["modules"]:
+            print_section(f"{entry['title']} ({entry['module']})")
+            print_table(
+                [[p["id"], p["type"], p["title"], p.get("source") or p.get("command") or ""]
+                 for p in entry["panels"]],
+                headers=("panel", "type", "title", "source / command"),
+            )
+        for issue in manifest["issues"]:
+            where = issue["module"] + (f".{issue['panel']}" if issue.get("panel") else "")
+            write_line(f"{TAG_ERROR} {where}: {issue['message']}")
+        if not manifest["modules"]:
+            write_line(f"{TAG_NOTE} no loaded module declares a [ui] table")
+        return int(ExitCode.SUCCESS)
+
+    def _prefs_user(self, request: CliRequest) -> str | None:
+        named = request.option("user")
+        if named:
+            return str(named)
+        return request.caller.name if request.caller is not None else None
+
+    def _prefs_emit(self, request: CliRequest, prefs: dict[str, Any]) -> int:
+        if request.flag("as_json"):
+            dump_json(prefs)
+            return int(ExitCode.SUCCESS)
+        for section in ("nav", "panels", "buttons", "values", "defaults", "settings"):
+            value = prefs[section]
+            write_line(f"{section}: " + (json.dumps(value, ensure_ascii=False) if value else "-"))
+        return int(ExitCode.SUCCESS)
+
+    def _prefs_show(self, request: CliRequest) -> int:
+        return self._prefs_emit(request, self.prefs.load(self._prefs_user(request)))
+
+    def _prefs_patch(self, request: CliRequest) -> int:
+        try:
+            changes = json.loads(str(request.option("changes") or ""))
+            prefs = self.prefs.patch(self._prefs_user(request), changes)
+        except (ValueError, PrefsError) as exc:
+            write_line(f"{TAG_ERROR} {exc}")
+            return int(ExitCode.USAGE_ERROR)
+        return self._prefs_emit(request, prefs)
+
+    def _prefs_reset(self, request: CliRequest) -> int:
+        sections = tuple(str(s) for s in (request.option("sections") or ()))
+        try:
+            prefs = self.prefs.reset(self._prefs_user(request), sections)
+        except PrefsError as exc:
+            write_line(f"{TAG_ERROR} {exc}")
+            return int(ExitCode.USAGE_ERROR)
+        return self._prefs_emit(request, prefs)
 
     def catalog(self) -> dict[str, Any]:
         """Return every runnable module command with the arguments it declares."""
@@ -215,6 +362,66 @@ class WebConsoleModule(Module):
 
     def _catalog_route(self, request: IpcRequest) -> dict[str, Any]:
         return self.catalog()
+
+    # -- manifest and preferences ----------------------------------------------------
+
+    def manifest(self, locale: str | None = None) -> dict[str, Any]:
+        """Return the GUI every active module declares, validated and translated."""
+        context = self.require_context()
+        service = context.i18n
+        chosen = normalize_locale(locale) if locale else service.locale
+        view = I18n(chosen or service.locale)
+        for domain, directory in service.domains().items():
+            view.register(domain, directory)
+        declarations: list[tuple[str, Any]] = []
+        failures: list[dict[str, str]] = []
+        registry = context.registry
+        for record in registry.active() if registry is not None else []:
+            declared = record.spec.metadata.get("ui")
+            if declared is None:
+                try:
+                    declared = record.module.ui_spec()
+                except Exception as exc:  # a module's bug must not take the GUI down
+                    failures.append(
+                        {"module": record.spec.name, "message": f"ui_spec() raised: {exc}"}
+                    )
+                    continue
+            declarations.append((record.spec.name, declared))
+        known = {entry["path"] for entry in self.catalog()["commands"]}
+        manifest = build_manifest(
+            declarations,
+            known_commands=known,
+            translate=lambda message, domain: view.translate(message, domain=domain),
+            locale=view.locale,
+        )
+        manifest["issues"].extend(failures)
+        return manifest
+
+    def _manifest_route(self, request: IpcRequest) -> dict[str, Any]:
+        requested = request.query.get("locale", [""])[0]
+        return self.manifest(requested or None)
+
+    @property
+    def prefs(self) -> PrefsStore:
+        """Return the preference store under ``data/ui/``."""
+        return PrefsStore(self.require_context().paths.durable_dir / "ui")
+
+    def _prefs_route(self, request: IpcRequest) -> Any:
+        """Read, replace, merge or reset the caller's own preferences."""
+        caller = request.caller or current_caller()
+        user = caller.name if caller is not None else None
+        store = self.prefs
+        try:
+            if request.method == "GET":
+                return store.load(user)
+            if request.method == "PUT":
+                return store.replace(user, request.payload)
+            if request.method == "PATCH":
+                return store.patch(user, request.payload)
+            sections = request.query.get("section", [])
+            return store.reset(user, tuple(sections))
+        except PrefsError as exc:
+            return 400, {"error": str(exc)}
 
     def i18n_payload(self, locale: str | None = None) -> dict[str, Any]:
         """Return the page's messages for *locale* (default: the chassis language)."""

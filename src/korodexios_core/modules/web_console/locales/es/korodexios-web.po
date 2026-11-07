@@ -208,3 +208,90 @@ msgstr "versión"
 
 msgid "who this token belongs to"
 msgstr "a quién pertenece este token"
+
+msgid "Customize"
+msgstr "Personalizar"
+
+msgid "Rename, hide and reorder tabs and panels; add your own buttons"
+msgstr "Renombrar, ocultar y reordenar pestañas y paneles; añadir tus propios botones"
+
+msgid "Shortcuts"
+msgstr "Atajos"
+
+msgid "Your shortcuts"
+msgstr "Tus atajos"
+
+msgid "Add a shortcut"
+msgstr "Añadir un atajo"
+
+msgid "button label"
+msgstr "etiqueta del botón"
+
+msgid "arguments, e.g. days=30, dry_run=true"
+msgstr "argumentos, p. ej. days=30, dry_run=true"
+
+msgid "Ask before running"
+msgstr "Preguntar antes de ejecutar"
+
+msgid "Add"
+msgstr "Añadir"
+
+msgid "Pinned defaults"
+msgstr "Valores predeterminados fijados"
+
+msgid "Reset layout"
+msgstr "Restablecer diseño"
+
+msgid "Forget the remembered layout, labels, shortcuts and form values (pinned defaults stay)"
+msgstr "Olvidar el diseño, las etiquetas, los atajos y los valores de formularios recordados (los valores fijados se conservan)"
+
+msgid "Up"
+msgstr "Subir"
+
+msgid "Down"
+msgstr "Bajar"
+
+msgid "Show"
+msgstr "Mostrar"
+
+msgid "Hide"
+msgstr "Ocultar"
+
+msgid "Remove"
+msgstr "Quitar"
+
+msgid "Save as default"
+msgstr "Guardar como predeterminado"
+
+msgid "Restore defaults"
+msgstr "Restaurar valores predeterminados"
+
+msgid "Clear default"
+msgstr "Quitar predeterminado"
+
+msgid "Nothing to show."
+msgstr "Nada que mostrar."
+
+msgid "No shortcuts yet. Use Customize, then add one below."
+msgstr "Aún no hay atajos. Usa Personalizar y añade uno abajo."
+
+msgid "No pinned defaults."
+msgstr "No hay valores fijados."
+
+msgid "Default saved"
+msgstr "Predeterminado guardado"
+
+msgid "Layout reset"
+msgstr "Diseño restablecido"
+
+msgid "Click again to run"
+msgstr "Haz clic de nuevo para ejecutar"
+
+msgid "Click again to reset"
+msgstr "Haz clic de nuevo para restablecer"
+
+msgid "this command is not available to you here"
+msgstr "este comando no está disponible para ti aquí"
+
+msgid "unknown command"
+msgstr "comando desconocido"

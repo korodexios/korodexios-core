@@ -169,3 +169,13 @@ tr.denied td { color: var(--bad); }
 
 .run-head { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
 .run-cancel { color: var(--bad); padding: 2px 10px; }
+
+/* ---- module panels and customization (modules.js) ---- */
+.panel { margin-bottom: 16px; }
+.panel-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.panel-head h2 { margin: 0 auto 0 0; }
+.panel-body .runs { margin-top: 8px; }
+.panel.ghost, .tabs button.ghost { opacity: 0.55; border-style: dashed; }
+input.inline { min-width: 12ch; }
+#btn-customize.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+#shortcut-list .row, #default-list .row { margin: 6px 0; align-items: center; }

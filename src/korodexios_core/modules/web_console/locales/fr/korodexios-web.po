@@ -208,3 +208,90 @@ msgstr "version"
 
 msgid "who this token belongs to"
 msgstr "à qui appartient ce jeton"
+
+msgid "Customize"
+msgstr "Personnaliser"
+
+msgid "Rename, hide and reorder tabs and panels; add your own buttons"
+msgstr "Renommer, masquer et réordonner onglets et panneaux ; ajouter vos propres boutons"
+
+msgid "Shortcuts"
+msgstr "Raccourcis"
+
+msgid "Your shortcuts"
+msgstr "Vos raccourcis"
+
+msgid "Add a shortcut"
+msgstr "Ajouter un raccourci"
+
+msgid "button label"
+msgstr "libellé du bouton"
+
+msgid "arguments, e.g. days=30, dry_run=true"
+msgstr "arguments, p. ex. days=30, dry_run=true"
+
+msgid "Ask before running"
+msgstr "Demander avant d'exécuter"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Pinned defaults"
+msgstr "Valeurs par défaut épinglées"
+
+msgid "Reset layout"
+msgstr "Réinitialiser la disposition"
+
+msgid "Forget the remembered layout, labels, shortcuts and form values (pinned defaults stay)"
+msgstr "Oublier la disposition, les libellés, les raccourcis et les valeurs de formulaire mémorisés (les valeurs épinglées restent)"
+
+msgid "Up"
+msgstr "Monter"
+
+msgid "Down"
+msgstr "Descendre"
+
+msgid "Show"
+msgstr "Afficher"
+
+msgid "Hide"
+msgstr "Masquer"
+
+msgid "Remove"
+msgstr "Retirer"
+
+msgid "Save as default"
+msgstr "Enregistrer par défaut"
+
+msgid "Restore defaults"
+msgstr "Rétablir les valeurs par défaut"
+
+msgid "Clear default"
+msgstr "Effacer la valeur par défaut"
+
+msgid "Nothing to show."
+msgstr "Rien à afficher."
+
+msgid "No shortcuts yet. Use Customize, then add one below."
+msgstr "Pas encore de raccourci. Utilisez Personnaliser, puis ajoutez-en un ci-dessous."
+
+msgid "No pinned defaults."
+msgstr "Aucune valeur par défaut épinglée."
+
+msgid "Default saved"
+msgstr "Valeur par défaut enregistrée"
+
+msgid "Layout reset"
+msgstr "Disposition réinitialisée"
+
+msgid "Click again to run"
+msgstr "Cliquez à nouveau pour exécuter"
+
+msgid "Click again to reset"
+msgstr "Cliquez à nouveau pour réinitialiser"
+
+msgid "this command is not available to you here"
+msgstr "cette commande n'est pas disponible ici pour vous"
+
+msgid "unknown command"
+msgstr "commande inconnue"

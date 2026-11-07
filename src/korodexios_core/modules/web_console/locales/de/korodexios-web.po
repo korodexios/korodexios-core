@@ -208,3 +208,90 @@ msgstr "Version"
 
 msgid "who this token belongs to"
 msgstr "wem dieser Token gehört"
+
+msgid "Customize"
+msgstr "Anpassen"
+
+msgid "Rename, hide and reorder tabs and panels; add your own buttons"
+msgstr "Tabs und Panels umbenennen, ausblenden und neu ordnen; eigene Schaltflächen hinzufügen"
+
+msgid "Shortcuts"
+msgstr "Verknüpfungen"
+
+msgid "Your shortcuts"
+msgstr "Deine Verknüpfungen"
+
+msgid "Add a shortcut"
+msgstr "Verknüpfung hinzufügen"
+
+msgid "button label"
+msgstr "Beschriftung der Schaltfläche"
+
+msgid "arguments, e.g. days=30, dry_run=true"
+msgstr "Argumente, z. B. days=30, dry_run=true"
+
+msgid "Ask before running"
+msgstr "Vor dem Ausführen nachfragen"
+
+msgid "Add"
+msgstr "Hinzufügen"
+
+msgid "Pinned defaults"
+msgstr "Fixierte Standardwerte"
+
+msgid "Reset layout"
+msgstr "Layout zurücksetzen"
+
+msgid "Forget the remembered layout, labels, shortcuts and form values (pinned defaults stay)"
+msgstr "Gemerktes Layout, Beschriftungen, Verknüpfungen und Formularwerte vergessen (fixierte Standardwerte bleiben)"
+
+msgid "Up"
+msgstr "Nach oben"
+
+msgid "Down"
+msgstr "Nach unten"
+
+msgid "Show"
+msgstr "Einblenden"
+
+msgid "Hide"
+msgstr "Ausblenden"
+
+msgid "Remove"
+msgstr "Entfernen"
+
+msgid "Save as default"
+msgstr "Als Standard speichern"
+
+msgid "Restore defaults"
+msgstr "Standardwerte wiederherstellen"
+
+msgid "Clear default"
+msgstr "Standard löschen"
+
+msgid "Nothing to show."
+msgstr "Nichts anzuzeigen."
+
+msgid "No shortcuts yet. Use Customize, then add one below."
+msgstr "Noch keine Verknüpfungen. Wähle Anpassen und füge unten eine hinzu."
+
+msgid "No pinned defaults."
+msgstr "Keine fixierten Standardwerte."
+
+msgid "Default saved"
+msgstr "Standard gespeichert"
+
+msgid "Layout reset"
+msgstr "Layout zurückgesetzt"
+
+msgid "Click again to run"
+msgstr "Zum Ausführen erneut klicken"
+
+msgid "Click again to reset"
+msgstr "Zum Zurücksetzen erneut klicken"
+
+msgid "this command is not available to you here"
+msgstr "dieser Befehl steht dir hier nicht zur Verfügung"
+
+msgid "unknown command"
+msgstr "unbekannter Befehl"

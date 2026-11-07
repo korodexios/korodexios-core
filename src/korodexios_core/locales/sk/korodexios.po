@@ -334,6 +334,10 @@ msgstr "Priečinok v cieli [názov projektu]."
 msgid "Follow the daemon's live events (Ctrl+C to stop)."
 msgstr "Sleduje udalosti démona naživo (zastavíš ich Ctrl+C)."
 
+#: modules/web_console/module.py
+msgid "Forget the remembered choices (defaults stay unless named)."
+msgstr "Zabudnúť zapamätané voľby (predvolené hodnoty ostanú, ak ich nepomenuješ)."
+
 #: modules/job_queue/module.py
 msgid "Handler kind."
 msgstr "Druh handlera."
@@ -522,6 +526,10 @@ msgstr "Spravuje pomenovaných používateľov riadiacej roviny a ich role."
 msgid "Memory"
 msgstr "Pamäť"
 
+#: modules/web_console/module.py
+msgid "Merge a JSON object into the preferences (a null value deletes that key)."
+msgstr "Zlúčiť JSON objekt do nastavení (hodnota null daný kľúč zmaže)."
+
 #: modules/wiki/module.py
 msgid "Merge this wiki into another one (an LLM-wiki, Obsidian, a git wiki), or print it as JSON."
 msgstr "Zlúči túto wiki do inej (LLM-wiki, Obsidian, git wiki) alebo ju vypíše ako JSON."
@@ -673,6 +681,10 @@ msgstr "Vypíše jednu stránku (v predvolenom jazyku, keď LANG chýba)."
 #: cli/proposal.py
 msgid "Print one proposal note."
 msgstr "Vypíše jeden návrh."
+
+#: modules/web_console/module.py
+msgid "Print the GUI every loaded module declares (what the browser gets)."
+msgstr "Vypísať GUI, ktoré deklaruje každý načítaný modul (to, čo dostane prehliadač)."
 
 #: cli/language.py
 msgid "Print the active language and where the choice came from."
@@ -878,6 +890,10 @@ msgstr "Zobrazí merania (z bežiaceho démona, ak beží)."
 msgid "Show the plan; write nothing."
 msgstr "Zobrazí plán; nič nezapíše."
 
+#: modules/web_console/module.py
+msgid "Show the stored GUI preferences."
+msgstr "Zobraziť uložené nastavenia GUI."
+
 #: modules/wiki/module.py
 msgid "Show the wiki log, or append one entry to it."
 msgstr "Zobrazí log wiki alebo doň pridá jeden záznam."
@@ -885,6 +901,10 @@ msgstr "Zobrazí log wiki alebo doň pridá jeden záznam."
 #: cli/users.py
 msgid "Show who acted over the control plane (commands, jobs, reloads, stops)."
 msgstr "Zobrazí, kto konal cez riadiacu rovinu (príkazy, úlohy, načítania, zastavenia)."
+
+#: modules/web_console/module.py
+msgid "Show, change or reset the remembered GUI choices."
+msgstr "Zobraziť, zmeniť alebo obnoviť zapamätané voľby GUI."
 
 #: cli/language.py
 msgid "Show, choose, and verify the language (message catalogues)."
@@ -1025,6 +1045,10 @@ msgstr "Ktorá wiki [all]."
 #: cli/brief.py
 msgid "Who uses it, and how (terminal, web page, other programs)?"
 msgstr "Kto ju používa a ako (terminál, webová stránka, iné programy)?"
+
+#: modules/web_console/module.py
+msgid "Whose preferences (default: the signed-in user, else 'default')."
+msgstr "Čie nastavenia (predvolene prihlásený používateľ, inak 'default')."
 
 #: cli/limiter.py
 msgid "Why, shown in doctor."
@@ -1354,6 +1378,10 @@ msgstr "skúšobný beh: nič sa nezapísalo"
 msgid "durable, never touched: {root}"
 msgstr "trvalé, nikdy sa ich nedotkne: {root}"
 
+#: modules/web_console/module.py
+msgid "e.g. '{\"defaults\": {\"job_queue.submit\":{\"kind\": \"demo\"}}}'."
+msgstr "napr. '{\"defaults\": {\"job_queue.submit\": {\"kind\": \"demo\"}}}'."
+
 #: cli/commands.py
 msgid "ecosystem"
 msgstr "ekosystém"
@@ -1638,6 +1666,10 @@ msgstr "uveďte wiki, do ktorej sa zlučuje: kdx wiki export DIR"
 msgid "named locks"
 msgstr "pomenované zámky"
 
+#: modules/web_console/module.py
+msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
+msgstr "nav, panels, buttons, values, defaults, settings; bez názvu sa myslia všetky okrem defaults."
+
 #: cli/commands.py
 msgid "next: cd {root} && uv sync --extra dev && uv run {script} run"
 msgstr "ďalej: cd {root} && uv sync --extra dev && uv run {script} run"
@@ -1713,6 +1745,10 @@ msgstr "žiadne nálezy diagnostiky"
 #: cli/limiter.py
 msgid "no limiters recorded"
 msgstr "nie sú zaznamenané žiadne limitery"
+
+#: modules/web_console/module.py
+msgid "no loaded module declares a [ui] table"
+msgstr "žiadny načítaný modul nedeklaruje tabuľku [ui]"
 
 #: cli/commands.py
 msgid "no log file found at {log_path}"
@@ -1861,6 +1897,10 @@ msgstr "balík"
 #: modules/wiki/module.py
 msgid "page"
 msgstr "stránka"
+
+#: modules/web_console/module.py
+msgid "panel"
+msgstr "panel"
 
 #: modules/backup_engine/module.py
 msgid "pass --force to copy anyway"
@@ -2078,6 +2118,10 @@ msgstr "pomalé obslužné funkcie"
 msgid "source"
 msgstr "zdroj"
 
+#: modules/web_console/module.py
+msgid "source / command"
+msgstr "zdroj / príkaz"
+
 #: cli/agents.py
 msgid "stale"
 msgstr "zastaraný"
@@ -2294,7 +2338,7 @@ msgstr "čas"
 msgid "timings"
 msgstr "časovanie"
 
-#: modules/wiki/module.py
+#: modules/web_console/module.py
 msgid "title"
 msgstr "názov"
 
@@ -2314,7 +2358,7 @@ msgstr "spolu"
 msgid "truncate the log file (asks first)"
 msgstr "vyprázdni logový súbor (najprv sa opýta)"
 
-#: modules/wiki/module.py
+#: modules/web_console/module.py
 msgid "type"
 msgstr "typ"
 

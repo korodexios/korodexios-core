@@ -492,6 +492,55 @@ owner = "korodexios"
 - `kdx modules list` shows origin (`builtin`, `project`, `path`) and state; `kdx
   modules show <name>` prints the spec plus `health()`.
 
+### 8.1 The module's GUI - the `[ui]` table
+
+A module describes its GUI as **data**; it writes no HTML or JavaScript. Declare a `[ui]`
+table in `kdx_module.toml` (or return the same shape from `Module.ui_spec()` when the
+declaration depends on code). The chassis validates it and serves one manifest at
+`GET /api/v1/ui/manifest` (`kdx ui manifest --json` prints exactly that). The web console, or a
+project's own React app, draws a tab for every *loaded* module that declares panels; a module
+that is disabled has no tab.
+
+```toml
+[ui]
+title = "Queue"              # tab label; translated when 'i18n' names a registered domain
+order = 40                   # lower comes first; ties by module name
+# i18n = "my_domain"         # optional: translate title/help/labels with this domain
+# nav = false                # optional: keep the module out of the navigation
+
+[[ui.panels]]
+id = "tasks"                 # ^[a-z][a-z0-9_-]*$, unique inside the module
+type = "table"              # table | keyvalue | log | text | form | actions
+title = "Latest tasks"
+source = "/api/v1/queue"    # a control-plane route under /api/v1/ (GET)
+path = "tasks"              # dotted key into the JSON answer
+columns = ["id", "kind", "state"]   # table only; strings or { key, label }
+refresh = 5                  # seconds; 0 (default) loads once
+```
+
+| Panel type | Fields | Draws |
+| --- | --- | --- |
+| `table` | `source`, `path`, `columns` | rows of an array of objects |
+| `keyvalue` | `source`, `path` | one object as label/value pairs |
+| `log` | `source`, `path` | lines of text |
+| `text` | `text` | static text |
+| `form` | `command`, `args` | a form built from the command's declared `CliArgument`s |
+| `actions` | `buttons = [{ id, label, command, args, confirm, danger }]` | buttons that run commands |
+
+Rules the validator enforces (a broken panel is dropped and listed under `issues`; it never
+takes the GUI down): a `command` must be a runnable command path (`queue purge`), a `source`
+must live under `/api/v1/`, ids are unique, and everything is plain data. Check your work with
+`kdx ui manifest` - an empty `issues` list means every panel was accepted.
+
+**What the person using the GUI can change** is stored per user on the daemon
+(`data/ui/prefs-<user>.json`, `GET/PUT/PATCH/DELETE /api/v1/ui/prefs`, `kdx ui prefs
+show|patch|reset`): relabel, hide or reorder a tab or panel (`nav`, `panels`), their own
+buttons (`buttons`: a label that runs a known command), the last values typed into each form
+(`values`, restored next time), values they pinned on purpose (`defaults`, restored by
+"Restore defaults" and kept by `kdx ui prefs reset`), and interface `settings` (`locale`,
+`theme`, `last_tab`, `density`). The manifest is only the default; never put per-person
+state in a module's `[ui]`.
+
 ## 9. Configuration Precedence and Discovery
 
 Five layers, lowest to highest: **defaults -> `kdx.yml` -> `kdx.local.yml` ->

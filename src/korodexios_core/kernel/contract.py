@@ -268,6 +268,16 @@ class Module:
         """
         return ()
 
+    def ui_spec(self) -> Any:
+        """Describe this module's part of the GUI as data; the default has none.
+
+        Return a mapping shaped like the ``[ui]`` table of ``kdx_module.toml`` (a title,
+        an order and a list of panels) when the declaration depends on code; a module that
+        can say it statically writes the table in its manifest instead. Either way the
+        chassis validates it and a generic renderer draws it - see ``kernel/ui_manifest``.
+        """
+        return None
+
     def diagnostics(self) -> tuple[Any, ...]:
         """Contribute named checks, with severity and hint, to 'kdx doctor'.
 
