@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.3.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.4.
 
 ## Working preferences
 
@@ -52,12 +52,19 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 
 ## Current state (2026-11-07)
 
-- v0.6.3 is prepared in the working tree of `main` (not committed, tagged or pushed; the owner decides):
-  settings editor (`kdx config set|unset|schema`, `config/editor.py`, `cli/config_edit.py`,
-  `/api/v1/ui/config/schema` and `/edit`, `settings` panel), table typed cells / row actions /
-  detail, form `fields` (`choices_from`, textarea, slider). From a proposal sent by a downstream
-  project; items 4-8 (status strip, upload and Range, theme tokens, event-driven panels, `embed`)
-  were deliberately left out. The version pins in README/install scripts already name `v0.6.3`.
+- v0.6.4 (the owner asked for version, tag and push): the one-window shell. Backend:
+  `kernel/ui_theme.py` (`--kdx-*` tokens, aliases for older names, `.css`/`.json` themes from
+  `<root>/themes/` and `data/ui/themes/`, WCAG check), `kernel/ui_tree.py` (node shape of a tree
+  route), prefs `layout`, manifest `position`/`badge`/`[[ui.sections]]`/`dock`/`locked`; CLI
+  `kdx ui layout|theme|--shell`. Front end: `modules/web_console/static/shell.{html,js,css}`
+  draws every panel type (the classic console stays at `/ui/`). Not done: split panes, command
+  palette, shortcut sheet, translated shell texts (English only); never tried against a real
+  downstream project, only a demo module.
+- v0.6.3 (tagged): settings editor (`kdx config set|unset|schema`, `config/editor.py`,
+  `cli/config_edit.py`, `/api/v1/ui/config/schema` and `/edit`, `settings` panel), table typed
+  cells / row actions / detail, form `fields` (`choices_from`, textarea, slider). From a proposal
+  sent by a downstream project; items 4-8 (status strip, upload and Range, theme tokens,
+  event-driven panels, `embed`) were deliberately left out (theme tokens came in 0.6.4).
 
 - `main` is at v0.6.2 (the owner asked for merge, tag and push): the GUI manifest (`[ui]` in
   `kdx_module.toml`, `/api/v1/ui/manifest`) with per-user remembered choices (`kdx ui prefs`), GUI tiers

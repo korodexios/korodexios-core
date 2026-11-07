@@ -5,6 +5,8 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.6.4] - 2026-11-07
+
 ### Added
 
 - Backend for a one-window shell, usable from the terminal first:
