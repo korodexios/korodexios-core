@@ -54,6 +54,10 @@ msgstr "--rotate et --clear s'excluent mutuellement"
 msgid "... and {count} more"
 msgstr "... et {count} de plus"
 
+#: cli/container_doctor.py
+msgid "Add the keys .env lacks (never overwrites)."
+msgstr "Ajouter les clés qui manquent à .env (n'écrase jamais)."
+
 #: modules/job_queue/module.py
 msgid "Age in days."
 msgstr "Ancienneté en jours."
@@ -125,6 +129,10 @@ msgstr "Primitives du châssis"
 #: cli/language.py
 msgid "Check the file and report; write nothing."
 msgstr "Vérifie le fichier et rend compte ; n'écrit rien."
+
+#: cli/container_doctor.py
+msgid "Check user ids and container engines; propose settings, change nothing."
+msgstr "Vérifier les id utilisateur et les moteurs de conteneurs ; proposer des réglages sans rien changer."
 
 #: cli/language.py
 msgid "Choose the language for this machine (writes kdx.local.yml)."
@@ -694,6 +702,10 @@ msgstr "Chemins"
 msgid "Print (or write) the MCP client configuration for this project."
 msgstr "Affiche (ou écrit) la configuration du client MCP pour ce projet."
 
+#: cli/container_doctor.py
+msgid "Print KDX_UID and KDX_GID for compose; --write adds missing keys to .env."
+msgstr "Afficher KDX_UID et KDX_GID pour compose ; --write ajoute les clés manquantes à .env."
+
 #: modules/system_info/module.py
 msgid "Print a full system snapshot."
 msgstr "Affiche un instantané complet du système."
@@ -825,6 +837,10 @@ msgstr "Signale les clés que rien ne lit ; code 3 si une clé est une faute de 
 #: modules/backup_engine/module.py
 msgid "Report the retention window, standing copies, and sweep record."
 msgstr "Indique la fenêtre de rétention, les copies en place et le journal de nettoyage."
+
+#: cli/container_doctor.py
+msgid "Report uid, gid, id mapping and rootless readiness; propose a free subuid range if one is needed."
+msgstr "Indiquer uid, gid, correspondance des id et disponibilité rootless ; proposer une plage subuid libre si besoin."
 
 #: modules/web_console/module.py
 msgid "Report what this machine can run for a GUI: Node, Bun, browsers, a display, headless testing."
@@ -1166,9 +1182,17 @@ msgstr "un SIGHUP envoyé au démon fait la même chose"
 msgid "a file a person wrote is kept; --force replaces it"
 msgstr "un fichier écrit par une personne est conservé ; --force le remplace"
 
+#: cli/container_doctor.py
+msgid "a free range that nobody uses (review it, then run as admin):"
+msgstr "une plage libre que personne n'utilise (vérifiez-la, puis exécutez en administrateur) :"
+
 #: cli/proposal.py
 msgid "a proposal needs a title"
 msgstr "une proposition a besoin d'un titre"
+
+#: cli/container_doctor.py
+msgid "a rootless engine has the ids it needs"
+msgstr "un moteur rootless dispose des id nécessaires"
 
 #: cli/txn.py
 msgid "action"
@@ -1181,6 +1205,10 @@ msgstr "actif"
 #: cli/users.py
 msgid "add one with: kdx users add NAME --role operator"
 msgstr "ajoutez-en un avec : kdx users add NOM --role operator"
+
+#: cli/container_doctor.py
+msgid "added to .env: {keys}"
+msgstr "ajouté à .env : {keys}"
 
 #: cli/txn.py
 msgid "after"
@@ -1366,6 +1394,10 @@ msgstr "conteneur"
 msgid "container engines"
 msgstr "moteurs de conteneurs"
 
+#: cli/container_doctor.py
+msgid "container user"
+msgstr "utilisateur du conteneur"
+
 #: cli/commands.py
 msgid "contract directory"
 msgstr "répertoire des contrats"
@@ -1486,6 +1518,10 @@ msgstr "écosystème"
 msgid "endpoint"
 msgstr "point d'accès"
 
+#: cli/container_doctor.py
+msgid "engines"
+msgstr "moteurs"
+
 #: cli/commands.py
 msgid "entrypoint"
 msgstr "point d'entrée"
@@ -1605,6 +1641,10 @@ msgstr "comment décider"
 #: cli/jobs.py
 msgid "id"
 msgstr "id"
+
+#: cli/container_doctor.py
+msgid "id mapping"
+msgstr "correspondance des id"
 
 #: modules/system_info/module.py
 msgid "inodes"
@@ -2338,6 +2378,10 @@ msgstr "affiche les lignes ajoutées en continu jusqu'à Ctrl-C"
 msgid "subscriptions"
 msgstr "abonnements"
 
+#: cli/container_doctor.py
+msgid "subuid"
+msgstr "subuid"
+
 #: cli/db.py
 msgid "table"
 msgstr "table"
@@ -2558,7 +2602,7 @@ msgstr "utilisé"
 msgid "used today"
 msgstr "utilisé aujourd'hui"
 
-#: cli/jobs.py
+#: cli/container_doctor.py
 msgid "user"
 msgstr "utilisateur"
 

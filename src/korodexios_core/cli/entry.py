@@ -22,6 +22,7 @@ from ..version import format_version
 from .agents import agents_command
 from .brief import brief_command
 from .commands import core_commands, render_rpc_reply, wizard_command
+from .container_doctor import container_command
 from .conventions import conventions_command
 from .db import db_command
 from .jobs import events_command, jobs_command, stop_command
@@ -658,6 +659,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         surface.add_command(txn_command())
         surface.add_command(limiter_command())
         surface.add_command(db_command())
+        surface.add_command(container_command())
         chassis.reserved_cli = frozenset(surface.names())
         chassis.collect_cli(surface)
 

@@ -52,6 +52,10 @@ msgstr ""
 msgid "... and {count} more"
 msgstr ""
 
+#: cli/container_doctor.py
+msgid "Add the keys .env lacks (never overwrites)."
+msgstr ""
+
 #: modules/job_queue/module.py
 msgid "Age in days."
 msgstr ""
@@ -122,6 +126,10 @@ msgstr ""
 
 #: cli/language.py
 msgid "Check the file and report; write nothing."
+msgstr ""
+
+#: cli/container_doctor.py
+msgid "Check user ids and container engines; propose settings, change nothing."
 msgstr ""
 
 #: cli/language.py
@@ -692,6 +700,10 @@ msgstr ""
 msgid "Print (or write) the MCP client configuration for this project."
 msgstr ""
 
+#: cli/container_doctor.py
+msgid "Print KDX_UID and KDX_GID for compose; --write adds missing keys to .env."
+msgstr ""
+
 #: modules/system_info/module.py
 msgid "Print a full system snapshot."
 msgstr ""
@@ -822,6 +834,10 @@ msgstr ""
 
 #: modules/backup_engine/module.py
 msgid "Report the retention window, standing copies, and sweep record."
+msgstr ""
+
+#: cli/container_doctor.py
+msgid "Report uid, gid, id mapping and rootless readiness; propose a free subuid range if one is needed."
 msgstr ""
 
 #: modules/web_console/module.py
@@ -1164,8 +1180,16 @@ msgstr ""
 msgid "a file a person wrote is kept; --force replaces it"
 msgstr ""
 
+#: cli/container_doctor.py
+msgid "a free range that nobody uses (review it, then run as admin):"
+msgstr ""
+
 #: cli/proposal.py
 msgid "a proposal needs a title"
+msgstr ""
+
+#: cli/container_doctor.py
+msgid "a rootless engine has the ids it needs"
 msgstr ""
 
 #: cli/txn.py
@@ -1178,6 +1202,10 @@ msgstr ""
 
 #: cli/users.py
 msgid "add one with: kdx users add NAME --role operator"
+msgstr ""
+
+#: cli/container_doctor.py
+msgid "added to .env: {keys}"
 msgstr ""
 
 #: cli/txn.py
@@ -1364,6 +1392,10 @@ msgstr ""
 msgid "container engines"
 msgstr ""
 
+#: cli/container_doctor.py
+msgid "container user"
+msgstr ""
+
 #: cli/commands.py
 msgid "contract directory"
 msgstr ""
@@ -1484,6 +1516,10 @@ msgstr ""
 msgid "endpoint"
 msgstr ""
 
+#: cli/container_doctor.py
+msgid "engines"
+msgstr ""
+
 #: cli/commands.py
 msgid "entrypoint"
 msgstr ""
@@ -1602,6 +1638,10 @@ msgstr ""
 
 #: cli/jobs.py
 msgid "id"
+msgstr ""
+
+#: cli/container_doctor.py
+msgid "id mapping"
 msgstr ""
 
 #: modules/system_info/module.py
@@ -2336,6 +2376,10 @@ msgstr ""
 msgid "subscriptions"
 msgstr ""
 
+#: cli/container_doctor.py
+msgid "subuid"
+msgstr ""
+
 #: cli/db.py
 msgid "table"
 msgstr ""
@@ -2556,7 +2600,7 @@ msgstr ""
 msgid "used today"
 msgstr ""
 
-#: cli/jobs.py
+#: cli/container_doctor.py
 msgid "user"
 msgstr ""
 

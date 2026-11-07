@@ -39,7 +39,7 @@ def test_the_dockerfile_is_multistage_unprivileged_and_health_checked() -> None:
     words = instructions(dockerfile)
     assert set(words) <= INSTRUCTIONS, set(words) - INSTRUCTIONS
     assert words[0] == "FROM" and words.count("FROM") == 2  # build stage + runtime stage
-    assert "USER kdx" in dockerfile and "--uid 10001" in dockerfile
+    assert "USER ${KDX_UID}:${KDX_GID}" in dockerfile and "ARG KDX_UID=10001" in dockerfile
     assert "HEALTHCHECK" in dockerfile and "/health" in dockerfile
     assert 'CMD ["demo-app", "run"]' in dockerfile
     assert "KDX_CORE__IPC__HOST=0.0.0.0" in dockerfile

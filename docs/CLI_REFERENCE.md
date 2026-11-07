@@ -555,6 +555,24 @@ so state survives `docker compose down` and an image rebuild. With the default g
 the build stage installs `git`. `kdx ui doctor` reports the container engines found and whether
 it runs inside a container (then there is no display, so headed tests are skipped).
 
+User ids are never assumed. The image takes `KDX_UID`/`KDX_GID` build arguments (compose passes them
+from `.env`; default 10001), reuses an account that already has that id instead of changing it, and
+runs as that id, so a bind-mounted directory can belong to whoever runs the stack (often 1000, but
+the chassis reads the real value):
+
+```bash
+kdx container doctor [--json]        # uid/gid, id mapping, subuid ranges, engines, rootless readiness
+kdx container env [--write] [--json] # KDX_UID/KDX_GID for compose; --write adds only missing keys to .env
+```
+
+`doctor` only reads: `/proc/self/uid_map`, `/etc/passwd`, `/etc/group`, `/etc/subuid`, `/etc/subgid`
+and the engines on PATH. When a rootless engine (Podman) lacks usable subordinate ids - typically
+inside an LXC, where the range must lie inside the ids the container maps - it proposes a block that
+no account and no other user's range uses, keeping the low ids free for accounts created later, and
+prints the exact `sudo usermod ...` command. The chassis never edits `/etc/subuid` or an existing
+account itself; that is the administrator's decision. Inside an LXC the lasting fix is a wider idmap
+on the LXC host.
+
 Linux distributions: `scripts/distro-check.sh` runs ruff, mypy and pytest in a clean image with
 the distribution's own Python as an unprivileged user (`docker run --rm -v "$PWD:/src:ro" debian:13
 sh /src/scripts/distro-check.sh`). CI runs it for Debian 13, Ubuntu 24.04, Fedora 42, Alpine 3.21,

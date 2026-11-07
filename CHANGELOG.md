@@ -23,6 +23,10 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - `kdx init --container`: Dockerfile (multi-stage, unprivileged user, healthcheck, Node stage for the
   react tier), `compose.yaml` (token required, loopback port, state volumes) and `.dockerignore`, for
   Docker and Podman. `kdx ui doctor` reports container engines and whether it runs inside a container.
+- `kdx container doctor|env`: reads uid/gid, the user-namespace id map, `/etc/passwd`, `/etc/subuid`
+  and the engines, and proposes a free subordinate id range (never one another user or account owns;
+  it changes nothing itself). The seeded image takes `KDX_UID`/`KDX_GID` build arguments and reuses an
+  existing account; base images are fully qualified so Podman can resolve them.
 - `scripts/distro-check.sh` and a CI `distros` job: ruff, mypy and pytest in clean Debian, Ubuntu,
   Fedora, Alpine, Arch and python-slim images with the distribution's own Python.
 - `kdx ui test [--headed] [--install]`: one command for the manifest check, the web app's type

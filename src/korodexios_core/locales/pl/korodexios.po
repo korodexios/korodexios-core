@@ -54,6 +54,10 @@ msgstr "--rotate i --clear wzajemnie się wykluczają"
 msgid "... and {count} more"
 msgstr "... i {count} więcej"
 
+#: cli/container_doctor.py
+msgid "Add the keys .env lacks (never overwrites)."
+msgstr "Dodaj klucze, których brakuje w .env (nigdy nie nadpisuje)."
+
 #: modules/job_queue/module.py
 msgid "Age in days."
 msgstr "Wiek w dniach."
@@ -125,6 +129,10 @@ msgstr "Elementy podstawowe szkieletu"
 #: cli/language.py
 msgid "Check the file and report; write nothing."
 msgstr "Sprawdź plik i zgłoś wynik; nic nie zapisuj."
+
+#: cli/container_doctor.py
+msgid "Check user ids and container engines; propose settings, change nothing."
+msgstr "Sprawdź identyfikatory użytkownika i silniki kontenerów; zaproponuj ustawienia, nic nie zmieniaj."
 
 #: cli/language.py
 msgid "Choose the language for this machine (writes kdx.local.yml)."
@@ -694,6 +702,10 @@ msgstr "Ścieżki"
 msgid "Print (or write) the MCP client configuration for this project."
 msgstr "Wyświetla (lub zapisuje) konfigurację klienta MCP dla tego projektu."
 
+#: cli/container_doctor.py
+msgid "Print KDX_UID and KDX_GID for compose; --write adds missing keys to .env."
+msgstr "Wypisz KDX_UID i KDX_GID dla compose; --write dopisuje brakujące klucze do .env."
+
 #: modules/system_info/module.py
 msgid "Print a full system snapshot."
 msgstr "Wypisz pełną migawkę systemu."
@@ -825,6 +837,10 @@ msgstr "Zgłoś klucze, których nic nie czyta; zakończ kodem 3, gdy klucz jest
 #: modules/backup_engine/module.py
 msgid "Report the retention window, standing copies, and sweep record."
 msgstr "Pokaż okno retencji, trwające kopie i zapis czyszczenia."
+
+#: cli/container_doctor.py
+msgid "Report uid, gid, id mapping and rootless readiness; propose a free subuid range if one is needed."
+msgstr "Pokaż uid, gid, mapowanie id i gotowość rootless; w razie potrzeby zaproponuj wolny zakres subuid."
 
 #: modules/web_console/module.py
 msgid "Report what this machine can run for a GUI: Node, Bun, browsers, a display, headless testing."
@@ -1166,9 +1182,17 @@ msgstr "SIGHUP wysłany do demona robi to samo"
 msgid "a file a person wrote is kept; --force replaces it"
 msgstr "plik napisany przez człowieka zostaje; --force go zastępuje"
 
+#: cli/container_doctor.py
+msgid "a free range that nobody uses (review it, then run as admin):"
+msgstr "wolny zakres, którego nikt nie używa (sprawdź i uruchom jako administrator):"
+
 #: cli/proposal.py
 msgid "a proposal needs a title"
 msgstr "propozycja wymaga tytułu"
+
+#: cli/container_doctor.py
+msgid "a rootless engine has the ids it needs"
+msgstr "silnik rootless ma potrzebne identyfikatory"
 
 #: cli/txn.py
 msgid "action"
@@ -1181,6 +1205,10 @@ msgstr "aktywny"
 #: cli/users.py
 msgid "add one with: kdx users add NAME --role operator"
 msgstr "dodaj go poleceniem: kdx users add NAME --role operator"
+
+#: cli/container_doctor.py
+msgid "added to .env: {keys}"
+msgstr "dodano do .env: {keys}"
 
 #: cli/txn.py
 msgid "after"
@@ -1366,6 +1394,10 @@ msgstr "kontener"
 msgid "container engines"
 msgstr "silniki kontenerów"
 
+#: cli/container_doctor.py
+msgid "container user"
+msgstr "użytkownik w kontenerze"
+
 #: cli/commands.py
 msgid "contract directory"
 msgstr "katalog kontraktów"
@@ -1486,6 +1518,10 @@ msgstr "ekosystem"
 msgid "endpoint"
 msgstr "punkt końcowy"
 
+#: cli/container_doctor.py
+msgid "engines"
+msgstr "silniki"
+
 #: cli/commands.py
 msgid "entrypoint"
 msgstr "punkt wejścia"
@@ -1605,6 +1641,10 @@ msgstr "jak zdecydować"
 #: cli/jobs.py
 msgid "id"
 msgstr "id"
+
+#: cli/container_doctor.py
+msgid "id mapping"
+msgstr "mapowanie id"
 
 #: modules/system_info/module.py
 msgid "inodes"
@@ -2338,6 +2378,10 @@ msgstr "przesyłaj nowo dopisane wiersze do Ctrl-C"
 msgid "subscriptions"
 msgstr "subskrypcje"
 
+#: cli/container_doctor.py
+msgid "subuid"
+msgstr "subuid"
+
 #: cli/db.py
 msgid "table"
 msgstr "tabela"
@@ -2558,7 +2602,7 @@ msgstr "użyte"
 msgid "used today"
 msgstr "zużyto dziś"
 
-#: cli/jobs.py
+#: cli/container_doctor.py
 msgid "user"
 msgstr "użytkownik"
 

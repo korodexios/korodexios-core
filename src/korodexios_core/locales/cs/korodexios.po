@@ -54,6 +54,10 @@ msgstr "--rotate a --clear se navzájem vylučují"
 msgid "... and {count} more"
 msgstr "... a dalších {count}"
 
+#: cli/container_doctor.py
+msgid "Add the keys .env lacks (never overwrites)."
+msgstr "Přidat klíče, které .env nemá (nikdy nepřepisuje)."
+
 #: modules/job_queue/module.py
 msgid "Age in days."
 msgstr "Stáří ve dnech."
@@ -125,6 +129,10 @@ msgstr "Základní prvky šasi"
 #: cli/language.py
 msgid "Check the file and report; write nothing."
 msgstr "Zkontroluje soubor a ohlásí výsledek; nic nezapíše."
+
+#: cli/container_doctor.py
+msgid "Check user ids and container engines; propose settings, change nothing."
+msgstr "Zkontrolovat id uživatele a kontejnerové nástroje; navrhnout nastavení, nic neměnit."
 
 #: cli/language.py
 msgid "Choose the language for this machine (writes kdx.local.yml)."
@@ -694,6 +702,10 @@ msgstr "Cesty"
 msgid "Print (or write) the MCP client configuration for this project."
 msgstr "Vypíše (nebo zapíše) konfiguraci MCP klienta pro tento projekt."
 
+#: cli/container_doctor.py
+msgid "Print KDX_UID and KDX_GID for compose; --write adds missing keys to .env."
+msgstr "Vypsat KDX_UID a KDX_GID pro compose; --write doplní chybějící klíče do .env."
+
 #: modules/system_info/module.py
 msgid "Print a full system snapshot."
 msgstr "Vypíše úplný snímek systému."
@@ -825,6 +837,10 @@ msgstr "Ohlásí klíče, které nic nečte; je-li klíč překlep, skončí kó
 #: modules/backup_engine/module.py
 msgid "Report the retention window, standing copies, and sweep record."
 msgstr "Ohlásí okno uchovávání, platné kopie a záznam o čištění."
+
+#: cli/container_doctor.py
+msgid "Report uid, gid, id mapping and rootless readiness; propose a free subuid range if one is needed."
+msgstr "Ukázat uid, gid, mapování id a připravenost rootless; v případě potřeby navrhnout volný rozsah subuid."
 
 #: modules/web_console/module.py
 msgid "Report what this machine can run for a GUI: Node, Bun, browsers, a display, headless testing."
@@ -1166,9 +1182,17 @@ msgstr "totéž udělá SIGHUP poslaný démonovi"
 msgid "a file a person wrote is kept; --force replaces it"
 msgstr "soubor, který napsal člověk, zůstává; --force ho nahradí"
 
+#: cli/container_doctor.py
+msgid "a free range that nobody uses (review it, then run as admin):"
+msgstr "volný rozsah, který nikdo nepoužívá (zkontroluj ho a spusť jako admin):"
+
 #: cli/proposal.py
 msgid "a proposal needs a title"
 msgstr "návrh potřebuje název"
+
+#: cli/container_doctor.py
+msgid "a rootless engine has the ids it needs"
+msgstr "rootless nástroj má id, která potřebuje"
 
 #: cli/txn.py
 msgid "action"
@@ -1181,6 +1205,10 @@ msgstr "aktivní"
 #: cli/users.py
 msgid "add one with: kdx users add NAME --role operator"
 msgstr "přidej ho přes: kdx users add JMÉNO --role operator"
+
+#: cli/container_doctor.py
+msgid "added to .env: {keys}"
+msgstr "přidáno do .env: {keys}"
 
 #: cli/txn.py
 msgid "after"
@@ -1366,6 +1394,10 @@ msgstr "kontejner"
 msgid "container engines"
 msgstr "kontejnerové nástroje"
 
+#: cli/container_doctor.py
+msgid "container user"
+msgstr "uživatel v kontejneru"
+
 #: cli/commands.py
 msgid "contract directory"
 msgstr "adresář kontraktů"
@@ -1486,6 +1518,10 @@ msgstr "ekosystém"
 msgid "endpoint"
 msgstr "koncový bod"
 
+#: cli/container_doctor.py
+msgid "engines"
+msgstr "nástroje"
+
 #: cli/commands.py
 msgid "entrypoint"
 msgstr "vstupní bod"
@@ -1605,6 +1641,10 @@ msgstr "jak se rozhodnout"
 #: cli/jobs.py
 msgid "id"
 msgstr "id"
+
+#: cli/container_doctor.py
+msgid "id mapping"
+msgstr "mapování id"
 
 #: modules/system_info/module.py
 msgid "inodes"
@@ -2338,6 +2378,10 @@ msgstr "průběžně vypisuje nové řádky, dokud nestiskneš Ctrl-C"
 msgid "subscriptions"
 msgstr "odběry"
 
+#: cli/container_doctor.py
+msgid "subuid"
+msgstr "subuid"
+
 #: cli/db.py
 msgid "table"
 msgstr "tabulka"
@@ -2558,7 +2602,7 @@ msgstr "využito"
 msgid "used today"
 msgstr "použito dnes"
 
-#: cli/jobs.py
+#: cli/container_doctor.py
 msgid "user"
 msgstr "uživatel"
 

@@ -557,6 +557,13 @@ Podman reads the same files but has not been run against them; Windows container
 are not supported - the image is Linux. `docker compose down -v` deletes the state volumes. Verify portability with
 `scripts/distro-check.sh` (see `docs/CLI_REFERENCE.md`).
 
+**User ids are read, never assumed, and never changed for you.** Run `kdx container doctor --json`
+before touching container or rootless-engine setup: it reports the uid/gid, the id mapping of the
+namespace, `/etc/subuid` ranges and engines. Do not hard-code uid 1000, do not edit `/etc/subuid`,
+`/etc/passwd` or an existing account, and do not reuse an id another user or service owns; if the
+doctor proposes a range, show the command to the person and let them run it. `kdx container env
+--write` adds `KDX_UID`/`KDX_GID` to `.env` without overwriting existing keys.
+
 **Known limits - read before you build.** `kdx ui guide --json` lists them under `notes`; they are
 also in the seeded `web/README.md`. In short: the `react` app only *reads* the saved layout
 (renaming, hiding and shortcut buttons are edited in the built-in console or with `kdx ui prefs
