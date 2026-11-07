@@ -703,6 +703,12 @@ kdx ui manifest [--json]                     # the GUI every loaded module decla
 kdx ui prefs show [--user NAME] [--json]     # what a person changed in the interface
 kdx ui prefs patch '{"settings":{"theme":"dark"}}' [--user NAME]
 kdx ui prefs reset [SECTION ...] [--user NAME]   # no section: all but pinned defaults
+kdx ui layout show [--user NAME] [--json]        # pane sizes, hidden panes, ribbon mode
+kdx ui layout set [--side PX] [--bottom PX] [--inspector PX] [--hide PANES] [--show PANES]
+                  [--ribbon icons|labels] [--user NAME]   # PANES: ribbon,side,bottom,inspector,all
+kdx ui layout reset [--user NAME]
+kdx ui theme list|show [NAME] [--css]|set NAME [--user NAME]   # built in + themes/ + per user
+kdx ui theme check NAME_OR_FILE [--level AA|AAA] [--json]       # contrast, exit 1 when below
 ```
 
 Choosing a GUI for a project is a decision for the person or the AI agent, so the chassis

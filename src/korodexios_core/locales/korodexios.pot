@@ -64,6 +64,14 @@ msgstr ""
 msgid "A dotted key."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "A theme name or a .css/.json file."
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "AA is 4.5:1 [default], AAA is 7:1."
+msgstr ""
+
 #: cli/container_doctor.py
 msgid "Add the keys .env lacks (never overwrites)."
 msgstr ""
@@ -128,12 +136,20 @@ msgstr ""
 msgid "Change nothing; exit 3 when the template is out of date."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Change pane sizes, hide or show panes, pick the ribbon mode."
+msgstr ""
+
 #: cli/commands.py
 msgid "Chassis"
 msgstr ""
 
 #: cli/commands.py
 msgid "Chassis primitives"
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "Check the contrast of a theme or of a theme file (--level AAA for the 7:1 bar)."
 msgstr ""
 
 #: cli/language.py
@@ -144,12 +160,20 @@ msgstr ""
 msgid "Check user ids and container engines; propose settings, change nothing."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Choose the active theme ('system' follows the operating system)."
+msgstr ""
+
 #: cli/language.py
 msgid "Choose the language for this machine (writes kdx.local.yml)."
 msgstr ""
 
 #: cli/language.py
 msgid "Collect translatable strings into the template and update translations."
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "Comma list to show again (or 'all')."
 msgstr ""
 
 #: modules/wiki/module.py
@@ -372,6 +396,10 @@ msgstr ""
 msgid "Forget the remembered choices (defaults stay unless named)."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Forget the stored window layout."
+msgstr ""
+
 #: cli/commands.py
 msgid "GUI tier: none | static | react [none]; see 'kdx ui guide'"
 msgstr ""
@@ -386,6 +414,10 @@ msgstr ""
 
 #: modules/heartbeat/module.py
 msgid "Heartbeat module utilities."
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "Height of the bottom panel in pixels."
 msgstr ""
 
 #: modules/mcp_server/module.py
@@ -520,6 +552,10 @@ msgstr ""
 msgid "List tasks, newest first."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "List the available themes and where each comes from."
+msgstr ""
+
 #: modules/webhooks/module.py
 msgid "List the configured targets (URLs masked)."
 msgstr ""
@@ -558,6 +594,10 @@ msgstr ""
 
 #: cli/txn.py
 msgid "List, recover, and undo file transactions."
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "List, show, choose or check themes (CSS tokens every console reads)."
 msgstr ""
 
 #: cli/reset.py
@@ -610,6 +650,10 @@ msgstr ""
 
 #: cli/db.py
 msgid "Most rows to print [100]."
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "Need"
 msgstr ""
 
 #: cli/jobs.py
@@ -712,6 +756,10 @@ msgstr ""
 msgid "Page type: page, source, entity, concept, synthesis, decision, guide, or your own [page]."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Pair"
+msgstr ""
+
 #: cli/commands.py
 msgid "Paths"
 msgstr ""
@@ -746,6 +794,10 @@ msgstr ""
 
 #: cli/proposal.py
 msgid "Print one proposal note."
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "Print the :root rule instead."
 msgstr ""
 
 #: modules/web_console/module.py
@@ -816,6 +868,10 @@ msgstr ""
 msgid "Queue a task for the running daemon's handler of that kind."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Ratio"
+msgstr ""
+
 #: modules/wiki/module.py
 msgid "Record the check in log.md."
 msgstr ""
@@ -870,6 +926,10 @@ msgstr ""
 
 #: modules/backup_engine/module.py
 msgid "Report what would be copied without writing."
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "Ribbon with icons only or with labels."
 msgstr ""
 
 #: modules/wiki/module.py
@@ -968,6 +1028,10 @@ msgstr ""
 msgid "Show a database's tables, columns and row counts."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Show a theme's tokens (default: the active one) or its CSS with --css."
+msgstr ""
+
 #: cli/jobs.py
 msgid "Show one job's state and output."
 msgstr ""
@@ -982,6 +1046,10 @@ msgstr ""
 
 #: cli/txn.py
 msgid "Show one transaction and what each file hashed to."
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "Show or change the shape of the window: pane sizes, hidden panes, ribbon mode."
 msgstr ""
 
 #: cli/limiter.py
@@ -1002,6 +1070,10 @@ msgstr ""
 
 #: modules/web_console/module.py
 msgid "Show the stored GUI preferences."
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "Show the stored window layout."
 msgstr ""
 
 #: modules/wiki/module.py
@@ -1116,6 +1188,14 @@ msgstr ""
 msgid "The source: an article, PDF, transcript, notes."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Theme name [the active theme]."
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "Theme name, see 'kdx ui theme list'."
+msgstr ""
+
 #: cli/txn.py
 msgid "Transaction id (see 'kdx txn list')."
 msgstr ""
@@ -1174,6 +1254,14 @@ msgstr ""
 
 #: cli/limiter.py
 msgid "Why, shown in doctor."
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "Width of the inspector in pixels."
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "Width of the side list in pixels."
 msgstr ""
 
 #: cli/proposal.py
@@ -1800,6 +1888,10 @@ msgstr ""
 msgid "layer"
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "layout forgotten"
+msgstr ""
+
 #: cli/limiter.py
 msgid "left today"
 msgstr ""
@@ -1893,7 +1985,7 @@ msgid "named locks"
 msgstr ""
 
 #: modules/web_console/module.py
-msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
+msgid "nav, panels, buttons, values, defaults, settings, layout; none means all but defaults."
 msgstr ""
 
 #: cli/commands.py
@@ -2070,6 +2162,10 @@ msgstr ""
 
 #: modules/wiki/module.py
 msgid "nothing found for {query}"
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
 msgstr ""
 
 #: cli/container_doctor.py
@@ -2910,6 +3006,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "{name}: {count} keys, required={required} secrets={secrets}"
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "{note} no layout stored; the shell uses its defaults."
 msgstr ""
 
 #: cli/language.py

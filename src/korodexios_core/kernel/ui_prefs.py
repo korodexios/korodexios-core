@@ -15,7 +15,10 @@ machine and the terminal (``kdx ui prefs``). One file holds five kinds of choice
     values the person pinned on purpose; a form shows them when nothing is remembered
     and on "Restore defaults", and they survive a reset of the remembered ones;
 ``settings``
-    interface settings such as ``locale``, ``theme`` and ``last_tab``.
+    interface settings such as ``locale``, ``theme`` and ``last_tab``;
+``layout``
+    the shape of the window: pane sizes in pixels (``sizes``), which panes are hidden
+    (``hidden``), the ribbon mode, the open tree nodes and the active area.
 
 Everything is validated and size-capped on the way in; a file that is damaged or edited by
 hand into nonsense is ignored (and kept as ``*.bad``) instead of breaking the GUI.
@@ -33,7 +36,12 @@ from pathlib import Path
 from typing import Any
 
 PREFS_VERSION = 1
-SECTIONS = ("nav", "panels", "buttons", "values", "defaults", "settings")
+SECTIONS = ("nav", "panels", "buttons", "values", "defaults", "settings", "layout")
+PANES = ("ribbon", "side", "bottom", "inspector")
+PANE_LIMITS = {"side": (120, 600), "bottom": (60, 800), "inspector": (160, 700)}
+RIBBON_MODES = ("icons", "labels")
+LAYOUT_KEYS = ("sizes", "hidden", "ribbon", "open", "area")
+MAX_OPEN_NODES = 200
 MAX_BYTES = 64 * 1024
 MAX_ITEMS = 200
 MAX_TEXT = 200
@@ -43,6 +51,8 @@ _FIELD = re.compile(r"^[A-Za-z_][A-Za-z0-9_\-]{0,63}$")
 _COMMAND = re.compile(r"^[a-z][a-z0-9_-]*( [a-z][a-z0-9_-]*)*$")
 _SETTING_KEYS = ("locale", "theme", "last_tab", "density")
 _SAFE_NAME = re.compile(r"[^A-Za-z0-9_.-]")
+_MERGED_DEEP = ("values", "defaults", "nav", "panels", "layout")  # patched key by key, two deep
+_NODE_ID =re.compile(r"^[A-Za-z0-9_.:/\-]{1,96}$")
 
 
 class PrefsError(ValueError):
@@ -59,6 +69,7 @@ def empty_prefs() -> dict[str, Any]:
         "values": {},
         "defaults": {},
         "settings": {},
+        "layout": {},
     }
 
 
@@ -117,9 +128,7 @@ class PrefsStore:
                 for key, value in incoming.items():
                     if value is None:
                         target.pop(str(key), None)
-                    elif section in ("values", "defaults", "nav", "panels") and isinstance(
-                        value, Mapping
-                    ):
+                    elif section in _MERGED_DEEP and isinstance(value, Mapping):
                         inner = dict(target.get(str(key), {}))
                         for field_name, field_value in value.items():
                             if field_value is None:
@@ -189,6 +198,7 @@ def validate_prefs(prefs: Any) -> dict[str, Any]:
     for section in ("values", "defaults"):
         clean[section] = _forms(prefs.get(section), section)
     clean["settings"] = _settings(prefs.get("settings"))
+    clean["layout"] = _layout(prefs.get("layout"))
     size = len(json.dumps(clean, ensure_ascii=False).encode("utf-8"))
     if size > MAX_BYTES:
         raise PrefsError(f"preferences are {size} bytes; the limit is {MAX_BYTES}")
@@ -298,6 +308,61 @@ def _scalars(value: Any, what: str) -> dict[str, Any]:
             continue
         else:
             raise PrefsError(f"{what}.{name} must be text, a number or true/false")
+    return result
+
+
+def _layout(value: Any) -> dict[str, Any]:
+    """Validate the window shape; sizes outside a pane's limits are refused, not clamped."""
+    if value in (None, {}):
+        return {}
+    if not isinstance(value, Mapping):
+        raise PrefsError("'layout' must be an object")
+    unknown = sorted(set(value) - set(LAYOUT_KEYS))
+    if unknown:
+        raise PrefsError(
+            f"unknown layout key(s): {', '.join(unknown)}; known: {', '.join(LAYOUT_KEYS)}"
+        )
+    result: dict[str, Any] = {}
+    sizes = value.get("sizes")
+    if sizes not in (None, {}):
+        if not isinstance(sizes, Mapping):
+            raise PrefsError("layout.sizes must be an object of pixel sizes")
+        clean_sizes: dict[str, int] = {}
+        for pane, pixels in sizes.items():
+            if pane not in PANE_LIMITS:
+                raise PrefsError(
+                    f"layout.sizes: {pane!r} cannot be resized; use {', '.join(PANE_LIMITS)}"
+                )
+            low, high = PANE_LIMITS[str(pane)]
+            if isinstance(pixels, bool) or not isinstance(pixels, int) or not low <= pixels <= high:
+                raise PrefsError(f"layout.sizes.{pane} must be a whole number from {low} to {high}")
+            clean_sizes[str(pane)] = pixels
+        if clean_sizes:
+            result["sizes"] = clean_sizes
+    hidden = value.get("hidden")
+    if hidden not in (None, []):
+        if not isinstance(hidden, list | tuple) or any(item not in PANES for item in hidden):
+            raise PrefsError(f"layout.hidden must be a list of: {', '.join(PANES)}")
+        result["hidden"] = [pane for pane in PANES if pane in hidden]
+    ribbon = value.get("ribbon")
+    if ribbon not in (None, ""):
+        if ribbon not in RIBBON_MODES:
+            raise PrefsError(f"layout.ribbon must be one of: {', '.join(RIBBON_MODES)}")
+        result["ribbon"] = ribbon
+    opened = value.get("open")
+    if opened not in (None, []):
+        if (
+            not isinstance(opened, list | tuple)
+            or len(opened) > MAX_OPEN_NODES
+            or any(not isinstance(item, str) or not _NODE_ID.match(item) for item in opened)
+        ):
+            raise PrefsError(
+                f"layout.open must be a list of at most {MAX_OPEN_NODES} node ids"
+            )
+        result["open"] = list(dict.fromkeys(opened))
+    area = value.get("area")
+    if area not in (None, ""):
+        result["area"] = _key(area, "layout.area")
     return result
 
 

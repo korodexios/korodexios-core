@@ -66,6 +66,14 @@ msgstr "Kľúč s bodkami, napr. core.log.level."
 msgid "A dotted key."
 msgstr "Kľúč s bodkami."
 
+#: modules/web_console/module.py
+msgid "A theme name or a .css/.json file."
+msgstr "Názov témy alebo súbor .css/.json."
+
+#: modules/web_console/module.py
+msgid "AA is 4.5:1 [default], AAA is 7:1."
+msgstr "AA je 4,5:1 [predvolené], AAA je 7:1."
+
 #: cli/container_doctor.py
 msgid "Add the keys .env lacks (never overwrites)."
 msgstr "Pridať kľúče, ktoré .env nemá (nikdy neprepisuje)."
@@ -130,6 +138,10 @@ msgstr "Nič nemení; skončí s kódom 1, keď súbor chýba alebo je zastaran�
 msgid "Change nothing; exit 3 when the template is out of date."
 msgstr "Nič nemení; skončí kódom 3, ak je šablóna zastaraná."
 
+#: modules/web_console/module.py
+msgid "Change pane sizes, hide or show panes, pick the ribbon mode."
+msgstr "Zmení veľkosti panelov, skryje alebo zobrazí panely, vyberie režim ikonového pruhu."
+
 #: cli/commands.py
 msgid "Chassis"
 msgstr "Šasi"
@@ -137,6 +149,10 @@ msgstr "Šasi"
 #: cli/commands.py
 msgid "Chassis primitives"
 msgstr "Základné prvky šasi"
+
+#: modules/web_console/module.py
+msgid "Check the contrast of a theme or of a theme file (--level AAA for the 7:1 bar)."
+msgstr "Skontroluje kontrast témy alebo súboru témy (--level AAA pre hranicu 7:1)."
 
 #: cli/language.py
 msgid "Check the file and report; write nothing."
@@ -146,6 +162,10 @@ msgstr "Skontroluje súbor a ohlási výsledok; nič nezapíše."
 msgid "Check user ids and container engines; propose settings, change nothing."
 msgstr "Skontrolovať id používateľa a kontajnerové nástroje; navrhnúť nastavenia, nič nemeniť."
 
+#: modules/web_console/module.py
+msgid "Choose the active theme ('system' follows the operating system)."
+msgstr "Vyberie aktívnu tému ('system' sleduje operačný systém)."
+
 #: cli/language.py
 msgid "Choose the language for this machine (writes kdx.local.yml)."
 msgstr "Zvolí jazyk pre tento počítač (zapíše kdx.local.yml)."
@@ -153,6 +173,10 @@ msgstr "Zvolí jazyk pre tento počítač (zapíše kdx.local.yml)."
 #: cli/language.py
 msgid "Collect translatable strings into the template and update translations."
 msgstr "Zbiera preložiteľné texty do šablóny a dopĺňa preklady."
+
+#: modules/web_console/module.py
+msgid "Comma list to show again (or 'all')."
+msgstr "Zoznam panelov oddelený čiarkou, ktoré sa majú znova zobraziť (alebo 'all')."
 
 #: modules/wiki/module.py
 msgid "Comma-separated names of the source pages used."
@@ -374,6 +398,10 @@ msgstr "Sleduje udalosti démona naživo (zastavíš ich Ctrl+C)."
 msgid "Forget the remembered choices (defaults stay unless named)."
 msgstr "Zabudnúť zapamätané voľby (predvolené hodnoty ostanú, ak ich nepomenuješ)."
 
+#: modules/web_console/module.py
+msgid "Forget the stored window layout."
+msgstr "Zabudne uložené rozloženie okna."
+
 #: cli/commands.py
 msgid "GUI tier: none | static | react [none]; see 'kdx ui guide'"
 msgstr "úroveň GUI: none | static | react [none]; pozri 'kdx ui guide'"
@@ -389,6 +417,10 @@ msgstr "Spočíta hash každého deklarovaného súboru a ohlási odchýlky; pri
 #: modules/heartbeat/module.py
 msgid "Heartbeat module utilities."
 msgstr "Nástroje modulu heartbeat."
+
+#: modules/web_console/module.py
+msgid "Height of the bottom panel in pixels."
+msgstr "Výška spodného panela v pixeloch."
 
 #: modules/mcp_server/module.py
 msgid "Highest role the agent acts with [modules.mcp.role, operator]."
@@ -522,6 +554,10 @@ msgstr "Vypíše stránky s typom, jazykmi a štítkami."
 msgid "List tasks, newest first."
 msgstr "Zoznam úloh, najnovšie prvé."
 
+#: modules/web_console/module.py
+msgid "List the available themes and where each comes from."
+msgstr "Vypíše dostupné témy a odkiaľ každá pochádza."
+
 #: modules/webhooks/module.py
 msgid "List the configured targets (URLs masked)."
 msgstr "Vypíše nastavené ciele (URL maskované)."
@@ -561,6 +597,10 @@ msgstr "Vypíše, sleduje alebo zruší príkazy bežiace na pozadí v démonovi
 #: cli/txn.py
 msgid "List, recover, and undo file transactions."
 msgstr "Vypíše, obnoví a vráti späť súborové transakcie."
+
+#: modules/web_console/module.py
+msgid "List, show, choose or check themes (CSS tokens every console reads)."
+msgstr "Vypíše, zobrazí, vyberie alebo skontroluje témy (CSS tokeny, ktoré číta každá konzola)."
 
 #: cli/reset.py
 msgid "List, then with --apply delete, the disposable development data."
@@ -613,6 +653,10 @@ msgstr "Moduly"
 #: cli/db.py
 msgid "Most rows to print [100]."
 msgstr "Najviac riadkov na výpis [100]."
+
+#: modules/web_console/module.py
+msgid "Need"
+msgstr "Treba"
 
 #: cli/jobs.py
 msgid "One JSON object per line."
@@ -714,6 +758,10 @@ msgstr "Názov stránky [podľa slugu]."
 msgid "Page type: page, source, entity, concept, synthesis, decision, guide, or your own [page]."
 msgstr "Typ stránky: page, source, entity, concept, synthesis, decision, guide alebo vlastný [page]."
 
+#: modules/web_console/module.py
+msgid "Pair"
+msgstr "Dvojica"
+
 #: cli/commands.py
 msgid "Paths"
 msgstr "Cesty"
@@ -749,6 +797,10 @@ msgstr "Vypíše jednu stránku (v predvolenom jazyku, keď LANG chýba)."
 #: cli/proposal.py
 msgid "Print one proposal note."
 msgstr "Vypíše jeden návrh."
+
+#: modules/web_console/module.py
+msgid "Print the :root rule instead."
+msgstr "Namiesto toho vypíše pravidlo :root."
 
 #: modules/web_console/module.py
 msgid "Print the GUI every loaded module declares (what the browser gets)."
@@ -818,6 +870,10 @@ msgstr "Znova zaradí zlyhanú alebo zrušenú úlohu do frontu."
 msgid "Queue a task for the running daemon's handler of that kind."
 msgstr "Zaradí úlohu pre handler daemona tohto druhu."
 
+#: modules/web_console/module.py
+msgid "Ratio"
+msgstr "Pomer"
+
 #: modules/wiki/module.py
 msgid "Record the check in log.md."
 msgstr "Zapíše kontrolu do log.md."
@@ -873,6 +929,10 @@ msgstr "Ukázať, čo tento stroj zvládne pre GUI: Node, Bun, prehliadače, dis
 #: modules/backup_engine/module.py
 msgid "Report what would be copied without writing."
 msgstr "Ohlási, čo by sa skopírovalo, bez zápisu."
+
+#: modules/web_console/module.py
+msgid "Ribbon with icons only or with labels."
+msgstr "Ikonový pruh iba s ikonami alebo aj s popismi."
 
 #: modules/wiki/module.py
 msgid "Root of the wiki to merge into."
@@ -970,6 +1030,10 @@ msgstr "Krátky názov návrhu."
 msgid "Show a database's tables, columns and row counts."
 msgstr "Ukázať tabuľky, stĺpce a počty riadkov databázy."
 
+#: modules/web_console/module.py
+msgid "Show a theme's tokens (default: the active one) or its CSS with --css."
+msgstr "Zobrazí tokeny témy (predvolene aktívnej) alebo jej CSS cez --css."
+
 #: cli/jobs.py
 msgid "Show one job's state and output."
 msgstr "Zobrazí stav a výstup jednej úlohy."
@@ -985,6 +1049,10 @@ msgstr "Zobrazí jednu úlohu s dátami, výsledkom a chybou."
 #: cli/txn.py
 msgid "Show one transaction and what each file hashed to."
 msgstr "Ukáže jednu transakciu a hash každého súboru."
+
+#: modules/web_console/module.py
+msgid "Show or change the shape of the window: pane sizes, hidden panes, ribbon mode."
+msgstr "Zobrazí alebo zmení tvar okna: veľkosti panelov, skryté panely, režim ikonového pruhu."
 
 #: cli/limiter.py
 msgid "Show rate limiters; start or end a cooldown."
@@ -1005,6 +1073,10 @@ msgstr "Zobrazí plán; nič nezapíše."
 #: modules/web_console/module.py
 msgid "Show the stored GUI preferences."
 msgstr "Zobraziť uložené nastavenia GUI."
+
+#: modules/web_console/module.py
+msgid "Show the stored window layout."
+msgstr "Zobrazí uložené rozloženie okna."
 
 #: modules/wiki/module.py
 msgid "Show the wiki log, or append one entry to it."
@@ -1118,6 +1190,14 @@ msgstr "Wiki projektu (rozloženie LLM-wiki): verejná a interná, po jazykoch."
 msgid "The source: an article, PDF, transcript, notes."
 msgstr "Zdroj: článok, PDF, prepis, poznámky."
 
+#: modules/web_console/module.py
+msgid "Theme name [the active theme]."
+msgstr "Názov témy [aktívna téma]."
+
+#: modules/web_console/module.py
+msgid "Theme name, see 'kdx ui theme list'."
+msgstr "Názov témy, pozri 'kdx ui theme list'."
+
 #: cli/txn.py
 msgid "Transaction id (see 'kdx txn list')."
 msgstr "ID transakcie (pozri 'kdx txn list')."
@@ -1177,6 +1257,14 @@ msgstr "Čie nastavenia (predvolene prihlásený používateľ, inak 'default').
 #: cli/limiter.py
 msgid "Why, shown in doctor."
 msgstr "Dôvod, zobrazí sa v doctor."
+
+#: modules/web_console/module.py
+msgid "Width of the inspector in pixels."
+msgstr "Šírka inspektora v pixeloch."
+
+#: modules/web_console/module.py
+msgid "Width of the side list in pixels."
+msgstr "Šírka bočného zoznamu v pixeloch."
 
 #: cli/proposal.py
 msgid "Without gh: open the issue form in the browser."
@@ -1802,6 +1890,10 @@ msgstr "jazyky"
 msgid "layer"
 msgstr "vrstva"
 
+#: modules/web_console/module.py
+msgid "layout forgotten"
+msgstr "rozloženie zabudnuté"
+
 #: cli/limiter.py
 msgid "left today"
 msgstr "zostáva dnes"
@@ -1895,8 +1987,8 @@ msgid "named locks"
 msgstr "pomenované zámky"
 
 #: modules/web_console/module.py
-msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
-msgstr "nav, panels, buttons, values, defaults, settings; bez názvu sa myslia všetky okrem defaults."
+msgid "nav, panels, buttons, values, defaults, settings, layout; none means all but defaults."
+msgstr "nav, panels, buttons, values, defaults, settings, layout; bez názvu sa myslia všetky okrem defaults."
 
 #: cli/commands.py
 msgid "next: cd {root} && uv sync --extra dev && uv run {script} run"
@@ -2073,6 +2165,10 @@ msgstr "zatiaľ sa nič neskopírovalo: išlo o plán"
 #: modules/wiki/module.py
 msgid "nothing found for {query}"
 msgstr "pre {query} sa nič nenašlo"
+
+#: modules/web_console/module.py
+msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
+msgstr "nie je čo meniť: zadaj --side, --bottom, --inspector, --hide, --show alebo --ribbon"
 
 #: cli/container_doctor.py
 msgid "nothing to fix: a rootless engine has the ids it needs"
@@ -2914,6 +3010,10 @@ msgstr "{name} nebola registrovaná; nie je čo odstrániť"
 msgid "{name}: {count} keys, required={required} secrets={secrets}"
 msgstr "{name}: {count} kľúčov, povinné={required} tajné={secrets}"
 
+#: modules/web_console/module.py
+msgid "{note} no layout stored; the shell uses its defaults."
+msgstr "{note} nie je uložené žiadne rozloženie; shell použije predvolené."
+
 #: cli/language.py
 msgid "{origin} still wins over kdx.local.yml; the new value applies once it is removed"
 msgstr "{origin} má stále prednosť pred kdx.local.yml; nová hodnota platí, až keď ho odstrániš"
@@ -3026,6 +3126,9 @@ msgstr "{verb}; tento token sa zobrazí iba teraz - odovzdaj ho súkromne"
 
 #~ msgid "Write INDEX.md for each wiki (what an agent reads first)."
 #~ msgstr "Zapíše INDEX.md pre každú wiki (to, čo agent číta ako prvé)."
+
+#~ msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
+#~ msgstr "nav, panels, buttons, values, defaults, settings; bez názvu sa myslia všetky okrem defaults."
 
 #~ msgid "python | fullstack"
 #~ msgstr "python | fullstack"

@@ -644,6 +644,18 @@ buttons (`buttons`: a label that runs a known command), the last values typed in
 `theme`, `last_tab`, `density`). The manifest is only the default; never put per-person
 state in a module's `[ui]`.
 
+**For a window with a ribbon, side list, bottom panel and inspector** (a shell), a module's
+`[ui]` may also say `position = "bottom"` and `badge = "/api/v1/..."` (its ribbon entry),
+declare `[[ui.sections]]` (`id`, `title`, `tree` route, `empty` text: one collapsible tree each
+in the side list), and mark a panel `dock = "bottom"` or `locked = true`. A tree route answers
+`{"nodes": [...]}` built with `kernel/ui_tree.py` (`id`, `label`, `meta`, `tone`,
+`has_children`, `opens`); a node with `has_children` is asked again with `?parent=<id>`. The
+person's window shape lives in prefs `layout` (`sizes`, `hidden`, `ribbon`, `open`, `area`;
+`kdx ui layout show|set|reset`). Colours are one token set: `GET /api/v1/ui/theme` returns the
+active theme's tokens and a `:root` rule with `--kdx-*` variables plus the older aliases
+(`--fg`, `--muted`, `--acc` ...); a theme is a `.css` or `.json` file in `<root>/themes/` or
+`data/ui/themes/` (`kdx ui theme list|show|set|check`, contrast AA 4.5:1 or AAA 7:1).
+
 ## 9. Configuration Precedence and Discovery
 
 Five layers, lowest to highest: **defaults -> `kdx.yml` -> `kdx.local.yml` ->

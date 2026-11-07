@@ -66,6 +66,14 @@ msgstr "Una clave con puntos, p. ej. core.log.level."
 msgid "A dotted key."
 msgstr "Una clave con puntos."
 
+#: modules/web_console/module.py
+msgid "A theme name or a .css/.json file."
+msgstr "Un nombre de tema o un archivo .css/.json."
+
+#: modules/web_console/module.py
+msgid "AA is 4.5:1 [default], AAA is 7:1."
+msgstr "AA es 4,5:1 [predeterminado], AAA es 7:1."
+
 #: cli/container_doctor.py
 msgid "Add the keys .env lacks (never overwrites)."
 msgstr "Añadir las claves que le faltan a .env (nunca sobrescribe)."
@@ -130,6 +138,10 @@ msgstr "No cambia nada; sale con 1 si falta un archivo o está desactualizado (p
 msgid "Change nothing; exit 3 when the template is out of date."
 msgstr "No cambia nada; termina con código 3 si la plantilla está desactualizada."
 
+#: modules/web_console/module.py
+msgid "Change pane sizes, hide or show panes, pick the ribbon mode."
+msgstr "Cambia el tamaño de los paneles, oculta o muestra paneles, elige el modo de la barra de iconos."
+
 #: cli/commands.py
 msgid "Chassis"
 msgstr "Chasis"
@@ -137,6 +149,10 @@ msgstr "Chasis"
 #: cli/commands.py
 msgid "Chassis primitives"
 msgstr "Primitivas del chasis"
+
+#: modules/web_console/module.py
+msgid "Check the contrast of a theme or of a theme file (--level AAA for the 7:1 bar)."
+msgstr "Comprueba el contraste de un tema o de un archivo de tema (--level AAA para el umbral 7:1)."
 
 #: cli/language.py
 msgid "Check the file and report; write nothing."
@@ -146,6 +162,10 @@ msgstr "Comprueba el archivo e informa; no escribe nada."
 msgid "Check user ids and container engines; propose settings, change nothing."
 msgstr "Comprobar los id de usuario y los motores de contenedores; proponer ajustes sin cambiar nada."
 
+#: modules/web_console/module.py
+msgid "Choose the active theme ('system' follows the operating system)."
+msgstr "Elige el tema activo ('system' sigue al sistema operativo)."
+
 #: cli/language.py
 msgid "Choose the language for this machine (writes kdx.local.yml)."
 msgstr "Elige el idioma de este equipo (escribe kdx.local.yml)."
@@ -153,6 +173,10 @@ msgstr "Elige el idioma de este equipo (escribe kdx.local.yml)."
 #: cli/language.py
 msgid "Collect translatable strings into the template and update translations."
 msgstr "Reúne los textos traducibles en la plantilla y actualiza las traducciones."
+
+#: modules/web_console/module.py
+msgid "Comma list to show again (or 'all')."
+msgstr "Lista de paneles separada por comas que se vuelven a mostrar (o 'all')."
 
 #: modules/wiki/module.py
 msgid "Comma-separated names of the source pages used."
@@ -374,6 +398,10 @@ msgstr "Sigue los eventos en vivo del demonio (Ctrl+C para detener)."
 msgid "Forget the remembered choices (defaults stay unless named)."
 msgstr "Olvidar las opciones recordadas (los valores predeterminados se conservan salvo que se nombren)."
 
+#: modules/web_console/module.py
+msgid "Forget the stored window layout."
+msgstr "Olvida la disposición guardada de la ventana."
+
 #: cli/commands.py
 msgid "GUI tier: none | static | react [none]; see 'kdx ui guide'"
 msgstr "nivel de GUI: none | static | react [none]; véase 'kdx ui guide'"
@@ -389,6 +417,10 @@ msgstr "Calcula el hash de cada archivo declarado e informa de desviaciones; có
 #: modules/heartbeat/module.py
 msgid "Heartbeat module utilities."
 msgstr "Utilidades del módulo heartbeat."
+
+#: modules/web_console/module.py
+msgid "Height of the bottom panel in pixels."
+msgstr "Altura del panel inferior en píxeles."
 
 #: modules/mcp_server/module.py
 msgid "Highest role the agent acts with [modules.mcp.role, operator]."
@@ -522,6 +554,10 @@ msgstr "Lista las páginas con su tipo, idiomas y etiquetas."
 msgid "List tasks, newest first."
 msgstr "Lista tareas, las más recientes primero."
 
+#: modules/web_console/module.py
+msgid "List the available themes and where each comes from."
+msgstr "Lista los temas disponibles y de dónde viene cada uno."
+
 #: modules/webhooks/module.py
 msgid "List the configured targets (URLs masked)."
 msgstr "Lista los destinos configurados (URL enmascaradas)."
@@ -561,6 +597,10 @@ msgstr "Lista, sigue o cancela los comandos que se ejecutan en segundo plano en 
 #: cli/txn.py
 msgid "List, recover, and undo file transactions."
 msgstr "Lista, recupera y deshace transacciones de archivos."
+
+#: modules/web_console/module.py
+msgid "List, show, choose or check themes (CSS tokens every console reads)."
+msgstr "Lista, muestra, elige o comprueba temas (tokens CSS que lee cada consola)."
 
 #: cli/reset.py
 msgid "List, then with --apply delete, the disposable development data."
@@ -613,6 +653,10 @@ msgstr "Módulos"
 #: cli/db.py
 msgid "Most rows to print [100]."
 msgstr "Máximo de filas a mostrar [100]."
+
+#: modules/web_console/module.py
+msgid "Need"
+msgstr "Necesario"
 
 #: cli/jobs.py
 msgid "One JSON object per line."
@@ -714,6 +758,10 @@ msgstr "Título de la página [a partir del slug]."
 msgid "Page type: page, source, entity, concept, synthesis, decision, guide, or your own [page]."
 msgstr "Tipo de página: page, source, entity, concept, synthesis, decision, guide o uno propio [page]."
 
+#: modules/web_console/module.py
+msgid "Pair"
+msgstr "Par"
+
 #: cli/commands.py
 msgid "Paths"
 msgstr "Rutas"
@@ -749,6 +797,10 @@ msgstr "Muestra una página (en el idioma por defecto si falta LANG)."
 #: cli/proposal.py
 msgid "Print one proposal note."
 msgstr "Muestra una propuesta."
+
+#: modules/web_console/module.py
+msgid "Print the :root rule instead."
+msgstr "Imprime en su lugar la regla :root."
 
 #: modules/web_console/module.py
 msgid "Print the GUI every loaded module declares (what the browser gets)."
@@ -818,6 +870,10 @@ msgstr "Vuelve a poner en cola una tarea fallida o cancelada."
 msgid "Queue a task for the running daemon's handler of that kind."
 msgstr "Pone en cola una tarea para el manejador de ese tipo del daemon en ejecución."
 
+#: modules/web_console/module.py
+msgid "Ratio"
+msgstr "Relación"
+
 #: modules/wiki/module.py
 msgid "Record the check in log.md."
 msgstr "Registra la comprobación en log.md."
@@ -873,6 +929,10 @@ msgstr "Mostrar lo que esta máquina puede ejecutar para una GUI: Node, Bun, nav
 #: modules/backup_engine/module.py
 msgid "Report what would be copied without writing."
 msgstr "Informa de lo que se copiaría sin escribir."
+
+#: modules/web_console/module.py
+msgid "Ribbon with icons only or with labels."
+msgstr "Barra de iconos solo con iconos o con etiquetas."
 
 #: modules/wiki/module.py
 msgid "Root of the wiki to merge into."
@@ -970,6 +1030,10 @@ msgstr "Título corto de la propuesta."
 msgid "Show a database's tables, columns and row counts."
 msgstr "Mostrar las tablas, columnas y número de filas de una base de datos."
 
+#: modules/web_console/module.py
+msgid "Show a theme's tokens (default: the active one) or its CSS with --css."
+msgstr "Muestra los tokens de un tema (por defecto el activo) o su CSS con --css."
+
 #: cli/jobs.py
 msgid "Show one job's state and output."
 msgstr "Muestra el estado y la salida de un trabajo."
@@ -985,6 +1049,10 @@ msgstr "Muestra una tarea con sus datos, resultado y error."
 #: cli/txn.py
 msgid "Show one transaction and what each file hashed to."
 msgstr "Muestra una transacción y el hash de cada archivo."
+
+#: modules/web_console/module.py
+msgid "Show or change the shape of the window: pane sizes, hidden panes, ribbon mode."
+msgstr "Muestra o cambia la forma de la ventana: tamaños de paneles, paneles ocultos, modo de la barra de iconos."
 
 #: cli/limiter.py
 msgid "Show rate limiters; start or end a cooldown."
@@ -1005,6 +1073,10 @@ msgstr "Muestra el plan; no escribe nada."
 #: modules/web_console/module.py
 msgid "Show the stored GUI preferences."
 msgstr "Mostrar las preferencias guardadas de la GUI."
+
+#: modules/web_console/module.py
+msgid "Show the stored window layout."
+msgstr "Muestra la disposición guardada de la ventana."
 
 #: modules/wiki/module.py
 msgid "Show the wiki log, or append one entry to it."
@@ -1118,6 +1190,14 @@ msgstr "El wiki del proyecto (estructura LLM-wiki): público e interno, por idio
 msgid "The source: an article, PDF, transcript, notes."
 msgstr "La fuente: un artículo, PDF, transcripción, notas."
 
+#: modules/web_console/module.py
+msgid "Theme name [the active theme]."
+msgstr "Nombre del tema [el tema activo]."
+
+#: modules/web_console/module.py
+msgid "Theme name, see 'kdx ui theme list'."
+msgstr "Nombre del tema, véase 'kdx ui theme list'."
+
 #: cli/txn.py
 msgid "Transaction id (see 'kdx txn list')."
 msgstr "ID de la transacción (véase 'kdx txn list')."
@@ -1177,6 +1257,14 @@ msgstr "De quién son las preferencias (por defecto el usuario con sesión, si n
 #: cli/limiter.py
 msgid "Why, shown in doctor."
 msgstr "Motivo, se muestra en doctor."
+
+#: modules/web_console/module.py
+msgid "Width of the inspector in pixels."
+msgstr "Ancho del inspector en píxeles."
+
+#: modules/web_console/module.py
+msgid "Width of the side list in pixels."
+msgstr "Ancho de la lista lateral en píxeles."
 
 #: cli/proposal.py
 msgid "Without gh: open the issue form in the browser."
@@ -1802,6 +1890,10 @@ msgstr "idiomas"
 msgid "layer"
 msgstr "capa"
 
+#: modules/web_console/module.py
+msgid "layout forgotten"
+msgstr "disposición olvidada"
+
 #: cli/limiter.py
 msgid "left today"
 msgstr "restante hoy"
@@ -1895,8 +1987,8 @@ msgid "named locks"
 msgstr "bloqueos con nombre"
 
 #: modules/web_console/module.py
-msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
-msgstr "nav, panels, buttons, values, defaults, settings; sin indicar, todo menos defaults."
+msgid "nav, panels, buttons, values, defaults, settings, layout; none means all but defaults."
+msgstr "nav, panels, buttons, values, defaults, settings, layout; sin nombre se entienden todos menos defaults."
 
 #: cli/commands.py
 msgid "next: cd {root} && uv sync --extra dev && uv run {script} run"
@@ -2073,6 +2165,10 @@ msgstr "aún no se ha copiado nada: esto fue un plan"
 #: modules/wiki/module.py
 msgid "nothing found for {query}"
 msgstr "nada encontrado para {query}"
+
+#: modules/web_console/module.py
+msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
+msgstr "nada que cambiar: indica --side, --bottom, --inspector, --hide, --show o --ribbon"
 
 #: cli/container_doctor.py
 msgid "nothing to fix: a rootless engine has the ids it needs"
@@ -2914,6 +3010,10 @@ msgstr "{name} no estaba registrado; nada que eliminar"
 msgid "{name}: {count} keys, required={required} secrets={secrets}"
 msgstr "{name}: {count} claves, obligatorias={required} secretas={secrets}"
 
+#: modules/web_console/module.py
+msgid "{note} no layout stored; the shell uses its defaults."
+msgstr "{note} no hay disposición guardada; el shell usa la predeterminada."
+
 #: cli/language.py
 msgid "{origin} still wins over kdx.local.yml; the new value applies once it is removed"
 msgstr "{origin} sigue teniendo prioridad sobre kdx.local.yml; el nuevo valor se aplica cuando se quite"
@@ -3026,6 +3126,9 @@ msgstr "{verb}; este token solo se muestra ahora - entrégalo en privado"
 
 #~ msgid "Write INDEX.md for each wiki (what an agent reads first)."
 #~ msgstr "Escribe INDEX.md para cada wiki (lo que un agente lee primero)."
+
+#~ msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
+#~ msgstr "nav, panels, buttons, values, defaults, settings; sin indicar, todo menos defaults."
 
 #~ msgid "python | fullstack"
 #~ msgstr "python | fullstack"

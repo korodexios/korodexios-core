@@ -5,6 +5,19 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Added
+
+- Backend for a one-window shell, usable from the terminal first:
+  - Themes: `kernel/ui_theme.py`, `GET /api/v1/ui/theme`, `kdx ui theme list|show|set|check`.
+    Built in `graphite`, `light`, `contrast` (+ `system` for the browser), plus `.css`/`.json` token
+    files from `<root>/themes/` and `data/ui/themes/`; `--kdx-*` variables with aliases for the
+    older names; WCAG contrast check (AA 4.5:1, AAA 7:1).
+  - Window layout: prefs section `layout` (pane sizes, hidden panes, ribbon mode, open tree nodes,
+    active area), `kdx ui layout show|set|reset`.
+  - Manifest: `[ui] position`, `badge`, `[[ui.sections]]` (one lazy tree each), panel `dock` and
+    `locked`; `kernel/ui_tree.py` fixes the node shape a tree route answers with.
+  - The web console does not draw the shell yet; this is the contract it will read.
+
 ## [0.6.3] - 2026-11-07
 
 ### Added

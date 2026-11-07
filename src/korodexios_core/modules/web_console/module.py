@@ -54,7 +54,17 @@ from ...kernel.ipc import (
     IpcStream,
 )
 from ...kernel.ui_manifest import build_manifest
-from ...kernel.ui_prefs import PrefsError, PrefsStore
+from ...kernel.ui_prefs import PANE_LIMITS, PANES, RIBBON_MODES, PrefsError, PrefsStore
+from ...kernel.ui_theme import (
+    DEFAULT_THEME,
+    HIGH_CONTRAST,
+    ThemeError,
+    ThemeStore,
+    check_theme,
+    complete,
+    css_text,
+    parse_theme,
+)
 from ...kernel.ui_tiers import guide, probe_environment
 from ...kernel.users import current_caller, role_rank
 from ...logging.engine import tail_lines
@@ -70,6 +80,8 @@ AUDIT_PATH = "/api/v1/ui/audit"
 I18N_PATH = "/api/v1/ui/i18n"
 MANIFEST_PATH = "/api/v1/ui/manifest"
 PREFS_PATH = "/api/v1/ui/prefs"
+THEME_PATH = "/api/v1/ui/theme"
+SYSTEM_THEME = "system"
 WEB_DOMAIN = "korodexios-web"
 WEB_LOCALES_DIR = Path(__file__).resolve().parent / "locales"
 EVENT_QUEUE_SIZE = 500
@@ -205,6 +217,14 @@ class WebConsoleModule(Module):
                 summary="the caller's own GUI preferences: read, replace, merge, reset",
             ),
             IpcRoute(
+                path=THEME_PATH,
+                handler=self._theme_route,
+                module=self.name,
+                role="viewer",
+                summary="the active theme for the caller with its tokens and CSS, and the "
+                "themes to choose from ('?name=light' previews one)",
+            ),
+            IpcRoute(
                 path=AUDIT_PATH,
                 handler=self._audit_route,
                 module=self.name,
@@ -332,8 +352,127 @@ class WebConsoleModule(Module):
                                 args=(
                                     CliArgument(("sections",), metavar="SECTION", nargs="*",
                                                 help="nav, panels, buttons, values, defaults, "
-                                                "settings; none means all but defaults."),
+                                                "settings, layout; none means all but "
+                                                "defaults."),
                                     *_PREFS_ARGS,
+                                ),
+                            ),
+                        ),
+                    ),
+                    CliCommand(
+                        name="layout",
+                        help="Show or change the shape of the window: pane sizes, hidden "
+                        "panes, ribbon mode.",
+                        module_name=self.name,
+                        show_in_wizard=False,
+                        subcommands=(
+                            CliCommand(
+                                name="show",
+                                help="Show the stored window layout.",
+                                module_name=self.name,
+                                handler=self._layout_show,
+                                show_in_wizard=False,
+                                args=_PREFS_ARGS,
+                            ),
+                            CliCommand(
+                                name="set",
+                                help="Change pane sizes, hide or show panes, pick the ribbon "
+                                "mode.",
+                                module_name=self.name,
+                                handler=self._layout_set,
+                                show_in_wizard=False,
+                                args=(
+                                    CliArgument(("--side",), dest="side", type="int",
+                                                minimum=PANE_LIMITS["side"][0],
+                                                maximum=PANE_LIMITS["side"][1],
+                                                help="Width of the side list in pixels."),
+                                    CliArgument(("--bottom",), dest="bottom", type="int",
+                                                minimum=PANE_LIMITS["bottom"][0],
+                                                maximum=PANE_LIMITS["bottom"][1],
+                                                help="Height of the bottom panel in pixels."),
+                                    CliArgument(("--inspector",), dest="inspector", type="int",
+                                                minimum=PANE_LIMITS["inspector"][0],
+                                                maximum=PANE_LIMITS["inspector"][1],
+                                                help="Width of the inspector in pixels."),
+                                    CliArgument(("--hide",), dest="hide", metavar="PANES",
+                                                help="Comma list to hide: " + ", ".join(PANES)
+                                                + " (or 'all')."),
+                                    CliArgument(("--show",), dest="show", metavar="PANES",
+                                                help="Comma list to show again (or 'all')."),
+                                    CliArgument(("--ribbon",), dest="ribbon",
+                                                choices=RIBBON_MODES,
+                                                help="Ribbon with icons only or with labels."),
+                                    *_PREFS_ARGS,
+                                ),
+                            ),
+                            CliCommand(
+                                name="reset",
+                                help="Forget the stored window layout.",
+                                module_name=self.name,
+                                handler=self._layout_reset,
+                                show_in_wizard=False,
+                                args=_PREFS_ARGS,
+                            ),
+                        ),
+                    ),
+                    CliCommand(
+                        name="theme",
+                        help="List, show, choose or check themes (CSS tokens every console "
+                        "reads).",
+                        module_name=self.name,
+                        show_in_wizard=False,
+                        subcommands=(
+                            CliCommand(
+                                name="list",
+                                help="List the available themes and where each comes from.",
+                                module_name=self.name,
+                                handler=self._theme_list,
+                                show_in_wizard=False,
+                                args=_PREFS_ARGS,
+                            ),
+                            CliCommand(
+                                name="show",
+                                help="Show a theme's tokens (default: the active one) or its "
+                                "CSS with --css.",
+                                module_name=self.name,
+                                handler=self._theme_show,
+                                show_in_wizard=False,
+                                args=(
+                                    CliArgument(("name",), metavar="NAME", nargs="?",
+                                                help="Theme name [the active theme]."),
+                                    CliArgument(("--css",), dest="css", action="store_true",
+                                                help="Print the :root rule instead."),
+                                    *_PREFS_ARGS,
+                                ),
+                            ),
+                            CliCommand(
+                                name="set",
+                                help="Choose the active theme ('system' follows the "
+                                "operating system).",
+                                module_name=self.name,
+                                handler=self._theme_set,
+                                show_in_wizard=False,
+                                args=(
+                                    CliArgument(("name",), metavar="NAME",
+                                                help="Theme name, see 'kdx ui theme list'."),
+                                    *_PREFS_ARGS,
+                                ),
+                            ),
+                            CliCommand(
+                                name="check",
+                                help="Check the contrast of a theme or of a theme file "
+                                "(--level AAA for the 7:1 bar).",
+                                module_name=self.name,
+                                handler=self._theme_check,
+                                show_in_wizard=False,
+                                args=(
+                                    CliArgument(("target",), metavar="NAME_OR_FILE",
+                                                help="A theme name or a .css/.json file."),
+                                    CliArgument(("--level",), dest="level",
+                                                choices=("AA", "AAA"), default="AA",
+                                                help="AA is 4.5:1 [default], AAA is 7:1."),
+                                    CliArgument(("--json",), dest="as_json",
+                                                action="store_true", help="Emit JSON."),
                                 ),
                             ),
                         ),
@@ -461,7 +600,7 @@ class WebConsoleModule(Module):
         if request.flag("as_json"):
             dump_json(prefs)
             return int(ExitCode.SUCCESS)
-        for section in ("nav", "panels", "buttons", "values", "defaults", "settings"):
+        for section in ("nav", "panels", "buttons", "values", "defaults", "settings", "layout"):
             value = prefs[section]
             write_line(f"{section}: " + (json.dumps(value, ensure_ascii=False) if value else "-"))
         return int(ExitCode.SUCCESS)
@@ -486,6 +625,174 @@ class WebConsoleModule(Module):
             write_line(f"{TAG_ERROR} {exc}")
             return int(ExitCode.USAGE_ERROR)
         return self._prefs_emit(request, prefs)
+
+    # -- window layout ---------------------------------------------------------------
+
+    def _layout_show(self, request: CliRequest) -> int:
+        layout = self.prefs.load(self._prefs_user(request))["layout"]
+        if request.flag("as_json"):
+            dump_json(layout)
+            return int(ExitCode.SUCCESS)
+        if not layout:
+            write_line(tr("{note} no layout stored; the shell uses its defaults.",
+                          note=TAG_NOTE))
+            return int(ExitCode.SUCCESS)
+        print_key_values([(k, json.dumps(v, ensure_ascii=False)) for k, v in layout.items()])
+        return int(ExitCode.SUCCESS)
+
+    def _layout_set(self, request: CliRequest) -> int:
+        user = self._prefs_user(request)
+        try:
+            current = self.prefs.load(user)["layout"]
+            change: dict[str, Any] = {}
+            sizes = {
+                pane: int(request.option(pane))
+                for pane in PANE_LIMITS
+                if request.option(pane) is not None
+            }
+            if sizes:
+                change["sizes"] = sizes
+            hidden = _pane_list(request.option("hide"))
+            shown = _pane_list(request.option("show"))
+            if hidden or shown:
+                # hide first, then show: "--hide all --show side" leaves only the side list
+                change["hidden"] = [
+                    pane for pane in PANES
+                    if (pane in current.get("hidden", []) or pane in hidden) and pane not in shown
+                ]
+            if request.option("ribbon"):
+                change["ribbon"] = str(request.option("ribbon"))
+            if not change:
+                write_line(f"{TAG_ERROR} nothing to change: give --side, --bottom, --inspector, "
+                           "--hide, --show or --ribbon")
+                return int(ExitCode.USAGE_ERROR)
+            prefs = self.prefs.patch(user, {"layout": change})
+        except (ValueError, PrefsError) as exc:
+            write_line(f"{TAG_ERROR} {exc}")
+            return int(ExitCode.USAGE_ERROR)
+        if request.flag("as_json"):
+            dump_json(prefs["layout"])
+        else:
+            write_line(f"{TAG_OK} " + json.dumps(prefs["layout"], ensure_ascii=False))
+        return int(ExitCode.SUCCESS)
+
+    def _layout_reset(self, request: CliRequest) -> int:
+        prefs = self.prefs.reset(self._prefs_user(request), ("layout",))
+        if request.flag("as_json"):
+            dump_json(prefs["layout"])
+        else:
+            write_line(f"{TAG_OK} layout forgotten")
+        return int(ExitCode.SUCCESS)
+
+    # -- themes ----------------------------------------------------------------------
+
+    @property
+    def themes(self) -> ThemeStore:
+        """Return the theme finder: built in, ``<root>/themes/`` and the person's folder."""
+        paths = self.require_context().paths
+        return ThemeStore(Path(paths.root) / "themes", Path(paths.durable_dir) / "ui" / "themes")
+
+    def theme_payload(self, user: str | None, name: str | None = None) -> dict[str, Any]:
+        """Return the theme for *user* (or the previewed *name*) with every choice."""
+        available, problems = self.themes.themes()
+        chosen = name or self.prefs.load(user)["settings"].get("theme") or DEFAULT_THEME
+        following = chosen == SYSTEM_THEME
+        if following:
+            theme = available[DEFAULT_THEME]
+        elif chosen in available:
+            theme = available[chosen]
+        else:
+            problems.append(f"theme {chosen!r} not found; using {DEFAULT_THEME}")
+            chosen, theme = DEFAULT_THEME, available[DEFAULT_THEME]
+        choices = [
+            {"name": n, "source": t.source, "high_contrast": n in HIGH_CONTRAST}
+            for n, t in sorted(available.items())
+        ]
+        choices.append({"name": SYSTEM_THEME, "source": "builtin", "high_contrast": False})
+        return {
+            "active": chosen,
+            "tokens": theme.tokens,
+            "css": css_text(theme),
+            "system": {"dark": DEFAULT_THEME, "light": "light"} if following else None,
+            "themes": choices,
+            "problems": problems,
+        }
+
+    def _theme_route(self, request: IpcRequest) -> Any:
+        caller = request.caller or current_caller()
+        user = caller.name if caller is not None else None
+        return self.theme_payload(user, request.query.get("name", [""])[0] or None)
+
+    def _theme_list(self, request: CliRequest) -> int:
+        payload = self.theme_payload(self._prefs_user(request))
+        if request.flag("as_json"):
+            dump_json({"active": payload["active"], "themes": payload["themes"],
+                       "problems": payload["problems"]})
+            return int(ExitCode.SUCCESS)
+        rows = [
+            ("*" if t["name"] == payload["active"] else "", t["name"], t["source"])
+            for t in payload["themes"]
+        ]
+        print_table(rows, ("", "Theme", "From"))
+        for problem in payload["problems"]:
+            write_line(f"{TAG_ERROR} {problem}")
+        return int(ExitCode.SUCCESS)
+
+    def _theme_show(self, request: CliRequest) -> int:
+        payload = self.theme_payload(self._prefs_user(request), request.option("name"))
+        if request.flag("css"):
+            write_line(payload["css"].rstrip("\n"))
+        elif request.flag("as_json"):
+            dump_json(payload)
+        else:
+            print_section(payload["active"])
+            print_key_values(list(payload["tokens"].items()))
+        return int(ExitCode.SUCCESS)
+
+    def _theme_set(self, request: CliRequest) -> int:
+        name = str(request.option("name"))
+        if name != SYSTEM_THEME:
+            try:
+                self.themes.get(name)
+            except ThemeError as exc:
+                write_line(f"{TAG_ERROR} {exc}")
+                return int(ExitCode.USAGE_ERROR)
+        self.prefs.patch(self._prefs_user(request), {"settings": {"theme": name}})
+        if request.flag("as_json"):
+            dump_json({"active": name})
+        else:
+            write_line(f"{TAG_OK} theme: {name}")
+        return int(ExitCode.SUCCESS)
+
+    def _theme_check(self, request: CliRequest) -> int:
+        target = str(request.option("target"))
+        level = str(request.option("level", "AA"))
+        try:
+            path = Path(target)
+            if path.suffix in (".css", ".json") and path.is_file():
+                tokens = complete(
+                    parse_theme(path.read_text(encoding="utf-8"), path.suffix, path.name)
+                )
+            else:
+                tokens = self.themes.get(target).tokens
+            rows = check_theme(tokens, level)
+        except (OSError, ThemeError) as exc:
+            write_line(f"{TAG_ERROR} {exc}")
+            return int(ExitCode.USAGE_ERROR)
+        failed = [row for row in rows if not row["ok"]]
+        if request.flag("as_json"):
+            dump_json({"target": target, "level": level, "ok": not failed, "pairs": rows})
+        else:
+            print_table(
+                [(r["pair"], f"{r['ratio']}", f"{r['need']}", "ok" if r["ok"] else "FAIL")
+                 for r in rows],
+                headers=("Pair", "Ratio", "Need", ""),
+            )
+            if failed:
+                write_line(f"{TAG_ERROR} {len(failed)} pair(s) below {level}")
+            else:
+                write_line(f"{TAG_OK} every pair meets {level}")
+        return int(ExitCode.SUCCESS if not failed else ExitCode.ERROR)
 
     def catalog(self) -> dict[str, Any]:
         """Return every runnable module command with the arguments it declares."""
@@ -814,6 +1121,17 @@ def describe_argument(argument: CliArgument) -> dict[str, Any]:
         "maximum": argument.maximum,
         "step": argument.step,
     }
+
+
+def _pane_list(value: Any) -> list[str]:
+    """Return the panes named in a comma list ('all' means every pane)."""
+    words = [word.strip() for word in str(value or "").split(",") if word.strip()]
+    if "all" in words:
+        return list(PANES)
+    unknown = [word for word in words if word not in PANES]
+    if unknown:
+        raise ValueError(f"unknown pane(s): {', '.join(unknown)}; use {', '.join(PANES)} or all")
+    return words
 
 
 MODULE = WebConsoleModule()

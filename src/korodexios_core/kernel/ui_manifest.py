@@ -22,6 +22,13 @@ may say, per argument, where its choices come from (``choices_from``) or how it 
 (``textarea``, ``number``, ``slider``; limits come from the command's own argument).
 Nothing here is code: the renderer decides colours and widgets.
 
+A shell (the window with a ribbon, side list, bottom panel and inspector) reads three more
+optional declarations: ``position = "bottom"`` and ``badge`` (a route returning a count) on
+the ``[ui]`` table place and decorate the module's ribbon entry; ``[[ui.sections]]`` give the
+side list one collapsible tree each (``id``, ``title``, ``tree`` route, ``empty`` text; the
+route answers with the nodes of ``kernel/ui_tree.py``); and a panel may say ``dock = "bottom"``
+(shown in the bottom panel while the person navigates) or ``locked = true`` (never hidden).
+
 The manifest is a contract for humans, agents and tests alike: ``kdx ui manifest --json``
 prints exactly what the browser receives. A broken declaration never takes the GUI down:
 the offending panel (or module entry) is dropped and listed under ``issues``.
@@ -42,6 +49,9 @@ FIELD_KINDS = ("text", "textarea", "number", "slider", "select")
 ROUTE_PREFIX = "/api/v1/"
 SETTINGS_SOURCE = "/api/v1/ui/config/schema"
 MAX_PANELS = 64
+MAX_SECTIONS = 8
+AREA_POSITIONS = ("top", "bottom")
+DOCKS = ("main", "bottom")
 MAX_BUTTONS = 32
 MAX_ROW_ACTIONS = 8
 MAX_FIELDS = 32
@@ -144,17 +154,79 @@ def _module_entry(name: str, declaration: Any, build: _Build) -> dict[str, Any] 
             panels.append(panel)
     if len(raw_panels) > MAX_PANELS:
         build.issue(f"more than {MAX_PANELS} panels; the rest were ignored")
-    if not panels:
+    sections = _sections(declaration.get("sections", ()), build)
+    if not panels and not sections:
         if raw_panels:
             build.issue("no valid panel is left, so the module has no GUI entry")
         return None
-    return {
+    entry: dict[str, Any] = {
         "module": name,
         "title": build.say(declaration.get("title") or name),
         "icon": _short(declaration.get("icon")),
         "order": _int(declaration.get("order"), 100),
         "panels": panels,
     }
+    # shell placement is optional and only present when declared, so older renderers see
+    # the same shape they always did
+    position = str(declaration.get("position") or "top")
+    if position == "bottom":
+        entry["position"] = position
+    elif position != "top":
+        build.issue(f"ui.position {position!r} is not one of {', '.join(AREA_POSITIONS)}")
+    badge = _route_or_issue(declaration.get("badge"), "ui.badge", build, "")
+    if badge:
+        entry["badge"] = badge
+    if sections:
+        entry["sections"] = sections
+    return entry
+
+
+def _route_or_issue(value: Any, what: str, build: _Build, ident: str) -> str:
+    """Return *value* when it is a control-plane route, else "" (with an issue when set)."""
+    route = str(value or "")
+    if not route:
+        return ""
+    if not route.startswith(ROUTE_PREFIX) or ".." in route or "//" in route or not _ROUTE.match(
+        route
+    ):
+        build.issue(f"{what} must be a control-plane route under {ROUTE_PREFIX}", ident)
+        return ""
+    return route
+
+
+def _sections(raw: Any, build: _Build) -> list[dict[str, Any]]:
+    """Validate ``[[ui.sections]]``: each is one collapsible tree in the side list."""
+    if raw in (None, (), []):
+        return []
+    if not isinstance(raw, list | tuple):
+        build.issue("ui.sections must be an array of tables")
+        return []
+    sections: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for index, item in enumerate(raw[:MAX_SECTIONS]):
+        if not isinstance(item, Mapping):
+            build.issue(f"section #{index + 1} must be a table")
+            continue
+        ident = str(item.get("id") or "")
+        if not _IDENT.match(ident) or ident in seen:
+            build.issue(f"section #{index + 1} needs a unique id like 'cases'")
+            continue
+        tree = _route_or_issue(item.get("tree"), "section tree", build, ident)
+        if not tree:
+            build.issue("section needs a tree route that returns nodes", ident)
+            continue
+        seen.add(ident)
+        sections.append(
+            {
+                "id": ident,
+                "title": build.say(item.get("title") or ident),
+                "tree": tree,
+                "empty": build.say(item.get("empty")),
+            }
+        )
+    if len(raw) > MAX_SECTIONS:
+        build.issue(f"more than {MAX_SECTIONS} sections; the rest were ignored")
+    return sections
 
 
 def _panel(
@@ -181,6 +253,13 @@ def _panel(
         "help": build.say(raw.get("help")),
         "refresh": min(MAX_REFRESH_SECONDS, max(0, _int(raw.get("refresh"), 0))),
     }
+    dock = str(raw.get("dock") or "main")
+    if dock == "bottom":
+        panel["dock"] = dock  # shown in the bottom panel, wherever the person navigates
+    elif dock != "main":
+        build.issue(f"dock {dock!r} is not one of {', '.join(DOCKS)}", ident)
+    if raw.get("locked") is True:
+        panel["locked"] = True  # the shell must not let a person hide this panel
     ok = _TYPES[kind](raw, panel, build, ident)
     if not ok:
         return None
