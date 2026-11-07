@@ -1646,6 +1646,10 @@ msgstr "id"
 msgid "id mapping"
 msgstr "mapovanie id"
 
+#: cli/container_doctor.py
+msgid "if usermod refuses (the user has running processes), replace the two lines directly:"
+msgstr "ak usermod odmietne (používateľ má bežiace procesy), nahraď tie dva riadky priamo:"
+
 #: modules/system_info/module.py
 msgid "inodes"
 msgstr "inódy"

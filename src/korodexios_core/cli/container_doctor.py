@@ -93,6 +93,12 @@ def _doctor(request: CliRequest) -> int:
             f"{TAG_NOTE} " + tr("a free range that nobody uses (review it, then run as admin):")
         )
         write_line(f"    {advice['command']}")
+        if advice.get("fallback"):
+            write_line(
+                f"{TAG_NOTE} " + tr("if usermod refuses (the user has running processes), "
+                                    "replace the two lines directly:")
+            )
+            write_line(f"    {advice['fallback']}")
         write_line(f"{TAG_NOTE} {advice['note']}")
     return int(ExitCode.ERROR)
 

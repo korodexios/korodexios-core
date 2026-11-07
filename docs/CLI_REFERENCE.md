@@ -569,7 +569,8 @@ kdx container env [--write] [--json] # KDX_UID/KDX_GID for compose; --write adds
 and the engines on PATH. When a rootless engine (Podman) lacks usable subordinate ids - typically
 inside an LXC, where the range must lie inside the ids the container maps - it proposes a block that
 no account and no other user's range uses, keeping the low ids free for accounts created later, and
-prints the exact `sudo usermod ...` command. The chassis never edits `/etc/subuid` or an existing
+prints the exact `sudo usermod ...` command and, because `usermod` refuses while the user has running
+processes (their own login), a `sed` that replaces just those two lines in `/etc/subuid` and `/etc/subgid`. The chassis never edits `/etc/subuid` or an existing
 account itself; that is the administrator's decision. Inside an LXC the lasting fix is a wider idmap
 on the LXC host.
 

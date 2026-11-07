@@ -1646,6 +1646,10 @@ msgstr "ID"
 msgid "id mapping"
 msgstr "ID-Zuordnung"
 
+#: cli/container_doctor.py
+msgid "if usermod refuses (the user has running processes), replace the two lines directly:"
+msgstr "wenn usermod ablehnt (der Benutzer hat laufende Prozesse), die beiden Zeilen direkt ersetzen:"
+
 #: modules/system_info/module.py
 msgid "inodes"
 msgstr "Inodes"

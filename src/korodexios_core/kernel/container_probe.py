@@ -225,10 +225,20 @@ def _advice(
         parts.append(f"--del-subgids {start}-{start + size - 1}")
     parts.append(f"--add-subuids {first}-{first + count - 1}")
     parts.append(f"--add-subgids {gfirst}-{gfirst + gcount - 1} {name}")
+    fallback = ""
+    if len(own) == 1 and len(own_gid) == 1:
+        # usermod refuses while the user has running processes (their own login); the two
+        # lines can be replaced directly, touching nothing else in the files
+        (_, ustart, usize), (_, gstart, gsize) = own[0], own_gid[0]
+        fallback = (
+            f"sudo sed -i 's/^{name}:{ustart}:{usize}$/{name}:{first}:{count}/' /etc/subuid"
+            f" && sudo sed -i 's/^{name}:{gstart}:{gsize}$/{name}:{gfirst}:{gcount}/' /etc/subgid"
+        )
     return {
         "subuid": {"first": first, "count": count},
         "subgid": {"first": gfirst, "count": gcount},
         "command": " ".join(parts),
+        "fallback": fallback,
         "note": "chosen from ids no account or other user's range uses, keeping the low ids free "
         "for accounts created later; review it, the chassis never edits /etc/subuid itself. "
         "With fewer than 65536 ids set ignore_chown_errors = \"true\" under "

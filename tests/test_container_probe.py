@@ -80,6 +80,9 @@ def test_an_lxc_host_with_an_unmapped_range_gets_a_free_proposal() -> None:
     assert command.startswith("sudo usermod") and "--del-subuids 100000-165535" in command
     assert f"--add-subuids {first}-{first + count - 1}" in command and command.endswith("kleo")
     assert "never edits /etc/subuid" in advice["note"]
+    fallback = advice["fallback"]  # usermod refuses while the user has processes: edit the lines
+    assert f"s/^kleo:100000:65536$/kleo:{first}:{count}/' /etc/subuid" in fallback
+    assert "/etc/subgid" in fallback and fallback.count("sudo sed -i") == 2
 
 
 def test_a_range_another_service_owns_is_never_proposed() -> None:
