@@ -55,9 +55,9 @@ def test_the_chassis_source_decides_whether_the_build_needs_git() -> None:
 
 def test_the_react_tier_adds_a_node_stage_for_the_chosen_package_manager() -> None:
     npm = files_for(ui="react")["Dockerfile"]
-    assert npm.count("FROM") == 3 and "FROM node:22-slim AS web" in npm
+    assert npm.count("FROM") == 3 and "FROM docker.io/library/node:22-slim AS web" in npm
     assert "npm run build" in npm and "COPY --from=web /web/dist ./web/dist" in npm
-    assert "FROM oven/bun:1 AS web" in files_for(ui="react", pm="bun")["Dockerfile"]
+    assert "FROM docker.io/oven/bun:1 AS web" in files_for(ui="react", pm="bun")["Dockerfile"]
     pnpm = files_for(ui="react", pm="pnpm")["Dockerfile"]
     assert "corepack enable && pnpm install" in pnpm and "pnpm run build" in pnpm
 
@@ -111,3 +111,11 @@ def test_doctor_knows_container_engines_and_whether_it_runs_inside_one() -> None
     assert _probe(environ={"KUBERNETES_SERVICE_HOST": "10.0.0.1"})["container"]["inside"] == (
         "kubernetes")
     assert _probe(environ={"container": "lxc"})["container"]["inside"] == "lxc"
+
+
+def test_every_base_image_is_fully_qualified_so_podman_can_resolve_it() -> None:
+    for kwargs in ({}, {"ui": "react"}, {"ui": "react", "pm": "bun"}):
+        for line in files_for(**kwargs)["Dockerfile"].splitlines():
+            if line.startswith("FROM "):
+                image = line.split()[1]
+                assert image.startswith("docker.io/"), line

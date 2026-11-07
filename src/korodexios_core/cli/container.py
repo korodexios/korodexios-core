@@ -16,11 +16,12 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .init_project import ProjectTemplate
 
-PYTHON_IMAGE = "python:3.13-slim"
+# Fully qualified: Podman refuses short names when it cannot ask which registry to use.
+PYTHON_IMAGE = "docker.io/library/python:3.13-slim"
 NODE_STAGE = {
-    "npm": ("node:22-slim", "npm install --no-audit --no-fund", "npm run build"),
-    "pnpm": ("node:22-slim", "corepack enable && pnpm install", "pnpm run build"),
-    "bun": ("oven/bun:1", "bun install", "bun run build"),
+    "npm": ("docker.io/library/node:22-slim", "npm install --no-audit --no-fund", "npm run build"),
+    "pnpm": ("docker.io/library/node:22-slim", "corepack enable && pnpm install", "pnpm run build"),
+    "bun": ("docker.io/oven/bun:1", "bun install", "bun run build"),
 }
 PORT = 18123
 
