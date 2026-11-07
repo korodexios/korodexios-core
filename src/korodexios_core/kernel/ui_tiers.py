@@ -140,8 +140,8 @@ NOTES: list[dict[str, str]] = [
     {
         "id": "container-engines",
         "applies_to": "container",
-        "text": "The container files are verified with Docker running Linux containers: on a Debian "
-        "host and with Docker Desktop on Windows (Linux engine). Podman reads the same "
+        "text": "The container files are verified with Docker running Linux containers: on Debian "
+        "and with Docker Desktop on Windows (Linux engine). Podman reads the same "
         "Dockerfile and compose.yaml but has not been run against them; Windows containers "
         "(the Windows engine) are not supported - the image is Linux. The build stage needs "
         "network access (package index, and git for the default git chassis source).",
