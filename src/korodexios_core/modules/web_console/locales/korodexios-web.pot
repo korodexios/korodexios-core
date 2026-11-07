@@ -395,3 +395,67 @@ msgstr ""
 #: static/modules.js static/index.html
 msgid "unknown command"
 msgstr ""
+
+#: static/modules.js
+msgid "Details"
+msgstr ""
+
+#: static/modules.js
+msgid "Close"
+msgstr ""
+
+#: static/modules.js
+msgid "Reset"
+msgstr ""
+
+#: static/modules.js
+msgid "Save changes"
+msgstr ""
+
+#: static/modules.js
+msgid "Nothing changed"
+msgstr ""
+
+#: static/modules.js
+msgid "Settings saved"
+msgstr ""
+
+#: static/modules.js
+msgid "applies live"
+msgstr ""
+
+#: static/modules.js
+msgid "needs restart"
+msgstr ""
+
+#: static/modules.js
+msgid "overridden by environment or CLI"
+msgstr ""
+
+#: static/modules.js
+msgid "secret: set it in .env"
+msgstr ""
+
+#: static/modules.js
+msgid "applied now"
+msgstr ""
+
+#: static/modules.js
+msgid "saved; needs a restart"
+msgstr ""
+
+#: static/modules.js
+msgid "saved, but a higher layer still wins"
+msgstr ""
+
+#: static/modules.js
+msgid "saved"
+msgstr ""
+
+#: static/modules.js
+msgid "No declared settings."
+msgstr ""
+
+#: static/modules.js
+msgid "Saving needs the admin role."
+msgstr ""

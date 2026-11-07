@@ -179,3 +179,21 @@ tr.denied td { color: var(--bad); }
 input.inline { min-width: 12ch; }
 #btn-customize.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 #shortcut-list .row, #default-list .row { margin: 6px 0; align-items: center; }
+
+/* typed cells, row actions, settings */
+.chip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--line); }
+.chip.tone-ok { color: var(--ok); border-color: var(--ok); }
+.chip.tone-warn { color: var(--warn); border-color: var(--warn); }
+.chip.tone-bad { color: var(--bad); border-color: var(--bad); }
+.chip.tone-busy { color: var(--accent); border-color: var(--accent); }
+.chip.tone-muted { color: var(--muted); }
+td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.row-actions { white-space: nowrap; text-align: right; }
+td.row-actions button { margin-left: 4px; padding: 2px 8px; }
+.panel-body .detail:not(:empty) { margin-top: 8px; }
+textarea { font: inherit; color: inherit; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; width: 100%; }
+input[type="range"] { padding: 0; }
+.setting { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.setting .field { flex: 1 1 280px; }
+.setting .badges { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; padding-top: 22px; }
+.settings-result p { margin: 2px 0; }

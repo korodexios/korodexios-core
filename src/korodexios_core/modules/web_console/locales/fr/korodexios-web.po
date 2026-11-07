@@ -295,3 +295,51 @@ msgstr "cette commande n'est pas disponible ici pour vous"
 
 msgid "unknown command"
 msgstr "commande inconnue"
+
+msgid "Details"
+msgstr "Détails"
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "Reset"
+msgstr "Réinitialiser"
+
+msgid "Save changes"
+msgstr "Enregistrer les modifications"
+
+msgid "Nothing changed"
+msgstr "Rien n'a changé"
+
+msgid "Settings saved"
+msgstr "Réglages enregistrés"
+
+msgid "applies live"
+msgstr "effet immédiat"
+
+msgid "needs restart"
+msgstr "nécessite un redémarrage"
+
+msgid "overridden by environment or CLI"
+msgstr "remplacé par l'environnement ou la CLI"
+
+msgid "secret: set it in .env"
+msgstr "secret : à définir dans .env"
+
+msgid "applied now"
+msgstr "appliqué maintenant"
+
+msgid "saved; needs a restart"
+msgstr "enregistré ; redémarrage requis"
+
+msgid "saved, but a higher layer still wins"
+msgstr "enregistré, mais une couche supérieure l'emporte encore"
+
+msgid "saved"
+msgstr "enregistré"
+
+msgid "No declared settings."
+msgstr "Aucun réglage déclaré."
+
+msgid "Saving needs the admin role."
+msgstr "L'enregistrement nécessite le rôle admin."

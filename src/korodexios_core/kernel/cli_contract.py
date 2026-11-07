@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -27,6 +28,23 @@ _TYPE_MAP: dict[str, Callable[[Any], Any]] = {
     "float": float,
     "path": Path,
 }
+
+
+def _ranged(convert: Callable[[Any], Any], argument: CliArgument) -> Callable[[Any], Any]:
+    """Wrap *convert* so a number outside the declared range is refused like a bad type."""
+    low, high = argument.minimum, argument.maximum
+    if low is None and high is None:
+        return convert
+
+    def check(text: Any) -> Any:
+        value = convert(text)
+        if low is not None and value < low:
+            raise argparse.ArgumentTypeError(f"must be at least {low:g}, got {value}")
+        if high is not None and value > high:
+            raise argparse.ArgumentTypeError(f"must be at most {high:g}, got {value}")
+        return value
+
+    return check
 
 
 def add_command_arguments(
@@ -56,7 +74,7 @@ def add_command_arguments(
         if argument.action not in _FLAG_ACTIONS and argument.type != "flag":
             # The named type is applied everywhere a value is parsed: options, positionals
             # (which used to arrive as strings), and 'append' lists of values.
-            kwargs["type"] = _TYPE_MAP.get(argument.type, str)
+            kwargs["type"] = _ranged(_TYPE_MAP.get(argument.type, str), argument)
         if is_positional:
             # A positional is mandatory unless its nargs says otherwise, and
             # argparse refuses 'required' for one; only the default is honoured,
@@ -89,10 +107,29 @@ class CliArgument:
     default: Any = None
     type: str = "str"
     required: bool = False
+    minimum: float | None = None
+    """Smallest accepted number (type int or float); the parser and a GUI slider both honour it."""
+    maximum: float | None = None
+    step: float | None = None
+    """Increment a GUI slider moves in; a hint only, the parser does not enforce it."""
 
     def __post_init__(self) -> None:
         if not self.flags:
             raise ValueError("a CLI argument needs at least one flag or positional name")
+        if (self.minimum is not None or self.maximum is not None) and self.type not in (
+            "int",
+            "float",
+        ):
+            raise ValueError(
+                f"argument {self.flags[-1]!r} sets a minimum or maximum, which needs type "
+                "'int' or 'float'"
+            )
+        if (
+            self.minimum is not None
+            and self.maximum is not None
+            and self.minimum > self.maximum
+        ):
+            raise ValueError(f"argument {self.flags[-1]!r} has a minimum above its maximum")
         if self.type not in {"str", "int", "float", "path", "flag"}:
             raise ValueError(f"unsupported CLI argument type {self.type!r}")
         if self.required and self.action in _FLAG_ACTIONS:

@@ -13,7 +13,7 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 | Distribution | `korodexios-core` |
 | Import root | `korodexios_core` |
 | Console scripts | `kdx` (primary short alias), `korodexios` (canonical) |
-| Version | `0.6.2` (production), core API frozen at `v2` (additive changes only inside v2) |
+| Version | `0.6.3` (production), core API frozen at `v2` (additive changes only inside v2) |
 | Runtime | CPython 3.11+, stdlib first (PyYAML for config, rich for the CLI surface) |
 | Config file | `kdx.yml` / `kdx.yaml` / `kdx.json` (then `korodexios.*`) |
 | Env prefix | `KDX_` primary; `KORODEXIOS_` is the canonical long prefix |
@@ -522,7 +522,7 @@ order = 40                   # lower comes first; ties by module name
 
 [[ui.panels]]
 id = "tasks"                 # ^[a-z][a-z0-9_-]*$, unique inside the module
-type = "table"              # table | keyvalue | log | text | form | actions
+type = "table"              # table | keyvalue | log | text | form | actions | settings
 title = "Latest tasks"
 source = "/api/v1/queue"    # a control-plane route under /api/v1/ (GET)
 path = "tasks"              # dotted key into the JSON answer
@@ -532,17 +532,64 @@ refresh = 5                  # seconds; 0 (default) loads once
 
 | Panel type | Fields | Draws |
 | --- | --- | --- |
-| `table` | `source`, `path`, `columns` | rows of an array of objects |
+| `table` | `source`, `path`, `columns`, `actions`, `detail` | rows of an array of objects, typed cells, per-row buttons |
 | `keyvalue` | `source`, `path` | one object as label/value pairs |
 | `log` | `source`, `path` | lines of text |
 | `text` | `text` | static text |
-| `form` | `command`, `args` | a form built from the command's declared `CliArgument`s |
+| `form` | `command`, `args`, `fields` | a form built from the command's declared `CliArgument`s |
 | `actions` | `buttons = [{ id, label, command, args, confirm, danger }]` | buttons that run commands |
+| `settings` | `module = "name"` or `group = "core.log"` | a typed form of the declared config keys (see 8.2) |
 
 Rules the validator enforces (a broken panel is dropped and listed under `issues`; it never
 takes the GUI down): a `command` must be a runnable command path (`queue purge`), a `source`
 must live under `/api/v1/`, ids are unique, and everything is plain data. Check your work with
 `kdx ui manifest` - an empty `issues` list means every panel was accepted.
+
+**The `/ui/` prefix is reserved for the UI.** The console's files are served under `/ui/` and its
+own routes under `/api/v1/ui/`; a module that mounts a static directory or a single-page app must
+pick another prefix (the `react` tier uses `/app/`), so its client routes can never collide with
+`/api/v1/` or with the console.
+
+**Typed cells, row actions and detail (table).** A column is a string or a table
+`{ key, label, kind, tones }`; `kind` is `text` (default), `chip`, `bytes`, `duration` (seconds),
+`time` (epoch seconds or an ISO string), `link` (only `http(s)` or a path of the same host is ever
+followed) or `code`. A `chip` takes `tones = { done = "ok", failed = "bad" }` with the tones `ok`,
+`warn`, `bad`, `busy`, `muted`; common words (`done`, `failed`, `queued`) get a tone without any
+declaration, and the colours are the renderer's business. `actions = [{ id, label, command, args,
+confirm, danger }]` puts buttons in every row; an `args` value may hold `{column}` placeholders
+(`args = { id = "{id}" }`, dotted names reach into nested rows) that are filled from that row, and
+the command must be a runnable command path like any button. `detail = { source =
+"/api/v1/queue?id={id}", path = "task" }` opens a key/value view of a route from a row.
+
+**Choices and widgets (form).** `[ui.panels.fields.<argument>]` says how one argument of the
+command is drawn: `choices_from = "/api/v1/models"` with `path`, `value`, `label` fills a select
+from a route; `kind = "textarea"` (with `rows`), `"number"`, `"slider"` or `"select"`. A number's
+`min`, `max` and `step` come from the command's own `CliArgument(minimum=, maximum=, step=)`,
+which the parser enforces too, so the terminal and the form refuse the same values. File upload
+is not part of this release.
+
+### 8.2 Settings: `kdx config set|unset|schema` and the `settings` panel
+
+A project that wants a Settings tab declares nothing but `type = "settings"` and `module = "name"`
+(or `group = "core.log"`); the console draws a switch, select or number per declared key from
+`GET /api/v1/ui/config/schema` and saves through `POST /api/v1/ui/config/edit` (role `admin`,
+written to the audit log). The terminal does the same without a browser:
+
+```bash
+kdx config schema --module heartbeat --json   # type, default, choices, secret, live, value, layer
+kdx config set modules.heartbeat.interval 2   # or: kdx config set interval 2 --module heartbeat
+kdx config unset modules.heartbeat.interval   # the layer below applies again
+```
+
+Rules: only the **local layer** (`kdx.local.yml`) is written - never `kdx.yml`, never `.env`; a
+**secret** (declared `secret=True`, or named like one) is refused, secrets keep the `.env` recipe;
+a key must be declared (by the chassis or a module's `ConfigField`) and the value must pass that
+declaration - type, `choices`, and `minimum`/`maximum` - or nothing is written, and the error
+names the field's description and choices. A running daemon reloads at once and reports per key
+`live` (the module handled `on_config_reload`, or declared `ConfigField(live=True)`), `restart`
+(read at boot; `ConfigField(live=False)`, or a module without a reload hook) or `shadowed` (the
+environment or the command line still wins over the file). Comments in a hand-edited
+`kdx.local.yml` do not survive a rewrite, which is why only that machine-local file is touched.
 
 **Choosing a GUI tier.** Start with no GUI files: the built-in console already draws every
 module's `[ui]` panels. Run `kdx ui guide --json` for the tiers and when to pick each, and

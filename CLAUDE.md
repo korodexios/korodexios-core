@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.2.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.3.
 
 ## Working preferences
 
@@ -51,6 +51,13 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
   `var/` and runtime state out of git.
 
 ## Current state (2026-11-07)
+
+- v0.6.3 is prepared in the working tree of `main` (not committed, tagged or pushed; the owner decides):
+  settings editor (`kdx config set|unset|schema`, `config/editor.py`, `cli/config_edit.py`,
+  `/api/v1/ui/config/schema` and `/edit`, `settings` panel), table typed cells / row actions /
+  detail, form `fields` (`choices_from`, textarea, slider). From a proposal sent by a downstream
+  project; items 4-8 (status strip, upload and Range, theme tokens, event-driven panels, `embed`)
+  were deliberately left out. The version pins in README/install scripts already name `v0.6.3`.
 
 - `main` is at v0.6.2 (the owner asked for merge, tag and push): the GUI manifest (`[ui]` in
   `kdx_module.toml`, `/api/v1/ui/manifest`) with per-user remembered choices (`kdx ui prefs`), GUI tiers

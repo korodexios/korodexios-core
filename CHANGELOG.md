@@ -5,6 +5,35 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-11-07
+
+### Added
+
+- Settings editor: `kdx config set|unset|schema`. Writes only the local layer (`kdx.local.yml`),
+  refuses secrets and undeclared keys, validates against the declaration (type, `choices`,
+  `minimum`/`maximum`) before anything is written, and asks a running daemon to reload, reporting
+  per key `live`, `restart`, `shadowed` or `saved`. `ConfigField` gains `live`, `minimum`,
+  `maximum`; chassis keys carry sane bounds (`core.log.level` choices, `core.ipc.port` range).
+- Console: `GET /api/v1/ui/config/schema` (declared keys joined with value and layer),
+  `POST /api/v1/ui/config/edit` (admin, audited, the same writer as the terminal) and a `settings`
+  manifest panel (`module = "name"` or `group = "core.log"`) drawn as a typed form.
+- Manifest tables: column `kind` (`chip` with `tones`, `bytes`, `duration`, `time`, `link`,
+  `code`), per-row `actions` with `{column}` placeholders, and a `detail` route opened from a row.
+- Manifest forms: `[ui.panels.fields.<argument>]` with `choices_from` (a select filled from a
+  route), `textarea`, `number` and `slider`; `CliArgument` gains `minimum`, `maximum`, `step`,
+  enforced by the parser as well as shown by the form.
+- `AGENTS_GUIDE.md` states that `/ui/` and `/api/v1/ui/` are the reserved UI prefixes.
+
+### Fixed
+
+- A daemon that booted without a `kdx.local.yml` never read one created later; an edit now teaches
+  it where the file lives, so the reload sees it.
+
+### Not in this release
+
+- File upload fields, `Range` requests, the status strip, panels that subscribe to events, shared
+  theme tokens and the sandboxed `embed` panel from the same proposal were left for later.
+
 ## [0.6.2] - 2026-11-07
 
 ### Added

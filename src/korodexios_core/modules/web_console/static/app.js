@@ -465,7 +465,7 @@
       finishCard(card, payload.error || `HTTP ${status}`, `refused · HTTP ${status}`, true);
       return;
     }
-    followJob(payload.job.id, card);
+    await followJob(payload.job.id, card);
   }
 
   function runCard(line, host) {

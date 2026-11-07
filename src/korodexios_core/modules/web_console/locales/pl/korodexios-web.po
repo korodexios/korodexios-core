@@ -295,3 +295,51 @@ msgstr "to polecenie nie jest tu dla ciebie dostępne"
 
 msgid "unknown command"
 msgstr "nieznane polecenie"
+
+msgid "Details"
+msgstr "Szczegóły"
+
+msgid "Close"
+msgstr "Zamknij"
+
+msgid "Reset"
+msgstr "Przywróć"
+
+msgid "Save changes"
+msgstr "Zapisz zmiany"
+
+msgid "Nothing changed"
+msgstr "Nic się nie zmieniło"
+
+msgid "Settings saved"
+msgstr "Ustawienia zapisane"
+
+msgid "applies live"
+msgstr "działa od razu"
+
+msgid "needs restart"
+msgstr "wymaga restartu"
+
+msgid "overridden by environment or CLI"
+msgstr "nadpisane przez środowisko lub CLI"
+
+msgid "secret: set it in .env"
+msgstr "sekret: ustaw w .env"
+
+msgid "applied now"
+msgstr "zastosowano od razu"
+
+msgid "saved; needs a restart"
+msgstr "zapisano; wymaga restartu"
+
+msgid "saved, but a higher layer still wins"
+msgstr "zapisano, ale wyższa warstwa nadal wygrywa"
+
+msgid "saved"
+msgstr "zapisano"
+
+msgid "No declared settings."
+msgstr "Brak zadeklarowanych ustawień."
+
+msgid "Saving needs the admin role."
+msgstr "Zapis wymaga roli admin."

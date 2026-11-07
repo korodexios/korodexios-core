@@ -23,6 +23,7 @@ from ..kernel.ipc import (
     is_loopback_host,
 )
 from ..version import format_version
+from .config_edit import edit_commands
 from .render import (
     dump_json,
     format_bool,
@@ -478,6 +479,7 @@ def core_commands(chassis: Chassis) -> list[CliCommand]:
                     handler=_config_check_command,
                     module_name="core",
                 ),
+                *edit_commands(),
             ),
         ),
         CliCommand(

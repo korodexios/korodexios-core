@@ -20,8 +20,8 @@ docs. `kdx --help` lists every command, including the ones modules contributed.
 | uv, in the chassis repository | `uv venv --python 3.13 && uv sync --extra dev && uv run kdx doctor` | uv (Astral) owns the environment; `make` resolves to `uv run` when uv is on `PATH` |
 | guided installer | `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) | four coloured steps - check, install, verify, first project; asks before installing uv; `--lang sk`, `--yes`, `--dry-run` (`-Language`, `-Yes`, `-DryRun` on Windows) |
 | uv tool | `uv tool install korodexios-core` | a global `kdx` on PATH, no project involved |
-| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.2"` | the documented pin before an index publish; needs network |
-| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.6.2"` | what `kdx init --chassis-source git` writes into the seed |
+| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.3"` | the documented pin before an index publish; needs network |
+| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.6.3"` | what `kdx init --chassis-source git` writes into the seed |
 | pipx, or venv + pip | `pipx install korodexios-core`; `python3 -m venv .venv && pip install -e ".[dev]"` | the fallback when uv is absent - and it fails as written on a PEP 668 `EXTERNALLY-MANAGED` interpreter with no `pip` and no `ensurepip` |
 | from an index | `uv pip install korodexios-core`, or `pip install korodexios-core` | once published; a consumer pins it with `uv lock` |
 
@@ -280,7 +280,20 @@ kdx config show --reveal              # show secret values instead of ***redacte
 kdx config file                       # which file won, and the local override if any
 kdx config check                      # unknown keys, module schema violations
 kdx config check --json               # the same report for machines
+kdx config schema [--module NAME] [--group PREFIX] [--json]   # every settable key: type, default,
+                                      # choices, secret, live, current value and the layer it comes from
+kdx config set KEY VALUE [--module NAME] [--json]   # write one key to kdx.local.yml, checked
+kdx config unset KEY [--module NAME] [--json]       # remove it again; the layer below applies
 ```
+
+`set` and `unset` write **only** `kdx.local.yml` (never `kdx.yml`, never `.env`), refuse a secret
+and any key nobody declared, and validate the value against the declaration (type, `choices`,
+`minimum`/`maximum`) before touching the file; the error names the field's description and
+choices. With `--module NAME`, `KEY` is the module's own key (`interval` means
+`modules.NAME.interval`). When a daemon is running it is asked to reload, and each key is reported
+as `live`, `restart` or `shadowed` (an environment variable or CLI flag still wins); without one,
+the key is `saved` and applies on the next start. The web console's Settings panel calls the same
+code over `POST /api/v1/ui/config/edit` (admin role, audited).
 
 Sources: `built-in default`, `config file`, `local override file`, `environment`,
 `CLI override`. Environment aliases work in either declared shape - the mapping under
@@ -346,7 +359,7 @@ The seed ships `kdx.yml`, `.env.example`, `Makefile`, `README.md`, `AGENTS.md`,
 smoke tests. It passes `make check` on arrival.
 
 The chassis dependency is pinned to the repository by default
-(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.2`), so a fresh
+(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.6.3`), so a fresh
 venv can `pip install -e .` the seeded project before any index publish. Pass
 `--chassis-source index` once the package is on an index; an unknown choice is refused
 with a hint. A git pin needs network and uv at install time - `uv venv`,

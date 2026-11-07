@@ -86,6 +86,11 @@ class ConfigField:
     description: str = ""
     choices: tuple[str, ...] = ()
     sentinel: Any = None
+    live: bool | None = None
+    """True: the module applies a changed value on reload; False: it needs a restart;
+    None: not declared (the editor then asks whether the module reacts to a reload at all)."""
+    minimum: float | None = None
+    maximum: float | None = None
 
     def __post_init__(self) -> None:
         if not str(self.key).strip():
@@ -110,6 +115,11 @@ class ConfigField:
             rendered = str(coerced)
             if rendered not in self.choices:
                 return f"{self.key} must be one of {', '.join(self.choices)}, got {rendered!r}"
+        if self.kind in (ConfigKind.INT, ConfigKind.FLOAT):
+            if self.minimum is not None and coerced < self.minimum:
+                return f"{self.key} must be at least {self.minimum:g}, got {coerced!r}"
+            if self.maximum is not None and coerced > self.maximum:
+                return f"{self.key} must be at most {self.maximum:g}, got {coerced!r}"
         return ""
 
     def as_dict(self) -> dict[str, Any]:
@@ -123,6 +133,9 @@ class ConfigField:
             "description": self.description,
             "choices": list(self.choices),
             "sentinel": self.sentinel,
+            "live": self.live,
+            "minimum": self.minimum,
+            "maximum": self.maximum,
         }
 
 
@@ -291,7 +304,17 @@ def _field_from_table(key: str, table: Mapping[str, Any]) -> ConfigField:
         secret=bool(table.get("secret", False)),
         description=str(table.get("description", "") or ""),
         choices=tuple(str(item) for item in choices),
+        live=table["live"] if isinstance(table.get("live"), bool) else None,
+        minimum=_number(table.get("minimum", table.get("min"))),
+        maximum=_number(table.get("maximum", table.get("max"))),
     )
+
+
+def _number(value: Any) -> float | None:
+    """Return *value* as a float when it is a real number, else None (booleans are not)."""
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        return None
+    return float(value)
 
 
 def schema_from_mapping(

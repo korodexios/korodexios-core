@@ -11,8 +11,16 @@ Panel types (every field is plain data; nothing here runs in a browser)::
     keyvalue   one object as label/value pairs          source, path
     log        text lines from a route                  source, path
     text       static text                              text
-    form       a module command with a form             command, args
+    form       a module command with a form             command, args, fields
     actions    buttons that run commands                buttons
+    settings   typed form of declared config keys       module or group
+
+A ``table`` column may carry a ``kind`` (``chip`` with optional ``tones``, ``bytes``,
+``duration``, ``time``, ``link``, ``code``), the table may list per-row ``actions`` whose
+``args`` use ``{column}`` placeholders, and a ``detail`` route opened from a row. A ``form``
+may say, per argument, where its choices come from (``choices_from``) or how it is drawn
+(``textarea``, ``number``, ``slider``; limits come from the command's own argument).
+Nothing here is code: the renderer decides colours and widgets.
 
 The manifest is a contract for humans, agents and tests alike: ``kdx ui manifest --json``
 prints exactly what the browser receives. A broken declaration never takes the GUI down:
@@ -27,15 +35,25 @@ from dataclasses import dataclass, field
 from typing import Any
 
 MANIFEST_VERSION = 1
-PANEL_TYPES = ("table", "keyvalue", "log", "text", "form", "actions")
+PANEL_TYPES = ("table", "keyvalue", "log", "text", "form", "actions", "settings")
+CELL_KINDS = ("text", "chip", "bytes", "duration", "time", "link", "code")
+TONES = ("ok", "warn", "bad", "busy", "muted")
+FIELD_KINDS = ("text", "textarea", "number", "slider", "select")
 ROUTE_PREFIX = "/api/v1/"
+SETTINGS_SOURCE = "/api/v1/ui/config/schema"
 MAX_PANELS = 64
 MAX_BUTTONS = 32
+MAX_ROW_ACTIONS = 8
+MAX_FIELDS = 32
+MAX_TONES = 32
 MAX_REFRESH_SECONDS = 3600
 _IDENT = re.compile(r"^[a-z][a-z0-9_-]{0,47}$")
 _PATH = re.compile(r"^[A-Za-z0-9_.\-]{0,128}$")
 _COMMAND = re.compile(r"^[a-z][a-z0-9_-]*( [a-z][a-z0-9_-]*)*$")
-_ROUTE = re.compile(r"^/[A-Za-z0-9_\-./]*$")
+_ROUTE = re.compile(r"^/[A-Za-z0-9_\-./?=&]*$")
+_TEMPLATE_ROUTE = re.compile(r"^/[A-Za-z0-9_\-./{}?=&]*$")
+_PLACEHOLDER = re.compile(r"\{([^{}]*)\}")
+_COLUMN = re.compile(r"^[A-Za-z0-9_.\-]{1,64}$")
 
 Translator = Callable[[str, str], str]
 """``(message, domain) -> translated`` - the manifest asks it for every visible string."""
@@ -189,19 +207,123 @@ def _source(raw: Mapping[str, Any], panel: dict[str, Any], build: _Build, ident:
     return True
 
 
+def _tones(value: Any, build: _Build, ident: str) -> dict[str, str]:
+    if not isinstance(value, Mapping):
+        return {}
+    tones: dict[str, str] = {}
+    for word, tone in list(value.items())[:MAX_TONES]:
+        if str(tone) in TONES:
+            tones[str(word)] = str(tone)
+        else:
+            build.issue(f"tone {tone!s} for {word!s} is not one of {', '.join(TONES)}", ident)
+    return tones
+
+
+def _column(
+    item: Any, build: _Build, ident: str
+) -> dict[str, Any] | None:
+    if isinstance(item, Mapping):
+        key, label = str(item.get("key") or ""), build.say(item.get("label") or item.get("key"))
+        kind = str(item.get("kind") or "text")
+    else:
+        key, label, kind = str(item), build.say(item), "text"
+    if not key or not _PATH.match(key):
+        return None
+    if kind not in CELL_KINDS:
+        build.issue(f"column {key!r}: kind {kind!r} is not one of {', '.join(CELL_KINDS)}", ident)
+        kind = "text"
+    column: dict[str, Any] = {"key": key, "label": label}
+    if kind != "text":
+        column["kind"] = kind
+    if kind == "chip" and isinstance(item, Mapping):
+        tones = _tones(item.get("tones"), build, ident)
+        if tones:
+            column["tones"] = tones
+    return column
+
+
+def _placeholders_ok(text: str, build: _Build, ident: str, what: str) -> bool:
+    """Return True when every ``{name}`` in *text* names a column; a stray brace is refused."""
+    stripped = _PLACEHOLDER.sub("", text)
+    if "{" in stripped or "}" in stripped:
+        build.issue(f"{what} has an unbalanced brace", ident)
+        return False
+    for name in _PLACEHOLDER.findall(text):
+        if not _COLUMN.match(name):
+            build.issue(f"{what}: {{{name}}} is not a column name", ident)
+            return False
+    return True
+
+
+def _row_actions(raw: Any, build: _Build, ident: str) -> list[dict[str, Any]]:
+    actions: list[dict[str, Any]] = []
+    declared = raw if isinstance(raw, list | tuple) else ()
+    for index, item in enumerate(declared[:MAX_ROW_ACTIONS]):
+        if not isinstance(item, Mapping):
+            build.issue(f"row action #{index + 1} must be a table", ident)
+            continue
+        action_id = str(item.get("id") or "")
+        if not _IDENT.match(action_id) or any(a["id"] == action_id for a in actions):
+            build.issue(f"row action #{index + 1} needs a unique id", ident)
+            continue
+        command = _command_ok(item.get("command"), build, ident)
+        args = _args(item.get("args"))
+        if command is None or not all(
+            _placeholders_ok(value, build, ident, f"row action {action_id!r} argument {name!r}")
+            for name, value in args.items()
+            if isinstance(value, str)
+        ):
+            continue
+        actions.append(
+            {
+                "id": action_id,
+                "label": build.say(item.get("label") or action_id),
+                "command": command,
+                "args": args,
+                "confirm": bool(item.get("confirm", False)),
+                "danger": bool(item.get("danger", False)),
+            }
+        )
+    return actions
+
+
+def _detail(raw: Any, build: _Build, ident: str) -> dict[str, str] | None:
+    if raw is None:
+        return None
+    source = str(raw.get("source") or "") if isinstance(raw, Mapping) else ""
+    path = str(raw.get("path") or "") if isinstance(raw, Mapping) else ""
+    if (
+        not source.startswith(ROUTE_PREFIX)
+        or ".." in source
+        or "//" in source
+        or not _TEMPLATE_ROUTE.match(source)
+        or not _PATH.match(path)
+        or not _placeholders_ok(source, build, ident, "detail source")
+    ):
+        build.issue(
+            f"detail needs a source under {ROUTE_PREFIX} (it may hold {{column}} placeholders)",
+            ident,
+        )
+        return None
+    return {"source": source, "path": path}
+
+
 def _table(raw: Mapping[str, Any], panel: dict[str, Any], build: _Build, ident: str) -> bool:
     if not _source(raw, panel, build, ident):
         return False
-    columns: list[dict[str, str]] = []
+    columns: list[dict[str, Any]] = []
     declared = raw.get("columns", ())
     for item in declared if isinstance(declared, list | tuple) else ():
-        if isinstance(item, Mapping):
-            key, label = str(item.get("key") or ""), build.say(item.get("label") or item.get("key"))
-        else:
-            key, label = str(item), build.say(item)
-        if _PATH.match(key) and key:
-            columns.append({"key": key, "label": label})
+        column = _column(item, build, ident)
+        if column is not None:
+            columns.append(column)
     panel["columns"] = columns
+    actions = _row_actions(raw.get("actions"), build, ident)
+    if actions:
+        panel["actions"] = actions
+    detail = _detail(raw.get("detail"), build, ident)
+    if detail is not None:
+        panel["detail"] = detail
     return True
 
 
@@ -249,6 +371,63 @@ def _form(raw: Mapping[str, Any], panel: dict[str, Any], build: _Build, ident: s
         return False
     panel["command"] = command
     panel["args"] = _args(raw.get("args"))
+    fields = _fields(raw.get("fields"), build, ident)
+    if fields:
+        panel["fields"] = fields
+    return True
+
+
+def _fields(raw: Any, build: _Build, ident: str) -> dict[str, dict[str, Any]]:
+    """Validate ``[ui.panels.fields.<argument>]`` tables: how one argument is drawn."""
+    if not isinstance(raw, Mapping):
+        return {}
+    fields: dict[str, dict[str, Any]] = {}
+    for dest, spec in list(raw.items())[:MAX_FIELDS]:
+        name = str(dest)
+        if not _IDENT.match(name) or not isinstance(spec, Mapping):
+            build.issue(f"field {name!r} must be a table named after a command argument", ident)
+            continue
+        kind = str(spec.get("kind") or "")
+        if kind and kind not in FIELD_KINDS:
+            known = ', '.join(FIELD_KINDS)
+            build.issue(f"field {name!r}: kind {kind!r} is not one of {known}", ident)
+            continue
+        field: dict[str, Any] = {}
+        if kind:
+            field["kind"] = kind
+        source = str(spec.get("choices_from") or "")
+        if source:
+            value, label = str(spec.get("value") or ""), str(spec.get("label") or "")
+            path = str(spec.get("path") or "")
+            if (
+                not source.startswith(ROUTE_PREFIX)
+                or ".." in source
+                or "//" in source
+                or not _ROUTE.match(source)
+                or not all(_PATH.match(part) for part in (value, label, path))
+            ):
+                build.issue(f"field {name!r}: choices_from must be under {ROUTE_PREFIX}", ident)
+                continue
+            field.update({"choices_from": source, "path": path, "value": value, "label": label})
+            field.setdefault("kind", "select")
+        if spec.get("rows") is not None:
+            field["rows"] = min(20, max(1, _int(spec.get("rows"), 4)))
+        if field:
+            fields[name] = field
+    return fields
+
+
+def _settings(raw: Mapping[str, Any], panel: dict[str, Any], build: _Build, ident: str) -> bool:
+    module = str(raw.get("module") or "")
+    group = str(raw.get("group") or "")
+    if (not module and not group) or (module and not _IDENT.match(module.lower())) or (
+        group and not _PATH.match(group)
+    ):
+        build.issue("a settings panel needs 'module' (a module name) or 'group' (a prefix)", ident)
+        return False
+    panel["source"] = SETTINGS_SOURCE
+    panel["module"] = module
+    panel["group"] = group
     return True
 
 
@@ -291,6 +470,7 @@ _TYPES: dict[str, Callable[[Mapping[str, Any], dict[str, Any], _Build, str], boo
     "text": _text,
     "form": _form,
     "actions": _actions,
+    "settings": _settings,
 }
 
 

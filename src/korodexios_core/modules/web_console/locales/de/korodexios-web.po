@@ -295,3 +295,51 @@ msgstr "dieser Befehl steht dir hier nicht zur Verfügung"
 
 msgid "unknown command"
 msgstr "unbekannter Befehl"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+msgid "Save changes"
+msgstr "Änderungen speichern"
+
+msgid "Nothing changed"
+msgstr "Nichts geändert"
+
+msgid "Settings saved"
+msgstr "Einstellungen gespeichert"
+
+msgid "applies live"
+msgstr "wirkt sofort"
+
+msgid "needs restart"
+msgstr "braucht Neustart"
+
+msgid "overridden by environment or CLI"
+msgstr "von Umgebung oder CLI überschrieben"
+
+msgid "secret: set it in .env"
+msgstr "geheim: in .env setzen"
+
+msgid "applied now"
+msgstr "sofort angewendet"
+
+msgid "saved; needs a restart"
+msgstr "gespeichert; Neustart nötig"
+
+msgid "saved, but a higher layer still wins"
+msgstr "gespeichert, aber eine höhere Ebene gewinnt weiterhin"
+
+msgid "saved"
+msgstr "gespeichert"
+
+msgid "No declared settings."
+msgstr "Keine deklarierten Einstellungen."
+
+msgid "Saving needs the admin role."
+msgstr "Speichern erfordert die Rolle admin."

@@ -56,6 +56,14 @@ msgstr ""
 msgid "... and {count} more"
 msgstr ""
 
+#: cli/config_edit.py
+msgid "A dotted key, e.g. core.log.level."
+msgstr ""
+
+#: cli/config_edit.py
+msgid "A dotted key."
+msgstr ""
+
 #: cli/container_doctor.py
 msgid "Add the keys .env lacks (never overwrites)."
 msgstr ""
@@ -496,6 +504,10 @@ msgstr ""
 msgid "List discovered modules and their state."
 msgstr ""
 
+#: cli/config_edit.py
+msgid "List every key that can be set: type, default, choices, live, current value."
+msgstr ""
+
 #: cli/limiter.py
 msgid "List limiters: calls today, budget left, cooldown."
 msgstr ""
@@ -618,6 +630,10 @@ msgstr ""
 
 #: modules/backup_engine/module.py
 msgid "Only copy paths matching PATTERN (repeatable)."
+msgstr ""
+
+#: cli/config_edit.py
+msgid "Only keys starting with PREFIX."
 msgstr ""
 
 #: modules/metrics/module.py
@@ -812,6 +828,10 @@ msgstr ""
 msgid "Register the daemon to start at logon, and start it now."
 msgstr ""
 
+#: cli/config_edit.py
+msgid "Remove a key from the local layer, so the layer below it applies again."
+msgstr ""
+
 #: cli/language.py
 msgid "Remove obsolete translations (strings no longer in the template)."
 msgstr ""
@@ -930,6 +950,10 @@ msgstr ""
 
 #: cli/service.py
 msgid "Service name [korodexios-<project>]."
+msgstr ""
+
+#: cli/config_edit.py
+msgid "Set a key in the local layer (kdx.local.yml), checked against its declaration."
 msgstr ""
 
 #: cli/container_doctor.py
@@ -1074,6 +1098,14 @@ msgstr ""
 
 #: cli/brief.py
 msgid "The 3 to 5 things it must do, separated by ';'"
+msgstr ""
+
+#: cli/config_edit.py
+msgid "The key belongs to this module (modules.NAME.KEY)."
+msgstr ""
+
+#: cli/config_edit.py
+msgid "The new value."
 msgstr ""
 
 #: modules/wiki/module.py
@@ -1238,6 +1270,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "app"
+msgstr ""
+
+#: cli/config_edit.py
+msgid "applied now"
 msgstr ""
 
 #: cli/commands.py
@@ -1584,6 +1620,10 @@ msgstr ""
 msgid "failed"
 msgstr ""
 
+#: cli/config_edit.py
+msgid "file written"
+msgstr ""
+
 #: cli/txn.py
 msgid "files"
 msgstr ""
@@ -1756,8 +1796,16 @@ msgstr ""
 msgid "languages"
 msgstr ""
 
+#: cli/config_edit.py
+msgid "layer"
+msgstr ""
+
 #: cli/limiter.py
 msgid "left today"
+msgstr ""
+
+#: cli/config_edit.py
+msgid "live"
 msgstr ""
 
 #: cli/commands.py
@@ -1916,8 +1964,16 @@ msgstr ""
 msgid "no daemon is running and this command has no chassis"
 msgstr ""
 
+#: cli/config_edit.py
+msgid "no daemon is running; the change applies on the next start"
+msgstr ""
+
 #: cli/db.py
 msgid "no databases: no module has asked for one"
+msgstr ""
+
+#: cli/config_edit.py
+msgid "no declared key matches"
 msgstr ""
 
 #: cli/commands.py
@@ -2296,6 +2352,18 @@ msgstr ""
 msgid "running inside"
 msgstr ""
 
+#: cli/config_edit.py
+msgid "saved, but a higher layer (environment or CLI) still wins"
+msgstr ""
+
+#: cli/config_edit.py
+msgid "saved; applies on the next start or reload"
+msgstr ""
+
+#: cli/config_edit.py
+msgid "saved; needs a restart to take effect"
+msgstr ""
+
 #: modules/wiki/module.py
 msgid "say what happened: kdx wiki log update \"what changed\""
 msgstr ""
@@ -2496,6 +2564,10 @@ msgstr ""
 msgid "the daemon refused the event feed (HTTP {code})"
 msgstr ""
 
+#: cli/config_edit.py
+msgid "the daemon refused the reload; run kdx reload as an admin"
+msgstr ""
+
 #: cli/commands.py
 msgid "the daemon rejected this client (token required)"
 msgstr ""
@@ -2612,7 +2684,7 @@ msgstr ""
 msgid "truncate the log file (asks first)"
 msgstr ""
 
-#: modules/web_console/module.py
+#: cli/config_edit.py
 msgid "type"
 msgstr ""
 
@@ -2790,6 +2862,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "{job_id} started; Ctrl+C stops watching, not the job"
+msgstr ""
+
+#: cli/config_edit.py
+msgid "{key}{shown} {verb} in {file}"
 msgstr ""
 
 #: modules/wiki/module.py

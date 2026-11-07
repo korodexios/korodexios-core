@@ -295,3 +295,51 @@ msgstr "tento příkaz zde pro tebe není dostupný"
 
 msgid "unknown command"
 msgstr "neznámý příkaz"
+
+msgid "Details"
+msgstr "Podrobnosti"
+
+msgid "Close"
+msgstr "Zavřít"
+
+msgid "Reset"
+msgstr "Obnovit původní"
+
+msgid "Save changes"
+msgstr "Uložit změny"
+
+msgid "Nothing changed"
+msgstr "Nic se nezměnilo"
+
+msgid "Settings saved"
+msgstr "Nastavení uložena"
+
+msgid "applies live"
+msgstr "platí okamžitě"
+
+msgid "needs restart"
+msgstr "vyžaduje restart"
+
+msgid "overridden by environment or CLI"
+msgstr "přepsáno prostředím nebo CLI"
+
+msgid "secret: set it in .env"
+msgstr "tajné: nastavte v .env"
+
+msgid "applied now"
+msgstr "použito okamžitě"
+
+msgid "saved; needs a restart"
+msgstr "uloženo; vyžaduje restart"
+
+msgid "saved, but a higher layer still wins"
+msgstr "uloženo, ale vyšší vrstva stále vítězí"
+
+msgid "saved"
+msgstr "uloženo"
+
+msgid "No declared settings."
+msgstr "Žádná deklarovaná nastavení."
+
+msgid "Saving needs the admin role."
+msgstr "Ukládání vyžaduje roli admin."

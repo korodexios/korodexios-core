@@ -58,6 +58,14 @@ msgstr "--rotate y --clear son mutuamente excluyentes"
 msgid "... and {count} more"
 msgstr "... y {count} más"
 
+#: cli/config_edit.py
+msgid "A dotted key, e.g. core.log.level."
+msgstr "Una clave con puntos, p. ej. core.log.level."
+
+#: cli/config_edit.py
+msgid "A dotted key."
+msgstr "Una clave con puntos."
+
 #: cli/container_doctor.py
 msgid "Add the keys .env lacks (never overwrites)."
 msgstr "Añadir las claves que le faltan a .env (nunca sobrescribe)."
@@ -498,6 +506,10 @@ msgstr "Lista los trabajos en segundo plano, los más recientes primero."
 msgid "List discovered modules and their state."
 msgstr "Lista los módulos descubiertos y su estado."
 
+#: cli/config_edit.py
+msgid "List every key that can be set: type, default, choices, live, current value."
+msgstr "Lista todas las claves configurables: tipo, valor por defecto, opciones, en vivo, valor actual."
+
 #: cli/limiter.py
 msgid "List limiters: calls today, budget left, cooldown."
 msgstr "Lista limitadores: llamadas de hoy, presupuesto restante, enfriamiento."
@@ -621,6 +633,10 @@ msgstr "Resumen de una línea."
 #: modules/backup_engine/module.py
 msgid "Only copy paths matching PATTERN (repeatable)."
 msgstr "Copia solo las rutas que coincidan con PATRÓN (repetible)."
+
+#: cli/config_edit.py
+msgid "Only keys starting with PREFIX."
+msgstr "Solo claves que empiezan por PREFIX."
 
 #: modules/metrics/module.py
 msgid "Only metrics whose name contains TEXT."
@@ -814,6 +830,10 @@ msgstr "Rechaza toda llamada de un limitador durante un tiempo (tras un 429 o 50
 msgid "Register the daemon to start at logon, and start it now."
 msgstr "Registra el demonio para iniciarse al iniciar sesión y lo inicia ahora."
 
+#: cli/config_edit.py
+msgid "Remove a key from the local layer, so the layer below it applies again."
+msgstr "Quita una clave de la capa local, de modo que vuelve a aplicarse la capa inferior."
+
 #: cli/language.py
 msgid "Remove obsolete translations (strings no longer in the template)."
 msgstr "Elimina traducciones obsoletas (cadenas que ya no están en la plantilla)."
@@ -933,6 +953,10 @@ msgstr "Ofrece este proyecto a agentes de IA mediante el Model Context Protocol.
 #: cli/service.py
 msgid "Service name [korodexios-<project>]."
 msgstr "Nombre del servicio [korodexios-<proyecto>]."
+
+#: cli/config_edit.py
+msgid "Set a key in the local layer (kdx.local.yml), checked against its declaration."
+msgstr "Establece una clave en la capa local (kdx.local.yml), comprobada contra su declaración."
 
 #: cli/container_doctor.py
 msgid "Set up rootless-engine ids: explains why sudo is needed, shows the commands, asks, then lets sudo ask for the password."
@@ -1077,6 +1101,14 @@ msgstr "ID de la tarea (véase 'kdx queue list')."
 #: cli/brief.py
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "Las 3 a 5 cosas que debe hacer, separadas por «;»"
+
+#: cli/config_edit.py
+msgid "The key belongs to this module (modules.NAME.KEY)."
+msgstr "La clave pertenece a este módulo (modules.NAME.KEY)."
+
+#: cli/config_edit.py
+msgid "The new value."
+msgstr "El nuevo valor."
 
 #: modules/wiki/module.py
 msgid "The project wiki (LLM-wiki layout): public and internal, per language."
@@ -1241,6 +1273,10 @@ msgstr "escribir también Dockerfile, compose.yaml y .dockerignore"
 #: cli/commands.py
 msgid "app"
 msgstr "aplicación"
+
+#: cli/config_edit.py
+msgid "applied now"
+msgstr "aplicado ahora"
 
 #: cli/commands.py
 msgid "archive the log file and start a fresh one"
@@ -1586,6 +1622,10 @@ msgstr "código de salida"
 msgid "failed"
 msgstr "fallido"
 
+#: cli/config_edit.py
+msgid "file written"
+msgstr "archivo escrito"
+
 #: cli/txn.py
 msgid "files"
 msgstr "archivos"
@@ -1758,9 +1798,17 @@ msgstr "idioma"
 msgid "languages"
 msgstr "idiomas"
 
+#: cli/config_edit.py
+msgid "layer"
+msgstr "capa"
+
 #: cli/limiter.py
 msgid "left today"
 msgstr "restante hoy"
+
+#: cli/config_edit.py
+msgid "live"
+msgstr "en vivo"
 
 #: cli/commands.py
 msgid "lock held"
@@ -1918,9 +1966,17 @@ msgstr "ningún demonio responde; inicia uno con 'kdx run'"
 msgid "no daemon is running and this command has no chassis"
 msgstr "no hay ningún demonio en ejecución y este comando no tiene chasis"
 
+#: cli/config_edit.py
+msgid "no daemon is running; the change applies on the next start"
+msgstr "no hay demonio en ejecución; el cambio se aplica en el próximo inicio"
+
 #: cli/db.py
 msgid "no databases: no module has asked for one"
 msgstr "no hay bases de datos: ningún módulo ha pedido una"
+
+#: cli/config_edit.py
+msgid "no declared key matches"
+msgstr "ninguna clave declarada coincide"
 
 #: cli/commands.py
 msgid "no diagnostics findings"
@@ -2298,6 +2354,18 @@ msgstr "en ejecución"
 msgid "running inside"
 msgstr "se ejecuta en"
 
+#: cli/config_edit.py
+msgid "saved, but a higher layer (environment or CLI) still wins"
+msgstr "guardado, pero una capa superior (entorno o CLI) sigue ganando"
+
+#: cli/config_edit.py
+msgid "saved; applies on the next start or reload"
+msgstr "guardado; se aplica en el próximo inicio o recarga"
+
+#: cli/config_edit.py
+msgid "saved; needs a restart to take effect"
+msgstr "guardado; requiere reinicio para surtir efecto"
+
 #: modules/wiki/module.py
 msgid "say what happened: kdx wiki log update \"what changed\""
 msgstr "diga qué pasó: kdx wiki log update \"qué cambió\""
@@ -2498,6 +2566,10 @@ msgstr "el daemon está en ejecución; deténgalo primero: kdx stop"
 msgid "the daemon refused the event feed (HTTP {code})"
 msgstr "el demonio rechazó el flujo de eventos (HTTP {code})"
 
+#: cli/config_edit.py
+msgid "the daemon refused the reload; run kdx reload as an admin"
+msgstr "el demonio rechazó la recarga; ejecuta kdx reload como admin"
+
 #: cli/commands.py
 msgid "the daemon rejected this client (token required)"
 msgstr "el demonio rechazó a este cliente (se requiere token)"
@@ -2614,7 +2686,7 @@ msgstr "total"
 msgid "truncate the log file (asks first)"
 msgstr "trunca el archivo de registro (pregunta antes)"
 
-#: modules/web_console/module.py
+#: cli/config_edit.py
 msgid "type"
 msgstr "tipo"
 
@@ -2793,6 +2865,10 @@ msgstr "{job_id} ya está {state}; nada que detener"
 #: cli/commands.py
 msgid "{job_id} started; Ctrl+C stops watching, not the job"
 msgstr "{job_id} iniciado; Ctrl+C deja de seguirlo, no detiene el trabajo"
+
+#: cli/config_edit.py
+msgid "{key}{shown} {verb} in {file}"
+msgstr "{key}{shown} {verb} en {file}"
 
 #: modules/wiki/module.py
 msgid "{line} added to .gitignore"

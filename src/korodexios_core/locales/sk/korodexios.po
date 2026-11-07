@@ -58,6 +58,14 @@ msgstr "--rotate a --clear sa navzájom vylučujú"
 msgid "... and {count} more"
 msgstr "... a ďalších {count}"
 
+#: cli/config_edit.py
+msgid "A dotted key, e.g. core.log.level."
+msgstr "Kľúč s bodkami, napr. core.log.level."
+
+#: cli/config_edit.py
+msgid "A dotted key."
+msgstr "Kľúč s bodkami."
+
 #: cli/container_doctor.py
 msgid "Add the keys .env lacks (never overwrites)."
 msgstr "Pridať kľúče, ktoré .env nemá (nikdy neprepisuje)."
@@ -498,6 +506,10 @@ msgstr "Vypíše úlohy na pozadí, najnovšie prvé."
 msgid "List discovered modules and their state."
 msgstr "Vypíše nájdené moduly a ich stav."
 
+#: cli/config_edit.py
+msgid "List every key that can be set: type, default, choices, live, current value."
+msgstr "Zoznam všetkých kľúčov, ktoré možno nastaviť: typ, predvolená hodnota, voľby, živá zmena, aktuálna hodnota."
+
 #: cli/limiter.py
 msgid "List limiters: calls today, budget left, cooldown."
 msgstr "Zoznam limiterov: dnešné volania, zostávajúci rozpočet, cooldown."
@@ -621,6 +633,10 @@ msgstr "Zhrnutie na jeden riadok."
 #: modules/backup_engine/module.py
 msgid "Only copy paths matching PATTERN (repeatable)."
 msgstr "Skopíruje iba cesty zodpovedajúce VZORU (opakovateľné)."
+
+#: cli/config_edit.py
+msgid "Only keys starting with PREFIX."
+msgstr "Iba kľúče začínajúce PREFIX."
 
 #: modules/metrics/module.py
 msgid "Only metrics whose name contains TEXT."
@@ -814,6 +830,10 @@ msgstr "Na chvíľu odmietne každé volanie limitera (po chybe 429 alebo 503)."
 msgid "Register the daemon to start at logon, and start it now."
 msgstr "Zaregistruje démona na spustenie pri prihlásení a hneď ho spustí."
 
+#: cli/config_edit.py
+msgid "Remove a key from the local layer, so the layer below it applies again."
+msgstr "Odstráni kľúč z lokálnej vrstvy, takže opäť platí vrstva pod ňou."
+
 #: cli/language.py
 msgid "Remove obsolete translations (strings no longer in the template)."
 msgstr "Odstráni zastarané preklady (reťazce, ktoré už nie sú v šablóne)."
@@ -933,6 +953,10 @@ msgstr "Sprístupní tento projekt AI agentom cez Model Context Protocol."
 #: cli/service.py
 msgid "Service name [korodexios-<project>]."
 msgstr "Názov služby [korodexios-<projekt>]."
+
+#: cli/config_edit.py
+msgid "Set a key in the local layer (kdx.local.yml), checked against its declaration."
+msgstr "Nastaví kľúč v lokálnej vrstve (kdx.local.yml) po kontrole voči jeho deklarácii."
 
 #: cli/container_doctor.py
 msgid "Set up rootless-engine ids: explains why sudo is needed, shows the commands, asks, then lets sudo ask for the password."
@@ -1077,6 +1101,14 @@ msgstr "ID úlohy (pozri 'kdx queue list')."
 #: cli/brief.py
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "3 až 5 vecí, ktoré musí robiť, oddelené „;“"
+
+#: cli/config_edit.py
+msgid "The key belongs to this module (modules.NAME.KEY)."
+msgstr "Kľúč patrí tomuto modulu (modules.NAME.KEY)."
+
+#: cli/config_edit.py
+msgid "The new value."
+msgstr "Nová hodnota."
 
 #: modules/wiki/module.py
 msgid "The project wiki (LLM-wiki layout): public and internal, per language."
@@ -1241,6 +1273,10 @@ msgstr "zapísať aj Dockerfile, compose.yaml a .dockerignore"
 #: cli/commands.py
 msgid "app"
 msgstr "aplikácia"
+
+#: cli/config_edit.py
+msgid "applied now"
+msgstr "použité hneď"
 
 #: cli/commands.py
 msgid "archive the log file and start a fresh one"
@@ -1586,6 +1622,10 @@ msgstr "kód ukončenia"
 msgid "failed"
 msgstr "zlyhalo"
 
+#: cli/config_edit.py
+msgid "file written"
+msgstr "zapísaný súbor"
+
 #: cli/txn.py
 msgid "files"
 msgstr "súbory"
@@ -1758,9 +1798,17 @@ msgstr "jazyk"
 msgid "languages"
 msgstr "jazyky"
 
+#: cli/config_edit.py
+msgid "layer"
+msgstr "vrstva"
+
 #: cli/limiter.py
 msgid "left today"
 msgstr "zostáva dnes"
+
+#: cli/config_edit.py
+msgid "live"
+msgstr "živé"
 
 #: cli/commands.py
 msgid "lock held"
@@ -1918,9 +1966,17 @@ msgstr "žiadny démon neodpovedá; spusti ho cez 'kdx run'"
 msgid "no daemon is running and this command has no chassis"
 msgstr "nebeží žiadny démon a tento príkaz nemá šasi"
 
+#: cli/config_edit.py
+msgid "no daemon is running; the change applies on the next start"
+msgstr "démon nebeží; zmena sa prejaví pri ďalšom štarte"
+
 #: cli/db.py
 msgid "no databases: no module has asked for one"
 msgstr "žiadne databázy: žiaden modul si ju nevyžiadal"
+
+#: cli/config_edit.py
+msgid "no declared key matches"
+msgstr "žiadny deklarovaný kľúč nezodpovedá"
 
 #: cli/commands.py
 msgid "no diagnostics findings"
@@ -2298,6 +2354,18 @@ msgstr "beží"
 msgid "running inside"
 msgstr "beží v"
 
+#: cli/config_edit.py
+msgid "saved, but a higher layer (environment or CLI) still wins"
+msgstr "uložené, ale vyššia vrstva (prostredie alebo CLI) stále víťazí"
+
+#: cli/config_edit.py
+msgid "saved; applies on the next start or reload"
+msgstr "uložené; platí od ďalšieho štartu alebo reloadu"
+
+#: cli/config_edit.py
+msgid "saved; needs a restart to take effect"
+msgstr "uložené; na prejavenie treba reštart"
+
 #: modules/wiki/module.py
 msgid "say what happened: kdx wiki log update \"what changed\""
 msgstr "povedzte, čo sa stalo: kdx wiki log update \"čo sa zmenilo\""
@@ -2498,6 +2566,10 @@ msgstr "daemon beží; najprv ho zastavte: kdx stop"
 msgid "the daemon refused the event feed (HTTP {code})"
 msgstr "démon odmietol prenos udalostí (HTTP {code})"
 
+#: cli/config_edit.py
+msgid "the daemon refused the reload; run kdx reload as an admin"
+msgstr "démon odmietol reload; spusti kdx reload ako admin"
+
 #: cli/commands.py
 msgid "the daemon rejected this client (token required)"
 msgstr "démon tohto klienta odmietol (vyžaduje token)"
@@ -2614,7 +2686,7 @@ msgstr "spolu"
 msgid "truncate the log file (asks first)"
 msgstr "vyprázdni logový súbor (najprv sa opýta)"
 
-#: modules/web_console/module.py
+#: cli/config_edit.py
 msgid "type"
 msgstr "typ"
 
@@ -2793,6 +2865,10 @@ msgstr "{job_id} je už {state}; nie je čo zastaviť"
 #: cli/commands.py
 msgid "{job_id} started; Ctrl+C stops watching, not the job"
 msgstr "{job_id} sa spustila; Ctrl+C zastaví sledovanie, nie úlohu"
+
+#: cli/config_edit.py
+msgid "{key}{shown} {verb} in {file}"
+msgstr "{key}{shown} {verb} v {file}"
 
 #: modules/wiki/module.py
 msgid "{line} added to .gitignore"

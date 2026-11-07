@@ -25,6 +25,7 @@ from collections.abc import Callable, Iterator
 from pathlib import Path
 from typing import Any
 
+from ...cli.config_edit import apply_edits, schema_view
 from ...cli.render import (
     dump_json,
     print_key_values,
@@ -34,6 +35,7 @@ from ...cli.render import (
     write_line,
 )
 from ...cli.ui_test import run_gui_tests
+from ...config.editor import ConfigEditError
 from ...config.layered import is_secret_key, redact_for_display
 from ...config.schema import ConfigField, ConfigKind, ConfigSchema
 from ...constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
@@ -61,6 +63,8 @@ UI_PREFIX = "/ui"
 CATALOG_PATH = "/api/v1/ui/catalog"
 LOGS_PATH = "/api/v1/ui/logs"
 CONFIG_PATH = "/api/v1/ui/config"
+CONFIG_SCHEMA_PATH = "/api/v1/ui/config/schema"
+CONFIG_EDIT_PATH = "/api/v1/ui/config/edit"
 EVENTS_PATH = "/api/v1/ui/events"
 AUDIT_PATH = "/api/v1/ui/audit"
 I18N_PATH = "/api/v1/ui/i18n"
@@ -162,6 +166,22 @@ class WebConsoleModule(Module):
                 handler=self._config_route,
                 module=self.name,
                 summary="resolved configuration with provenance, secrets masked",
+            ),
+            IpcRoute(
+                path=CONFIG_SCHEMA_PATH,
+                handler=self._config_schema_route,
+                module=self.name,
+                summary="declared settings per module joined with value and layer "
+                "('?module=NAME', '?group=core.log')",
+            ),
+            IpcRoute(
+                path=CONFIG_EDIT_PATH,
+                handler=self._config_edit_route,
+                methods=("POST",),
+                module=self.name,
+                role="admin",
+                summary="set or unset keys of the local layer, then reload; "
+                "body {set: {key: value}, unset: [key]}",
             ),
             IpcRoute(
                 path=I18N_PATH,
@@ -617,6 +637,36 @@ class WebConsoleModule(Module):
             ]
         }
 
+    def _config_schema_route(self, request: IpcRequest) -> Any:
+        """Return the declared settings with value and layer, so a form can be typed."""
+        chassis = self.context.chassis if self.context is not None else None
+        if chassis is None:
+            return {"keys": []}
+        module = request.query.get("module", [""])[0]
+        group = request.query.get("group", [""])[0]
+        return {"keys": schema_view(chassis, module=module, group=group)}
+
+    def _config_edit_route(self, request: IpcRequest) -> Any:
+        """Apply a validated change to the local layer and reload; admin only, audited."""
+        chassis = self.context.chassis if self.context is not None else None
+        body = request.payload
+        if chassis is None or not isinstance(body, dict):
+            return 400, {"error": "expected a JSON object {set: {...}, unset: [...]}"}
+        sets, unsets = body.get("set") or {}, body.get("unset") or []
+        if not isinstance(sets, dict) or not isinstance(unsets, list):
+            return 400, {"error": "'set' must be an object and 'unset' a list of keys"}
+        try:
+            return apply_edits(
+                chassis,
+                sets={str(key): value for key, value in sets.items()},
+                unsets=[str(key) for key in unsets],
+                module=str(body.get("module") or ""),
+                reload=True,
+                caller=request.caller or current_caller(),
+            )
+        except ConfigEditError as exc:
+            return 400, {"error": str(exc), "key": exc.key, "hint": exc.hint}
+
     def _audit_route(self, request: IpcRequest) -> Any:
         """Return the newest audit records to an admin; who did what is not for everyone."""
         caller = current_caller()
@@ -760,6 +810,9 @@ def describe_argument(argument: CliArgument) -> dict[str, Any]:
         "required": argument.required,
         "help": argument.help,
         "metavar": argument.metavar,
+        "minimum": argument.minimum,
+        "maximum": argument.maximum,
+        "step": argument.step,
     }
 
 

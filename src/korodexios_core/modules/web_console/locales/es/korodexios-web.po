@@ -295,3 +295,51 @@ msgstr "este comando no está disponible para ti aquí"
 
 msgid "unknown command"
 msgstr "comando desconocido"
+
+msgid "Details"
+msgstr "Detalles"
+
+msgid "Close"
+msgstr "Cerrar"
+
+msgid "Reset"
+msgstr "Restablecer"
+
+msgid "Save changes"
+msgstr "Guardar cambios"
+
+msgid "Nothing changed"
+msgstr "Nada ha cambiado"
+
+msgid "Settings saved"
+msgstr "Ajustes guardados"
+
+msgid "applies live"
+msgstr "se aplica al instante"
+
+msgid "needs restart"
+msgstr "requiere reinicio"
+
+msgid "overridden by environment or CLI"
+msgstr "anulado por entorno o CLI"
+
+msgid "secret: set it in .env"
+msgstr "secreto: defínelo en .env"
+
+msgid "applied now"
+msgstr "aplicado ahora"
+
+msgid "saved; needs a restart"
+msgstr "guardado; requiere reinicio"
+
+msgid "saved, but a higher layer still wins"
+msgstr "guardado, pero una capa superior sigue ganando"
+
+msgid "saved"
+msgstr "guardado"
+
+msgid "No declared settings."
+msgstr "No hay ajustes declarados."
+
+msgid "Saving needs the admin role."
+msgstr "Guardar requiere el rol admin."

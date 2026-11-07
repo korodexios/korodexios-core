@@ -31,8 +31,29 @@ type = "table"
 title = "Latest tasks"
 source = "/api/v1/queue"
 path = "tasks"
-columns = ["id", "kind", "state", "attempts", "error"]
+columns = [
+  "id",
+  "kind",
+  { key = "state", kind = "chip", tones = { failed = "bad", cancelled = "muted", queued = "busy" } },
+  "attempts",
+  { key = "created_at", label = "created", kind = "time" },
+  "error",
+]
 refresh = 5
+detail = { source = "/api/v1/queue?id={id}", path = "" }
+
+[[ui.panels.actions]]
+id = "retry"
+label = "Retry"
+command = "queue retry"
+args = { task_id = "{id}" }
+
+[[ui.panels.actions]]
+id = "cancel"
+label = "Cancel"
+command = "queue cancel"
+args = { task_id = "{id}" }
+confirm = true
 
 [[ui.panels]]
 id = "submit"
@@ -49,3 +70,9 @@ id = "purge"
 label = "Purge finished tasks"
 command = "queue purge"
 confirm = true
+
+[[ui.panels]]
+id = "settings"
+type = "settings"
+title = "Settings"
+module = "job_queue"

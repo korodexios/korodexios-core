@@ -185,8 +185,13 @@ def test_routes_serve_the_manifest_and_the_callers_prefs(project_root) -> None:
         manifest = console._manifest_route(request_for(MANIFEST_PATH))
         queue = next(entry for entry in manifest["modules"] if entry["module"] == "job_queue")
         assert {panel["type"] for panel in queue["panels"]} == {
-            "keyvalue", "table", "form", "actions"}
+            "keyvalue", "table", "form", "actions", "settings"}
         assert manifest["issues"] == []
+        tasks = next(panel for panel in queue["panels"] if panel["id"] == "tasks")
+        assert [action["id"] for action in tasks["actions"]] == ["retry", "cancel"]
+        assert tasks["actions"][0]["args"] == {"task_id": "{id}"}
+        assert tasks["detail"]["source"] == "/api/v1/queue?id={id}"
+        assert next(c for c in tasks["columns"] if c["key"] == "state")["kind"] == "chip"
 
         def call(method: str, payload: Any = None, **query: str) -> Any:
             return console._prefs_route(IpcRequest(
@@ -300,3 +305,118 @@ def test_a_module_without_a_ui_spec_hook_is_skipped_not_reported(project_root, m
         assert [i for i in manifest["issues"] if "ui_spec" in i["message"]] == []
     finally:
         chassis.shutdown()
+
+
+# -- typed cells, row actions, detail, form fields, settings (0.6.3) -----------------
+
+
+def panel_of(declaration: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+    manifest = one({"panels": [declaration]})
+    problems = [issue["message"] for issue in manifest["issues"]]
+    modules = manifest["modules"]
+    return (modules[0]["panels"][0] if modules else {}), problems
+
+
+def test_table_columns_carry_a_kind_and_tones_and_stay_plain_without_one() -> None:
+    panel, problems = panel_of(
+        {"id": "jobs", "type": "table", "source": "/api/v1/queue", "path": "tasks",
+         "columns": [
+             "id",
+             {"key": "state", "kind": "chip", "tones": {"done": "ok", "weird": "loud"}},
+             {"key": "size", "kind": "bytes"},
+             {"key": "age", "kind": "sparkle"},
+             {"key": "note", "tones": {"x": "ok"}},  # tones mean nothing off a chip
+         ]}
+    )
+    assert panel["columns"][0] == {"key": "id", "label": "id"}  # unchanged shape
+    assert panel["columns"][1] == {"key": "state", "label": "state", "kind": "chip",
+                                   "tones": {"done": "ok"}}
+    assert panel["columns"][2]["kind"] == "bytes"
+    assert "kind" not in panel["columns"][3] and "tones" not in panel["columns"][4]
+    joined = " | ".join(problems)
+    assert "tone 'loud'" in joined or "loud" in joined
+    assert "sparkle" in joined
+
+
+def test_row_actions_use_column_placeholders_and_known_commands() -> None:
+    panel, problems = panel_of(
+        {"id": "jobs", "type": "table", "source": "/api/v1/queue", "path": "tasks",
+         "actions": [
+             {"id": "purge", "label": "Purge", "command": "queue purge",
+              "args": {"id": "{id}", "tag": "job-{meta.tag}"}, "confirm": True, "danger": True},
+             {"id": "ghost", "command": "no such thing"},
+             {"id": "bad", "command": "queue purge", "args": {"id": "{id"}},
+             {"id": "worse", "command": "queue purge", "args": {"id": "{a b}"}},
+             {"id": "purge", "command": "queue purge"},
+             "not a table",
+         ]}
+    )
+    assert [action["id"] for action in panel["actions"]] == ["purge"]
+    action = panel["actions"][0]
+    assert action["args"] == {"id": "{id}", "tag": "job-{meta.tag}"}
+    assert (action["confirm"], action["danger"]) == (True, True)
+    joined = " | ".join(problems)
+    assert "not a runnable command" in joined or "not a command path" in joined
+    assert "unbalanced" in joined and "not a column name" in joined and "unique id" in joined
+
+
+def test_row_actions_are_capped() -> None:
+    many = [{"id": f"a{n}", "command": "queue purge"} for n in range(12)]
+    panel, _ = panel_of({"id": "jobs", "type": "table", "source": "/api/v1/queue",
+                         "actions": many})
+    assert len(panel["actions"]) == 8
+
+
+def test_a_table_detail_is_a_route_with_placeholders_or_it_is_dropped() -> None:
+    panel, problems = panel_of(
+        {"id": "jobs", "type": "table", "source": "/api/v1/queue",
+         "detail": {"source": "/api/v1/queue?id={id}", "path": "task"}}
+    )
+    assert panel["detail"] == {"source": "/api/v1/queue?id={id}", "path": "task"}
+    assert problems == []
+    for bad in ("http://evil.example/{id}", "/api/v1/../x/{id}", "/api/v1/q/{a b}", "/api/v1/{id"):
+        panel, problems = panel_of(
+            {"id": "jobs", "type": "table", "source": "/api/v1/queue", "detail": {"source": bad}}
+        )
+        assert "detail" not in panel and problems, bad
+
+
+def test_form_fields_name_where_choices_come_from_and_how_to_draw() -> None:
+    panel, problems = panel_of(
+        {"id": "go", "type": "form", "command": "queue submit",
+         "fields": {
+             "model": {"choices_from": "/api/v1/models", "path": "items",
+                       "value": "id", "label": "name"},
+             "body": {"kind": "textarea", "rows": 99},
+             "level": {"kind": "slider"},
+             "odd": {"kind": "carousel"},
+             "far": {"choices_from": "http://evil.example/x"},
+             "Bad Name": {"kind": "text"},
+         }}
+    )
+    fields = panel["fields"]
+    assert fields["model"] == {"kind": "select", "choices_from": "/api/v1/models",
+                               "path": "items", "value": "id", "label": "name"}
+    assert fields["body"] == {"kind": "textarea", "rows": 20}  # capped
+    assert fields["level"] == {"kind": "slider"}
+    assert set(fields) == {"model", "body", "level"}
+    joined = " | ".join(problems)
+    assert "carousel" in joined and "choices_from" in joined and "Bad Name" in joined
+
+
+def test_settings_panel_points_at_the_schema_route() -> None:
+    panel, problems = panel_of({"id": "prefs", "type": "settings", "module": "heartbeat"})
+    assert (panel["source"], panel["module"], panel["group"]) == (
+        "/api/v1/ui/config/schema", "heartbeat", "")
+    assert problems == []
+    panel, _ = panel_of({"id": "prefs", "type": "settings", "group": "core.log"})
+    assert panel["group"] == "core.log"
+    for bad in ({}, {"module": "Bad Module"}, {"group": "core log!"}):
+        panel, problems = panel_of({"id": "prefs", "type": "settings", **bad})
+        assert panel == {} and "settings panel needs" in " ".join(problems), bad
+
+
+def test_the_console_scripts_stay_free_of_innerhtml_and_unsafe_links() -> None:
+    script = (STATIC_DIR / "modules.js").read_text(encoding="utf-8")
+    assert "innerHTML" not in script
+    assert "safeHref" in script  # a link cell never follows a javascript: address
