@@ -653,6 +653,22 @@ browser; Vitest in jsdom; Playwright headless). `doctor` says whether a headless
 browser is available here; in the react app `PW_HEADED=1` opens the window and
 `PW_CHANNEL=chrome` uses an installed browser instead of a download.
 
+One command runs every GUI test the machine can run:
+
+```bash
+kdx ui test [--headed] [--install] [--pm npm|bun|pnpm] [--path DIR] [--json]
+```
+
+It checks the module manifest (any `issues` fail the run) and, when the project has `web/`,
+runs the type check, the component tests and the end-to-end tests with the package manager of
+the lockfile (else npm). The e2e run is **headless**; `--headed` adds a second run with a visible
+browser window, but only when `kdx ui doctor` found a display - a step that cannot run here is
+`skipped` with the reason (no browser, no display, `node_modules` missing, package manager not
+installed), never a silent pass. `--install` runs the package manager's install first. Exit code 0
+when nothing failed, 1 otherwise; `--json` prints every step with its status, seconds and the
+output tail of a failure. It sets `PW_CHANNEL` from `kdx ui doctor` so an installed Chrome or
+Edge is used.
+
 The **Customize** button lets a person rename, hide and reorder tabs and panels and add
 their own **Shortcuts** (a label that runs a known command with fixed arguments). Form
 values are remembered per form, a form can **Save as default** and **Restore defaults**, and

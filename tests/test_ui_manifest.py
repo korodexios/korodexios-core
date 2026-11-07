@@ -204,20 +204,23 @@ def test_routes_serve_the_manifest_and_the_callers_prefs(project_root) -> None:
         chassis.shutdown()
 
 
-def test_a_module_can_declare_its_ui_in_code_and_a_bug_is_contained(project_root) -> None:
+def test_a_module_can_declare_its_ui_in_code_and_a_bug_is_contained(
+    project_root, monkeypatch
+) -> None:
     chassis = ipc_chassis(project_root)
     chassis.initialize()
     try:
         console = console_of(chassis)
         record = chassis.registry.require("heartbeat")
-        record.module.ui_spec = lambda: {  # type: ignore[method-assign]
-            "title": "Beat", "panels": [{"id": "n", "type": "text", "text": "hi"}]}
+        # module instances are process-wide singletons: patch them so the change is undone
+        monkeypatch.setattr(record.module, "ui_spec", lambda: {
+            "title": "Beat", "panels": [{"id": "n", "type": "text", "text": "hi"}]})
         broken = chassis.registry.require("system_info")
 
         def boom() -> Any:
             raise RuntimeError("bad spec")
 
-        broken.module.ui_spec = boom  # type: ignore[method-assign]
+        monkeypatch.setattr(broken.module, "ui_spec", boom)
         manifest = console.manifest()
         assert "heartbeat" in [entry["module"] for entry in manifest["modules"]]
         assert any(i["module"] == "system_info" and "bad spec" in i["message"]

@@ -62,6 +62,10 @@ msgstr "Ancienneté en jours."
 msgid "Also overwrite a rule file a person wrote."
 msgstr "Écrase aussi un fichier de règles écrit par une personne."
 
+#: modules/web_console/module.py
+msgid "Also run the e2e tests with a visible browser window (needs a display)."
+msgstr "Lancer aussi les tests e2e avec une fenêtre de navigateur visible (nécessite un écran)."
+
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
 msgstr "Demande à une tâche de s'arrêter (sa commande décide quand elle le peut)."
@@ -750,6 +754,10 @@ msgstr "Affiche le texte que 'send' enverrait (rien ne quitte la machine)."
 msgid "Project identity"
 msgstr "Identité du projet"
 
+#: modules/web_console/module.py
+msgid "Project root [the chassis root]."
+msgstr "Racine du projet [la racine du chassis]."
+
 #: cli/proposal.py
 msgid "Proposal number (see 'kdx proposal list')."
 msgstr "Numéro de proposition (voir 'kdx proposal list')."
@@ -842,9 +850,17 @@ msgstr "Le lance comme tâche et affiche sa sortie en direct ; sans délai."
 msgid "Run one module command inside a live daemon instead of booting a chassis."
 msgstr "Exécute une commande de module dans un démon actif au lieu de démarrer un châssis."
 
+#: modules/web_console/module.py
+msgid "Run the GUI tests this machine can run: manifest, then the web app's type check, component tests and headless e2e (--headed adds a window)."
+msgstr "Lancer les tests d'interface que cette machine peut exécuter : manifeste, puis vérification des types de l'app web, tests de composants et e2e headless (--headed ajoute une fenêtre)."
+
 #: modules/backup_engine/module.py
 msgid "Run the backup (copies files unless --dry-run)."
 msgstr "Lance la sauvegarde (copie les fichiers sauf avec --dry-run)."
+
+#: modules/web_console/module.py
+msgid "Run the package manager's install if node_modules is missing."
+msgstr "Lancer l'installation du gestionnaire de paquets si node_modules manque."
 
 #: modules/mcp_server/module.py
 msgid "Run tools here even when a daemon is running."
@@ -1941,6 +1957,10 @@ msgstr "rien n'a été envoyé ; lisez le texte puis relancez avec --confirm ou 
 #: cli/commands.py
 msgid "nothing written"
 msgstr "rien d'écrit"
+
+#: modules/web_console/module.py
+msgid "npm | bun | pnpm [from the lockfile, else npm]."
+msgstr "npm | bun | pnpm [selon le lockfile, sinon npm]."
 
 #: cli/language.py
 msgid "obsolete"

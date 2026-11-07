@@ -541,6 +541,11 @@ project with `kdx init NAME --ui none|static|react [--pm npm|bun|pnpm]`, record 
 `doctor` reports a display. The `react` tier draws the same manifest as the built-in console,
 so a module's `[ui]` table needs no React; override a single panel with `overridePanel()`.
 
+**Run `kdx ui test` before you say a GUI change is done.** It runs the manifest check, the web
+app's type check, component tests and headless e2e, and with `--headed` a visible-window run when
+`kdx ui doctor` reports a display; steps that cannot run here come back `skipped` with the reason,
+so say so in your report instead of claiming they passed. `--json` gives you every step.
+
 **Known limits - read before you build.** `kdx ui guide --json` lists them under `notes`; they are
 also in the seeded `web/README.md`. In short: the `react` app only *reads* the saved layout
 (renaming, hiding and shortcut buttons are edited in the built-in console or with `kdx ui prefs

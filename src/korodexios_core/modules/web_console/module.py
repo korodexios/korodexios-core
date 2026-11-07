@@ -33,6 +33,7 @@ from ...cli.render import (
     tr,
     write_line,
 )
+from ...cli.ui_test import run_gui_tests
 from ...config.layered import is_secret_key, redact_for_display
 from ...config.schema import ConfigField, ConfigKind, ConfigSchema
 from ...constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
@@ -239,6 +240,29 @@ class WebConsoleModule(Module):
                         ),
                     ),
                     CliCommand(
+                        name="test",
+                        help="Run the GUI tests this machine can run: manifest, then the web app's "
+                        "type check, component tests and headless e2e (--headed adds a window).",
+                        module_name=self.name,
+                        handler=self._test_command,
+                        show_in_wizard=False,
+                        remote=False,
+                        args=(
+                            CliArgument(("--headed",), dest="headed", action="store_true",
+                                        help="Also run the e2e tests with a visible browser "
+                                        "window (needs a display)."),
+                            CliArgument(("--install",), dest="install", action="store_true",
+                                        help="Run the package manager's install if node_modules "
+                                        "is missing."),
+                            CliArgument(("--pm",), dest="pm", metavar="MANAGER",
+                                        help="npm | bun | pnpm [from the lockfile, else npm]."),
+                            CliArgument(("--path",), dest="path", metavar="DIR",
+                                        help="Project root [the chassis root]."),
+                            CliArgument(("--json",), dest="as_json", action="store_true",
+                                        help="Emit JSON."),
+                        ),
+                    ),
+                    CliCommand(
                         name="guide",
                         help="Explain the GUI tiers a project can choose and when to pick each.",
                         module_name=self.name,
@@ -357,6 +381,29 @@ class WebConsoleModule(Module):
                      state="ready" if tier["ready"] else "missing " + ", ".join(tier["missing"]))
             )
         return int(ExitCode.SUCCESS)
+
+    def _test_command(self, request: CliRequest) -> int:
+        path_text = str(request.option("path") or "").strip()
+        root = Path(path_text).expanduser() if path_text else Path(request.context.paths.root)
+        report = run_gui_tests(
+            root,
+            manifest=self.manifest(),
+            environment=probe_environment(),
+            headed=request.flag("headed"),
+            install=request.flag("install"),
+            pm=str(request.option("pm") or "").strip().lower(),
+        )
+        if request.flag("as_json"):
+            dump_json(report.as_dict())
+        else:
+            for step in report.steps:
+                tag = {"passed": TAG_OK, "failed": TAG_ERROR}.get(step.status, TAG_NOTE)
+                took = f" ({step.seconds:.1f}s)" if step.seconds else ""
+                write_line(f"{tag} {step.name}: {step.status}{took} {step.detail}".rstrip())
+                if step.output:
+                    for line in step.output.splitlines():
+                        write_line(f"    {line}")
+        return int(ExitCode.SUCCESS if report.ok else ExitCode.ERROR)
 
     def _guide_command(self, request: CliRequest) -> int:
         data = guide()

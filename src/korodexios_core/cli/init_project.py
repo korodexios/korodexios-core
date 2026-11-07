@@ -601,7 +601,8 @@ def _readme(project: ProjectTemplate) -> str:
         " @BT@kdx_module.toml@BT@ (docs/AGENTS_GUIDE.md section 8.1, check it with"
         f" @BT@{project.script} ui manifest --json@BT@). Before adding GUI files of your own,"
         f" run @BT@{project.script} ui guide@BT@ and @BT@{project.script} ui doctor --json@BT@"
-        " and record the choice in @BT@docs/BRIEF.md@BT@.",
+        f" and record the choice in @BT@docs/BRIEF.md@BT@. Run @BT@{project.script} ui test@BT@"
+        " (add @BT@--headed@BT@ when there is a display) before calling a GUI change done.",
         "",
         "## Messages (i18n)",
         "",

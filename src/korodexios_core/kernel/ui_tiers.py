@@ -266,11 +266,13 @@ def _recommended(
             break
         if name in ("msedge", "microsoft-edge"):
             channel = channel or "msedge"
-    if not playwright:
-        if channel:
-            advice["PW_CHANNEL"] = channel
-        else:
-            advice["install"] = "npx playwright install chromium"
+    # An installed browser is the reliable choice: Playwright's own cache may hold a Chromium
+    # of another revision than the one the project's Playwright wants, which only shows when
+    # the first test fails to launch.
+    if channel:
+        advice["PW_CHANNEL"] = channel
+    elif not playwright:
+        advice["install"] = "npx playwright install chromium"
     if display["available"] and (playwright or channel):
         advice["PW_HEADED"] = "1"
     return advice

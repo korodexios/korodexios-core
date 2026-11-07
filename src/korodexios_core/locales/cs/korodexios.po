@@ -62,6 +62,10 @@ msgstr "Stáří ve dnech."
 msgid "Also overwrite a rule file a person wrote."
 msgstr "Přepíše i soubor s pravidly, který napsal člověk."
 
+#: modules/web_console/module.py
+msgid "Also run the e2e tests with a visible browser window (needs a display)."
+msgstr "Spustit e2e testy i s viditelným oknem prohlížeče (vyžaduje displej)."
+
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
 msgstr "Požádá úlohu o zastavení (kdy se zastaví, určuje její příkaz)."
@@ -750,6 +754,10 @@ msgstr "Vypíše text, který by 'send' odeslal (nic neopustí počítač)."
 msgid "Project identity"
 msgstr "Identita projektu"
 
+#: modules/web_console/module.py
+msgid "Project root [the chassis root]."
+msgstr "Kořen projektu [kořen chassis]."
+
 #: cli/proposal.py
 msgid "Proposal number (see 'kdx proposal list')."
 msgstr "Číslo návrhu (viz 'kdx proposal list')."
@@ -842,9 +850,17 @@ msgstr "Spustí ho jako úlohu a vypisuje výstup živě; bez časového limitu.
 msgid "Run one module command inside a live daemon instead of booting a chassis."
 msgstr "Spustí příkaz modulu v běžícím démonovi místo startu šasi."
 
+#: modules/web_console/module.py
+msgid "Run the GUI tests this machine can run: manifest, then the web app's type check, component tests and headless e2e (--headed adds a window)."
+msgstr "Spustit GUI testy, které tento stroj zvládne: manifest, poté kontrolu typů webové aplikace, testy komponent a headless e2e (--headed přidá okno)."
+
 #: modules/backup_engine/module.py
 msgid "Run the backup (copies files unless --dry-run)."
 msgstr "Spustí zálohu (kopíruje soubory, pokud není --dry-run)."
+
+#: modules/web_console/module.py
+msgid "Run the package manager's install if node_modules is missing."
+msgstr "Spustit install správce balíčků, pokud chybí node_modules."
 
 #: modules/mcp_server/module.py
 msgid "Run tools here even when a daemon is running."
@@ -1941,6 +1957,10 @@ msgstr "nic se neodeslalo; přečtěte si text a spusťte znovu s --confirm nebo
 #: cli/commands.py
 msgid "nothing written"
 msgstr "nic se nezapsalo"
+
+#: modules/web_console/module.py
+msgid "npm | bun | pnpm [from the lockfile, else npm]."
+msgstr "npm | bun | pnpm [podle lockfile, jinak npm]."
 
 #: cli/language.py
 msgid "obsolete"

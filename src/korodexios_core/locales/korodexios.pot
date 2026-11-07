@@ -60,6 +60,10 @@ msgstr ""
 msgid "Also overwrite a rule file a person wrote."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Also run the e2e tests with a visible browser window (needs a display)."
+msgstr ""
+
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
 msgstr ""
@@ -748,6 +752,10 @@ msgstr ""
 msgid "Project identity"
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Project root [the chassis root]."
+msgstr ""
+
 #: cli/proposal.py
 msgid "Proposal number (see 'kdx proposal list')."
 msgstr ""
@@ -840,8 +848,16 @@ msgstr ""
 msgid "Run one module command inside a live daemon instead of booting a chassis."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Run the GUI tests this machine can run: manifest, then the web app's type check, component tests and headless e2e (--headed adds a window)."
+msgstr ""
+
 #: modules/backup_engine/module.py
 msgid "Run the backup (copies files unless --dry-run)."
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "Run the package manager's install if node_modules is missing."
 msgstr ""
 
 #: modules/mcp_server/module.py
@@ -1938,6 +1954,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "nothing written"
+msgstr ""
+
+#: modules/web_console/module.py
+msgid "npm | bun | pnpm [from the lockfile, else npm]."
 msgstr ""
 
 #: cli/language.py

@@ -215,6 +215,9 @@ def test_the_recommended_browser_setting_follows_what_is_installed(tmp_path) -> 
     (tmp_path / ".cache" / "ms-playwright" / "chromium-1").mkdir(parents=True)
     cached = _probe(exists=Path.exists, home=tmp_path, environ={"DISPLAY": ":0"})
     assert cached["testing"]["recommended"] == {"PW_HEADED": "1"}
+    # the cache may hold another Chromium revision: an installed browser still wins
+    both = _probe(which={"chromium": "/bin/chromium"}.get, exists=Path.exists, home=tmp_path)
+    assert both["testing"]["recommended"] == {}  # chromium is not a Chrome/Edge channel
 
 
 def test_known_limits_are_published_for_agents_and_in_the_seeded_readme() -> None:

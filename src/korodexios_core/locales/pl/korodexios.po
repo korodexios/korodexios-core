@@ -62,6 +62,10 @@ msgstr "Wiek w dniach."
 msgid "Also overwrite a rule file a person wrote."
 msgstr "Nadpisuje także plik reguł napisany przez człowieka."
 
+#: modules/web_console/module.py
+msgid "Also run the e2e tests with a visible browser window (needs a display)."
+msgstr "Uruchom testy e2e także z widocznym oknem przeglądarki (wymaga wyświetlacza)."
+
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
 msgstr "Poproś zadanie o zatrzymanie (jego polecenie decyduje, kiedy to możliwe)."
@@ -750,6 +754,10 @@ msgstr "Wypisuje tekst, który wysłałoby 'send' (nic nie opuszcza komputera)."
 msgid "Project identity"
 msgstr "Tożsamość projektu"
 
+#: modules/web_console/module.py
+msgid "Project root [the chassis root]."
+msgstr "Katalog główny projektu [katalog główny chassis]."
+
 #: cli/proposal.py
 msgid "Proposal number (see 'kdx proposal list')."
 msgstr "Numer propozycji (zob. 'kdx proposal list')."
@@ -842,9 +850,17 @@ msgstr "Uruchom jako zadanie i wypisuj dane na żywo; bez limitu czasu."
 msgid "Run one module command inside a live daemon instead of booting a chassis."
 msgstr "Uruchom polecenie modułu w działającym demonie zamiast uruchamiać szkielet."
 
+#: modules/web_console/module.py
+msgid "Run the GUI tests this machine can run: manifest, then the web app's type check, component tests and headless e2e (--headed adds a window)."
+msgstr "Uruchom testy GUI, które ta maszyna potrafi: manifest, potem sprawdzenie typów aplikacji webowej, testy komponentów i e2e headless (--headed dodaje okno)."
+
 #: modules/backup_engine/module.py
 msgid "Run the backup (copies files unless --dry-run)."
 msgstr "Uruchom kopię zapasową (kopiuje pliki, chyba że podano --dry-run)."
+
+#: modules/web_console/module.py
+msgid "Run the package manager's install if node_modules is missing."
+msgstr "Uruchom instalację menedżera pakietów, jeśli brakuje node_modules."
 
 #: modules/mcp_server/module.py
 msgid "Run tools here even when a daemon is running."
@@ -1941,6 +1957,10 @@ msgstr "nic nie wysłano; przeczytaj tekst i uruchom ponownie z --confirm albo o
 #: cli/commands.py
 msgid "nothing written"
 msgstr "nic nie zapisano"
+
+#: modules/web_console/module.py
+msgid "npm | bun | pnpm [from the lockfile, else npm]."
+msgstr "npm | bun | pnpm [z lockfile, inaczej npm]."
 
 #: cli/language.py
 msgid "obsolete"
