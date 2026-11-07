@@ -3,7 +3,8 @@
 #
 # Four clearly separated steps - check, install, verify, first project - with colour and
 # plain explanations. It asks before installing uv or creating anything and never
-# touches system settings.
+# touches system settings on its own: if rootless Podman needs ids it explains why, shows the
+# exact commands and only runs them after you answer yes (sudo asks for the password itself).
 #
 #   ./install.sh                 interactive
 #   ./install.sh --lang sk       Slovak messages
@@ -79,6 +80,8 @@ msg() {
     sk:n2) echo "kdx playbook         pracovná príručka pre AI agentov" ;;
     sk:n3) echo "kdx locale set sk     slovenčina v nápovede a hláseniach" ;;
     sk:n4) echo "kdx wizard            vedené menu ku každému príkazu" ;;
+    sk:ctask) echo "Podman potrebuje jednorazové nastavenie id (kdx container fix). Spustiť ho teraz? Vysvetlí, prečo treba sudo, ukáže príkazy a heslo si vypýta sudo samo." ;;
+    sk:ctskip) echo "Nastavenie Podmanu môžeš spustiť neskôr: kdx container fix" ;;
     sk:dry) echo "Skúšobný beh: nič sa nezmenilo." ;;
     sk:yn) echo "[A/n]" ;;
     en:title) echo "Korodexios core - installation" ;;
@@ -112,6 +115,8 @@ msg() {
     en:n2) echo "kdx playbook         the working guide for AI agents" ;;
     en:n3) echo "kdx locale set sk     use Slovak for help and messages" ;;
     en:n4) echo "kdx wizard            a guided menu for every command" ;;
+    en:ctask) echo "Podman needs a one-time id setup (kdx container fix). Run it now? It explains why sudo is needed, shows the commands, and sudo asks for the password itself." ;;
+    en:ctskip) echo "You can run the Podman setup later: kdx container fix" ;;
     en:dry) echo "Dry run: nothing was changed." ;;
     en:yn) echo "[Y/n]" ;;
   esac
@@ -192,6 +197,20 @@ if [ "$DRY" -eq 0 ]; then
 else
   run kdx version
   run kdx modules list
+fi
+
+# Rootless Podman needs subordinate user ids; 'kdx container doctor' only reads the system.
+# The fix itself is never run silently: kdx asks, explains the sudo, and sudo asks for the password.
+if [ "$DRY" -eq 0 ] && command -v podman >/dev/null 2>&1; then
+  scratch=$(mktemp -d)
+  if ! (cd "$scratch" && kdx --no-log-file --home "$scratch" container doctor >/dev/null 2>&1); then
+    if [ "$YES" -eq 0 ] && [ -t 0 ] && confirm "$(msg ctask)"; then
+      (cd "$scratch" && kdx --locale "$LANGUAGE" --no-log-file --home "$scratch" container fix) || true
+    else
+      info "$(msg ctskip)"
+    fi
+  fi
+  rm -rf "$scratch"
 fi
 
 step "$(msg s4)"

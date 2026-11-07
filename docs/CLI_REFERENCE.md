@@ -574,6 +574,19 @@ processes (their own login), a `sed` that replaces just those two lines in `/etc
 account itself; that is the administrator's decision. Inside an LXC the lasting fix is a wider idmap
 on the LXC host.
 
+```bash
+kdx container fix        # explains why sudo is needed, shows the commands, asks, then runs them
+```
+
+`fix` is the automatic path: it never runs anything silently. It prints why root is needed
+(`/etc/subuid` and `/etc/subgid` are root-owned and say which ids your containers may use; no other
+file is changed), the exact commands, and asks (default no; with no terminal it only prints). `sudo`
+then asks for the password itself - the chassis never sees, stores or forwards it. It stops at the first
+failing command, re-checks the result and runs `podman system migrate` as you. `install.sh` offers it
+when Podman is present and not ready (never with `--yes`: a change to system files always needs an
+explicit answer). Rootless Podman in an LXC also needs `/dev/net/tun`; without it `kdx container doctor`
+notes that containers must run with `--network=host` (verified that way).
+
 Linux distributions: `scripts/distro-check.sh` runs ruff, mypy and pytest in a clean image with
 the distribution's own Python as an unprivileged user (`docker run --rm -v "$PWD:/src:ro" debian:13
 sh /src/scripts/distro-check.sh`). CI runs it for Debian 13, Ubuntu 24.04, Fedora 42, Alpine 3.21,

@@ -14,6 +14,10 @@ msgstr "  [voliteľné] {name}: potrebuje {module} - {hint}"
 msgid "  [skipped] {name}: {reason}"
 msgstr "  [preskočené] {name}: {reason}"
 
+#: cli/container_doctor.py
+msgid "'kdx container fix' explains and runs this for you"
+msgstr "'kdx container fix' to vysvetlí a spustí za teba"
+
 #: renderer
 msgid "(empty)"
 msgstr "(prázdne)"
@@ -878,6 +882,10 @@ msgstr "Spustí zálohu (kopíruje súbory, ak nie je --dry-run)."
 msgid "Run the package manager's install if node_modules is missing."
 msgstr "Spustiť install správcu balíčkov, ak chýba node_modules."
 
+#: cli/container_doctor.py
+msgid "Run these commands now?"
+msgstr "Spustiť tieto príkazy teraz?"
+
 #: modules/mcp_server/module.py
 msgid "Run tools here even when a daemon is running."
 msgstr "Spúšťa nástroje tu, aj keď beží démon."
@@ -925,6 +933,10 @@ msgstr "Sprístupní tento projekt AI agentom cez Model Context Protocol."
 #: cli/service.py
 msgid "Service name [korodexios-<project>]."
 msgstr "Názov služby [korodexios-<projekt>]."
+
+#: cli/container_doctor.py
+msgid "Set up rootless-engine ids: explains why sudo is needed, shows the commands, asks, then lets sudo ask for the password."
+msgstr "Nastaviť id pre rootless nástroj: vysvetlí, prečo treba sudo, ukáže príkazy, opýta sa a heslo si vypýta sudo samo."
 
 #: cli/proposal.py
 msgid "Short title of the proposal."
@@ -1177,6 +1189,10 @@ msgstr "Zapíše do internej (git-ignorovanej) wiki."
 #: cli/commands.py
 msgid "a SIGHUP to the daemon does the same thing"
 msgstr "to isté urobí SIGHUP poslaný démonovi"
+
+#: cli/container_doctor.py
+msgid "a command failed (exit {code}); nothing further was run"
+msgstr "príkaz zlyhal (exit {code}); nič ďalšie sa nespustilo"
 
 #: cli/agents.py
 msgid "a file a person wrote is kept; --force replaces it"
@@ -1493,6 +1509,10 @@ msgstr "doména"
 #: cli/language.py
 msgid "done"
 msgstr "hotovo"
+
+#: cli/container_doctor.py
+msgid "done: a rootless engine now has the ids it needs"
+msgstr "hotovo: rootless nástroj má teraz id, ktoré potrebuje"
 
 #: cli/commands.py
 msgid "drifted"
@@ -1958,6 +1978,10 @@ msgstr "zatiaľ žiadne návrhy"
 msgid "no rows"
 msgstr "žiadne riadky"
 
+#: cli/container_doctor.py
+msgid "no safe automatic change is possible; see 'kdx container doctor'"
+msgstr "bezpečná automatická zmena nie je možná; pozri 'kdx container doctor'"
+
 #: modules/job_queue/module.py
 msgid "no such task"
 msgstr "taká úloha neexistuje"
@@ -1994,6 +2018,10 @@ msgstr "zatiaľ sa nič neskopírovalo: išlo o plán"
 msgid "nothing found for {query}"
 msgstr "pre {query} sa nič nenašlo"
 
+#: cli/container_doctor.py
+msgid "nothing to fix: a rootless engine has the ids it needs"
+msgstr "niet čo opravovať: rootless nástroj má id, ktoré potrebuje"
+
 #: cli/txn.py
 msgid "nothing to recover"
 msgstr "nie je čo obnovovať"
@@ -2001,6 +2029,10 @@ msgstr "nie je čo obnovovať"
 #: cli/reset.py
 msgid "nothing to remove"
 msgstr "nie je čo odstrániť"
+
+#: cli/container_doctor.py
+msgid "nothing was changed; run the commands yourself when ready"
+msgstr "nič sa nezmenilo; príkazy spusti sám, keď budeš pripravený"
 
 #: cli/reset.py
 msgid "nothing was deleted"
@@ -2386,6 +2418,14 @@ msgstr "odbery"
 msgid "subuid"
 msgstr "subuid"
 
+#: cli/container_doctor.py
+msgid "sudo asks for your password itself; this program never sees it"
+msgstr "sudo si heslo vypýta samo; tento program ho nikdy nevidí"
+
+#: cli/container_doctor.py
+msgid "sudo is not installed; run the commands as an administrator"
+msgstr "sudo nie je nainštalované; spusti príkazy ako administrátor"
+
 #: cli/db.py
 msgid "table"
 msgstr "tabuľka"
@@ -2473,6 +2513,14 @@ msgstr "démon sa spúšťa pri prihlásení a práve sa spúšťa"
 #: cli/jobs.py
 msgid "the event feed ended: {exc}"
 msgstr "prenos udalostí skončil: {exc}"
+
+#: cli/container_doctor.py
+msgid "the free range was chosen so that no account or other user's range is touched. The commands:"
+msgstr "voľný rozsah je vybraný tak, aby sa nedotkol žiadneho účtu ani cudzieho rozsahu. Príkazy:"
+
+#: cli/container_doctor.py
+msgid "the ids are still not usable; run 'kdx container doctor'"
+msgstr "id stále nie sú použiteľné; spusti 'kdx container doctor'"
 
 #: modules/wiki/module.py
 msgid "the internal wiki is exported: its notes leave the project"
@@ -2625,6 +2673,10 @@ msgstr "verzia"
 #: cli/jobs.py
 msgid "watch it with: kdx jobs show {job_id} --follow"
 msgstr "sleduj ju cez: kdx jobs show {job_id} --follow"
+
+#: cli/container_doctor.py
+msgid "why sudo: /etc/subuid and /etc/subgid are owned by root and say which user ids your containers may use; no other file is changed"
+msgstr "prečo sudo: /etc/subuid a /etc/subgid vlastní root a určujú, ktoré id môžu tvoje kontajnery používať; žiadny iný súbor sa nemení"
 
 #: cli/commands.py
 msgid "without uv: pip install -e '.[dev]' && {script} run"

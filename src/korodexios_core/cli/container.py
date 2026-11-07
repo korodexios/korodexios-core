@@ -134,6 +134,13 @@ def _compose(project: ProjectTemplate) -> str:
             "    volumes:",
             "      - app-var:/app/var     # logs, chassis.ipc, locks",
             "      - app-data:/app/data   # durable state: databases, queue, GUI preferences",
+            "    healthcheck:   # also here: Podman ignores the Dockerfile one in OCI images",
+            '      test: ["CMD", "python", "-c", "import urllib.request; '
+            f"urllib.request.urlopen('http://127.0.0.1:{PORT}/health', timeout=4)\"]",
+            "      interval: 30s",
+            "      timeout: 5s",
+            "      start_period: 20s",
+            "      retries: 3",
             "    cap_drop: [ALL]",
             "    security_opt:",
             "      - no-new-privileges:true",

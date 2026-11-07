@@ -552,16 +552,18 @@ whenever it listens beyond the loopback (`KDX_TOKEN` is required by compose), th
 published on `127.0.0.1` only, durable state lives in the `/app/data` volume, and the project's
 modules are found through `src/<package>/modules`, so the image keeps `src/`. Build and run the
 image on a machine with Docker before you say the container works; `kdx ui doctor` lists the
-engines found. Verified: Docker with Linux containers on a Debian host and Docker Desktop on Windows (Linux engine).
-Podman reads the same files but has not been run against them; Windows containers (the Windows engine)
-are not supported - the image is Linux. `docker compose down -v` deletes the state volumes. Verify portability with
-`scripts/distro-check.sh` (see `docs/CLI_REFERENCE.md`).
+engines found. Verified: Docker with Linux containers on a Debian host and Docker Desktop on Windows
+(Linux engine), and rootless Podman 5.4 on Debian 13 inside an LXC (build and run with `--network=host`
+when `/dev/net/tun` is missing). Podman compose providers were not tried; Windows containers (the Windows
+engine) are not supported - the image is Linux. `docker compose down -v` deletes the state volumes.
+Verify portability with `scripts/distro-check.sh` (see `docs/CLI_REFERENCE.md`).
 
 **User ids are read, never assumed, and never changed for you.** Run `kdx container doctor --json`
 before touching container or rootless-engine setup: it reports the uid/gid, the id mapping of the
 namespace, `/etc/subuid` ranges and engines. Do not hard-code uid 1000, do not edit `/etc/subuid`,
 `/etc/passwd` or an existing account, and do not reuse an id another user or service owns; if the
-doctor proposes a range, show the command to the person and let them run it. `kdx container env
+doctor proposes a range, show the command to the person and let them run it. `kdx container fix` is the only way the chassis changes system ids: it explains why sudo is needed, shows
+the commands and asks first - never run it for the person, let them answer. `kdx container env
 --write` adds `KDX_UID`/`KDX_GID` to `.env` without overwriting existing keys.
 
 **Known limits - read before you build.** `kdx ui guide --json` lists them under `notes`; they are

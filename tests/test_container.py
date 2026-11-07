@@ -69,6 +69,8 @@ def test_compose_requires_a_token_binds_the_loopback_and_keeps_state_in_volumes(
     assert app["image"] == "demo-app:latest" and app["restart"] == "unless-stopped"
     assert app["environment"]["KDX_CORE__IPC__TOKEN"].startswith("${KDX_TOKEN:?")
     assert app["ports"] == ["127.0.0.1:${KDX_PORT:-18123}:18123"]
+    health = app["healthcheck"]  # Podman ignores the Dockerfile HEALTHCHECK, compose carries it too
+    assert health["test"][:3] == ["CMD", "python", "-c"] and "/health" in health["test"][3]
     assert app["cap_drop"] == ["ALL"] and "no-new-privileges:true" in app["security_opt"]
     assert {v.split(":")[1] for v in app["volumes"]} == {"/app/var", "/app/data"}
     assert set(data["volumes"]) == {"app-var", "app-data"}

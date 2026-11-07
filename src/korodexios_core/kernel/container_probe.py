@@ -141,6 +141,7 @@ def probe_container_host(
     platform: str | None = None,
     ids: tuple[int, int] | None = None,
     user: str | None = None,
+    has_tun: Callable[[], bool] = lambda: Path("/dev/net/tun").exists(),
 ) -> dict[str, Any]:
     """Return who we are, how ids are mapped, and what a rootless engine would need."""
     env = os.environ if environ is None else environ
@@ -163,6 +164,9 @@ def probe_container_host(
     own_gid = [e for e in parse_subids(read("/etc/subgid")) if e[0] in mine]
     foreign_gid = [e for e in parse_subids(read("/etc/subgid")) if e[0] not in mine]
     engines = [engine for engine in ("docker", "podman") if which(engine)]
+    tun_missing = bool(
+        "podman" in engines and system.startswith("linux") and not has_tun()
+    )
     problems: list[str] = []
     advice: dict[str, Any] = {}
     rootless_ok = True
@@ -203,6 +207,11 @@ def probe_container_host(
         "engines": engines,
         "rootless_ready": rootless_ok,
         "problems": problems,
+        "notes": (
+            ["/dev/net/tun is missing, so rootless Podman networking cannot start: run "
+             "containers with --network=host, or enable the tun device on the LXC/VM host"]
+            if tun_missing else []
+        ),
         "advice": advice,
         "container_user": {"uid": uid if uid > 0 else DEFAULT_CONTAINER_UID,
                            "gid": gid if gid > 0 else DEFAULT_CONTAINER_UID},
@@ -218,27 +227,32 @@ def _advice(
 ) -> dict[str, Any]:
     first, count = uid_block
     gfirst, gcount = gid_block
-    parts = ["sudo usermod"]
+    argv = ["sudo", "usermod"]
     for _, start, size in own:
-        parts.append(f"--del-subuids {start}-{start + size - 1}")
+        argv += ["--del-subuids", f"{start}-{start + size - 1}"]
     for _, start, size in own_gid:
-        parts.append(f"--del-subgids {start}-{start + size - 1}")
-    parts.append(f"--add-subuids {first}-{first + count - 1}")
-    parts.append(f"--add-subgids {gfirst}-{gfirst + gcount - 1} {name}")
+        argv += ["--del-subgids", f"{start}-{start + size - 1}"]
+    argv += ["--add-subuids", f"{first}-{first + count - 1}"]
+    argv += ["--add-subgids", f"{gfirst}-{gfirst + gcount - 1}", name]
     fallback = ""
+    steps: list[list[str]] = []
     if len(own) == 1 and len(own_gid) == 1:
         # usermod refuses while the user has running processes (their own login); the two
         # lines can be replaced directly, touching nothing else in the files
         (_, ustart, usize), (_, gstart, gsize) = own[0], own_gid[0]
-        fallback = (
-            f"sudo sed -i 's/^{name}:{ustart}:{usize}$/{name}:{first}:{count}/' /etc/subuid"
-            f" && sudo sed -i 's/^{name}:{gstart}:{gsize}$/{name}:{gfirst}:{gcount}/' /etc/subgid"
-        )
+        uexpr = f"s/^{name}:{ustart}:{usize}$/{name}:{first}:{count}/"
+        gexpr = f"s/^{name}:{gstart}:{gsize}$/{name}:{gfirst}:{gcount}/"
+        fallback = f"sudo sed -i '{uexpr}' /etc/subuid && sudo sed -i '{gexpr}' /etc/subgid"
+        steps = [["sudo", "sed", "-i", uexpr, "/etc/subuid"],
+                 ["sudo", "sed", "-i", gexpr, "/etc/subgid"]]
+    else:
+        steps = [argv]
     return {
         "subuid": {"first": first, "count": count},
         "subgid": {"first": gfirst, "count": gcount},
-        "command": " ".join(parts),
+        "command": " ".join(argv),
         "fallback": fallback,
+        "steps": steps,
         "note": "chosen from ids no account or other user's range uses, keeping the low ids free "
         "for accounts created later; review it, the chassis never edits /etc/subuid itself. "
         "With fewer than 65536 ids set ignore_chown_errors = \"true\" under "

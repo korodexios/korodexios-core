@@ -34,11 +34,11 @@ def files(**contents: str):  # type: ignore[no-untyped-def]
     return lambda path: table.get(path)
 
 
-def probe(read, *, engines=("podman",), ids=(1000, 1000), user="kleo"):  # type: ignore[no-untyped-def]
+def probe(read, *, engines=("podman",), ids=(1000, 1000), user="kleo", tun=True):  # type: ignore[no-untyped-def]
     return probe_container_host(
         read=read,
         which=lambda name: f"/bin/{name}" if name in engines else None,
-        environ={}, platform="linux", ids=ids, user=user,
+        environ={}, platform="linux", ids=ids, user=user, has_tun=lambda: tun,
     )
 
 
@@ -152,3 +152,94 @@ def test_the_terminal_reports_and_env_never_overwrites(project_root, capsys) -> 
     assert main([*args, "container", "env"]) == 0
     assert "KDX_UID=" in capsys.readouterr().out
     assert Path(project_root / ".env").read_text(encoding="utf-8") == text  # second run no-op
+
+
+def test_a_missing_tun_device_is_noted_for_podman_only() -> None:
+    assert probe(files(), tun=False)["notes"] and "--network=host" in probe(files(), tun=False)["notes"][0]
+    assert probe(files(), tun=True)["notes"] == []
+    assert probe(files(), engines=("docker",), tun=False)["notes"] == []
+
+
+# -- kdx container fix: explain, ask, let sudo ask for the password ------------------------
+
+
+from korodexios_core.cli import container_doctor
+
+STEPS = [["sudo", "sed", "-i", "s/^kleo:1:2$/kleo:10000:55534/", "/etc/subuid"],
+         ["sudo", "sed", "-i", "s/^kleo:1:2$/kleo:10000:55534/", "/etc/subgid"]]
+
+
+def broken(*, root: bool = False, steps=STEPS, engines=("podman",)):  # type: ignore[no-untyped-def]
+    return {"rootless_ready": False, "problems": ["range outside the namespace"],
+            "advice": {"steps": steps, "command": "x", "note": "n"} if steps else {},
+            "user": {"root": root, "name": "kleo", "uid": 1000, "gid": 1000},
+            "engines": list(engines), "notes": ["tun note"], "container_user": {"uid": 1, "gid": 1}}
+
+
+def ready():  # type: ignore[no-untyped-def]
+    return {**broken(), "rootless_ready": True, "problems": [], "advice": {}}
+
+
+class Harness:
+    def __init__(self, monkeypatch, reports, *, answer=True, codes=None, sudo=True):  # type: ignore[no-untyped-def]
+        self.reports = list(reports)
+        self.ran: list[list[str]] = []
+        self.asked: list[str] = []
+        self.codes = codes or {}
+        monkeypatch.setattr(container_doctor, "probe_container_host", lambda: self.reports.pop(0))
+        monkeypatch.setattr(container_doctor, "run_step", self.run)
+        monkeypatch.setattr(container_doctor.shutil, "which", lambda name: "/bin/sudo" if sudo else None)
+        monkeypatch.setattr(container_doctor.UserExperience, "confirm",
+                            lambda ux, label, default=True: self.asked.append(label) or answer)
+
+    def run(self, argv):  # type: ignore[no-untyped-def]
+        self.ran.append(argv)
+        return self.codes.get(len(self.ran), 0)
+
+
+def test_fix_does_nothing_when_nothing_is_wrong(project_root, monkeypatch, capsys) -> None:
+    harness = Harness(monkeypatch, [ready()])
+    assert main([*base_args(project_root), "container", "fix"]) == 0
+    assert "nothing to fix" in capsys.readouterr().out and harness.ran == [] and harness.asked == []
+
+
+def test_fix_explains_asks_and_changes_nothing_when_declined(project_root, monkeypatch, capsys) -> None:
+    harness = Harness(monkeypatch, [broken()], answer=False)
+    assert main([*base_args(project_root), "container", "fix"]) == 1
+    out = capsys.readouterr().out
+    assert "why sudo" in out and "owned by root" in out and "never sees it" in out
+    assert "sudo sed -i" in out  # the exact commands are shown before anything runs
+    assert harness.ran == [] and harness.asked == ["Run these commands now?"]
+
+
+def test_fix_runs_the_steps_then_verifies_and_migrates_podman(project_root, monkeypatch, capsys) -> None:
+    harness = Harness(monkeypatch, [broken(), ready()])
+    assert main([*base_args(project_root), "container", "fix"]) == 0
+    assert harness.ran == [*STEPS, ["podman", "system", "migrate"]]
+    out = capsys.readouterr().out
+    assert "done: a rootless engine now has the ids" in out and "tun note" in out
+
+
+def test_fix_stops_at_the_first_failing_command_and_checks_the_result(
+    project_root, monkeypatch, capsys
+) -> None:
+    harness = Harness(monkeypatch, [broken()], codes={1: 1})
+    assert main([*base_args(project_root), "container", "fix"]) == 1
+    assert len(harness.ran) == 1 and "a command failed (exit 1)" in capsys.readouterr().out
+    still = Harness(monkeypatch, [broken(), broken()])
+    assert main([*base_args(project_root), "container", "fix"]) == 1
+    assert "still not usable" in capsys.readouterr().out and len(still.ran) == 2
+
+
+def test_fix_refuses_without_a_safe_change_without_sudo_and_drops_sudo_for_root(
+    project_root, monkeypatch, capsys
+) -> None:
+    Harness(monkeypatch, [broken(steps=[])])
+    assert main([*base_args(project_root), "container", "fix"]) == 1
+    assert "no safe automatic change" in capsys.readouterr().out
+    Harness(monkeypatch, [broken()], sudo=False)
+    assert main([*base_args(project_root), "container", "fix"]) == 1
+    assert "sudo is not installed" in capsys.readouterr().out
+    harness = Harness(monkeypatch, [broken(root=True), ready()], sudo=False)
+    assert main([*base_args(project_root), "container", "fix"]) == 0
+    assert harness.ran[0][0] == "sed"  # root needs no sudo

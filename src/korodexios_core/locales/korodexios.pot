@@ -12,6 +12,10 @@ msgstr ""
 msgid "  [skipped] {name}: {reason}"
 msgstr ""
 
+#: cli/container_doctor.py
+msgid "'kdx container fix' explains and runs this for you"
+msgstr ""
+
 #: renderer
 msgid "(empty)"
 msgstr ""
@@ -876,6 +880,10 @@ msgstr ""
 msgid "Run the package manager's install if node_modules is missing."
 msgstr ""
 
+#: cli/container_doctor.py
+msgid "Run these commands now?"
+msgstr ""
+
 #: modules/mcp_server/module.py
 msgid "Run tools here even when a daemon is running."
 msgstr ""
@@ -922,6 +930,10 @@ msgstr ""
 
 #: cli/service.py
 msgid "Service name [korodexios-<project>]."
+msgstr ""
+
+#: cli/container_doctor.py
+msgid "Set up rootless-engine ids: explains why sudo is needed, shows the commands, asks, then lets sudo ask for the password."
 msgstr ""
 
 #: cli/proposal.py
@@ -1174,6 +1186,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "a SIGHUP to the daemon does the same thing"
+msgstr ""
+
+#: cli/container_doctor.py
+msgid "a command failed (exit {code}); nothing further was run"
 msgstr ""
 
 #: cli/agents.py
@@ -1490,6 +1506,10 @@ msgstr ""
 
 #: cli/language.py
 msgid "done"
+msgstr ""
+
+#: cli/container_doctor.py
+msgid "done: a rootless engine now has the ids it needs"
 msgstr ""
 
 #: cli/commands.py
@@ -1956,6 +1976,10 @@ msgstr ""
 msgid "no rows"
 msgstr ""
 
+#: cli/container_doctor.py
+msgid "no safe automatic change is possible; see 'kdx container doctor'"
+msgstr ""
+
 #: modules/job_queue/module.py
 msgid "no such task"
 msgstr ""
@@ -1992,12 +2016,20 @@ msgstr ""
 msgid "nothing found for {query}"
 msgstr ""
 
+#: cli/container_doctor.py
+msgid "nothing to fix: a rootless engine has the ids it needs"
+msgstr ""
+
 #: cli/txn.py
 msgid "nothing to recover"
 msgstr ""
 
 #: cli/reset.py
 msgid "nothing to remove"
+msgstr ""
+
+#: cli/container_doctor.py
+msgid "nothing was changed; run the commands yourself when ready"
 msgstr ""
 
 #: cli/reset.py
@@ -2384,6 +2416,14 @@ msgstr ""
 msgid "subuid"
 msgstr ""
 
+#: cli/container_doctor.py
+msgid "sudo asks for your password itself; this program never sees it"
+msgstr ""
+
+#: cli/container_doctor.py
+msgid "sudo is not installed; run the commands as an administrator"
+msgstr ""
+
 #: cli/db.py
 msgid "table"
 msgstr ""
@@ -2470,6 +2510,14 @@ msgstr ""
 
 #: cli/jobs.py
 msgid "the event feed ended: {exc}"
+msgstr ""
+
+#: cli/container_doctor.py
+msgid "the free range was chosen so that no account or other user's range is touched. The commands:"
+msgstr ""
+
+#: cli/container_doctor.py
+msgid "the ids are still not usable; run 'kdx container doctor'"
 msgstr ""
 
 #: modules/wiki/module.py
@@ -2622,6 +2670,10 @@ msgstr ""
 
 #: cli/jobs.py
 msgid "watch it with: kdx jobs show {job_id} --follow"
+msgstr ""
+
+#: cli/container_doctor.py
+msgid "why sudo: /etc/subuid and /etc/subgid are owned by root and say which user ids your containers may use; no other file is changed"
 msgstr ""
 
 #: cli/commands.py

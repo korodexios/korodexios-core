@@ -144,6 +144,7 @@ select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM", "RUF"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["B018"]
+"tests/test_container_probe.py" = ["E501", "E402"]  # long fixture lines; late import by design
 "src/korodexios_core/cli/ui_react.py" = ["E501"]  # embedded TypeScript templates
 
 [tool.mypy]

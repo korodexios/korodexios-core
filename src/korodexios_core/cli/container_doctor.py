@@ -11,6 +11,8 @@ never overwritten.
 
 from __future__ import annotations
 
+import shutil
+import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
@@ -18,6 +20,7 @@ from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
 from ..kernel.container_probe import probe_container_host
 from .render import dump_json, print_key_values, tr, write_line
+from .ux import UserExperience
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from ..kernel.chassis import Chassis
@@ -41,6 +44,15 @@ def container_command() -> CliCommand:
                 group="core",
                 remote=False,
                 args=(JSON_ARG,),
+            ),
+            CliCommand(
+                name="fix",
+                help="Set up rootless-engine ids: explains why sudo is needed, shows the "
+                "commands, asks, then lets sudo ask for the password.",
+                handler=_fix,
+                group="core",
+                remote=False,
+                args=(),
             ),
             CliCommand(
                 name="env",
@@ -82,6 +94,8 @@ def _doctor(request: CliRequest) -> int:
             ("container user", container_user),
         ]
     )
+    for note in report["notes"]:
+        write_line(f"{TAG_NOTE} {note}")
     if report["rootless_ready"]:
         write_line(f"{TAG_OK} " + tr("a rootless engine has the ids it needs"))
         return int(ExitCode.SUCCESS)
@@ -100,7 +114,70 @@ def _doctor(request: CliRequest) -> int:
             )
             write_line(f"    {advice['fallback']}")
         write_line(f"{TAG_NOTE} {advice['note']}")
+        write_line(f"{TAG_NOTE} " + tr("'kdx container fix' explains and runs this for you"))
     return int(ExitCode.ERROR)
+
+
+def run_step(argv: list[str]) -> int:
+    """Run one command with the terminal attached, so sudo asks for the password itself.
+
+    The chassis never reads, stores or passes on a password: the child owns the terminal.
+    """
+    return subprocess.run(argv, check=False).returncode
+
+
+def _fix(request: CliRequest) -> int:
+    report = probe_container_host()
+    if report["rootless_ready"]:
+        write_line(f"{TAG_OK} " + tr("nothing to fix: a rootless engine has the ids it needs"))
+        return int(ExitCode.SUCCESS)
+    advice = report["advice"]
+    for problem in report["problems"]:
+        write_line(f"{TAG_ERROR} {problem}")
+    if not advice or not advice["steps"]:
+        write_line(
+            f"{TAG_NOTE} " + tr("no safe automatic change is possible; see 'kdx container doctor'")
+        )
+        return int(ExitCode.ERROR)
+    steps = [list(step) for step in advice["steps"]]
+    if report["user"]["root"]:
+        steps = [step[1:] if step and step[0] == "sudo" else step for step in steps]
+    write_line(f"{TAG_NOTE} " + tr(
+        "why sudo: /etc/subuid and /etc/subgid are owned by root and say which user ids "
+        "your containers may use; no other file is changed"))
+    write_line(f"{TAG_NOTE} " + tr("the free range was chosen so that no account or other "
+                                   "user's range is touched. The commands:"))
+    for step in steps:
+        write_line("    " + " ".join(step))
+    write_line(
+        f"{TAG_NOTE} " + tr("sudo asks for your password itself; this program never sees it")
+    )
+    chassis = cast("Chassis", request.options.get("chassis") or request.context.chassis)
+    ux = UserExperience(chassis.config)
+    if not ux.confirm(tr("Run these commands now?"), default=False):
+        write_line(f"{TAG_NOTE} " + tr("nothing was changed; run the commands yourself when ready"))
+        return int(ExitCode.ERROR)
+    if not report["user"]["root"] and shutil.which("sudo") is None:
+        write_line(
+            f"{TAG_ERROR} " + tr("sudo is not installed; run the commands as an administrator")
+        )
+        return int(ExitCode.ERROR)
+    for step in steps:
+        code = run_step(step)
+        if code != 0:
+            message = tr("a command failed (exit {code}); nothing further was run", code=code)
+            write_line(f"{TAG_ERROR} {message}")
+            return int(ExitCode.ERROR)
+    after = probe_container_host()
+    if not after["rootless_ready"]:
+        write_line(f"{TAG_ERROR} " + tr("the ids are still not usable; run 'kdx container doctor'"))
+        return int(ExitCode.ERROR)
+    if "podman" in after["engines"]:
+        run_step(["podman", "system", "migrate"])  # as this user: re-reads the new ranges
+    write_line(f"{TAG_OK} " + tr("done: a rootless engine now has the ids it needs"))
+    for note in after["notes"]:
+        write_line(f"{TAG_NOTE} {note}")
+    return int(ExitCode.SUCCESS)
 
 
 def _env(request: CliRequest) -> int:

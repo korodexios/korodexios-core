@@ -14,6 +14,10 @@ msgstr "  [optional] {name}: benötigt {module} - {hint}"
 msgid "  [skipped] {name}: {reason}"
 msgstr "  [übersprungen] {name}: {reason}"
 
+#: cli/container_doctor.py
+msgid "'kdx container fix' explains and runs this for you"
+msgstr "'kdx container fix' erklärt und führt das für dich aus"
+
 #: renderer
 msgid "(empty)"
 msgstr "(leer)"
@@ -878,6 +882,10 @@ msgstr "Führt das Backup aus (kopiert Dateien, außer mit --dry-run)."
 msgid "Run the package manager's install if node_modules is missing."
 msgstr "Die Installation des Paketmanagers ausführen, falls node_modules fehlt."
 
+#: cli/container_doctor.py
+msgid "Run these commands now?"
+msgstr "Diese Befehle jetzt ausführen?"
+
 #: modules/mcp_server/module.py
 msgid "Run tools here even when a daemon is running."
 msgstr "Führt Werkzeuge hier aus, auch wenn ein Daemon läuft."
@@ -925,6 +933,10 @@ msgstr "Stellt dieses Projekt KI-Agenten über das Model Context Protocol bereit
 #: cli/service.py
 msgid "Service name [korodexios-<project>]."
 msgstr "Dienstname [korodexios-<Projekt>]."
+
+#: cli/container_doctor.py
+msgid "Set up rootless-engine ids: explains why sudo is needed, shows the commands, asks, then lets sudo ask for the password."
+msgstr "IDs für die Rootless-Engine einrichten: erklärt, warum sudo nötig ist, zeigt die Befehle, fragt nach und lässt sudo selbst das Passwort abfragen."
 
 #: cli/proposal.py
 msgid "Short title of the proposal."
@@ -1177,6 +1189,10 @@ msgstr "In das interne (von git ignorierte) Wiki schreiben."
 #: cli/commands.py
 msgid "a SIGHUP to the daemon does the same thing"
 msgstr "ein SIGHUP an den Daemon bewirkt dasselbe"
+
+#: cli/container_doctor.py
+msgid "a command failed (exit {code}); nothing further was run"
+msgstr "ein Befehl ist fehlgeschlagen (exit {code}); nichts weiter wurde ausgeführt"
 
 #: cli/agents.py
 msgid "a file a person wrote is kept; --force replaces it"
@@ -1493,6 +1509,10 @@ msgstr "Domäne"
 #: cli/language.py
 msgid "done"
 msgstr "fertig"
+
+#: cli/container_doctor.py
+msgid "done: a rootless engine now has the ids it needs"
+msgstr "fertig: eine Rootless-Engine hat jetzt die benötigten IDs"
 
 #: cli/commands.py
 msgid "drifted"
@@ -1958,6 +1978,10 @@ msgstr "noch keine Vorschläge"
 msgid "no rows"
 msgstr "keine Zeilen"
 
+#: cli/container_doctor.py
+msgid "no safe automatic change is possible; see 'kdx container doctor'"
+msgstr "keine sichere automatische Änderung möglich; siehe 'kdx container doctor'"
+
 #: modules/job_queue/module.py
 msgid "no such task"
 msgstr "keine solche Aufgabe"
@@ -1994,6 +2018,10 @@ msgstr "noch nichts kopiert: dies war ein Plan"
 msgid "nothing found for {query}"
 msgstr "nichts gefunden für {query}"
 
+#: cli/container_doctor.py
+msgid "nothing to fix: a rootless engine has the ids it needs"
+msgstr "nichts zu beheben: eine Rootless-Engine hat die benötigten IDs"
+
 #: cli/txn.py
 msgid "nothing to recover"
 msgstr "nichts wiederherzustellen"
@@ -2001,6 +2029,10 @@ msgstr "nichts wiederherzustellen"
 #: cli/reset.py
 msgid "nothing to remove"
 msgstr "nichts zu entfernen"
+
+#: cli/container_doctor.py
+msgid "nothing was changed; run the commands yourself when ready"
+msgstr "es wurde nichts geändert; führe die Befehle selbst aus, wenn du bereit bist"
 
 #: cli/reset.py
 msgid "nothing was deleted"
@@ -2386,6 +2418,14 @@ msgstr "Abonnements"
 msgid "subuid"
 msgstr "subuid"
 
+#: cli/container_doctor.py
+msgid "sudo asks for your password itself; this program never sees it"
+msgstr "sudo fragt selbst nach dem Passwort; dieses Programm sieht es nie"
+
+#: cli/container_doctor.py
+msgid "sudo is not installed; run the commands as an administrator"
+msgstr "sudo ist nicht installiert; führe die Befehle als Administrator aus"
+
 #: cli/db.py
 msgid "table"
 msgstr "Tabelle"
@@ -2473,6 +2513,14 @@ msgstr "der Daemon startet bei der Anmeldung und startet jetzt"
 #: cli/jobs.py
 msgid "the event feed ended: {exc}"
 msgstr "der Ereignis-Feed wurde beendet: {exc}"
+
+#: cli/container_doctor.py
+msgid "the free range was chosen so that no account or other user's range is touched. The commands:"
+msgstr "der freie Bereich wurde so gewählt, dass kein Konto und kein fremder Bereich berührt wird. Die Befehle:"
+
+#: cli/container_doctor.py
+msgid "the ids are still not usable; run 'kdx container doctor'"
+msgstr "die IDs sind weiterhin nicht nutzbar; führe 'kdx container doctor' aus"
 
 #: modules/wiki/module.py
 msgid "the internal wiki is exported: its notes leave the project"
@@ -2625,6 +2673,10 @@ msgstr "Version"
 #: cli/jobs.py
 msgid "watch it with: kdx jobs show {job_id} --follow"
 msgstr "verfolge sie mit: kdx jobs show {job_id} --follow"
+
+#: cli/container_doctor.py
+msgid "why sudo: /etc/subuid and /etc/subgid are owned by root and say which user ids your containers may use; no other file is changed"
+msgstr "warum sudo: /etc/subuid und /etc/subgid gehören root und legen fest, welche IDs deine Container nutzen dürfen; keine andere Datei wird geändert"
 
 #: cli/commands.py
 msgid "without uv: pip install -e '.[dev]' && {script} run"
