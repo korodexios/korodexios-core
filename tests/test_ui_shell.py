@@ -328,3 +328,32 @@ def test_theme_commands_choose_check_and_print_css(project_root, capsys, tmp_pat
     assert report["ok"] is False and report["pairs"][0]["ok"] is False
     assert main([*base, "check", str(tmp_path / "missing.css")]) == int(ExitCode.USAGE_ERROR)
     assert main([*base, "set", "system", "--user", "t"]) == 0
+
+
+# -- the shell page ----------------------------------------------------------------
+
+
+def test_shell_page_ships_and_keeps_the_console_security_rules() -> None:
+    from korodexios_core.modules.web_console.module import STATIC_DIR
+
+    for name in ("shell.html", "shell.js", "shell.css"):
+        assert (STATIC_DIR / name).is_file(), name
+    page = (STATIC_DIR / "shell.html").read_text(encoding="utf-8")
+    assert "script-src 'self'" in page and "style-src 'self'" in page
+    assert "unsafe-inline" not in page and "<script>" not in page and "style=" not in page
+    script = (STATIC_DIR / "shell.js").read_text(encoding="utf-8")
+    assert "innerHTML" not in script  # daemon data is only ever written as text
+    assert "eval(" not in script and "setAttribute(\"style\"" not in script
+    for endpoint in ("/api/v1/ui/manifest", "/api/v1/ui/theme", "/api/v1/ui/prefs"):
+        assert endpoint in script
+
+
+def test_console_url_can_point_at_the_shell() -> None:
+    from korodexios_core.kernel.ipc import IpcDiscovery
+    from korodexios_core.modules.web_console.module import SHELL_PAGE, console_url
+
+    discovery = IpcDiscovery(
+        pid=1, host="127.0.0.1", port=1234, token="tok", started_at=0.0
+    )
+    assert console_url(discovery).endswith("/ui/#token=tok")
+    assert console_url(discovery, SHELL_PAGE).endswith("/ui/shell.html#token=tok")

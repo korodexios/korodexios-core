@@ -16,7 +16,13 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
     active area), `kdx ui layout show|set|reset`.
   - Manifest: `[ui] position`, `badge`, `[[ui.sections]]` (one lazy tree each), panel `dock` and
     `locked`; `kernel/ui_tree.py` fixes the node shape a tree route answers with.
-  - The web console does not draw the shell yet; this is the contract it will read.
+  - The shell itself: `kdx ui --shell` opens `/ui/shell.html` (`shell.html`, `shell.css`,
+    `shell.js`, no inline script or style). Ribbon (areas from the manifest, badges, System and
+    Settings), side list with lazy trees per section, tabs, bottom panel for docked panels,
+    inspector, splitters (pointer, touch, arrow keys, double click resets), per-pane hide and a
+    Focus toggle, theme picker, responsive down to a phone. It draws the read-only panel types
+    (keyvalue, table, log, text); form, actions and settings panels point to the classic console,
+    which stays at `/ui/`. Shell texts are English only for now.
 
 ## [0.6.3] - 2026-11-07
 

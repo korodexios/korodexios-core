@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Korodexios Shell</title>
+  <link rel="stylesheet" href="shell.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="topbar">
+      <span class="brand"><span id="brand-logo" aria-hidden="true"></span><span id="app-name">korodexios</span></span>
+      <span class="crumbs"><span id="crumb-area"></span><span id="crumb-item" class="muted"></span></span>
+      <span class="grow"></span>
+      <div id="pane-toggles" class="toggles" role="group" aria-label="Show or hide panels"></div>
+      <select id="theme-select" aria-label="Theme" title="Theme"></select>
+      <span id="state-pill" class="pill">offline</span>
+      <a class="link-button" href="./" title="The classic console: commands, logs, config, events">Classic console</a>
+    </header>
+
+    <div class="body">
+      <nav id="ribbon" class="ribbon" aria-label="Areas"></nav>
+
+      <aside id="side" class="side" aria-label="Side list">
+        <div class="pane-head"><span id="side-title" class="pane-title"></span>
+          <span class="grow"></span>
+          <button id="btn-collapse" type="button" class="icon-button" title="Collapse all" aria-label="Collapse all"></button>
+        </div>
+        <div id="side-body" class="pane-body"></div>
+      </aside>
+      <button id="split-side" type="button" class="splitter vertical" aria-label="Resize side list. Arrow keys change the width, double click resets"></button>
+
+      <div class="center">
+        <main class="main" aria-label="Main surface">
+          <div id="tabs" class="tabs" role="tablist"></div>
+          <div id="surface" class="surface"></div>
+        </main>
+        <button id="split-bottom" type="button" class="splitter horizontal" aria-label="Resize bottom panel. Arrow keys change the height, double click resets"></button>
+        <section id="bottom" class="bottom" aria-label="Bottom panel">
+          <div class="pane-head"><span class="pane-title">Docked</span></div>
+          <div id="bottom-body" class="pane-body"></div>
+        </section>
+      </div>
+
+      <button id="split-inspector" type="button" class="splitter vertical" aria-label="Resize inspector. Arrow keys change the width, double click resets"></button>
+      <aside id="inspector" class="inspector" aria-label="Inspector">
+        <div class="pane-head"><span class="pane-title">Inspector</span></div>
+        <div id="inspector-body" class="pane-body"></div>
+      </aside>
+    </div>
+
+    <footer class="statusbar"><span id="status-theme"></span><span id="status-layout"></span><span class="grow"></span><span id="status-user"></span></footer>
+  </div>
+
+  <section id="token-gate" class="gate" hidden>
+    <h2>Session token needed</h2>
+    <p>Open the shell with <code>kdx ui --shell</code>, or paste a token.</p>
+    <form id="token-form" class="row">
+      <input id="token-input" type="password" autocomplete="off" placeholder="token" aria-label="token">
+      <button type="submit">Connect</button>
+    </form>
+    <p id="token-error" class="error" hidden></p>
+  </section>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script src="shell.js"></script>
+</body>
+</html>

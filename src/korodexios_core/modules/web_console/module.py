@@ -82,6 +82,7 @@ MANIFEST_PATH = "/api/v1/ui/manifest"
 PREFS_PATH = "/api/v1/ui/prefs"
 THEME_PATH = "/api/v1/ui/theme"
 SYSTEM_THEME = "system"
+SHELL_PAGE = "shell.html"
 WEB_DOMAIN = "korodexios-web"
 WEB_LOCALES_DIR = Path(__file__).resolve().parent / "locales"
 EVENT_QUEUE_SIZE = 500
@@ -254,6 +255,13 @@ class WebConsoleModule(Module):
                         dest="no_browser",
                         action="store_true",
                         help="Print the console URL instead of opening a browser.",
+                    ),
+                    CliArgument(
+                        ("--shell",),
+                        dest="shell",
+                        action="store_true",
+                        help="Open the one-window shell (ribbon, side list, panels) instead "
+                        "of the classic console.",
                     ),
                 ),
                 subcommands=(
@@ -1039,9 +1047,10 @@ class WebConsoleModule(Module):
         open_browser = self.config.get_bool("open_browser", True) and not request.flag(
             "no_browser"
         )
+        page = SHELL_PAGE if request.flag("shell") else ""
         discovery = IpcDiscovery.load(context.paths.state_dir / DISCOVERY_NAME)
         if discovery is not None and discovery.is_process_alive():
-            self._announce(console_url(discovery), open_browser)
+            self._announce(console_url(discovery, page), open_browser)
             return 0
         chassis = request.options.get("chassis") or context.chassis
         if chassis is None:
@@ -1053,7 +1062,7 @@ class WebConsoleModule(Module):
             return 1
         watcher = threading.Thread(
             target=self._announce_when_ready,
-            args=(chassis, open_browser),
+            args=(chassis, open_browser, page),
             name="kdx-ui-announce",
             daemon=True,
         )
@@ -1066,14 +1075,14 @@ class WebConsoleModule(Module):
             chassis.signals.request_shutdown()
         return int(chassis.shutdown())
 
-    def _announce_when_ready(self, chassis: Any, open_browser: bool) -> None:
+    def _announce_when_ready(self, chassis: Any, open_browser: bool, page: str = "") -> None:
         """Wait for the control plane this process is starting, then announce it."""
         deadline = time.monotonic() + READY_WAIT_SECONDS
         while time.monotonic() < deadline:
             server = getattr(chassis, "ipc", None)
             discovery = getattr(server, "discovery", None) if server is not None else None
             if discovery is not None and getattr(server, "running", False):
-                self._announce(console_url(discovery), open_browser)
+                self._announce(console_url(discovery, page), open_browser)
                 return
             if getattr(getattr(chassis, "state", None), "value", "") == "stopped":
                 return
@@ -1093,9 +1102,9 @@ class WebConsoleModule(Module):
         sys.stdout.flush()
 
 
-def console_url(discovery: IpcDiscovery) -> str:
+def console_url(discovery: IpcDiscovery, page: str = "") -> str:
     """Return the console URL with the token in its fragment, never in its query."""
-    base = f"{discovery.base_url()}{UI_PREFIX}/"
+    base = f"{discovery.base_url()}{UI_PREFIX}/{page}"
     return f"{base}#token={discovery.token}" if discovery.token else base
 
 

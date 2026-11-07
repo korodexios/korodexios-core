@@ -699,6 +699,7 @@ section 8.1), so a loaded module gets a tab with no GUI code. Everything the pag
 available in the terminal:
 
 ```bash
+kdx ui [--shell] [--no-browser]              # open the console (--shell: the one-window shell)
 kdx ui manifest [--json]                     # the GUI every loaded module declares
 kdx ui prefs show [--user NAME] [--json]     # what a person changed in the interface
 kdx ui prefs patch '{"settings":{"theme":"dark"}}' [--user NAME]

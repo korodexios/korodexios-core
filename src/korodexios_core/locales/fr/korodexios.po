@@ -726,6 +726,10 @@ msgstr "Ouvre la console dans le navigateur (démarre le démon s'il n'y en a pa
 msgid "Open the interactive command wizard."
 msgstr "Ouvre l'assistant interactif de commandes."
 
+#: modules/web_console/module.py
+msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
+msgstr "Ouvre le shell à fenêtre unique (barre d'icônes, liste latérale, panneaux) au lieu de la console classique."
+
 #: modules/system_info/module.py
 msgid "Operating system"
 msgstr "Système d'exploitation"

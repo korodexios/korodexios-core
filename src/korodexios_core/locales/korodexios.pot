@@ -724,6 +724,10 @@ msgstr ""
 msgid "Open the interactive command wizard."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
+msgstr ""
+
 #: modules/system_info/module.py
 msgid "Operating system"
 msgstr ""

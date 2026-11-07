@@ -726,6 +726,10 @@ msgstr "Otwórz konsolę w przeglądarce (uruchamia demona, jeśli żaden nie dz
 msgid "Open the interactive command wizard."
 msgstr "Otwórz interaktywnego kreatora poleceń."
 
+#: modules/web_console/module.py
+msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
+msgstr "Otwiera jednookienkową powłokę (pasek ikon, lista boczna, panele) zamiast klasycznej konsoli."
+
 #: modules/system_info/module.py
 msgid "Operating system"
 msgstr "System operacyjny"

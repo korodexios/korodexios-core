@@ -726,6 +726,10 @@ msgstr "Öffnet die Browser-Konsole (startet den Daemon, falls keiner läuft)."
 msgid "Open the interactive command wizard."
 msgstr "Öffnet den interaktiven Befehlsassistenten."
 
+#: modules/web_console/module.py
+msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
+msgstr "Öffnet die Ein-Fenster-Shell (Symbolleiste, Seitenliste, Panels) statt der klassischen Konsole."
+
 #: modules/system_info/module.py
 msgid "Operating system"
 msgstr "Betriebssystem"

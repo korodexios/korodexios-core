@@ -726,6 +726,10 @@ msgstr "Otevře konzoli v prohlížeči (pokud démon neběží, spustí ho)."
 msgid "Open the interactive command wizard."
 msgstr "Otevře interaktivního průvodce příkazy."
 
+#: modules/web_console/module.py
+msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
+msgstr "Otevře jednookenní shell (ikonový pruh, boční seznam, panely) místo klasické konzole."
+
 #: modules/system_info/module.py
 msgid "Operating system"
 msgstr "Operační systém"
