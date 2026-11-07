@@ -552,8 +552,9 @@ whenever it listens beyond the loopback (`KDX_TOKEN` is required by compose), th
 published on `127.0.0.1` only, durable state lives in the `/app/data` volume, and the project's
 modules are found through `src/<package>/modules`, so the image keeps `src/`. Build and run the
 image on a machine with Docker before you say the container works; `kdx ui doctor` lists the
-engines found. Docker is the verified engine; Podman reads the same files but is not exercised by the tests, and Windows
-containers are not supported. `docker compose down -v` deletes the state volumes. Verify portability with
+engines found. Verified: Docker with Linux containers on a Debian host and Docker Desktop on Windows (Linux engine).
+Podman reads the same files but has not been run against them; Windows containers (the Windows engine)
+are not supported - the image is Linux. `docker compose down -v` deletes the state volumes. Verify portability with
 `scripts/distro-check.sh` (see `docs/CLI_REFERENCE.md`).
 
 **Known limits - read before you build.** `kdx ui guide --json` lists them under `notes`; they are
