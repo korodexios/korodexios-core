@@ -138,6 +138,21 @@ NOTES: list[dict[str, str]] = [
         "chromium'). Headed runs (PW_HEADED=1) need a display; doctor says if there is one.",
     },
     {
+        "id": "container-engines",
+        "applies_to": "container",
+        "text": "The container files are built and run with Docker (Linux, amd64). Podman reads "
+        "the same Dockerfile and compose.yaml but is not exercised by the chassis tests; Windows "
+        "containers are not supported. The build stage needs network access (package index, "
+        "and git for the default git chassis source).",
+    },
+    {
+        "id": "container-state",
+        "applies_to": "container",
+        "text": "State lives in the app-var and app-data volumes: 'docker compose down -v' deletes "
+        "it. The control plane needs KDX_TOKEN and is published on 127.0.0.1 only; put TLS in "
+        "front of it before widening the bind.",
+    },
+    {
         "id": "static-is-not-served",
         "applies_to": "static",
         "text": "The static tier's web/ is not served by the chassis on its own. Serve it with "

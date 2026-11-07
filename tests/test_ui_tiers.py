@@ -224,7 +224,7 @@ def test_known_limits_are_published_for_agents_and_in_the_seeded_readme() -> Non
     from korodexios_core.cli.init_project import build_files
 
     notes = guide()["notes"]
-    assert {note["applies_to"] for note in notes} == {"react", "static"}
+    assert {note["applies_to"] for note in notes} == {"react", "static", "container"}
     assert all(note["id"] and note["text"] for note in notes)
     readme = build_files(project_from_inputs("demo_app", ui="react", pm="pnpm"))["web/README.md"]
     assert "Known limits" in readme and "pnpm run typecheck && pnpm run test" in readme
