@@ -741,3 +741,19 @@ msgstr "Apariencia"
 #: static/shell.js
 msgid "Layout"
 msgstr "Disposición"
+
+#: static/shell.js
+msgid "{count} items"
+msgstr "{count} elementos"
+
+#: static/shell.js
+msgid "{count} keys"
+msgstr "{count} claves"
+
+#: static/shell.html
+msgid "Show the side list"
+msgstr "Mostrar la lista lateral"
+
+#: static/shell.html
+msgid "Back"
+msgstr "Atrás"

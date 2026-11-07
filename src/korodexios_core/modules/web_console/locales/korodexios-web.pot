@@ -739,3 +739,19 @@ msgstr ""
 #: static/shell.js
 msgid "Layout"
 msgstr ""
+
+#: static/shell.js
+msgid "{count} items"
+msgstr ""
+
+#: static/shell.js
+msgid "{count} keys"
+msgstr ""
+
+#: static/shell.html
+msgid "Show the side list"
+msgstr ""
+
+#: static/shell.html
+msgid "Back"
+msgstr ""

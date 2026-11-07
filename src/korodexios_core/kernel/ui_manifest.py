@@ -47,6 +47,9 @@ CELL_KINDS = ("text", "chip", "bytes", "duration", "time", "link", "code")
 TONES = ("ok", "warn", "bad", "busy", "muted")
 FIELD_KINDS = ("text", "textarea", "number", "slider", "select")
 ROUTE_PREFIX = "/api/v1/"
+NODE_PLACEHOLDER = "node"
+"""``{node}`` in a panel source, detail source or argument: the id of the tree node selected."""
+DETAIL_KINDS = ("text", "line")
 SETTINGS_SOURCE = "/api/v1/ui/config/schema"
 MAX_PANELS = 64
 MAX_SECTIONS = 8
@@ -273,9 +276,15 @@ def _source(raw: Mapping[str, Any], panel: dict[str, Any], build: _Build, ident:
         not source.startswith(ROUTE_PREFIX)
         or ".." in source
         or "//" in source
-        or not _ROUTE.match(source)
+        or not _TEMPLATE_ROUTE.match(source)
+        or any(ch in _PLACEHOLDER.sub("", source) for ch in "{}")
+        or any(name != NODE_PLACEHOLDER for name in _PLACEHOLDER.findall(source))
     ):
-        build.issue(f"source must be a control-plane route under {ROUTE_PREFIX}", ident)
+        build.issue(
+            f"source must be a control-plane route under {ROUTE_PREFIX} "
+            f"(the only placeholder allowed is {{{NODE_PLACEHOLDER}}})",
+            ident,
+        )
         return False
     path = str(raw.get("path") or "")
     if not _PATH.match(path):
@@ -366,7 +375,21 @@ def _row_actions(raw: Any, build: _Build, ident: str) -> list[dict[str, Any]]:
     return actions
 
 
-def _detail(raw: Any, build: _Build, ident: str) -> dict[str, str] | None:
+def _detail_kinds(raw: Any, build: _Build, ident: str) -> dict[str, str]:
+    """Return ``{field: "text"|"line"}``: ``text`` is always a wrapped block, ``line`` never."""
+    if not isinstance(raw, Mapping):
+        return {}
+    kinds: dict[str, str] = {}
+    for key, kind in list(raw.items())[:MAX_FIELDS]:
+        if _PATH.match(str(key)) and str(key) and str(kind) in DETAIL_KINDS:
+            kinds[str(key)] = str(kind)
+        else:
+            known = ", ".join(DETAIL_KINDS)
+            build.issue(f"detail kind {kind!s} for {key!s} is not one of {known}", ident)
+    return kinds
+
+
+def _detail(raw: Any, build: _Build, ident: str) -> dict[str, Any] | None:
     if raw is None:
         return None
     source = str(raw.get("source") or "") if isinstance(raw, Mapping) else ""
@@ -384,7 +407,11 @@ def _detail(raw: Any, build: _Build, ident: str) -> dict[str, str] | None:
             ident,
         )
         return None
-    return {"source": source, "path": path}
+    detail: dict[str, Any] = {"source": source, "path": path}
+    kinds = _detail_kinds(raw.get("kinds"), build, ident)
+    if kinds:
+        detail["kinds"] = kinds
+    return detail
 
 
 def _table(raw: Mapping[str, Any], panel: dict[str, Any], build: _Build, ident: str) -> bool:

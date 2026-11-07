@@ -22,7 +22,7 @@ from korodexios_core.kernel.ui_theme import (
     css_variables,
     parse_theme,
 )
-from korodexios_core.kernel.ui_tree import TreeError, node, nodes_payload
+from korodexios_core.kernel.ui_tree import TreeError, node, nodes_payload, page_nodes
 from korodexios_core.modules.web_console.module import _pane_list
 
 from .test_ipc import base_args, ipc_chassis
@@ -387,3 +387,134 @@ def test_shell_files_stay_project_neutral_and_have_palette_split_and_language() 
         text = (STATIC_DIR / name).read_text(encoding="utf-8").lower()
         for word in ("assay", "sonus", "dosage"):
             assert word not in text, (name, word)
+
+
+def test_shell_script_has_no_shorthand_property_for_an_undefined_variable() -> None:
+    """A text-column cell once read `el("td", { plain })` with no such variable."""
+    from korodexios_core.modules.web_console.module import STATIC_DIR
+
+    script = (STATIC_DIR / "shell.js").read_text(encoding="utf-8")
+    assert "{ plain }" not in script
+    assert 'default: return el("td", { plain: text });' in script
+
+
+# -- {node}, paged trees, detail kinds ---------------------------------------------
+
+
+def _panel(**extra: object) -> dict[str, object]:
+    return {"id": "p", "type": "table", "columns": ["id"], **extra}
+
+
+def test_panel_source_may_name_the_selected_node() -> None:
+    manifest = build_manifest(
+        [("m", {"panels": [_panel(source="/api/v1/kb/list?under={node}", path="rows")]})]
+    )
+    assert manifest["issues"] == []
+    assert manifest["modules"][0]["panels"][0]["source"] == "/api/v1/kb/list?under={node}"
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "/api/v1/kb/list?under={id}",  # only {node} is allowed in a panel source
+        "/api/v1/kb/list?under={node",  # unbalanced
+        "/api/v1/kb/list?under=node}",
+        "/api/v1/kb/{node}/../x",
+        "/api/v1/kb/list?a={node}{}",
+        "/elsewhere/list?under={node}",
+    ],
+)
+def test_panel_source_refuses_other_placeholders(source: str) -> None:
+    manifest = build_manifest([("m", {"panels": [_panel(source=source, path="rows")]})])
+    assert manifest["modules"] == []  # the only panel is dropped, so the entry is too
+    assert manifest["issues"]
+
+
+def test_detail_kinds_are_kept_and_checked() -> None:
+    detail = {"source": "/api/v1/kb/read?path={path}", "path": "data",
+              "kinds": {"body": "text", "title": "line", "x": "html"}}
+    panel = _panel(source="/api/v1/kb/list", path="r", detail=detail)
+    manifest = build_manifest([("m", {"panels": [panel]})])
+    kept = manifest["modules"][0]["panels"][0]["detail"]["kinds"]
+    assert kept == {"body": "text", "title": "line"}
+    assert any("html" in issue["message"] for issue in manifest["issues"])
+
+
+def test_more_node_carries_a_cursor_and_opens_nothing() -> None:
+    marker = node("more.100", "Load more", more=True, next="100")
+    assert marker == {"id": "more.100", "label": "Load more", "more": True, "next": "100"}
+    for bad in (
+        lambda: node("m", "x", more=True),  # no cursor
+        lambda: node("m", "x", more=True, next="a b"),
+        lambda: node("m", "x", more=True, next="1", opens="panel"),
+        lambda: node("m", "x", more=True, next="1", has_children=True),
+        lambda: node("m", "x", next="1"),  # a cursor without 'more'
+        lambda: nodes_payload(
+            [{"id": "m", "label": "x", "more": True, "next": "1"}, {"id": "b", "label": "y"}]
+        ),
+    ):
+        with pytest.raises(TreeError):
+            bad()
+
+
+def test_page_nodes_walks_a_long_list_without_losing_or_repeating_items() -> None:
+    items = [{"id": f"i{n}", "label": f"Item {n}"} for n in range(1234)]
+    seen: list[str] = []
+    cursor = ""
+    pages = 0
+    while True:
+        payload = page_nodes(items, after=cursor, size=499)
+        assert len(payload["nodes"]) <= 500
+        pages += 1
+        last = payload["nodes"][-1]
+        seen.extend(n["id"] for n in payload["nodes"] if not n.get("more"))
+        if not last.get("more"):
+            break
+        cursor = last["next"]
+    assert seen == [i["id"] for i in items]
+    assert pages == 3
+
+
+def test_page_nodes_edges() -> None:
+    assert page_nodes([]) == {"nodes": []}
+    exact = [{"id": f"i{n}", "label": "x"} for n in range(5)]
+    assert not any(n.get("more") for n in page_nodes(exact, size=5)["nodes"])  # fits, no marker
+    assert page_nodes(exact, after="5") == {"nodes": []}
+    for bad_cursor in ("abc", "-1", "6"):
+        with pytest.raises(TreeError):
+            page_nodes(exact, after=bad_cursor)
+    for bad_size in (0, 500, -3):
+        with pytest.raises(TreeError):
+            page_nodes(exact, size=bad_size)
+
+
+def test_shell_script_wires_node_paging_long_values_and_a_phone_layout() -> None:
+    from korodexios_core.modules.web_console.module import STATIC_DIR
+
+    script = (STATIC_DIR / "shell.js").read_text(encoding="utf-8")
+    css = (STATIC_DIR / "shell.css").read_text(encoding="utf-8")
+    html = (STATIC_DIR / "shell.html").read_text(encoding="utf-8")
+    assert "encodeURIComponent(nodeId())" in script and "refreshNodePanels" in script
+    assert "after=${encodeURIComponent(after)}" in script and "node.more" in script
+    assert "LONG_TEXT" in script and 'el("details"' in script
+    assert 'id="btn-list"' in html and 'id="side-back"' in html
+    assert "@media (max-width: 699px)" in css and ".bottom.empty" in css
+    assert "overflow: hidden; } /* splitter hit areas" in css
+
+
+def test_shell_script_parses_when_node_is_installed() -> None:
+    import shutil
+    import subprocess
+
+    from korodexios_core.modules.web_console.module import STATIC_DIR
+
+    node_exe = shutil.which("node")
+    if node_exe is None:
+        pytest.skip("node is not installed")
+    result = subprocess.run(
+        [node_exe, "--check", str(STATIC_DIR / "shell.js")],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert result.returncode == 0, result.stderr

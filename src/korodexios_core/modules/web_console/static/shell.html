@@ -12,6 +12,7 @@
 <body>
   <div id="app" class="app">
     <header class="topbar">
+      <button id="btn-list" type="button" class="icon-button narrow-only" title="Show the side list" aria-label="Show the side list"></button>
       <span class="brand"><span id="brand-logo" aria-hidden="true"></span><span id="app-name">korodexios</span></span>
       <span class="crumbs"><span id="crumb-area"></span><span id="crumb-item" class="muted"></span></span>
       <span class="grow"></span>
@@ -27,7 +28,7 @@
       <nav id="ribbon" class="ribbon" aria-label="Areas"></nav>
 
       <aside id="side" class="side" aria-label="Side list">
-        <div class="pane-head"><span id="side-title" class="pane-title"></span>
+        <div class="pane-head"><button id="side-back" type="button" class="plain narrow-only">Back</button><span id="side-title" class="pane-title"></span>
           <span class="grow"></span>
           <button id="btn-collapse" type="button" class="icon-button" title="Collapse all" aria-label="Collapse all"></button>
         </div>

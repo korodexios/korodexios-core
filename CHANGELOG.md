@@ -5,6 +5,21 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.6.6] - 2026-11-07
+
+### Added
+
+- Panels may use `{node}` (the tree node chosen in the side list) in `source`, `detail` source and `args`; the shell redraws them when the choice changes.
+- Tree answers can page: a `more` node with a `next` cursor, `?after=<cursor>`, `kernel.ui_tree.page_nodes`; the shell shows "Load more".
+- Row and key/value views draw long text as a wrapped block and fold lists and objects; `detail.kinds` forces `text` or `line` per field.
+- Phone layout under 700 px: bottom bar of areas, side list as its own page with a back button, language next to the theme under Settings, 40 px touch targets.
+
+### Fixed
+
+- A table column without a `kind` (plain text) raised `plain is not defined` in the shell and stopped drawing the rows.
+- The shell page was 4 px wider than the window at 768-1099 px (splitter hit areas); the body now clips them.
+- On a phone the main column grew to the height of its content and pushed the bottom bar out of view.
+
 ## [0.6.5] - 2026-11-07
 
 ### Added

@@ -190,6 +190,39 @@
     return typeof value === "object" ? JSON.stringify(value) : String(value);
   }
 
+  // {node} in a panel source or argument is the id of the tree node chosen in the side list
+  // (empty until one is); in a URL it is encoded so no id can add a parameter or a path step
+  const nodeId = () => (state.selected && state.selected.node ? String(state.selected.node.id) : "");
+  const withNode = (text, urlSafe = true) => String(text).replace(/\{node\}/g, () => (urlSafe ? encodeURIComponent(nodeId()) : nodeId()));
+  const usesNode = (panel) => [panel.source, panel.detail && panel.detail.source].some((s) => typeof s === "string" && s.includes("{node}"))
+    || Object.values(panel.args || {}).some((v) => typeof v === "string" && v.includes("{node}"))
+    || (panel.buttons || []).some((b) => Object.values(b.args || {}).some((v) => typeof v === "string" && v.includes("{node}")));
+  const nodeArgs = (args) => {
+    const out = {};
+    Object.entries(args || {}).forEach(([name, value]) => { out[name] = typeof value === "string" ? withNode(value, false) : value; });
+    return out;
+  };
+
+  // one long text is a wrapped block, a list or object folds away, a short value stays a line
+  const LONG_TEXT = 200;
+  function valueNode(value, kind) {
+    if (value !== null && typeof value === "object") {
+      const size = Array.isArray(value) ? value.length : Object.keys(value).length;
+      const label = Array.isArray(value) ? tf("{count} items", { count: size }) : tf("{count} keys", { count: size });
+      return el("details", { class: "fold" }, [el("summary", { plain: label }), el("pre", { class: "block", plain: JSON.stringify(value, null, 2) })]);
+    }
+    const text = fmt(value);
+    const long = typeof value === "string" && (text.length > LONG_TEXT || text.includes("\n"));
+    if (kind === "text" || (long && kind !== "line")) return el("pre", { class: "block", plain: text });
+    return document.createTextNode(text);
+  }
+
+  function pairList(pairs, kinds) {
+    const list = el("dl", { class: "kv" });
+    pairs.forEach(([key, value]) => list.append(el("dt", { plain: key }), el("dd", {}, [valueNode(value, (kinds || {})[key])])));
+    return list;
+  }
+
   const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
   const narrow = () => window.matchMedia("(max-width: 699px)").matches;
 
@@ -369,7 +402,7 @@
     };
     const all = areas();
     const expand = el("button", {
-      type: "button", class: "ribbon-item", title: "Expand or shrink the ribbon", "aria-label": "Expand or shrink the ribbon",
+      type: "button", class: "ribbon-item expand", title: "Expand or shrink the ribbon", "aria-label": "Expand or shrink the ribbon",
       onclick: () => { saveLayout({ ribbon: layout().ribbon === "labels" ? "icons" : "labels" }); applyLayout(); },
     });
     expand.append(icon("ribbon"));
@@ -474,9 +507,27 @@
     saveLayout({ open: ids.slice(0, 200) });
   }
 
-  function treeUrl(section, parent) {
-    if (!parent) return section.tree;
-    return `${section.tree}${section.tree.includes("?") ? "&" : "?"}parent=${encodeURIComponent(parent)}`;
+  function treeUrl(section, parent, after) {
+    const params = [];
+    if (parent) params.push(`parent=${encodeURIComponent(parent)}`);
+    if (after) params.push(`after=${encodeURIComponent(after)}`);
+    if (!params.length) return section.tree;
+    return `${section.tree}${section.tree.includes("?") ? "&" : "?"}${params.join("&")}`;
+  }
+
+  // a "more" node closes a long list: its cursor fetches the next page, which is appended
+  function loadMore(area, section, parent, marker) {
+    const cacheKey = `${area.id}/${section.id}/${parent}`;
+    const cached = state.trees[cacheKey];
+    if (!cached || cached.paging) return;
+    cached.paging = true;
+    renderSide();
+    api(treeUrl(section, parent, marker.next)).then((payload) => {
+      const kept = cached.nodes.filter((n) => !n.more);
+      const known = new Set(kept.map((n) => n.id));
+      state.trees[cacheKey] = { nodes: [...kept, ...(payload.nodes || []).filter((n) => !known.has(n.id))] };
+      renderSide();
+    }).catch((error) => { cached.paging = false; toast(error.message, true); renderSide(); });
   }
 
   function levelRows(area, section, parent, depth) {
@@ -492,6 +543,13 @@
     if (!cached.nodes.length) return depth ? [] : [el("div", { class: "side-note", text: section.empty || "Nothing here." })];
     const rows = [];
     cached.nodes.forEach((node) => {
+      if (node.more) {
+        const more = el("button", { type: "button", class: "tree-node more", disabled: Boolean(cached.paging), onclick: () => loadMore(area, section, parent, node) });
+        more.style.paddingLeft = `${8 + depth * 16}px`;
+        more.append(chevron(false, true), el("span", { class: "name", plain: cached.paging ? t("Loading…") : node.label }));
+        rows.push(more);
+        return;
+      }
       const openKey = `${area.id}/${section.id}/${node.id}`;
       const isOpen = node.has_children && state.open.has(openKey);
       const chosen = state.selected && state.selected.key === openKey;
@@ -519,17 +577,22 @@
     renderInspector(Object.entries({ id: node.id, label: node.label, meta: node.meta, tone: node.tone, opens: node.opens }).filter(([, v]) => v));
     if (node.opens) {
       const panel = ((area.entry && area.entry.panels) || []).find((p) => p.id === node.opens);
-      if (panel) openPanel(area, panel);
-    }
+      if (panel) openPanel(area, panel); else refreshNodePanels(area);
+    } else refreshNodePanels(area);
     if (narrow()) $("app").classList.add("hide-side");
+  }
+
+  // a panel whose source holds {node} shows a different answer for each chosen node
+  function refreshNodePanels(area) {
+    const shown = [state.active, state.activeB].map((key) => state.tabs.find((tab) => tab.key === key)).filter(Boolean);
+    if (shown.some((tab) => usesNode(tab.panel))) renderPanes();
+    if (((area.entry && area.entry.panels) || []).some((panel) => panel.dock === "bottom" && usesNode(panel))) renderDock();
   }
 
   function renderInspector(pairs) {
     const body = $("inspector-body");
     if (!pairs.length) { body.replaceChildren(el("div", { class: "side-note", text: "Select an item to see its properties." })); return; }
-    const list = el("dl", { class: "kv" });
-    pairs.forEach(([key, value]) => list.append(el("dt", { plain: key }), el("dd", { plain: fmt(value) })));
-    body.replaceChildren(list);
+    body.replaceChildren(pairList(pairs));
   }
 
   // ---- tabs and the main surface ---------------------------------------------------
@@ -607,6 +670,7 @@
     const area = currentArea();
     const docked = ((area.entry && area.entry.panels) || []).filter((panel) => panel.dock === "bottom");
     const body = $("bottom-body");
+    $("bottom").classList.toggle("empty", !docked.length);
     if (!docked.length) {
       body.replaceChildren(el("div", { class: "side-note", text: "Nothing is docked in this area. A module can dock a panel here with dock = \"bottom\"." }));
       return;
@@ -638,20 +702,18 @@
       case "appearance": renderAppearance(content); return;
       case "layout": renderLayoutSettings(content); return;
       case "keyvalue": {
-        const data = dig(await api(panel.source), panel.path) || {};
-        const list = el("dl", { class: "kv" });
-        Object.entries(data).forEach(([key, value]) => list.append(el("dt", { plain: key }), el("dd", { plain: fmt(value) })));
-        content.replaceChildren(list);
+        const data = dig(await api(withNode(panel.source)), panel.path) || {};
+        content.replaceChildren(pairList(Object.entries(data)));
         return;
       }
       case "log": {
-        const data = dig(await api(panel.source), panel.path);
+        const data = dig(await api(withNode(panel.source)), panel.path);
         const text = Array.isArray(data) ? data.join("\n") : fmt(data);
         content.replaceChildren(el("pre", { class: "log", text }));
         return;
       }
-      case "table": renderTable(content, panel, dig(await api(panel.source), panel.path) || [], area); return;
-      case "data": renderData(content, dig(await api(panel.source), panel.path)); return;
+      case "table": renderTable(content, panel, dig(await api(withNode(panel.source)), panel.path) || [], area); return;
+      case "data": renderData(content, dig(await api(withNode(panel.source)), panel.path)); return;
       case "form": renderForm(content, panel, area); return;
       case "actions": renderActions(content, panel); return;
       case "settings": await renderSettings(content, panel, area); return;
@@ -718,14 +780,15 @@
         const href = safeHref(text);
         return el("td", {}, [href ? el("a", { href, target: "_blank", rel: "noopener noreferrer", plain: text }) : document.createTextNode(text)]);
       }
-      default: return el("td", { plain });
+      default: return el("td", { plain: text });
     }
   }
 
   // {column} placeholders in a row action's args or a detail route are filled from the row
   function fillRow(template, row, urlSafe) {
     return String(template).replace(/\{([^{}]+)\}/g, (match, name) => {
-      const value = dig(row, name);
+      let value = dig(row, name);
+      if ((value === null || value === undefined) && name === "node") value = nodeId();
       const text = value === null || value === undefined ? "" : String(value);
       return urlSafe ? encodeURIComponent(text) : text;
     });
@@ -753,9 +816,7 @@
           try {
             const value = dig(await api(fillRow(panel.detail.source, row, true)), panel.detail.path);
             const pairs = value && typeof value === "object" ? Object.entries(value) : [["value", value]];
-            const list2 = el("dl", { class: "kv" });
-            pairs.forEach(([k, v]) => list2.append(el("dt", { plain: k }), el("dd", { plain: fmt(v) })));
-            detail.replaceChildren(list2, el("button", { type: "button", class: "plain", text: "Close", onclick: () => detail.replaceChildren() }));
+            detail.replaceChildren(pairList(pairs, panel.detail.kinds), el("button", { type: "button", class: "plain", text: "Close", onclick: () => detail.replaceChildren() }));
           } catch (error) { toast(error.message, true); }
         } }));
       }
@@ -898,7 +959,7 @@
       if (!command || !command.remote || !can(command.role)) node.disabled = true;
       node.addEventListener("click", () => {
         if ((button.confirm || button.danger) && !armed(node, "Click again to run")) return;
-        runCommand(runs, button.command, button.args);
+        runCommand(runs, button.command, nodeArgs(button.args));
       });
       return node;
     }));
@@ -910,7 +971,7 @@
     if (!command) { content.replaceChildren(el("p", { class: "error", text: tf("unknown command: {command}", { command: panel.command }) })); return; }
     const formKey = `${area.id}.${panel.id}`;
     const prefs = () => state.prefs;
-    const fresh = () => Object.assign({}, panel.args, (prefs().defaults || {})[formKey] || {});
+    const fresh = () => Object.assign({}, nodeArgs(panel.args),(prefs().defaults || {})[formKey] || {});
     const remembered = () => Object.assign(fresh(), (prefs().values || {})[formKey] || {});
     const inputs = new Map();
     const later = [];
@@ -1070,8 +1131,13 @@
     const select = el("select", { id: "appearance-theme", "aria-label": "Theme" }, state.themes.themes.map((theme) => el("option", { value: theme.name, text: `${theme.name} (${theme.source})` })));
     select.value = state.themes.active;
     select.addEventListener("change", () => chooseTheme(select.value).catch((e) => toast(e.message, true)));
+    // the language is also here, because the top bar of a phone has no room for it
+    const language = el("select", { id: "appearance-language", "aria-label": "Language" }, [...$("lang").options].map((o) => el("option", { value: o.value, plain: o.textContent })));
+    language.value = $("lang").value;
+    language.addEventListener("change", () => { $("lang").value = language.value; $("lang").dispatchEvent(new Event("change")); });
     content.replaceChildren(
       el("div", { class: "setting" }, [el("label", { for: "appearance-theme", text: "Theme" }), select]),
+      el("div", { class: "setting" }, [el("label", { for: "appearance-language", text: "Language" }), language]),
       el("p", { class: "muted", text: "Themes are CSS token files: built in, <project>/themes/ and data/ui/themes/. In the terminal: kdx ui theme list | set | check." }));
   }
 
@@ -1276,6 +1342,9 @@
     persistOpen();
     renderSide();
   });
+  $("btn-list").append(icon("list", 20));
+  $("btn-list").addEventListener("click", () => $("app").classList.remove("hide-side"));
+  $("side-back").addEventListener("click", () => $("app").classList.add("hide-side"));
   $("brand-logo").append(icon("logo", 20));
   markStatic();
   buildToggles();

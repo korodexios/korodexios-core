@@ -741,3 +741,19 @@ msgstr "Darstellung"
 #: static/shell.js
 msgid "Layout"
 msgstr "Layout"
+
+#: static/shell.js
+msgid "{count} items"
+msgstr "{count} Einträge"
+
+#: static/shell.js
+msgid "{count} keys"
+msgstr "{count} Schlüssel"
+
+#: static/shell.html
+msgid "Show the side list"
+msgstr "Seitenliste anzeigen"
+
+#: static/shell.html
+msgid "Back"
+msgstr "Zurück"

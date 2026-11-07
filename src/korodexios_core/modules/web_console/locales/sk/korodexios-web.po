@@ -741,3 +741,19 @@ msgstr "Vzhľad"
 #: static/shell.js
 msgid "Layout"
 msgstr "Rozloženie"
+
+#: static/shell.js
+msgid "{count} items"
+msgstr "{count} položiek"
+
+#: static/shell.js
+msgid "{count} keys"
+msgstr "{count} kľúčov"
+
+#: static/shell.html
+msgid "Show the side list"
+msgstr "Zobraziť zoznam"
+
+#: static/shell.html
+msgid "Back"
+msgstr "Späť"

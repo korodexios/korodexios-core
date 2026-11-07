@@ -13,7 +13,7 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 | Distribution | `korodexios-core` |
 | Import root | `korodexios_core` |
 | Console scripts | `kdx` (primary short alias), `korodexios` (canonical) |
-| Version | `0.6.5` (production), core API frozen at `v2` (additive changes only inside v2) |
+| Version | `0.6.6` (production), core API frozen at `v2` (additive changes only inside v2) |
 | Runtime | CPython 3.11+, stdlib first (PyYAML for config, rich for the CLI surface) |
 | Config file | `kdx.yml` / `kdx.yaml` / `kdx.json` (then `korodexios.*`) |
 | Env prefix | `KDX_` primary; `KORODEXIOS_` is the canonical long prefix |
@@ -559,7 +559,9 @@ declaration, and the colours are the renderer's business. `actions = [{ id, labe
 confirm, danger }]` puts buttons in every row; an `args` value may hold `{column}` placeholders
 (`args = { id = "{id}" }`, dotted names reach into nested rows) that are filled from that row, and
 the command must be a runnable command path like any button. `detail = { source =
-"/api/v1/queue?id={id}", path = "task" }` opens a key/value view of a route from a row.
+"/api/v1/queue?id={id}", path = "task" }` opens a key/value view of a route from a row. The view draws a long text (over 200 characters or with a line break) as a wrapped, scrolling block and folds a list or object away; `kinds = { body = "text", title = "line" }` in `detail` forces one field either way.
+
+**The selected node.** A panel `source` (and a `detail` source, form `args` or button `args`) may hold `{node}`: the shell fills it with the id of the tree node chosen in the side list (URL-encoded in a route, empty until one is chosen) and draws the panel again when the choice changes, so `source = "/api/v1/kb/list?under={node}"` filters a table by the folder that was clicked. It is the only placeholder a panel `source` may hold.
 
 **Choices and widgets (form).** `[ui.panels.fields.<argument>]` says how one argument of the
 command is drawn: `choices_from = "/api/v1/models"` with `path`, `value`, `label` fills a select
@@ -649,7 +651,7 @@ state in a module's `[ui]`.
 declare `[[ui.sections]]` (`id`, `title`, `tree` route, `empty` text: one collapsible tree each
 in the side list), and mark a panel `dock = "bottom"` or `locked = true`. A tree route answers
 `{"nodes": [...]}` built with `kernel/ui_tree.py` (`id`, `label`, `meta`, `tone`,
-`has_children`, `opens`); a node with `has_children` is asked again with `?parent=<id>`. The
+`has_children`, `opens`); a node with `has_children` is asked again with `?parent=<id>`. A long list ends with a marker node `{"id": "more.100", "label": "Load more (40)", "more": true, "next": "100"}`; the shell shows it as a button and asks the same route again with `?after=<next>`, appending the answer (`page_nodes(items, after=..., size=...)` builds a page and its marker; a page still holds at most 500 nodes). Below 700 px the shell is a phone layout: a bottom bar of areas (System and Settings included), the side list as a page of its own with a back button, theme and language under Settings, targets of at least 40 px. The
 person's window shape lives in prefs `layout` (`sizes`, `hidden`, `ribbon`, `split`, `open`, `area`;
 `kdx ui layout show|set|reset`). Colours are one token set: `GET /api/v1/ui/theme` returns the
 active theme's tokens and a `:root` rule with `--kdx-*` variables plus the older aliases

@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.5.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.6.
 
 ## Working preferences
 
@@ -52,6 +52,7 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 
 ## Current state (2026-11-07)
 
+- v0.6.6 (owner asked for commit, tag and push): shell panels may use `{node}`, tree answers page (`more` node, `page_nodes`), long values fold in detail views (`detail.kinds`), phone layout under 700 px; fixed the text-column cell crash. Verified in the browser pane on a scratch module only.
 - v0.6.5 (owner asked for version, tag and push): shell completed (palette, shortcut sheet, split panes, language, neutral icons). v0.6.4 (pushed): the one-window shell. Backend:
   `kernel/ui_theme.py` (`--kdx-*` tokens, aliases for older names, `.css`/`.json` themes from
   `<root>/themes/` and `data/ui/themes/`, WCAG check), `kernel/ui_tree.py` (node shape of a tree
