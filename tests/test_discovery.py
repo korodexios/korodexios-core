@@ -244,9 +244,6 @@ def test_single_file_plugin_can_import_a_sibling_helper(tmp_path: Path) -> None:
     paths = make_paths(plugins, project)
     report = ModuleDiscovery(paths, logger=None).scan()
     assert "solo" in report.names()
-    assert (
-        not [key for key in sys.modules if key.endswith("_solo") and "helpers" not in key] or True
-    )
 
 def test_a_plugin_can_import_its_own_project_package(tmp_path: Path) -> None:
     """<root>/src is exposed while a plugin runs, then taken away again."""

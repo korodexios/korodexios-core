@@ -287,5 +287,5 @@ def _schema_command(request: CliRequest) -> int:
         ],
         headers=("key", "type", "live", "value", "layer"),
     )
-    print_key_values([("file written", str(local_file(chassis)))])
+    print_key_values([("local file", str(local_file(chassis)))])
     return int(ExitCode.SUCCESS)

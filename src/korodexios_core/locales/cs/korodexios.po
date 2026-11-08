@@ -1818,10 +1818,6 @@ msgstr "kód ukončení"
 msgid "failed"
 msgstr "selhalo"
 
-#: cli/config_edit.py
-msgid "file written"
-msgstr "zapsaný soubor"
-
 #: cli/txn.py
 msgid "files"
 msgstr "soubory"
@@ -2013,6 +2009,10 @@ msgstr "zbývá dnes"
 #: cli/config_edit.py
 msgid "live"
 msgstr "živě"
+
+#: cli/config_edit.py
+msgid "local file"
+msgstr "lokální soubor"
 
 #: cli/commands.py
 msgid "lock held"

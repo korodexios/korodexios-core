@@ -428,12 +428,13 @@ any name `lock_name()` refuses are not locks and never look stale (`v0.2.5`).
 
 ## 11. Boundaries
 
-- **Single process.** No cluster, no distributed lock service, no persistence layer. The
+- **Single process.** No cluster, no distributed lock service, no external database or cluster store (SQLite files
+  only, opt-in through `context.db`, the job queue and the transaction journal). The
   scheduler is in-process periodic work, named locks are advisory and per-process, and the
   chassis owns the directories; modules own what they write inside them.
 - **No plugin isolation.** A module runs in-process; the contract and the timeout are
   the isolation.
 - **Stdlib first.** PyYAML and rich exist for config parsing and the terminal surface;
   everything else is the standard library.
-- **Headless first.** The CLI is a thin client; a TUI is planned on the same
-  declarative command tree.
+- **Headless first.** The CLI is a thin client of the declarative command tree;
+  the web console is an add-on on the same tree. No TUI is planned.

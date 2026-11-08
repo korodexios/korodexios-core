@@ -44,7 +44,7 @@ kdx logs -n 50    # the rotating log file, no POSIX tail required
 ## Rules
 
 1. **Headless first.** The chassis owns lifecycle, discovery, configuration, and
-   shutdown. The CLI and any future TUI are thin clients of that core.
+   shutdown. The CLI and any other front end are thin clients of that core.
 2. **Zero stubs.** No TODO bodies, no `pass` placeholders, no mock returns. If a
    branch exists, it runs.
 3. **Precedence is sacred.** CLI > env (`KDX_*`, then `KORODEXIOS_*`) >

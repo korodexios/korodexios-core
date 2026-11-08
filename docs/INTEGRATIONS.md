@@ -23,9 +23,9 @@ Hand every tool its own named token, with the least role it needs, so the audit 
 who did what and a leaked token can be rotated alone:
 
 ```bash
-kdx users add n8n-inbound contributor   # may only drop events in
-kdx users add n8n-ops operator          # may run commands
-kdx users add grafana viewer            # may only read
+kdx users add n8n-inbound --role contributor   # may only drop events in
+kdx users add n8n-ops --role operator          # may run commands
+kdx users add grafana --role viewer            # may only read
 kdx users rotate n8n-ops                # replace a token; the old one stops at once
 ```
 

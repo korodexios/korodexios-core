@@ -133,7 +133,8 @@ src/korodexios_core/
              # chassis, signals, ipc
   cli/       # thin clients: argparse surface, rich wizard, core commands,
              # project templating (init_project.py), scaffolding (scaffold.py)
-  modules/   # built-in modules: heartbeat, system_info, backup_engine, job_queue, web_console - a pure
+  modules/   # built-in modules (heartbeat, system_info, backup_engine, job_queue, web_console, metrics,
+             # mcp_server, realtime, webhooks, wiki) - a pure
              # discovery root: adding code here is the intended extension point
 docs/        # the documentation suite, including the roadmap
 .agents/skills/  # canonical playbooks, seeded into every project

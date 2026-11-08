@@ -76,3 +76,25 @@ def test_scaffold_outside_the_package_skips_the_test_file(tmp_path: Path) -> Non
     result = scaffold_module(plugins, "loose_plugin", project_root=root)
     assert result.test_file is None
     assert result.directory == plugins / "loose_plugin"
+
+
+def test_a_project_module_cannot_take_a_name_the_core_owns(tmp_path: Path) -> None:
+    """Review 2026-11-08, Q3: 'metrics' is a built-in module and 'status' a command."""
+    root = project(tmp_path)
+    modules = root / "korodexios_core" / "modules"
+    for taken in ("metrics", "status", "wiki", "db"):
+        with pytest.raises(ScaffoldError) as caught:
+            scaffold_module(modules, taken)
+        assert "already taken" in str(caught.value)
+    assert not (modules / "metrics").exists()
+    assert scaffold_module(modules, "sampler").directory == modules / "sampler"
+
+
+def test_a_prerelease_sorts_below_its_release() -> None:
+    """Review 2026-11-08, V1: a module needing >=0.7.0 must not load on 0.7.0rc1."""
+    from korodexios_core.version import parse_version
+
+    assert parse_version("0.7.0rc1").as_tuple() < parse_version("0.7.0").as_tuple()
+    assert parse_version("0.7.0").as_tuple() < parse_version("0.7.1").as_tuple()
+    assert parse_version("0.7.0rc1").as_tuple() < parse_version("0.7.0rc2").as_tuple()
+    assert parse_version("0.6.9").as_tuple() < parse_version("0.7.0rc1").as_tuple()

@@ -39,6 +39,11 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - `kdx locale extract` said `no translation of {domain} ...` with a `{domain}` field that `translate(domain=)` swallowed, so the note was never filled; it is `{name}` now. It also refuses a source without Python strings (the web domain's strings are in JavaScript) instead of replacing its template with the fixed words and turning the web translations obsolete.
 - The `.po` reader (`kernel/po.py`, behind the same `parse_po`/`PoEntry`) no longer pastes the lines of a `msgid_plural`, `msgstr[n]` or `msgctxt` onto the entry above it, an entry with a context no longer replaces the plain one of the same text, and a byte-order mark no longer hides the first entry. Plural and context entries are still not used by the chassis.
 - `kdx events` follows `GET /api/v1/events`, a core route (role viewer, `kernel/event_feed.py`), instead of the web console's `/api/v1/ui/events`: it works with `web_console` disabled. The browser route stays.
+- `kdx modules create` (and the tutorial's own example) refuses a name the core owns, a built-in module such as `metrics` or a top-level command such as `status`; the tutorial module is `sampler`. Before, a project module called `metrics` was rejected at start-up.
+- A prerelease version sorts below its release (`0.7.0rc1 < 0.7.0`), so a module that needs `>=0.7.0` no longer loads on a release candidate.
+- `kdx config schema` labels the path of the local layer `local file` instead of `file written`; nothing is written.
+- Documentation: no TUI is promised any more (the terminal is first, the web console an add-on), `kdx users add NAME --role ROLE` in the integration guide, `kdx stop` as the operator stop, the list of built-in modules and their key counts, quoting and the neutral `nestdb` example in the CLI reference, and the `persistence layer` boundary now says SQLite only, opt-in.
+- Two tests that could not fail (`... or True`) assert something.
 
 ## [0.6.6] - 2026-11-07
 

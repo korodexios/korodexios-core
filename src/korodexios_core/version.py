@@ -21,10 +21,10 @@ class VersionInfo(NamedTuple):
     patch: int
     prerelease: str = ""
 
-    def as_tuple(self) -> tuple[int, int, int, tuple[str, ...]]:
-        """Return a tuple usable for ordering comparisons."""
+    def as_tuple(self) -> tuple[int, int, int, int, tuple[str, ...]]:
+        """Return a tuple usable for ordering comparisons: 0.7.0rc1 sorts below 0.7.0."""
         pre: tuple[str, ...] = (self.prerelease,) if self.prerelease else ()
-        return (self.major, self.minor, self.patch, pre)
+        return (self.major, self.minor, self.patch, 0 if pre else 1, pre)
 
 
 def parse_version(text: str) -> VersionInfo:

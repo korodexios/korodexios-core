@@ -11,6 +11,19 @@ from ..version import __version__
 
 MODULE_NAME_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
 PACKAGE_MODULES_DIR = "korodexios_core/modules"
+RESERVED_VERBS = frozenset({
+    "version", "doctor", "logs", "init", "status", "reload", "rpc", "modules", "module", "config",
+    "run", "contracts", "wizard", "tls", "users", "audit", "jobs", "events", "stop", "service",
+    "locale", "playbook", "agents", "conventions", "docs", "brief", "proposal", "reset", "txn",
+    "limiter", "db", "container", "whoami", "api", "publish", "daemon",
+})
+"""Top-level commands the chassis owns: a module of that name would shadow or be shadowed."""
+
+
+def builtin_module_names() -> frozenset[str]:
+    """Return the names of the modules that ship with the core."""
+    root = Path(__file__).resolve().parent.parent / "modules"
+    return frozenset(item.name for item in root.iterdir() if (item / "kdx_module.toml").is_file())
 
 
 class ScaffoldError(ValueError):
@@ -62,6 +75,23 @@ def validate_module_name(name: str) -> str:
     return cleaned
 
 
+def check_not_reserved(parent: Path, name: str) -> Path:
+    """Refuse a project module that would collide with the core's modules or commands.
+
+    Scaffolding into the core's own modules directory is how a built-in module is born, so
+    that one place is exempt.
+    """
+    own = Path(__file__).resolve().parent.parent / "modules"
+    if Path(parent).resolve() == own:
+        return parent
+    if name in builtin_module_names() or name in RESERVED_VERBS:
+        raise ScaffoldError(
+            f"{name!r} is already taken by the core (a built-in module or a command)",
+            hint="Pick another name, for example 'sampler' or 'orders'.",
+        )
+    return parent
+
+
 def scaffold_module(
     parent: Path,
     name: str,
@@ -72,7 +102,7 @@ def scaffold_module(
 ) -> ScaffoldResult:
     """Create a working module package in *parent*/*name* and return what was written."""
     cleaned = validate_module_name(name)
-    parent = Path(parent)
+    parent = check_not_reserved(Path(parent), cleaned)
     directory = parent / cleaned
     if not parent.exists():
         try:

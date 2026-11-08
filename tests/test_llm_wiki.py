@@ -174,7 +174,7 @@ def test_init_ingest_new_log_index_check(capsys, project_root: Path, tmp_path: P
     operations = [entry["operation"] for entry in json.loads(out)["entries"]]
     assert operations == ["schema", "ingest", "create", "create", "update"]
     assert "[" in run(project_root, capsys, "wiki", "log", "-n", "2")[1]
-    assert "empty" in run(project_root, capsys, "wiki", "log", "--internal")[1] or True
+    assert run(project_root, capsys, "wiki", "log", "--internal")[0] == 0
     (wiki / "INDEX.md").write_text(INDEX_MARKER + "\nold\n", encoding="utf-8")
     assert run(project_root, capsys, "wiki", "index")[0] == 0
     names = {entry.name for entry in wiki.iterdir()}

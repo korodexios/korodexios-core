@@ -128,7 +128,7 @@ whether SIGHUP is wired.
 kdx rpc heartbeat status                 # run a module command inside the daemon
 kdx rpc heartbeat status --args '{"lines": 5}'
 kdx rpc backup run --json                # the daemon's reply, verbatim
-kdx rpc db index rebuild --args "{"lines": 8}"}   # a nested path, any depth
+kdx rpc nestdb index rebuild --args '{"lines": 8}'   # a nested path, any depth
 ```
 
 The client reads `var/chassis.ipc`, posts one `POST /api/v1/rpc`, and prints the answer:
@@ -138,7 +138,7 @@ on the wire and `1` here. `kdx --remote heartbeat status` is the same delegation
 as a global flag: the client never boots a chassis of its own.
 
 The command path nests as deep as the module declared it: the daemon walks
-`CliCommand.subcommands` token by token, so `kdx rpc db index rebuild` is one rpc call. Its
+`CliCommand.subcommands` token by token, so `kdx rpc nestdb index rebuild` is one rpc call. Its
 reply carries `path` and `depth`, and a name that resolves to a group with no handler answers
 `404` naming the group that has no such child.
 
@@ -318,9 +318,9 @@ findings once at boot, on stderr, and `kdx doctor --json` carries them under
 nothing reads, so CI can gate on it. The second half of the report is declarative
 module schemas: `config_schema()` hooks are read when a module registers and collected again
 after `init(context)` ran, validated against the module's scoped keys, and printed under
-"Module configuration schemas" - the three built-in proof modules declare
-`backup_engine: 10 keys`, `heartbeat: 1 keys`, and `system_info: 4 keys` out of the box, so a
-project is validated against a real schema before it owns one. A required
+"Module configuration schemas" - the built-in modules declare
+schemas (`backup_engine: 10 keys`, `heartbeat: 1 keys`, `system_info: 5 keys`, and so on for
+the other seven) out of the box, so a project is validated against a real schema before it owns one. A required
 key with no value, a value that will not coerce, or a value outside the declared
 `choices` is an error and exits `3`; the JSON payload carries them under `schemas.issues`.
 
@@ -385,9 +385,9 @@ Prints the chassis version, the core API version, and the Python runtime line.
 Module commands are trees, not flat names, and every surface reads the same tree:
 
 ```bash
-kdx db index rebuild --table page --lines 8   # argparse builds this from subcommands
+kdx nestdb index rebuild --table page --lines 8   # argparse builds this from subcommands
 kdx wizard                                    # the menu descends group by group
-kdx rpc db index rebuild                      # the daemon walks the same path
+kdx rpc nestdb index rebuild                      # the daemon walks the same path
 ```
 
 - A group is a `CliCommand` with `subcommands` and no handler; asking for the group alone

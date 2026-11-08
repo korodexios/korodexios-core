@@ -1816,10 +1816,6 @@ msgstr ""
 msgid "failed"
 msgstr ""
 
-#: cli/config_edit.py
-msgid "file written"
-msgstr ""
-
 #: cli/txn.py
 msgid "files"
 msgstr ""
@@ -2010,6 +2006,10 @@ msgstr ""
 
 #: cli/config_edit.py
 msgid "live"
+msgstr ""
+
+#: cli/config_edit.py
+msgid "local file"
 msgstr ""
 
 #: cli/commands.py

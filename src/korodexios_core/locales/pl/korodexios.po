@@ -1818,10 +1818,6 @@ msgstr "kod wyjścia"
 msgid "failed"
 msgstr "niepowodzenie"
 
-#: cli/config_edit.py
-msgid "file written"
-msgstr "zapisany plik"
-
 #: cli/txn.py
 msgid "files"
 msgstr "pliki"
@@ -2013,6 +2009,10 @@ msgstr "zostało dziś"
 #: cli/config_edit.py
 msgid "live"
 msgstr "na żywo"
+
+#: cli/config_edit.py
+msgid "local file"
+msgstr "plik lokalny"
 
 #: cli/commands.py
 msgid "lock held"

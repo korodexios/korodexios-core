@@ -50,8 +50,9 @@ people and agents *editing* that repository; this guide is the contract for *usi
 ## 1. Golden Rules of the Chassis
 
 1. **Headless first.** The chassis owns lifecycle, discovery, configuration, and
-   shutdown. CLI, TUI, and any future front end are thin clients of that core: if a
-   capability exists only in the CLI, it is a bug.
+   shutdown. The CLI and any other front end are thin clients of that core: if a
+   capability exists only in the GUI or only over HTTP, it is a bug (the terminal comes
+   first; the web console is an add-on).
 2. **Zero stubs.** No TODO bodies, no `pass` placeholders, no mock returns. If a
    branch exists, it runs - and a test runs it.
 3. **Stdlib first.** A new dependency needs a paragraph of justification, not a line.
@@ -458,7 +459,7 @@ and return early (exit `130` is the convention). A handler returns a process exi
   argparse and the wizard from the same tree, so a module command is automatically
   documented and menu-driven.
 - `subcommands` nests to any depth, and one tree drives everything: the argparse surface,
-  the wizard menus, and `POST /api/v1/rpc` all walk `kdx db index rebuild` the same way and
+  the wizard menus, and `POST /api/v1/rpc` all walk `kdx nestdb index rebuild` the same way and
   report a `LookupError` naming the group that has no such child.
 - `CliCommand` refuses a blank name, a duplicate subcommand, and a tree with neither a
   handler nor subcommands - all at construction, not at parse time.
@@ -743,7 +744,7 @@ dependency order -> lifecycle loop -> `stop()` in reverse -> close logging.
 
 | Situation | Exit code |
 | --- | --- |
-| Clean run or operator stop (`kdx status` shutdown, `request_clean_stop`) | `0` |
+| Clean run or operator stop (`kdx stop`, `request_clean_stop`) | `0` |
 | Handled chassis or CLI failure | `1` |
 | Usage error (bad flags) | `2` |
 | Configuration error | `3` |

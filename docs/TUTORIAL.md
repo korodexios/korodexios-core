@@ -82,13 +82,13 @@ Scaffold it, then replace the body with the blueprint from
 [`docs/AGENTS_GUIDE.md`](AGENTS_GUIDE.md):
 
 ```bash
-kdx modules create metrics --path src/demo_app/modules --title "Samples a counter"
+kdx modules create sampler --path src/demo_app/modules --title "Samples a counter"
 ```
 
 Three files, no stubs:
 
 ```text
-src/demo_app/modules/metrics/
+src/demo_app/modules/sampler/
   kdx_module.toml   # [module] name, description, version, entrypoint = "MODULE"
   module.py             # class MetricsModule(Module): ... ; MODULE = MetricsModule()
   __init__.py           # re-export MODULE and the class
@@ -128,7 +128,7 @@ class GreeterModule(Module):
 ```
 
 Read configuration through the scoped view (`self.config.get_float("interval", 5.0)`
-means `modules.metrics.interval`), log through `self.logger`, and talk to other
+means `modules.sampler.interval`), log through `self.logger`, and talk to other
 modules only through `self.bus`.
 
 The chassis hands over three primitives, so a module declares instead of managing:
@@ -154,10 +154,10 @@ each file's own media type. Files that must outlive a moved `var/` belong under
 ## 4. Prove it (60 seconds)
 
 ```bash
-kdx --home . modules list            # metrics appears with origin 'project'
-kdx --home . modules show metrics    # spec + live health
+kdx --home . modules list            # sampler appears with origin 'project'
+kdx --home . modules show sampler    # spec + live health
 kdx --home . run --duration 3        # the sampler thread runs and stops cleanly
-kdx --home . metrics status          # your CLI command, wired by register_cli
+kdx --home . sampler status          # your CLI command, wired by register_cli
 kdx --home . config check            # unknown keys and your schema, enforced
 kdx --home . rpc greeter             # one command inside the running daemon
 kdx --home . doctor                  # modules, scheduled tasks, named locks, static mounts
