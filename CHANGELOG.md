@@ -11,6 +11,7 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - `kdx init` seeds `make check-docs` (part of `make check`), a CI step for it and `tests/test_size_ratchet.py` (baselines at zero; the size excess may only shrink).
 - `tests/test_snapshots.py` pins the public shapes as `tests/snapshots/*.json` (trees of keys and types, no values): the `--json` output of `doctor`, `status`, `modules list`, `config check`, `docs check` and `locale show`, the core routes, the `ExitCode` values and the signatures of the functions in `korodexios_core.__all__`. Refresh with `KDX_UPDATE_SNAPSHOTS=1` and add a CHANGELOG line.
 - `tests/test_seed_commands.py` seeds a project (plain, `--container`, `--ui static`) and checks that every `kdx ...` command its Makefile, CI and pre-commit run exists in this core, so a seed can no longer call a command its pinned tag lacks unnoticed.
+- `kdx whoami`, `kdx api schema`, `kdx publish NAME [--payload JSON]` and `kdx daemon logs|audit|config show|set|unset` (all with `--json`, `--target URL --token T`): the terminal twins of `/api/v1/whoami`, `/api/v1/schema`, the inbound webhook route and the web console's log, audit and configuration routes, so a remote daemon can be read and tuned without a browser.
 
 ### Changed
 
@@ -37,6 +38,7 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - Diagnostics on stderr (`agents sync`, `brief`, `conventions`, `playbook`, `docs`) stay English whatever the locale (`render.plain`), as the stderr rule says; their catalogue entries became obsolete.
 - `kdx locale extract` said `no translation of {domain} ...` with a `{domain}` field that `translate(domain=)` swallowed, so the note was never filled; it is `{name}` now. It also refuses a source without Python strings (the web domain's strings are in JavaScript) instead of replacing its template with the fixed words and turning the web translations obsolete.
 - The `.po` reader (`kernel/po.py`, behind the same `parse_po`/`PoEntry`) no longer pastes the lines of a `msgid_plural`, `msgstr[n]` or `msgctxt` onto the entry above it, an entry with a context no longer replaces the plain one of the same text, and a byte-order mark no longer hides the first entry. Plural and context entries are still not used by the chassis.
+- `kdx events` follows `GET /api/v1/events`, a core route (role viewer, `kernel/event_feed.py`), instead of the web console's `/api/v1/ui/events`: it works with `web_console` disabled. The browser route stays.
 
 ## [0.6.6] - 2026-11-07
 

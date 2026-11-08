@@ -53,6 +53,7 @@ from .diagnostics import (
     diagnostic_check,
 )
 from .discovery import DiscoveryReport, ModuleDiscovery
+from .event_feed import event_route
 from .i18n import build_i18n
 from .instance_lock import InstanceLock
 from .ipc import (
@@ -516,10 +517,9 @@ class Chassis:
             tls_cert=self.tls_files()[0],
             tls_key=self.tls_files()[1],
         )
-        routes = list(self.ipc_routes) if self.config.get_bool("core.ipc.routes", True) else []
-        statics = (
-            list(self.ipc_static) if self.config.get_bool("core.ipc.static", True) else []
-        )
+        modules_routes = self.ipc_routes if self.config.get_bool("core.ipc.routes", True) else []
+        routes = [event_route(self.bus, lambda: self.ipc is None), *modules_routes]
+        statics = list(self.ipc_static) if self.config.get_bool("core.ipc.static", True) else []
         rpc_enabled = self.config.get_bool("core.ipc.rpc", True)
         server = IpcServer(
             status_fn=self.health_report,

@@ -159,7 +159,7 @@ def test_events_and_stop_in_the_terminal(daemon, capsys) -> None:
 
     reader = threading.Thread(target=follow)
     reader.start()
-    wait_for(lambda: any(sub.name == "web_console.feed"
+    wait_for(lambda: any(sub.name == "core.events.feed"
                          for sub in daemon.chassis.bus._subscriptions))
     daemon.chassis.bus.publish("demo.hello", {"n": 1}, source="test")
     reader.join(timeout=10)

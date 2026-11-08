@@ -46,6 +46,10 @@ msgstr "--lines doit valoir au moins 1, reçu {count}"
 msgid "--payload is not valid JSON: {error}"
 msgstr "--payload n'est pas du JSON valide : {error}"
 
+#: cli/remote.py
+msgid "--payload is not valid JSON: {exc}"
+msgstr "--payload n'est pas un JSON valide : {exc}"
+
 #: cli/service.py
 msgid "--print changed nothing"
 msgstr "--print n'a rien modifié"
@@ -154,6 +158,10 @@ msgstr "Ne change rien ; sort avec le code 3 et affiche un diff si docs/CONVENTI
 msgid "Change nothing; exit 3 when the template is out of date."
 msgstr "Ne change rien ; sort avec le code 3 si le modèle est périmé."
 
+#: cli/remote.py
+msgid "Change one setting on the daemon (admin)."
+msgstr "Modifie un réglage du daemon (admin)."
+
 #: modules/web_console/module.py
 msgid "Change pane sizes, hide or show panes, pick the ribbon mode."
 msgstr "Change la taille des panneaux, masque ou affiche des panneaux, choisit le mode de la barre d'icônes."
@@ -209,6 +217,10 @@ msgstr "Compare les catalogues à leurs modèles ; sort avec le code 3 si l'un e
 #: cli/commands.py
 msgid "Configuration"
 msgstr "Configuration"
+
+#: cli/remote.py
+msgid "Configuration key, for example core.locale."
+msgstr "Clé de configuration, par exemple core.locale."
 
 #: cli/commands.py
 msgid "Contracts"
@@ -370,6 +382,10 @@ msgstr "Bus d'événements"
 msgid "Event name to send [webhooks.test]."
 msgstr "Nom de l'événement à envoyer [webhooks.test]."
 
+#: cli/remote.py
+msgid "Event name, for example order.paid."
+msgstr "Nom de l'événement, par exemple order.paid."
+
 #: cli/jobs.py
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr "Motif d'événements : 'backup.*', 'core.job.**', '*' pour tous [*]."
@@ -449,6 +465,10 @@ msgstr "Diagnostic de l'hôte (OS, CPU, mémoire, disque)."
 #: cli/limiter.py
 msgid "Hours to cool down."
 msgstr "Heures de refroidissement."
+
+#: cli/remote.py
+msgid "How many [50]."
+msgstr "Combien [50]."
 
 #: modules/wiki/module.py
 msgid "How many entries to show [20]."
@@ -561,6 +581,10 @@ msgstr "Liste les modules découverts et leur état."
 #: cli/config_edit.py
 msgid "List every key that can be set: type, default, choices, live, current value."
 msgstr "Liste toutes les clés modifiables : type, défaut, choix, à chaud, valeur actuelle."
+
+#: cli/remote.py
+msgid "List every route the daemon serves, with its role."
+msgstr "Liste toutes les routes du daemon avec leur rôle."
 
 #: cli/limiter.py
 msgid "List limiters: calls today, budget left, cooldown."
@@ -706,6 +730,10 @@ msgstr "Ne copie que les chemins correspondant à MOTIF (répétable)."
 msgid "Only keys starting with PREFIX."
 msgstr "Uniquement les clés commençant par PREFIX."
 
+#: cli/remote.py
+msgid "Only keys starting with this."
+msgstr "Seulement les clés qui commencent ainsi."
+
 #: modules/metrics/module.py
 msgid "Only metrics whose name contains TEXT."
 msgstr "Seulement les métriques dont le nom contient TEXT."
@@ -850,9 +878,21 @@ msgstr "Affiche l'URL de la console au lieu d'ouvrir un navigateur."
 msgid "Print the conventions every Korodexios project follows."
 msgstr "Affiche les conventions que suit chaque projet Korodexios."
 
+#: cli/remote.py
+msgid "Print the daemon's audit records (admin)."
+msgstr "Affiche les enregistrements d'audit du daemon (admin)."
+
+#: cli/remote.py
+msgid "Print the daemon's resolved configuration."
+msgstr "Affiche la configuration résolue du daemon."
+
 #: cli/commands.py
 msgid "Print the discovered config and env file paths."
 msgstr "Affiche les chemins des fichiers de configuration et env découverts."
+
+#: cli/remote.py
+msgid "Print the newest log lines of the daemon."
+msgstr "Affiche les dernières lignes du journal du daemon."
 
 #: cli/playbook.py
 msgid "Print the playbook for AI agents (how to work in a project on the core)."
@@ -878,6 +918,10 @@ msgstr "Numéro de proposition (voir 'kdx proposal list')."
 msgid "Proposal title"
 msgstr "Titre de la proposition"
 
+#: cli/remote.py
+msgid "Publish an 'inbound.NAME' event on the daemon's bus."
+msgstr "Publie un événement 'inbound.NAME' sur le bus du daemon."
+
 #: cli/commands.py
 msgid "Publish one tick and stop (CI and smoke tests)."
 msgstr "Publie un tick et s'arrête (CI et tests de fumée)."
@@ -902,6 +946,18 @@ msgstr "Met en file une tâche pour le gestionnaire de ce type du démon en cour
 msgid "Ratio"
 msgstr "Rapport"
 
+#: cli/remote.py
+msgid "Read a daemon's HTTP API contract."
+msgstr "Lit le contrat de l'API HTTP d'un daemon."
+
+#: cli/remote.py
+msgid "Read a running daemon's logs, configuration and audit log."
+msgstr "Lit les journaux, la configuration et l'audit d'un daemon en cours d'exécution."
+
+#: cli/remote.py
+msgid "Read or change the daemon's configuration."
+msgstr "Lit ou modifie la configuration du daemon."
+
 #: modules/wiki/module.py
 msgid "Record the check in log.md."
 msgstr "Consigne la vérification dans log.md."
@@ -921,6 +977,10 @@ msgstr "Retire une clé de la couche locale ; la couche inférieure s'applique d
 #: cli/language.py
 msgid "Remove obsolete translations (strings no longer in the template)."
 msgstr "Supprime les traductions obsolètes (chaînes qui ne figurent plus dans le modèle)."
+
+#: cli/remote.py
+msgid "Remove one setting from the daemon's local layer."
+msgstr "Retire un réglage de la couche locale du daemon."
 
 #: modules/wiki/module.py
 msgid "Rename exported pages NAME-<page> to avoid clashes."
@@ -1114,6 +1174,10 @@ msgstr "Affiche la disposition enregistrée de la fenêtre."
 msgid "Show the wiki log, or append one entry to it."
 msgstr "Affiche le journal du wiki ou y ajoute une entrée."
 
+#: cli/remote.py
+msgid "Show who a daemon sees you as, and what that role may do."
+msgstr "Montre comment le daemon vous voit et ce que votre rôle peut faire."
+
 #: cli/users.py
 msgid "Show who acted over the control plane (commands, jobs, reloads, stops)."
 msgstr "Affiche qui a agi via le plan de contrôle (commandes, tâches, rechargements, arrêts)."
@@ -1205,6 +1269,10 @@ msgstr "ID de la tâche (voir 'kdx queue list')."
 #: cli/brief.py
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "Les 3 à 5 choses qu'il doit faire, séparées par « ; »"
+
+#: cli/remote.py
+msgid "The event's payload as a JSON value [{}]."
+msgstr "La charge de l'événement comme valeur JSON [{}]."
 
 #: cli/config_edit.py
 msgid "The key belongs to this module (modules.NAME.KEY)."
@@ -1362,7 +1430,7 @@ msgstr "une proposition a besoin d'un titre"
 msgid "a rootless engine has the ids it needs"
 msgstr "un moteur rootless dispose des id nécessaires"
 
-#: cli/txn.py
+#: cli/remote.py
 msgid "action"
 msgstr "action"
 
@@ -1422,6 +1490,10 @@ msgstr "tâches asynchrones"
 msgid "asyncio loop"
 msgstr "boucle asyncio"
 
+#: cli/remote.py
+msgid "at"
+msgstr "heure"
+
 #: modules/job_queue/module.py
 msgid "attempts"
 msgstr "essais"
@@ -1473,6 +1545,10 @@ msgstr "valeur par défaut intégrée"
 #: cli/db.py
 msgid "bytes"
 msgstr "octets"
+
+#: cli/remote.py
+msgid "can"
+msgstr "peut"
 
 #: modules/backup_engine/module.py
 msgid "cancelled after {copied} file(s); the partial copy stays at {target}"
@@ -1786,6 +1862,10 @@ msgstr "approximatif"
 msgid "give --hours or --minutes"
 msgstr "indiquez --hours ou --minutes"
 
+#: cli/remote.py
+msgid "give a value: kdx daemon config set KEY VALUE"
+msgstr "donnez une valeur : kdx daemon config set KEY VALUE"
+
 #: cli/commands.py
 msgid "handler errors"
 msgstr "erreurs de gestionnaires"
@@ -1973,6 +2053,10 @@ msgstr "correspondance"
 #: cli/language.py
 msgid "message domains"
 msgstr "domaines de messages"
+
+#: cli/remote.py
+msgid "method"
+msgstr "méthode"
 
 #: modules/metrics/module.py
 msgid "metric"
@@ -2274,7 +2358,7 @@ msgstr "openssl est introuvable sur cet hôte"
 msgid "origin"
 msgstr "origine"
 
-#: cli/users.py
+#: cli/remote.py
 msgid "outcome"
 msgstr "résultat"
 
@@ -2386,6 +2470,10 @@ msgstr "projet {name} créé"
 msgid "published"
 msgstr "publié"
 
+#: cli/remote.py
+msgid "published {event}"
+msgstr "publié : {event}"
+
 #: cli/commands.py
 msgid "python"
 msgstr "python"
@@ -2450,13 +2538,17 @@ msgstr "résident"
 msgid "restart the agent so it picks up the kdx server"
 msgstr "redémarrez l'agent pour qu'il charge le serveur kdx"
 
-#: cli/users.py
+#: cli/remote.py
 msgid "role"
 msgstr "rôle"
 
 #: cli/commands.py
 msgid "root"
 msgstr "racine"
+
+#: cli/remote.py
+msgid "route"
+msgstr "route"
 
 #: cli/db.py
 msgid "rows"
@@ -2621,6 +2713,10 @@ msgstr "sudo demande lui-même le mot de passe ; ce programme ne le voit jamais"
 #: cli/container_doctor.py
 msgid "sudo is not installed; run the commands as an administrator"
 msgstr "sudo n'est pas installé ; exécutez les commandes en tant qu'administrateur"
+
+#: cli/remote.py
+msgid "summary"
+msgstr "résumé"
 
 #: cli/db.py
 msgid "table"
@@ -2870,6 +2966,10 @@ msgstr "version"
 msgid "watch it with: kdx jobs show {job_id} --follow"
 msgstr "suivez-la avec : kdx jobs show {job_id} --follow"
 
+#: cli/remote.py
+msgid "who"
+msgstr "qui"
+
 #: cli/container_doctor.py
 msgid "why sudo: /etc/subuid and /etc/subgid are owned by root and say which user ids your containers may use; no other file is changed"
 msgstr "pourquoi sudo : /etc/subuid et /etc/subgid appartiennent à root et indiquent quels id vos conteneurs peuvent utiliser ; aucun autre fichier n'est modifié"
@@ -2989,6 +3089,10 @@ msgstr "{job_id} est déjà {state} ; rien à arrêter"
 #: cli/commands.py
 msgid "{job_id} started; Ctrl+C stops watching, not the job"
 msgstr "{job_id} démarrée ; Ctrl+C arrête le suivi, pas la tâche"
+
+#: cli/remote.py
+msgid "{key} changed on the daemon"
+msgstr "{key} modifié sur le daemon"
 
 #: cli/config_edit.py
 msgid "{key}{shown} {verb} in {file}"

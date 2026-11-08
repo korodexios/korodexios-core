@@ -527,6 +527,13 @@ kdx jobs cancel job-3                                # ask it to stop at its nex
 kdx events                                           # live bus events (routine ticks hidden)
 kdx events 'core.job.**' --json -n 10                # filtered, machine-readable, bounded
 kdx stop                                             # stop the daemon cleanly (admin)
+kdx whoami                                           # who the daemon sees you as, what the role may do
+kdx api schema                                       # every route the daemon serves, with its role
+kdx publish order.paid --payload '{"id": 7}'         # publish 'inbound.order.paid' on the bus
+kdx daemon logs -n 100                               # the daemon's newest log lines
+kdx daemon config show core.lifecycle                # its resolved configuration
+kdx daemon config set core.locale sk                 # change one setting (admin, audited)
+kdx daemon audit -n 50                               # its audit records (admin)
 ```
 
 Every command takes `--target URL --token T` for another machine. `kdx rpc --follow` has no

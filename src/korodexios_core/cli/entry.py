@@ -26,11 +26,11 @@ from .container_doctor import container_command
 from .conventions import conventions_command
 from .db import db_command
 from .docs_sync import docs_command
-from .jobs import events_command, jobs_command, stop_command
 from .language import locale_command
 from .limiter import limiter_command
 from .playbook import playbook_command
 from .proposal import proposal_command
+from .remote import remote_commands
 from .render import set_translator, write_line
 from .reset import reset_command
 from .service import service_command
@@ -646,9 +646,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         surface.add_command(tls_command())
         surface.add_command(users_command())
         surface.add_command(audit_command())
-        surface.add_command(jobs_command())
-        surface.add_command(events_command())
-        surface.add_command(stop_command())
+        for command in remote_commands():
+            surface.add_command(command)
         surface.add_command(service_command())
         surface.add_command(locale_command())
         surface.add_command(playbook_command())

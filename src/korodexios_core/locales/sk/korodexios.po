@@ -46,6 +46,10 @@ msgstr "--lines musí byť aspoň 1, zadané {count}"
 msgid "--payload is not valid JSON: {error}"
 msgstr "--payload nie je platný JSON: {error}"
 
+#: cli/remote.py
+msgid "--payload is not valid JSON: {exc}"
+msgstr "--payload nie je platný JSON: {exc}"
+
 #: cli/service.py
 msgid "--print changed nothing"
 msgstr "--print nič nezmenilo"
@@ -154,6 +158,10 @@ msgstr "Nič nemení; skončí s kódom 3 a vypíše rozdiely, keď sa docs/CONV
 msgid "Change nothing; exit 3 when the template is out of date."
 msgstr "Nič nemení; skončí kódom 3, ak je šablóna zastaraná."
 
+#: cli/remote.py
+msgid "Change one setting on the daemon (admin)."
+msgstr "Zmení jedno nastavenie na démonovi (admin)."
+
 #: modules/web_console/module.py
 msgid "Change pane sizes, hide or show panes, pick the ribbon mode."
 msgstr "Zmení veľkosti panelov, skryje alebo zobrazí panely, vyberie režim ikonového pruhu."
@@ -209,6 +217,10 @@ msgstr "Porovná katalógy so šablónami; skončí kódom 3, ak je niektorý ne
 #: cli/commands.py
 msgid "Configuration"
 msgstr "Konfigurácia"
+
+#: cli/remote.py
+msgid "Configuration key, for example core.locale."
+msgstr "Konfiguračný kľúč, napríklad core.locale."
 
 #: cli/commands.py
 msgid "Contracts"
@@ -370,6 +382,10 @@ msgstr "Zbernica udalostí"
 msgid "Event name to send [webhooks.test]."
 msgstr "Názov udalosti na odoslanie [webhooks.test]."
 
+#: cli/remote.py
+msgid "Event name, for example order.paid."
+msgstr "Názov udalosti, napríklad order.paid."
+
 #: cli/jobs.py
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr "Vzor udalostí: 'backup.*', 'core.job.**', '*' pre všetky [*]."
@@ -449,6 +465,10 @@ msgstr "Diagnostika hostiteľa (OS, CPU, pamäť, disk)."
 #: cli/limiter.py
 msgid "Hours to cool down."
 msgstr "Hodiny cooldownu."
+
+#: cli/remote.py
+msgid "How many [50]."
+msgstr "Koľko [50]."
 
 #: modules/wiki/module.py
 msgid "How many entries to show [20]."
@@ -561,6 +581,10 @@ msgstr "Vypíše nájdené moduly a ich stav."
 #: cli/config_edit.py
 msgid "List every key that can be set: type, default, choices, live, current value."
 msgstr "Zoznam všetkých kľúčov, ktoré možno nastaviť: typ, predvolená hodnota, voľby, živá zmena, aktuálna hodnota."
+
+#: cli/remote.py
+msgid "List every route the daemon serves, with its role."
+msgstr "Vypíše všetky routy, ktoré démon ponúka, s ich rolou."
 
 #: cli/limiter.py
 msgid "List limiters: calls today, budget left, cooldown."
@@ -706,6 +730,10 @@ msgstr "Skopíruje iba cesty zodpovedajúce VZORU (opakovateľné)."
 msgid "Only keys starting with PREFIX."
 msgstr "Iba kľúče začínajúce PREFIX."
 
+#: cli/remote.py
+msgid "Only keys starting with this."
+msgstr "Len kľúče, ktoré začínajú týmto."
+
 #: modules/metrics/module.py
 msgid "Only metrics whose name contains TEXT."
 msgstr "Len metriky, ktorých názov obsahuje TEXT."
@@ -850,9 +878,21 @@ msgstr "Vypíše adresu konzoly namiesto otvorenia prehliadača."
 msgid "Print the conventions every Korodexios project follows."
 msgstr "Vypíše konvencie, ktoré dodržiava každý projekt Korodexios."
 
+#: cli/remote.py
+msgid "Print the daemon's audit records (admin)."
+msgstr "Vypíše auditné záznamy démona (admin)."
+
+#: cli/remote.py
+msgid "Print the daemon's resolved configuration."
+msgstr "Vypíše vyriešenú konfiguráciu démona."
+
 #: cli/commands.py
 msgid "Print the discovered config and env file paths."
 msgstr "Vypíše cesty nájdených konfiguračných súborov a súboru env."
+
+#: cli/remote.py
+msgid "Print the newest log lines of the daemon."
+msgstr "Vypíše najnovšie riadky logu démona."
 
 #: cli/playbook.py
 msgid "Print the playbook for AI agents (how to work in a project on the core)."
@@ -878,6 +918,10 @@ msgstr "Číslo návrhu (pozri 'kdx proposal list')."
 msgid "Proposal title"
 msgstr "Názov návrhu"
 
+#: cli/remote.py
+msgid "Publish an 'inbound.NAME' event on the daemon's bus."
+msgstr "Publikuje udalosť 'inbound.NAME' na zbernici démona."
+
 #: cli/commands.py
 msgid "Publish one tick and stop (CI and smoke tests)."
 msgstr "Publikuje jeden tik a skončí (CI a rýchle testy)."
@@ -902,6 +946,18 @@ msgstr "Zaradí úlohu pre handler daemona tohto druhu."
 msgid "Ratio"
 msgstr "Pomer"
 
+#: cli/remote.py
+msgid "Read a daemon's HTTP API contract."
+msgstr "Prečíta HTTP kontrakt API démona."
+
+#: cli/remote.py
+msgid "Read a running daemon's logs, configuration and audit log."
+msgstr "Prečíta logy, konfiguráciu a audit bežiaceho démona."
+
+#: cli/remote.py
+msgid "Read or change the daemon's configuration."
+msgstr "Prečíta alebo zmení konfiguráciu démona."
+
 #: modules/wiki/module.py
 msgid "Record the check in log.md."
 msgstr "Zapíše kontrolu do log.md."
@@ -921,6 +977,10 @@ msgstr "Odstráni kľúč z lokálnej vrstvy, takže opäť platí vrstva pod ň
 #: cli/language.py
 msgid "Remove obsolete translations (strings no longer in the template)."
 msgstr "Odstráni zastarané preklady (reťazce, ktoré už nie sú v šablóne)."
+
+#: cli/remote.py
+msgid "Remove one setting from the daemon's local layer."
+msgstr "Odstráni jedno nastavenie z lokálnej vrstvy démona."
 
 #: modules/wiki/module.py
 msgid "Rename exported pages NAME-<page> to avoid clashes."
@@ -1114,6 +1174,10 @@ msgstr "Zobrazí uložené rozloženie okna."
 msgid "Show the wiki log, or append one entry to it."
 msgstr "Zobrazí log wiki alebo doň pridá jeden záznam."
 
+#: cli/remote.py
+msgid "Show who a daemon sees you as, and what that role may do."
+msgstr "Ukáže, ako vás démon vidí a čo smie vaša rola."
+
 #: cli/users.py
 msgid "Show who acted over the control plane (commands, jobs, reloads, stops)."
 msgstr "Zobrazí, kto konal cez riadiacu rovinu (príkazy, úlohy, načítania, zastavenia)."
@@ -1205,6 +1269,10 @@ msgstr "ID úlohy (pozri 'kdx queue list')."
 #: cli/brief.py
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "3 až 5 vecí, ktoré musí robiť, oddelené „;“"
+
+#: cli/remote.py
+msgid "The event's payload as a JSON value [{}]."
+msgstr "Obsah udalosti ako JSON hodnota [{}]."
 
 #: cli/config_edit.py
 msgid "The key belongs to this module (modules.NAME.KEY)."
@@ -1362,7 +1430,7 @@ msgstr "návrh potrebuje názov"
 msgid "a rootless engine has the ids it needs"
 msgstr "rootless nástroj má id, ktoré potrebuje"
 
-#: cli/txn.py
+#: cli/remote.py
 msgid "action"
 msgstr "akcia"
 
@@ -1422,6 +1490,10 @@ msgstr "asynchrónne úlohy"
 msgid "asyncio loop"
 msgstr "slučka asyncio"
 
+#: cli/remote.py
+msgid "at"
+msgstr "čas"
+
 #: modules/job_queue/module.py
 msgid "attempts"
 msgstr "pokusy"
@@ -1473,6 +1545,10 @@ msgstr "vstavaná predvolená hodnota"
 #: cli/db.py
 msgid "bytes"
 msgstr "bajty"
+
+#: cli/remote.py
+msgid "can"
+msgstr "môže"
 
 #: modules/backup_engine/module.py
 msgid "cancelled after {copied} file(s); the partial copy stays at {target}"
@@ -1786,6 +1862,10 @@ msgstr "nepresné"
 msgid "give --hours or --minutes"
 msgstr "zadajte --hours alebo --minutes"
 
+#: cli/remote.py
+msgid "give a value: kdx daemon config set KEY VALUE"
+msgstr "zadajte hodnotu: kdx daemon config set KEY VALUE"
+
 #: cli/commands.py
 msgid "handler errors"
 msgstr "chyby obslužných funkcií"
@@ -1973,6 +2053,10 @@ msgstr "zhoda"
 #: cli/language.py
 msgid "message domains"
 msgstr "domény správ"
+
+#: cli/remote.py
+msgid "method"
+msgstr "metóda"
 
 #: modules/metrics/module.py
 msgid "metric"
@@ -2274,7 +2358,7 @@ msgstr "openssl sa na tomto počítači nenašiel"
 msgid "origin"
 msgstr "pôvod"
 
-#: cli/users.py
+#: cli/remote.py
 msgid "outcome"
 msgstr "výsledok"
 
@@ -2386,6 +2470,10 @@ msgstr "projekt {name} bol vytvorený"
 msgid "published"
 msgstr "publikované"
 
+#: cli/remote.py
+msgid "published {event}"
+msgstr "publikované {event}"
+
 #: cli/commands.py
 msgid "python"
 msgstr "python"
@@ -2450,13 +2538,17 @@ msgstr "rezidentná"
 msgid "restart the agent so it picks up the kdx server"
 msgstr "reštartujte agenta, aby načítal server kdx"
 
-#: cli/users.py
+#: cli/remote.py
 msgid "role"
 msgstr "rola"
 
 #: cli/commands.py
 msgid "root"
 msgstr "koreň"
+
+#: cli/remote.py
+msgid "route"
+msgstr "routa"
 
 #: cli/db.py
 msgid "rows"
@@ -2621,6 +2713,10 @@ msgstr "sudo si heslo vypýta samo; tento program ho nikdy nevidí"
 #: cli/container_doctor.py
 msgid "sudo is not installed; run the commands as an administrator"
 msgstr "sudo nie je nainštalované; spusti príkazy ako administrátor"
+
+#: cli/remote.py
+msgid "summary"
+msgstr "zhrnutie"
 
 #: cli/db.py
 msgid "table"
@@ -2870,6 +2966,10 @@ msgstr "verzia"
 msgid "watch it with: kdx jobs show {job_id} --follow"
 msgstr "sleduj ju cez: kdx jobs show {job_id} --follow"
 
+#: cli/remote.py
+msgid "who"
+msgstr "kto"
+
 #: cli/container_doctor.py
 msgid "why sudo: /etc/subuid and /etc/subgid are owned by root and say which user ids your containers may use; no other file is changed"
 msgstr "prečo sudo: /etc/subuid a /etc/subgid vlastní root a určujú, ktoré id môžu tvoje kontajnery používať; žiadny iný súbor sa nemení"
@@ -2989,6 +3089,10 @@ msgstr "{job_id} je už {state}; nie je čo zastaviť"
 #: cli/commands.py
 msgid "{job_id} started; Ctrl+C stops watching, not the job"
 msgstr "{job_id} sa spustila; Ctrl+C zastaví sledovanie, nie úlohu"
+
+#: cli/remote.py
+msgid "{key} changed on the daemon"
+msgstr "{key} zmenený na démonovi"
 
 #: cli/config_edit.py
 msgid "{key}{shown} {verb} in {file}"

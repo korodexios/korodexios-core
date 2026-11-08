@@ -22,7 +22,7 @@ from .rpc_exit import json_no_daemon
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from ..kernel.chassis import Chassis
 
-EVENTS_PATH = "/api/v1/ui/events"
+EVENTS_PATH = "/api/v1/events"
 FOLLOW_POLL_SECONDS = 0.5
 ROUTINE_EVENTS = re.compile(r"^(core\.tick|core\.heartbeat|core\.task\.)")
 FINISHED_STATES = ("done", "failed", "cancelled")
