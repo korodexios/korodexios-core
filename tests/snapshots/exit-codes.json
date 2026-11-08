@@ -1,0 +1,7 @@
+{
+  "ABORTED": 130,
+  "CONFIG_ERROR": 3,
+  "ERROR": 1,
+  "SUCCESS": 0,
+  "USAGE_ERROR": 2
+}

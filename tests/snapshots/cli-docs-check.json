@@ -1,0 +1,9 @@
+{
+  "documents": [
+    {
+      "document": "str",
+      "path": "str",
+      "state": "str"
+    }
+  ]
+}

@@ -214,6 +214,9 @@ def _brief(request: CliRequest) -> int:
     existing = parse_brief(path.read_text(encoding="utf-8")) if path.is_file() else {}
     if request.flag("check"):
         if not path.is_file():
+            if request.flag("as_json"):
+                dump_json({"file": str(path), "complete": False, "pending": [], "exists": False})
+                return int(ExitCode.ERROR)
             reason = tr("{path} does not exist", path=path)
             write_line(f"{TAG_ERROR} {reason}", stream=sys.stderr)
             write_line(f"{TAG_NOTE} " + tr("run 'kdx brief' to create it"))

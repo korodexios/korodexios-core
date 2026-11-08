@@ -1,0 +1,15 @@
+{
+  "acting_as": "(caller: 'Caller | None') -> 'Iterator[None]'",
+  "as_module": "(candidate: 'Any') -> 'Any'",
+  "build_logger": "(config: 'LayeredConfig', paths: 'AppPaths', *, name: 'str' = 'kdx') -> 'tuple[logging.Logger, LoggerFactory]'",
+  "check_contract": "(candidate: 'Any') -> 'list[str]'",
+  "command_path": "(prefix: 'str', command: 'CliCommand') -> 'str'",
+  "contract_rows": "(report: 'Any') -> 'tuple[ContractRow, ...]'",
+  "current_caller": "() -> 'Caller | None'",
+  "guess_content_type": "(name: 'str') -> 'str'",
+  "is_secret_key": "(key: 'str') -> 'bool'",
+  "project_identity": "(config: 'Any', home: 'Path | None' = None) -> 'ProjectIdentity'",
+  "redact_value": "(value: 'Any', *, marker: 'str' = '***redacted***') -> 'Any'",
+  "stdin_is_tty": "() -> 'bool'",
+  "verify_contracts": "(rows: 'Sequence[ContractRow]', root: 'Path | None' = None, *, text: 'bool' = False) -> 'ContractReport'"
+}

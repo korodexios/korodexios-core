@@ -17,6 +17,7 @@ from ..events.bus import matches
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
 from ..kernel.ipc import JOBS_PATH, SHUTDOWN_PATH, IpcDiscovery
 from .render import dump_json, print_table, tr, write_line
+from .rpc_exit import json_no_daemon
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from ..kernel.chassis import Chassis
@@ -117,6 +118,9 @@ def connect(request: CliRequest) -> IpcDiscovery | None:
     chassis = cast("Chassis", request.options.get("chassis") or request.context.chassis)
     discovery, path = _client_discovery(request, chassis)
     if discovery is None or (not request.option("target") and not discovery.is_process_alive()):
+        if request.flag("as_json"):
+            json_no_daemon(path)
+            return None
         write_line(f"{TAG_NOTE} no daemon is answering; start one with 'kdx run'")
         write_line(f"{TAG_NOTE} " + tr("looked for {path}", path=path))
         return None

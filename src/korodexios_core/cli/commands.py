@@ -34,6 +34,7 @@ from .render import (
     write_line,
     write_status,
 )
+from .rpc_exit import json_no_daemon
 from .rpc_exit import rpc_exit_code as rpc_exit_code
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -1569,7 +1570,7 @@ def _rpc_command(request: CliRequest) -> int:
         write_line(f"{TAG_NOTE} kdx rpc heartbeat status -- -n 5")
         return int(ExitCode.USAGE_ERROR)
     raw_args = request.option("args_json")
-    args: dict[str, Any]
+    args: dict[str, Any] = {}
     if raw_args:
         try:
             decoded = jsonio.loads(str(raw_args))
@@ -1580,15 +1581,13 @@ def _rpc_command(request: CliRequest) -> int:
             write_line(f"{TAG_ERROR} --args must be a JSON object")
             return int(ExitCode.USAGE_ERROR)
         args = {str(key): value for key, value in decoded.items()}
-    else:
-        args = {}
     discovery, discovery_path = _client_discovery(request, chassis)
     if discovery is None or not discovery.is_process_alive():
+        if request.flag("as_json"):
+            return json_no_daemon(discovery_path)
         write_line(f"{TAG_NOTE} no chassis daemon answering; run 'kdx run' first")
-        write_line(
-            f"{TAG_NOTE} "
-            + tr("looked for {discovery_path}", discovery_path=discovery_path)
-        )
+        looked = tr("looked for {discovery_path}", discovery_path=discovery_path)
+        write_line(f"{TAG_NOTE} {looked}")
         return int(ExitCode.ERROR)
     # The first token names the command; the rest travel as argv, untouched, so the
     # daemon walks subcommands from them and hands every other token to the handler as

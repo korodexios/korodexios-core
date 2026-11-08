@@ -1,0 +1,6 @@
+{
+  "can": "list",
+  "name": "str",
+  "role": "str",
+  "source": "str"
+}

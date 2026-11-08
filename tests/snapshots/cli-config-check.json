@@ -1,0 +1,10 @@
+{
+  "checked": "number",
+  "config_file": "str",
+  "project_keys": "list",
+  "schemas": {
+    "issues": "list",
+    "modules": "number"
+  },
+  "unknown": "list"
+}

@@ -1,0 +1,35 @@
+{
+  "app": "object",
+  "async": "object",
+  "bus": "object",
+  "cli": "object",
+  "config": "object",
+  "contracts": "object",
+  "diagnostics": "object",
+  "discovery": "object",
+  "instance": "object",
+  "ipc": "object",
+  "ipc_file": "str",
+  "locks": "object",
+  "logging": "object",
+  "memory": "object",
+  "modules": "object",
+  "paths": "object",
+  "project": "object",
+  "runtime": "object",
+  "scheduler": "object",
+  "schema": "number",
+  "signals": "object",
+  "static": [
+    {
+      "auth": "bool",
+      "cache_control": "str",
+      "directory": "str",
+      "index_names": "list",
+      "methods": "list",
+      "module": "str",
+      "route_prefix": "str"
+    }
+  ],
+  "supervision": "object"
+}

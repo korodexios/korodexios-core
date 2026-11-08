@@ -9,6 +9,7 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 - `kdx docs check|update`, `kdx conventions --check` and `kdx playbook --check`: compare the documents `kdx init` seeds (conventions, playbook, spec template) with the installed core; exit 3 and a diff when one differs, `update` rewrites them.
 - `kdx init` seeds `make check-docs` (part of `make check`), a CI step for it and `tests/test_size_ratchet.py` (baselines at zero; the size excess may only shrink).
+- `tests/test_snapshots.py` pins the public shapes as `tests/snapshots/*.json` (trees of keys and types, no values): the `--json` output of `doctor`, `status`, `modules list`, `config check`, `docs check` and `locale show`, the core routes, the `ExitCode` values and the signatures of the functions in `korodexios_core.__all__`. Refresh with `KDX_UPDATE_SNAPSHOTS=1` and add a CHANGELOG line.
 
 ### Changed
 
@@ -25,6 +26,8 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - A configuration that fails to load on `kdx reload`, `POST /api/v1/reload` or SIGHUP is refused and the daemon keeps running with the old one. The control plane answers `422` with `{"reloaded": false, "error", "hint"}` (audited as `refused`), `kdx reload` exits 3, the bus carries `core.config.reload_failed` (error class only) and reloads run one at a time. Before, a SIGHUP with a typo ended the daemon with exit 3 and the HTTP reload dropped the connection.
 - `kdx rpc` and `kdx --remote` exit with the daemon command's own code (`result.exit_code`: 0, 1, or a module's verdict such as 4) instead of always 0 for an answered request; a failed request stays 1. The reply JSON is unchanged: `ok` still means the handler ran.
 - A calendar task runs once per allowed day: after `schedule_at("daily 04:00-05:00", ...)` ran, the next slot is searched from the end of that day (it used to roll a new random instant inside the same window, about 15 runs a day), and a wall clock stepped back before a slot no longer runs it twice. A manual `run_task` still leaves the day's slot alone.
+- `--json` without a running daemon (`jobs`, `events`, `stop`, `rpc`) prints `{"ok": false, "error": "no daemon is answering", "discovery_file": ...}` on stdout and exits 1, in English whatever the locale; `brief --check --json` with no brief file prints JSON too. Before, they printed prose.
+- `GET /api/v1/schema` declares the real keys: `allow_anonymous_shutdown` on the schema route, `jobs` and `running` on `/api/v1/jobs` (the job fields are in its summary), and the reload summary keys.
 
 ## [0.6.6] - 2026-11-07
 

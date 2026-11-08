@@ -1,0 +1,40 @@
+{
+  "by_state": {
+    "disabled": "number",
+    "failed": "number",
+    "initialized": "number",
+    "new": "number",
+    "running": "number",
+    "stopped": "number"
+  },
+  "failed": "list",
+  "failures": "list",
+  "modules": [
+    {
+      "commands": "list",
+      "config_keys": "list",
+      "contracts": "list",
+      "declarations_after_init": "bool",
+      "depends_on": "list",
+      "description": "str",
+      "diagnostics": "list",
+      "error": "null",
+      "name": "str",
+      "origin": "str",
+      "priority": "number",
+      "routes": "list",
+      "secret_keys": "list",
+      "settings_collisions": "list",
+      "state": "str",
+      "timings_ms": {
+        "init": "null",
+        "start": "null",
+        "stop": "null"
+      },
+      "version": "str"
+    }
+  ],
+  "optional": "list",
+  "skipped": "list",
+  "total": "number"
+}

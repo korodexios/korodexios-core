@@ -1,0 +1,39 @@
+{
+  "allow_anonymous_shutdown": "bool",
+  "auth": "bool",
+  "auth_schemes": "list",
+  "core_api": "str",
+  "module_routes": [
+    {
+      "auth": "bool",
+      "content_type": "str",
+      "methods": "list",
+      "module": "str",
+      "path": "str",
+      "role": "str",
+      "summary": "str"
+    }
+  ],
+  "routes": [
+    {
+      "auth": "bool",
+      "content_type": "str",
+      "fields": "list",
+      "method": "str",
+      "path": "str",
+      "summary": "str"
+    }
+  ],
+  "schema": "number",
+  "static_mounts": [
+    {
+      "auth": "bool",
+      "cache_control": "str",
+      "index_names": "list",
+      "methods": "list",
+      "module": "str",
+      "route_prefix": "str"
+    }
+  ],
+  "token_header": "str"
+}

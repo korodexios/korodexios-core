@@ -1,0 +1,7 @@
+{
+  "available": "list",
+  "configured": "str",
+  "domains": "list",
+  "locale": "str",
+  "origin": "str"
+}

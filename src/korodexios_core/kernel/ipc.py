@@ -2048,16 +2048,9 @@ class IpcServer:
                     "auth": False,
                     "content_type": CONTENT_JSON,
                     "summary": "this contract; static metadata",
-                    "fields": [
-                        "auth",
-                        "auth_schemes",
-                        "core_api",
-                        "module_routes",
-                        "routes",
-                        "schema",
-                        "static_mounts",
-                        "token_header",
-                    ],
+                    "fields": ["allow_anonymous_shutdown", "auth", "auth_schemes", "core_api",
+                               "module_routes", "routes", "schema", "static_mounts",
+                               "token_header"],
                 },
                 {
                     "method": "GET",
@@ -2081,7 +2074,7 @@ class IpcServer:
                     "auth": self.requires_token(RELOAD_PATH),
                     "content_type": CONTENT_JSON,
                     "summary": "re-read configuration; the daemon keeps running",
-                    "fields": ["reloaded", "changed"],
+                    "fields": ["at", "changed", "keys", "reloaded", "reloads"],
                 },
                 {
                     "method": "POST",
@@ -2096,9 +2089,10 @@ class IpcServer:
                     "path": JOBS_PATH,
                     "auth": self.requires_token(JOBS_PATH),
                     "content_type": CONTENT_JSON,
-                    "summary": "background jobs; '?id=job-N' adds that job's output so far; "
-                    "POST {\"cancel\": id} asks one to stop",
-                    "fields": ["command", "exit_code", "id", "output", "state"],
+                    "summary": "background jobs, each with command, exit_code, id, output, state; "
+                    "'?id=job-N' adds that job's output so far; POST {\"cancel\": id} asks one "
+                    "to stop",
+                    "fields": ["jobs", "running"],
                 },
                 {
                     "method": "GET",
