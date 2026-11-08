@@ -10,6 +10,7 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - `kdx docs check|update`, `kdx conventions --check` and `kdx playbook --check`: compare the documents `kdx init` seeds (conventions, playbook, spec template) with the installed core; exit 3 and a diff when one differs, `update` rewrites them.
 - `kdx init` seeds `make check-docs` (part of `make check`), a CI step for it and `tests/test_size_ratchet.py` (baselines at zero; the size excess may only shrink).
 - `tests/test_snapshots.py` pins the public shapes as `tests/snapshots/*.json` (trees of keys and types, no values): the `--json` output of `doctor`, `status`, `modules list`, `config check`, `docs check` and `locale show`, the core routes, the `ExitCode` values and the signatures of the functions in `korodexios_core.__all__`. Refresh with `KDX_UPDATE_SNAPSHOTS=1` and add a CHANGELOG line.
+- `tests/test_seed_commands.py` seeds a project (plain, `--container`, `--ui static`) and checks that every `kdx ...` command its Makefile, CI and pre-commit run exists in this core, so a seed can no longer call a command its pinned tag lacks unnoticed.
 
 ### Changed
 
