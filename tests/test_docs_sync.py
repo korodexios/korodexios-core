@@ -54,15 +54,15 @@ def test_crlf_checkout_is_not_drift(capsys, project_root: Path) -> None:
     assert run(project_root, capsys, "docs", "check")[0] == 0
 
 
-def test_a_stale_document_exits_three_and_prints_the_diff(capsys, project_root: Path) -> None:
+def test_a_stale_document_exits_one_and_prints_the_diff(capsys, project_root: Path) -> None:
     seed(project_root)
     path = project_root / "docs" / "CONVENTIONS.md"
     path.write_text("# Project conventions\n\nold text\n", encoding="utf-8")
     code, out, _ = run(project_root, capsys, "conventions", "--check")
-    assert code == int(ExitCode.CONFIG_ERROR) == 3
+    assert code == int(ExitCode.ERROR) == 1
     assert "(project)" in out and "(core)" in out and "-old text" in out
     code, out, _ = run(project_root, capsys, "docs", "check")
-    assert code == 3
+    assert code == 1
     assert "kdx docs update" in out
 
 
@@ -70,14 +70,14 @@ def test_a_missing_document_is_reported_as_json(capsys, project_root: Path) -> N
     seed(project_root)
     (project_root / "AGENT_PLAYBOOK.md").unlink()
     code, out, _ = run(project_root, capsys, "docs", "check", "--json")
-    assert code == 3
+    assert code == 1
     states = {row["document"]: row["state"] for row in json.loads(out)["documents"]}
     assert states == {
         "conventions": "current",
         "playbook": "missing",
         "spec-template": "current",
     }
-    assert run(project_root, capsys, "playbook", "--check")[0] == 3
+    assert run(project_root, capsys, "playbook", "--check")[0] == 1
 
 
 def test_update_rewrites_only_what_differs(capsys, project_root: Path) -> None:
@@ -150,3 +150,10 @@ def test_the_seeded_size_ratchet_runs_and_catches_growth(tmp_path: Path) -> None
         encoding="utf-8",
     )
     assert pytest_run().returncode == 0
+
+
+def test_a_broken_config_is_still_exit_three_not_drift(capsys, project_root: Path) -> None:
+    """Review 2026-11-08, K1: CI can tell a drifted document (1) from an unloadable config (3)."""
+    seed(project_root)
+    (project_root / "kdx.yml").write_text("core: [unclosed\n", encoding="utf-8")
+    assert run(project_root, capsys, "docs", "check")[0] == int(ExitCode.CONFIG_ERROR)

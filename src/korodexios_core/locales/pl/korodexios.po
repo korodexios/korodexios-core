@@ -138,21 +138,21 @@ msgstr "Anuluje zadanie w kolejce (uruchomionego nie można cofnąć)."
 msgid "Change a user's role."
 msgstr "Zmień rolę użytkownika."
 
+#: cli/playbook.py
+msgid "Change nothing; exit 1 and print a diff when AGENT_PLAYBOOK.md differs."
+msgstr "Niczego nie zmienia; kończy z kodem 1 i wypisuje diff, gdy AGENT_PLAYBOOK.md się różni."
+
+#: cli/docs_sync.py
+msgid "Change nothing; exit 1 and print a diff when a seeded document differs."
+msgstr "Niczego nie zmienia; kończy z kodem 1 i wypisuje diff, gdy zasiany dokument się różni."
+
+#: cli/conventions.py
+msgid "Change nothing; exit 1 and print a diff when docs/CONVENTIONS.md differs."
+msgstr "Niczego nie zmienia; kończy z kodem 1 i wypisuje diff, gdy docs/CONVENTIONS.md się różni."
+
 #: cli/agents.py
 msgid "Change nothing; exit 1 when a file is missing or stale (for CI)."
 msgstr "Niczego nie zmienia; kończy z kodem 1, gdy plik brakuje lub jest nieaktualny (dla CI)."
-
-#: cli/playbook.py
-msgid "Change nothing; exit 3 and print a diff when AGENT_PLAYBOOK.md differs."
-msgstr "Niczego nie zmienia; kończy z kodem 3 i wypisuje diff, gdy AGENT_PLAYBOOK.md się różni."
-
-#: cli/docs_sync.py
-msgid "Change nothing; exit 3 and print a diff when a seeded document differs."
-msgstr "Niczego nie zmienia; kończy z kodem 3 i wypisuje diff, gdy zasiany dokument się różni."
-
-#: cli/conventions.py
-msgid "Change nothing; exit 3 and print a diff when docs/CONVENTIONS.md differs."
-msgstr "Niczego nie zmienia; kończy z kodem 3 i wypisuje diff, gdy docs/CONVENTIONS.md się różni."
 
 #: cli/language.py
 msgid "Change nothing; exit 3 when the template is out of date."

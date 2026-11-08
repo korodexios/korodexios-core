@@ -5,6 +5,10 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Changed
+
+- `kdx docs check`, `kdx conventions --check` and `kdx playbook --check` exit `1` when a seeded document differs or is missing (they exited `3`, the configuration-error code, so CI could not tell a stale document from an unloadable `kdx.yml`, which still exits `3`). `kdx locale check`, `kdx contracts check` and the other released verdicts keep their codes. The exit-code tables in the CLI reference and the agent guide list which command uses which.
+
 ### Fixed
 
 - The seeded `.gitignore` ignores `data/db/` (every database under it, with its `-wal` and `-shm` files), not only `data/db/backups/`.

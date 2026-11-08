@@ -772,9 +772,9 @@ caller only. `--locale` (global) picks the language of the manifest titles.
 
 | Command | Effect |
 | --- | --- |
-| `kdx playbook [--write FILE \| --check]` | print (or write) the playbook for AI agents; `--check` exits 3 with a diff when `AGENT_PLAYBOOK.md` differs |
-| `kdx conventions [--write FILE \| --check]` | print (or write, overwriting) the rules every project follows; `--check` exits 3 with a diff when `docs/CONVENTIONS.md` differs |
-| `kdx docs check [--json]` | compare the playbook, the conventions and the spec template of the project with the installed core; exit 3 and a diff when one differs or is missing |
+| `kdx playbook [--write FILE \| --check]` | print (or write) the playbook for AI agents; `--check` exits 1 with a diff when `AGENT_PLAYBOOK.md` differs |
+| `kdx conventions [--write FILE \| --check]` | print (or write, overwriting) the rules every project follows; `--check` exits 1 with a diff when `docs/CONVENTIONS.md` differs |
+| `kdx docs check [--json]` | compare the playbook, the conventions and the spec template of the project with the installed core; exit 1 and a diff when one differs or is missing |
 | `kdx docs update [--json]` | rewrite those three documents from the installed core |
 
 `kdx init` seeds `AGENT_PLAYBOOK.md`, `docs/CONVENTIONS.md` and `docs/specs/TEMPLATE.md`; the
@@ -844,9 +844,9 @@ See [TRANSLATING.md](TRANSLATING.md).
 | Code | Meaning |
 | --- | --- |
 | `0` | success, or an operator-requested stop |
-| `1` | handled failure (chassis or CLI error with a hint) |
+| `1` | handled failure (chassis or CLI error with a hint), and the verdict of a `--check` on the seeded documents: `kdx docs check`, `kdx conventions --check`, `kdx playbook --check`, `kdx agents sync --check` (a file differs or is missing) |
 | `2` | usage error (argparse) |
-| `3` | configuration error (an unknown key from `kdx config check`, a refused boot when `core.modules.strict_discovery` is on, or a drifted or missing file from `kdx contracts check`) |
+| `3` | configuration error: an unloadable `kdx.yml`, an unknown key from `kdx config check`, a refused boot when `core.modules.strict_discovery` is on, a refused `kdx reload`, an invalid target in `kdx webhooks list`, a refused `kdx reset` plan; and the verdicts `kdx contracts check` (drifted or missing file), `kdx locale check` and `kdx locale extract --check` (incomplete or out of date) |
 | `4`-`125` | a command handler's own verdict code, passed through unchanged |
 | `130` | SIGINT; Windows `SIGBREAK` joins the same gate |
 | `143` | SIGTERM |

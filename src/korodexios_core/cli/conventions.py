@@ -58,7 +58,7 @@ def conventions_command() -> CliCommand:
                 ("--check",),
                 dest="check",
                 action="store_true",
-                help="Change nothing; exit 3 and print a diff when docs/CONVENTIONS.md differs.",
+                help="Change nothing; exit 1 and print a diff when docs/CONVENTIONS.md differs.",
             ),
         ),
     )

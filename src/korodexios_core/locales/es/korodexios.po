@@ -138,21 +138,21 @@ msgstr "Cancela una tarea en cola (una en ejecución no se puede retirar)."
 msgid "Change a user's role."
 msgstr "Cambia el rol de un usuario."
 
+#: cli/playbook.py
+msgid "Change nothing; exit 1 and print a diff when AGENT_PLAYBOOK.md differs."
+msgstr "No cambia nada; termina con código 1 e imprime un diff si AGENT_PLAYBOOK.md difiere."
+
+#: cli/docs_sync.py
+msgid "Change nothing; exit 1 and print a diff when a seeded document differs."
+msgstr "No cambia nada; termina con código 1 e imprime un diff si un documento sembrado difiere."
+
+#: cli/conventions.py
+msgid "Change nothing; exit 1 and print a diff when docs/CONVENTIONS.md differs."
+msgstr "No cambia nada; termina con código 1 e imprime un diff si docs/CONVENTIONS.md difiere."
+
 #: cli/agents.py
 msgid "Change nothing; exit 1 when a file is missing or stale (for CI)."
 msgstr "No cambia nada; sale con 1 si falta un archivo o está desactualizado (para CI)."
-
-#: cli/playbook.py
-msgid "Change nothing; exit 3 and print a diff when AGENT_PLAYBOOK.md differs."
-msgstr "No cambia nada; termina con código 3 e imprime un diff si AGENT_PLAYBOOK.md difiere."
-
-#: cli/docs_sync.py
-msgid "Change nothing; exit 3 and print a diff when a seeded document differs."
-msgstr "No cambia nada; termina con código 3 e imprime un diff si un documento sembrado difiere."
-
-#: cli/conventions.py
-msgid "Change nothing; exit 3 and print a diff when docs/CONVENTIONS.md differs."
-msgstr "No cambia nada; termina con código 3 e imprime un diff si docs/CONVENTIONS.md difiere."
 
 #: cli/language.py
 msgid "Change nothing; exit 3 when the template is out of date."

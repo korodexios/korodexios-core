@@ -42,7 +42,7 @@ def playbook_command() -> CliCommand:
                 ("--check",),
                 dest="check",
                 action="store_true",
-                help="Change nothing; exit 3 and print a diff when AGENT_PLAYBOOK.md differs.",
+                help="Change nothing; exit 1 and print a diff when AGENT_PLAYBOOK.md differs.",
             ),
         ),
     )

@@ -138,21 +138,21 @@ msgstr "Zruší úlohu vo fronte (bežiacu nemožno odvolať)."
 msgid "Change a user's role."
 msgstr "Zmení rolu používateľa."
 
+#: cli/playbook.py
+msgid "Change nothing; exit 1 and print a diff when AGENT_PLAYBOOK.md differs."
+msgstr "Nič nemení; skončí s kódom 1 a vypíše rozdiely, keď sa AGENT_PLAYBOOK.md líši."
+
+#: cli/docs_sync.py
+msgid "Change nothing; exit 1 and print a diff when a seeded document differs."
+msgstr "Nič nemení; skončí s kódom 1 a vypíše rozdiely, keď sa nasadený dokument líši."
+
+#: cli/conventions.py
+msgid "Change nothing; exit 1 and print a diff when docs/CONVENTIONS.md differs."
+msgstr "Nič nemení; skončí s kódom 1 a vypíše rozdiely, keď sa docs/CONVENTIONS.md líši."
+
 #: cli/agents.py
 msgid "Change nothing; exit 1 when a file is missing or stale (for CI)."
 msgstr "Nič nemení; skončí s kódom 1, keď súbor chýba alebo je zastaraný (pre CI)."
-
-#: cli/playbook.py
-msgid "Change nothing; exit 3 and print a diff when AGENT_PLAYBOOK.md differs."
-msgstr "Nič nemení; skončí s kódom 3 a vypíše rozdiely, keď sa AGENT_PLAYBOOK.md líši."
-
-#: cli/docs_sync.py
-msgid "Change nothing; exit 3 and print a diff when a seeded document differs."
-msgstr "Nič nemení; skončí s kódom 3 a vypíše rozdiely, keď sa nasadený dokument líši."
-
-#: cli/conventions.py
-msgid "Change nothing; exit 3 and print a diff when docs/CONVENTIONS.md differs."
-msgstr "Nič nemení; skončí s kódom 3 a vypíše rozdiely, keď sa docs/CONVENTIONS.md líši."
 
 #: cli/language.py
 msgid "Change nothing; exit 3 when the template is out of date."

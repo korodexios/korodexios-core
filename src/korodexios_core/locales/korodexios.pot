@@ -136,20 +136,20 @@ msgstr ""
 msgid "Change a user's role."
 msgstr ""
 
-#: cli/agents.py
-msgid "Change nothing; exit 1 when a file is missing or stale (for CI)."
-msgstr ""
-
 #: cli/playbook.py
-msgid "Change nothing; exit 3 and print a diff when AGENT_PLAYBOOK.md differs."
+msgid "Change nothing; exit 1 and print a diff when AGENT_PLAYBOOK.md differs."
 msgstr ""
 
 #: cli/docs_sync.py
-msgid "Change nothing; exit 3 and print a diff when a seeded document differs."
+msgid "Change nothing; exit 1 and print a diff when a seeded document differs."
 msgstr ""
 
 #: cli/conventions.py
-msgid "Change nothing; exit 3 and print a diff when docs/CONVENTIONS.md differs."
+msgid "Change nothing; exit 1 and print a diff when docs/CONVENTIONS.md differs."
+msgstr ""
+
+#: cli/agents.py
+msgid "Change nothing; exit 1 when a file is missing or stale (for CI)."
 msgstr ""
 
 #: cli/language.py

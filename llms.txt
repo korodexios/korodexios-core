@@ -745,9 +745,9 @@ dependency order -> lifecycle loop -> `stop()` in reverse -> close logging.
 | Situation | Exit code |
 | --- | --- |
 | Clean run or operator stop (`kdx stop`, `request_clean_stop`) | `0` |
-| Handled chassis or CLI failure | `1` |
+| Handled chassis or CLI failure, and the verdict of a `--check` on seeded documents (`kdx docs check`, `kdx conventions --check`, `kdx playbook --check`, `kdx agents sync --check`) | `1` |
 | Usage error (bad flags) | `2` |
-| Configuration error | `3` |
+| Configuration error (an unloadable `kdx.yml`, `kdx config check`, a refused strict boot), and the verdicts `kdx contracts check`, `kdx locale check`, `kdx locale extract --check`, `kdx reload` (refused configuration), `kdx webhooks list` (invalid target), `kdx reset` (refused plan) | `3` |
 | A command's own verdict code (`4`-`125`) | passed through unchanged |
 | SIGINT, and Windows `SIGBREAK` on the same gate | `130` |
 | SIGTERM | `143` |

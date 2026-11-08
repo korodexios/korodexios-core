@@ -2,7 +2,7 @@
 
 ``kdx init`` copies the conventions, the agent playbook and the spec template into every
 project. Those copies drift the day the core ships a newer text, and nobody notices.
-``kdx docs check`` compares each copy with the shipped resource (exit 3 and a diff when one
+``kdx docs check`` compares each copy with the shipped resource (exit 1 and a diff when one
 differs, which is what ``make check-docs`` runs); ``kdx docs update`` rewrites them.
 ``kdx conventions --check`` and ``kdx playbook --check`` do the same for one document.
 """
@@ -137,7 +137,7 @@ def check_one(request: CliRequest, key: str) -> int:
     rows = check_documents(_root(request), docs)
     _report(rows, as_json=False, show_diff=True)
     drift = any(row.state != "current" for row in rows)
-    return int(ExitCode.CONFIG_ERROR if drift else ExitCode.SUCCESS)
+    return int(ExitCode.ERROR if drift else ExitCode.SUCCESS)
 
 
 def docs_command() -> CliCommand:
@@ -151,7 +151,7 @@ def docs_command() -> CliCommand:
         subcommands=(
             CliCommand(
                 name="check",
-                help="Change nothing; exit 3 and print a diff when a seeded document differs.",
+                help="Change nothing; exit 1 and print a diff when a seeded document differs.",
                 group="core",
                 handler=_check,
                 remote=False,
@@ -174,7 +174,7 @@ def _check(request: CliRequest) -> int:
     as_json = request.flag("as_json")
     _report(rows, as_json=as_json, show_diff=not as_json)
     drift = any(row.state != "current" for row in rows)
-    return int(ExitCode.CONFIG_ERROR if drift else ExitCode.SUCCESS)
+    return int(ExitCode.ERROR if drift else ExitCode.SUCCESS)
 
 
 def _update(request: CliRequest) -> int:
