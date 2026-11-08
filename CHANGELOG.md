@@ -14,10 +14,6 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 - The size numbers in the conventions and the playbook are triggers for a decision, not caps: splitting a module is a decision about jobs, never about lines.
 
-## [0.6.6] - 2026-11-07
-
-### Added
-
 ### Security
 
 - `kdx wiki ingest` over the control plane (RPC, MCP, WebSocket) reads a relative path against the project root and only accepts a file inside the project: runtime state (`var/`), `data/users.json`, `data/audit.jsonl`, `data/db/`, `kdx.local.*` and dotfiles are refused, and a missing file and a refused one answer alike. A local terminal call is unchanged. Before, an operator token could copy `var/chassis.ipc` (the admin token) into the committed wiki.
@@ -27,6 +23,12 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 - Named locks exclude the threads of one process as well: a second thread asking for a held name waits up to its `timeout` (or is refused at once with `timeout=0`) instead of entering the critical section; the owning thread asking again still gets its handle. `hold()` waits likewise. The transaction manager now plans (and hashes `before`) under its lock, so two concurrent transactions serialise and the later one can still be undone.
 - A configuration that fails to load on `kdx reload`, `POST /api/v1/reload` or SIGHUP is refused and the daemon keeps running with the old one. The control plane answers `422` with `{"reloaded": false, "error", "hint"}` (audited as `refused`), `kdx reload` exits 3, the bus carries `core.config.reload_failed` (error class only) and reloads run one at a time. Before, a SIGHUP with a typo ended the daemon with exit 3 and the HTTP reload dropped the connection.
+- `kdx rpc` and `kdx --remote` exit with the daemon command's own code (`result.exit_code`: 0, 1, or a module's verdict such as 4) instead of always 0 for an answered request; a failed request stays 1. The reply JSON is unchanged: `ok` still means the handler ran.
+- A calendar task runs once per allowed day: after `schedule_at("daily 04:00-05:00", ...)` ran, the next slot is searched from the end of that day (it used to roll a new random instant inside the same window, about 15 runs a day), and a wall clock stepped back before a slot no longer runs it twice. A manual `run_task` still leaves the day's slot alone.
+
+## [0.6.6] - 2026-11-07
+
+### Added
 
 - Panels may use `{node}` (the tree node chosen in the side list) in `source`, `detail` source and `args`; the shell redraws them when the choice changes.
 - Tree answers can page: a `more` node with a `next` cursor, `?after=<cursor>`, `kernel.ui_tree.page_nodes`; the shell shows "Load more".

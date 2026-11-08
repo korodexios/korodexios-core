@@ -34,6 +34,7 @@ from .render import (
     write_line,
     write_status,
 )
+from .rpc_exit import rpc_exit_code as rpc_exit_code
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from ..kernel.chassis import Chassis
@@ -1607,9 +1608,7 @@ def _rpc_command(request: CliRequest) -> int:
         write_line(f"{TAG_NOTE} {exc}")
         return int(ExitCode.ERROR)
     render_rpc_reply(payload, command, as_json=bool(request.flag("as_json")))
-    if code in (401, 403):
-        return int(ExitCode.ERROR)
-    return int(ExitCode.SUCCESS) if code < 400 else int(ExitCode.ERROR)
+    return rpc_exit_code(code, payload)
 def _rpc_as_job(
     request: CliRequest, discovery: IpcDiscovery, command: str, args: Mapping[str, Any]
 ) -> int:

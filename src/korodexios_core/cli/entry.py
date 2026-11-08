@@ -21,7 +21,7 @@ from ..paths import AppPaths
 from ..version import format_version
 from .agents import agents_command
 from .brief import brief_command
-from .commands import core_commands, render_rpc_reply, wizard_command
+from .commands import core_commands, render_rpc_reply, rpc_exit_code, wizard_command
 from .container_doctor import container_command
 from .conventions import conventions_command
 from .db import db_command
@@ -587,7 +587,7 @@ def _delegate_remote(pre_args: argparse.Namespace, tokens: Sequence[str]) -> int
         print(f"{TAG_NOTE} {exc}", file=sys.stderr)
         return int(ExitCode.ERROR)
     render_rpc_reply(payload, command, as_json=False)
-    return int(ExitCode.SUCCESS) if code < 400 else int(ExitCode.ERROR)
+    return rpc_exit_code(code, payload)
 
 
 def _ensure_streams() -> None:

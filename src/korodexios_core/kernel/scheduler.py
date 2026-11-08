@@ -348,7 +348,7 @@ class TaskScheduler:
     def _after_run(self, task: ScheduledTask, moment: float) -> float:
         """Return when *task* is next due after a run that happened at *moment*."""
         if task.calendar is not None:
-            return moment + self._until_slot(task.calendar)
+            return moment + task.calendar.after_run(self._wall(), moment, task.next_due, self._rng)
         wait = self._spread(float(task.interval_seconds), task.jitter)
         return self._constrain(task_constraint=task.constraint, due=moment + wait)
 

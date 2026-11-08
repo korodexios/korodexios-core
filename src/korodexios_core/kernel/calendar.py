@@ -138,6 +138,22 @@ class CalendarSpec:
             return low.timestamp() + chooser.uniform(0.0, span)
         raise ValueError("the calendar spec never matches a day within the next 400 days")
 
+    def after_run(
+        self, wall: float, moment: float, due: float, rng: random.Random | None = None
+    ) -> float:
+        """Return seconds from *wall* to the next slot after a run of a task due at *due*.
+
+        A run that was due (monotonic *moment* has reached *due*) serves the slot of the day it
+        was due on, so the next slot is searched from the end of that day: a window is not
+        re-rolled inside the same day, and a wall clock stepped back before the slot cannot
+        make the same slot run twice. A run triggered early by hand serves nothing.
+        """
+        after = wall
+        if moment >= due:
+            served = datetime.fromtimestamp(wall - (moment - due))
+            after = max(wall, datetime.combine(served.date(), time.max).timestamp())
+        return max(0.0, self.next_after(after, rng) - wall)
+
     def describe(self) -> str:
         """Return the spec as the phrase `parse_spec` reads back."""
         names = [WEEKDAYS[index] for index in sorted(self.weekdays)]
