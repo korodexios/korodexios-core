@@ -18,7 +18,7 @@ FUNCTION_LINES = 40
 ARGUMENTS = 5
 
 FILES: dict[str, int] = {
-    "cli/commands.py": 1741,
+    "cli/commands.py": 1739,
     "cli/entry.py": 725,
     "cli/init_project.py": 1921,
     "cli/language.py": 518,
@@ -46,7 +46,7 @@ FILES: dict[str, int] = {
     "modules/job_queue/module.py": 457,
     "modules/mcp_server/module.py": 659,
     "modules/system_info/module.py": 506,
-    "modules/web_console/module.py": 1159,
+    "modules/web_console/module.py": 1158,
     "modules/webhooks/module.py": 489,
     "modules/wiki/module.py": 614,
     "modules/wiki/pages.py": 556,
@@ -56,7 +56,7 @@ FILES: dict[str, int] = {
 FUNCTIONS: dict[str, int] = {
     "cli/agents.py::_sync": 43,
     "cli/brief.py::questions": 52,
-    "cli/commands.py::_config_check_command": 74,
+    "cli/commands.py::_config_check_command": 72,
     "cli/commands.py::_contracts_check_command": 85,
     "cli/commands.py::_doctor_command": 226,
     "cli/commands.py::_init_command": 60,

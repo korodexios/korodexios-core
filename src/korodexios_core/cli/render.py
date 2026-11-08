@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 import sys
+from argparse import SUPPRESS as SUPPRESS_HELP
+from argparse import ArgumentParser
 from collections.abc import Callable, Sequence
-from typing import Any
+from typing import Any, TypeVar
 
 from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, tags_for
 
@@ -13,6 +15,7 @@ _TAGS = frozenset({TAG_ERROR, TAG_NOTE, TAG_OK, "[?]", "[!]", "[i]"})
 
 
 _translator: Callable[..., str] | None = None
+_ParserT = TypeVar("_ParserT", bound=ArgumentParser)
 
 
 def set_translator(translator: Callable[..., str] | None) -> None:
@@ -25,6 +28,19 @@ def set_translator(translator: Callable[..., str] | None) -> None:
     """
     global _translator
     _translator = translator
+
+
+def translated_help(parser: _ParserT) -> _ParserT:
+    """Translate the help text of every option of an argparse *parser* in place; return it.
+
+    The global flags are declared once with English help; this is the one place they meet the
+    translator, which is installed before the parser the user sees is built. The source
+    strings come from the ``add_argument(help=...)`` calls, which the extractor reads.
+    """
+    for action in parser._actions:
+        if action.help and action.help is not SUPPRESS_HELP:
+            action.help = _tr(str(action.help))
+    return parser
 
 
 def plain(message: str, /, **fields: Any) -> str:

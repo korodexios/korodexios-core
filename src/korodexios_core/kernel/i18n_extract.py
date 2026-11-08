@@ -29,6 +29,8 @@ FIXED_WORDS: Final[tuple[str, ...]] = ("yes", "no", "(empty)")
 _TRANSLATE_CALLS: Final[frozenset[str]] = frozenset({"translate", "_t", "tr"})
 _MESSAGE_CALLS: Final[frozenset[str]] = frozenset({"write_line", "write_status"})
 _HELP_OWNERS: Final[frozenset[str]] = frozenset({"CliCommand", "CliArgument"})
+_UX_CALLS: Final[frozenset[str]] = frozenset({"status", "note", "error", "heading", "confirm"})
+"""Methods of the interactive layer (`ux.note("...")`) whose first argument is user text."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -84,6 +86,17 @@ def _first_strings(call: ast.Call) -> Iterator[ast.expr]:
         for keyword in call.keywords:
             if keyword.arg == "headers" and isinstance(keyword.value, (ast.Tuple, ast.List)):
                 yield from keyword.value.elts
+        for arg in args[1:2]:  # headers given positionally
+            if isinstance(arg, (ast.Tuple, ast.List)):
+                yield from arg.elts
+    elif name == "add_argument":
+        for keyword in call.keywords:
+            if keyword.arg == "help":
+                yield keyword.value
+    elif name in _UX_CALLS and isinstance(call.func, ast.Attribute) and (
+        _name(call.func.value) in ("ux", "_ux")
+    ):
+        yield from args[:1]
     if name in _HELP_OWNERS:
         for keyword in call.keywords:
             if keyword.arg == "help":
@@ -99,7 +112,7 @@ def scan_source(source: str, label: str) -> list[Found]:
             continue
         name = _name(node.func)
         for expr in _first_strings(node):
-            if name in _MESSAGE_CALLS or isinstance(expr, ast.JoinedStr):
+            if name in _MESSAGE_CALLS or name in _UX_CALLS or isinstance(expr, ast.JoinedStr):
                 message = _static_message(expr)
             else:
                 message = _text(expr)

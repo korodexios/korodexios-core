@@ -25,6 +25,7 @@ from ..validate import ValidationResult, Validator
 from ..validate import require_float as _require_float
 from ..validate import require_int as _require_int
 from ..validate import require_path as _require_path_fn
+from .render import tr
 
 __all__ = ["MenuOption", "UserExperience"]
 
@@ -109,7 +110,7 @@ class UserExperience:
     def status(self, message: str, *, tag: str = TAG_OK, style: str = "") -> None:
         """Print a tagged status line on stdout."""
         tag = self._resolve_tag(tag)
-        rendered = Text.assemble((f"{tag} ", _TAG_STYLES.get(tag, "white")), (message, style))
+        rendered = Text.assemble((f"{tag} ", _TAG_STYLES.get(tag, "white")), (tr(message), style))
         self._console.print(rendered, markup=False)
 
     def note(self, message: str) -> None:
@@ -122,7 +123,7 @@ class UserExperience:
 
     def heading(self, message: str) -> None:
         """Print a section heading."""
-        self._console.print(Text(message, style="bold cyan"))
+        self._console.print(Text(tr(message), style="bold cyan"))
 
     def panel(self, title: str, lines: Sequence[str]) -> None:
         """Print a boxed block of rich-markup lines."""
@@ -327,7 +328,7 @@ class UserExperience:
             return default
         suffix = "[Y/n]: " if default else "[y/N]: "
         while self.is_interactive():
-            answer = self.read_line(f"{TAG_ASK} {label} {suffix}").strip().lower()
+            answer = self.read_line(f"{TAG_ASK} {tr(label)} {suffix}").strip().lower()
             if not answer:
                 return default
             if answer in ("y", "yes", "1", "true"):

@@ -22,9 +22,17 @@ msgstr "'kdx container fix' to vysvětlí a spustí za tebe"
 msgid "'kdx docs update' rewrites them from the installed core"
 msgstr "'kdx docs update' je přepíše z nainstalovaného jádra"
 
+#: cli/commands.py
+msgid "(did you mean {hint}?)"
+msgstr "(mysleli jste {hint}?)"
+
 #: renderer
 msgid "(empty)"
 msgstr "(prázdné)"
+
+#: cli/commands.py
+msgid "(module {name} is discovered)"
+msgstr "(modul {name} je objeven)"
 
 #: cli/commands.py
 msgid "+{hidden} more findings; pass --json for all of them"
@@ -82,6 +90,10 @@ msgstr "Název motivu nebo soubor .css/.json."
 msgid "AA is 4.5:1 [default], AAA is 7:1."
 msgstr "AA je 4,5:1 [výchozí], AAA je 7:1."
 
+#: cli/entry.py
+msgid "Accept defaults; never prompt (also auto-detected for non-TTY runs)."
+msgstr "Přijmout výchozí hodnoty a nikdy se neptat (zjistí se i při běhu mimo terminál)."
+
 #: cli/container_doctor.py
 msgid "Add the keys .env lacks (never overwrites)."
 msgstr "Přidat klíče, které .env nemá (nikdy nepřepisuje)."
@@ -89,6 +101,10 @@ msgstr "Přidat klíče, které .env nemá (nikdy nepřepisuje)."
 #: modules/job_queue/module.py
 msgid "Age in days."
 msgstr "Stáří ve dnech."
+
+#: cli/entry.py
+msgid "Allow anonymous /health and /api/v1/status reads."
+msgstr "Povolit anonymní čtení /health a /api/v1/status."
 
 #: cli/agents.py
 msgid "Also overwrite a rule file a person wrote."
@@ -105,6 +121,10 @@ msgstr "Požádá úlohu o zastavení (kdy se zastaví, určuje její příkaz).
 #: cli/commands.py
 msgid "Ask a running daemon to re-read its configuration (SIGHUP over IPC)."
 msgstr "Požádá běžícího démona, aby znovu načetl konfiguraci (SIGHUP přes IPC)."
+
+#: cli/entry.py
+msgid "Ask before destructive module actions."
+msgstr "Ptát se před ničivými akcemi modulů."
 
 #: modules/backup_engine/module.py
 msgid "Backup engine: plan, run, or configure a backup."
@@ -126,6 +146,14 @@ msgstr "Uchovávání záloh"
 msgid "Brief file to use."
 msgstr "Soubor zadání, který se použije."
 
+#: cli/entry.py
+msgid "Budget for module stop() hooks [5.0]."
+msgstr "Rozpočet pro hooky stop() modulů [5.0]."
+
+#: cli/reset.py
+msgid "Bytes"
+msgstr "Bajty"
+
 #: modules/system_info/module.py
 msgid "CPU"
 msgstr "CPU"
@@ -133,6 +161,10 @@ msgstr "CPU"
 #: modules/job_queue/module.py
 msgid "Cancel a queued task (a running one cannot be recalled)."
 msgstr "Zruší úlohu ve frontě (běžící nelze odvolat)."
+
+#: cli/entry.py
+msgid "Certificate to trust when calling a remote https control plane."
+msgstr "Certifikát, kterému věřit při volání vzdálené https řídicí roviny."
 
 #: cli/users.py
 msgid "Change a user's role."
@@ -170,9 +202,17 @@ msgstr "Změní velikosti panelů, skryje nebo zobrazí panely, vybere režim ik
 msgid "Chassis"
 msgstr "Šasi"
 
+#: cli/entry.py
+msgid "Chassis display name (banner, doctor)."
+msgstr "Zobrazovaný název jádra (banner, doctor)."
+
 #: cli/commands.py
 msgid "Chassis primitives"
 msgstr "Základní prvky šasi"
+
+#: cli/entry.py
+msgid "Chassis root directory."
+msgstr "Kořenový adresář jádra."
 
 #: modules/web_console/module.py
 msgid "Check the contrast of a theme or of a theme file (--level AAA for the 7:1 bar)."
@@ -193,6 +233,10 @@ msgstr "Vybere aktivní motiv ('system' sleduje operační systém)."
 #: cli/language.py
 msgid "Choose the language for this machine (writes kdx.local.yml)."
 msgstr "Zvolí jazyk pro tento počítač (zapíše kdx.local.yml)."
+
+#: cli/entry.py
+msgid "Client timeout for control-plane reads [2.0]."
+msgstr "Časový limit klienta pro čtení řídicí roviny [2.0]."
 
 #: cli/language.py
 msgid "Collect translatable strings into the template and update translations."
@@ -222,6 +266,10 @@ msgstr "Konfigurace"
 msgid "Configuration key, for example core.locale."
 msgstr "Konfigurační klíč, například core.locale."
 
+#: cli/entry.py
+msgid "Console log level (diagnostics go to stderr)."
+msgstr "Úroveň logu v konzoli (diagnostika jde na stderr)."
+
 #: cli/commands.py
 msgid "Contracts"
 msgstr "Kontrakty"
@@ -229,6 +277,14 @@ msgstr "Kontrakty"
 #: cli/commands.py
 msgid "Control plane"
 msgstr "Řídicí rovina"
+
+#: cli/entry.py
+msgid "Control-plane bind address (0.0.0.0 for LAN access) [127.0.0.1]."
+msgstr "Adresa řídicí roviny (0.0.0.0 pro přístup z LAN) [127.0.0.1]."
+
+#: cli/entry.py
+msgid "Control-plane port (0 for ephemeral) [18123]."
+msgstr "Port řídicí roviny (0 pro náhodný) [18123]."
 
 #: cli/db.py
 msgid "Copy a database with SQLite's online backup (safe while it is in use)."
@@ -278,6 +334,14 @@ msgstr "Vytvořit issue na github.com/{repo}?"
 msgid "Database name (see 'kdx db list') [main]."
 msgstr "Název databáze (viz 'kdx db list') [main]."
 
+#: cli/entry.py
+msgid "Debug logging and tracebacks."
+msgstr "Ladicí log a tracebacky."
+
+#: cli/entry.py
+msgid "Delegate the command to a live daemon; never boot a chassis here."
+msgstr "Delegovat příkaz běžícímu démonu; zde nikdy nespouštět jádro."
+
 #: cli/users.py
 msgid "Delete a user; their token stops working at once."
 msgstr "Smaže uživatele; jeho token okamžitě přestane platit."
@@ -302,13 +366,33 @@ msgstr "Diagnostika"
 msgid "Directory to create the module in."
 msgstr "Adresář, ve kterém se modul vytvoří."
 
+#: cli/entry.py
+msgid "Disable coloured output."
+msgstr "Vypnout barevný výstup."
+
+#: cli/entry.py
+msgid "Disable module auto-discovery for this run."
+msgstr "Pro tento běh vypnout automatické hledání modulů."
+
 #: modules/system_info/module.py
 msgid "Disk"
 msgstr "Disk"
 
+#: cli/entry.py
+msgid "Do not open the control plane in 'kdx run'."
+msgstr "V 'kdx run' neotevírat řídicí rovinu."
+
+#: modules/backup_engine/module.py
+msgid "Dry run (no files written)"
+msgstr "Zkušební běh (nezapíše se žádný soubor)"
+
 #: modules/job_queue/module.py
 msgid "Durable work queue: list, submit, cancel, retry."
 msgstr "Trvalá fronta úloh: seznam, zadání, zrušení, opakování."
+
+#: cli/entry.py
+msgid "Emit JSON log lines."
+msgstr "Řádky logu jako JSON."
 
 #: cli/agents.py
 msgid "Emit JSON."
@@ -370,6 +454,10 @@ msgstr "Vypíše snímek jako JSON."
 msgid "End a cooldown early."
 msgstr "Ukončí cooldown předčasně."
 
+#: cli/wizard.py
+msgid "Enter accepts the default in brackets; choose by number or name."
+msgstr "Enter přijme výchozí hodnotu v závorkách; vyberte číslem nebo jménem."
+
 #: modules/wiki/module.py
 msgid "Entry kind: update, query, lint, schema, ..."
 msgstr "Druh záznamu: update, query, lint, schema, ..."
@@ -402,6 +490,10 @@ msgstr "Exportuje interní wiki (opustí projekt)."
 msgid "Extra host name or IP the certificate covers (repeatable)."
 msgstr "Další název hostitele nebo IP, které certifikát pokrývá (opakovatelné)."
 
+#: cli/entry.py
+msgid "Extra plugin directory (repeatable)."
+msgstr "Další adresář s pluginy (opakovatelné)."
+
 #: modules/backup_engine/module.py
 msgid "Fail if the copy exceeds SIZE, e.g. 500MB."
 msgstr "Selže, pokud kopie překročí VELIKOST, např. 500MB."
@@ -422,9 +514,21 @@ msgstr "Dokončí nebo vrátí zpět každou transakci, kterou pád nechal rozpr
 msgid "Folder in the target [the project name]."
 msgstr "Složka v cíli [název projektu]."
 
+#: cli/entry.py
+msgid "Follow poll interval for 'kdx logs' [0.5]."
+msgstr "Interval čtení pro 'kdx logs' při sledování [0.5]."
+
 #: cli/jobs.py
 msgid "Follow the daemon's live events (Ctrl+C to stop)."
 msgstr "Sleduje události démona živě (zastavíš je Ctrl+C)."
+
+#: cli/entry.py
+msgid "Force-disable one module (repeatable)."
+msgstr "Vynuceně vypnout jeden modul (opakovatelné)."
+
+#: cli/entry.py
+msgid "Force-enable one module (repeatable)."
+msgstr "Vynuceně zapnout jeden modul (opakovatelné)."
 
 #: modules/web_console/module.py
 msgid "Forget the remembered choices (defaults stay unless named)."
@@ -433,6 +537,10 @@ msgstr "Zapomenout zapamatované volby (výchozí hodnoty zůstanou, pokud je ne
 #: modules/web_console/module.py
 msgid "Forget the stored window layout."
 msgstr "Zapomene uložené rozvržení okna."
+
+#: modules/web_console/module.py
+msgid "From"
+msgstr "Zdroj"
 
 #: cli/commands.py
 msgid "GUI tier: none | static | react [none]; see 'kdx ui guide'"
@@ -546,6 +654,10 @@ msgstr "Udržuje soubory s pravidly všech AI agentů v souladu s AGENTS.md."
 msgid "Keep the documents 'kdx init' seeded in step with the installed core."
 msgstr "Udržuje dokumenty, které 'kdx init' nasadil, v souladu s nainstalovaným jádrem."
 
+#: cli/reset.py
+msgid "Kind"
+msgstr "Druh"
+
 #: cli/commands.py
 msgid "Language"
 msgstr "Jazyk"
@@ -554,9 +666,25 @@ msgstr "Jazyk"
 msgid "Language code, such as de or pt_BR."
 msgstr "Kód jazyka, například de nebo pt_BR."
 
+#: cli/entry.py
+msgid "Language of messages, such as sk or sk_SK, or auto [en]."
+msgstr "Jazyk zpráv, například sk nebo sk_SK, nebo auto [en]."
+
 #: modules/wiki/module.py
 msgid "Language suffix, e.g. en, sk, de [modules.wiki.default_language]."
 msgstr "Jazyková přípona, např. en, sk, de [modules.wiki.default_language]."
+
+#: cli/entry.py
+msgid "Let a second daemon share this chassis root."
+msgstr "Dovolit druhému démonu sdílet tento kořen jádra."
+
+#: cli/entry.py
+msgid "Let unauthenticated clients POST /api/v1/shutdown."
+msgstr "Dovolit nepřihlášeným klientům POST /api/v1/shutdown."
+
+#: cli/entry.py
+msgid "Lifecycle tick interval [1.0]."
+msgstr "Interval cyklu životního cyklu [1.0]."
 
 #: cli/limiter.py
 msgid "Limiter name (see 'kdx limiter list')."
@@ -650,6 +778,10 @@ msgstr "Vypíše, zobrazí, vybere nebo zkontroluje motivy (CSS tokeny, které �
 msgid "List, then with --apply delete, the disposable development data."
 msgstr "Vypíše a s --apply smaže jednorázová vývojová data."
 
+#: cli/entry.py
+msgid "Log warnings and errors only."
+msgstr "Logovat jen varování a chyby."
+
 #: cli/commands.py
 msgid "Logging"
 msgstr "Logování"
@@ -661,6 +793,10 @@ msgstr "Hlavní plocha v jednom panelu (off) nebo ve dvou vedle sebe nebo pod se
 #: cli/users.py
 msgid "Manage named control-plane users and their roles."
 msgstr "Spravuje pojmenované uživatele řídicí roviny a jejich role."
+
+#: cli/entry.py
+msgid "Map a legacy environment variable onto a config key (repeatable)."
+msgstr "Namapovat starou proměnnou prostředí na konfigurační klíč (opakovatelné)."
 
 #: cli/commands.py
 msgid "Memory"
@@ -818,6 +954,18 @@ msgstr "Typ stránky: page, source, entity, concept, synthesis, decision, guide 
 msgid "Pair"
 msgstr "Dvojice"
 
+#: cli/reset.py
+msgid "Path"
+msgstr "Cesta"
+
+#: cli/entry.py
+msgid "Path to a .env file."
+msgstr "Cesta k souboru .env."
+
+#: cli/entry.py
+msgid "Path to kdx.yml or korodexios.yml."
+msgstr "Cesta k souboru kdx.yml nebo korodexios.yml."
+
 #: cli/commands.py
 msgid "Paths"
 msgstr "Cesty"
@@ -901,6 +1049,10 @@ msgstr "Vypiš příručku pro AI agenty (jak pracovat v projektu na jádru)."
 #: cli/proposal.py
 msgid "Print the text 'send' would submit (nothing leaves the machine)."
 msgstr "Vypíše text, který by 'send' odeslal (nic neopustí počítač)."
+
+#: cli/entry.py
+msgid "Print the version and exit."
+msgstr "Vypsat verzi a skončit."
 
 #: cli/commands.py
 msgid "Project identity"
@@ -994,6 +1146,10 @@ msgstr "Nahradí existující certifikát."
 msgid "Replace an existing module directory."
 msgstr "Nahradí existující adresář modulu."
 
+#: cli/commands.py
+msgid "Replace existing module {name}?"
+msgstr "Nahradit existující modul {name}?"
+
 #: modules/system_info/module.py
 msgid "Report disk usage for a path."
 msgstr "Ohlásí využití disku pro cestu."
@@ -1018,6 +1174,14 @@ msgstr "Ukázat, co tento stroj zvládne pro GUI: Node, Bun, prohlížeče, disp
 msgid "Report what would be copied without writing."
 msgstr "Ohlásí, co by se zkopírovalo, bez zápisu."
 
+#: cli/entry.py
+msgid "Require the chassis-level instance lock (default)."
+msgstr "Vyžadovat zámek instance na úrovni jádra (výchozí)."
+
+#: cli/entry.py
+msgid "Require the shared token on control-plane reads."
+msgstr "Vyžadovat sdílený token při čtení řídicí roviny."
+
 #: cli/docs_sync.py
 msgid "Rewrite the conventions, the playbook and the spec template from the core."
 msgstr "Přepíše konvence, playbook a šablonu specifikace z jádra."
@@ -1030,6 +1194,18 @@ msgstr "Ikonový pruh jen s ikonami nebo i s popisky."
 msgid "Root of the wiki to merge into."
 msgstr "Kořen wiki, do které se slučuje."
 
+#: cli/commands.py
+msgid "Rotate log file {path}?"
+msgstr "Rotovat soubor logu {path}?"
+
+#: cli/entry.py
+msgid "Rotating log archives kept [5]."
+msgstr "Počet uchovaných rotovaných archivů logu [5]."
+
+#: cli/entry.py
+msgid "Rotating log size limit [1048576]."
+msgstr "Limit velikosti rotovaného logu [1048576]."
+
 #: cli/db.py
 msgid "Run ONE read-only SQL statement (SELECT, PRAGMA ...) and print the rows."
 msgstr "Spustit JEDEN SQL příkaz jen pro čtení (SELECT, PRAGMA ...) a vypsat řádky."
@@ -1037,6 +1213,10 @@ msgstr "Spustit JEDEN SQL příkaz jen pro čtení (SELECT, PRAGMA ...) a vypsat
 #: cli/commands.py
 msgid "Run it as a job and print its output live; no timeout."
 msgstr "Spustí ho jako úlohu a vypisuje výstup živě; bez časového limitu."
+
+#: cli/entry.py
+msgid "Run module coroutines on a chassis-managed asyncio loop."
+msgstr "Spouštět korutiny modulů v asyncio smyčce spravované jádrem."
 
 #: cli/commands.py
 msgid "Run one module command inside a live daemon instead of booting a chassis."
@@ -1057,6 +1237,10 @@ msgstr "Spustit install správce balíčků, pokud chybí node_modules."
 #: cli/container_doctor.py
 msgid "Run these commands now?"
 msgstr "Spustit tyto příkazy teď?"
+
+#: modules/backup_engine/module.py
+msgid "Run this backup now"
+msgstr "Spustit tuto zálohu teď"
 
 #: modules/mcp_server/module.py
 msgid "Run tools here even when a daemon is running."
@@ -1097,6 +1281,10 @@ msgstr "Pošle i tehdy, když poznámka už uvádí issue."
 #: modules/webhooks/module.py
 msgid "Send one signed test event to every target and report the answer."
 msgstr "Pošle každému cíli jednu podepsanou testovací událost a vypíše odpověď."
+
+#: cli/entry.py
+msgid "Serve the control plane over https (certificate from 'kdx tls init')."
+msgstr "Poskytovat řídicí rovinu přes https (certifikát z 'kdx tls init')."
 
 #: modules/mcp_server/module.py
 msgid "Serve this project to AI agents over the Model Context Protocol."
@@ -1202,9 +1390,25 @@ msgstr "Zobrazí, prokáže a ověří vyřešenou konfiguraci."
 msgid "Signals"
 msgstr "Signály"
 
+#: cli/entry.py
+msgid "Skip destructive confirmations."
+msgstr "Přeskočit potvrzení ničivých akcí."
+
 #: modules/backup_engine/module.py
 msgid "Skip paths matching PATTERN (repeatable)."
 msgstr "Přeskočí cesty odpovídající VZORU (opakovatelné)."
+
+#: cli/entry.py
+msgid "Skip the asyncio loop; 'run_async' uses a private loop per call."
+msgstr "Nepoužívat asyncio smyčku; 'run_async' použije vlastní smyčku pro každé volání."
+
+#: cli/init_project.py
+msgid "Skip the example modules for a bare chassis?"
+msgstr "Vynechat ukázkové moduly pro holé jádro?"
+
+#: cli/entry.py
+msgid "Skip the rotating log file."
+msgstr "Nepoužívat rotující soubor logu."
 
 #: modules/backup_engine/module.py
 msgid "Source directory to back up."
@@ -1229,6 +1433,10 @@ msgstr "Spustí ho jako úlohu a hned vrátí její id (viz 'kdx jobs')."
 #: cli/service.py
 msgid "Start the daemon automatically at logon (Task Scheduler, systemd, launchd)."
 msgstr "Spustí démona automaticky při přihlášení (Plánovač úloh, systemd, launchd)."
+
+#: cli/entry.py
+msgid "Static shared secret for the control plane."
+msgstr "Statické sdílené tajemství pro řídicí rovinu."
 
 #: cli/jobs.py
 msgid "Stop after this many events (scripts, tests)."
@@ -1266,6 +1474,10 @@ msgstr "Cílový soubor (výchozí: data/db/backups/NAME-<čas>.sqlite3)."
 msgid "Task id (see 'kdx queue list')."
 msgstr "ID úlohy (viz 'kdx queue list')."
 
+#: cli/entry.py
+msgid "Terminal table width for the CLI [100]."
+msgstr "Šířka tabulek v terminálu [100]."
+
 #: cli/brief.py
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "3 až 5 věcí, které musí dělat, oddělené „;“"
@@ -1291,6 +1503,10 @@ msgid "The source: an article, PDF, transcript, notes."
 msgstr "Zdroj: článek, PDF, přepis, poznámky."
 
 #: modules/web_console/module.py
+msgid "Theme"
+msgstr "Téma"
+
+#: modules/web_console/module.py
 msgid "Theme name [the active theme]."
 msgstr "Název motivu [aktivní motiv]."
 
@@ -1305,6 +1521,10 @@ msgstr "ID transakce (viz 'kdx txn list')."
 #: modules/job_queue/module.py
 msgid "Tries before the task is marked failed."
 msgstr "Počet pokusů, než se úloha označí za selhanou."
+
+#: cli/commands.py
+msgid "Truncate log file {path}?"
+msgstr "Zkrátit soubor logu {path}?"
 
 #: modules/system_info/module.py
 msgid "Uptime"
@@ -1449,6 +1669,10 @@ msgstr "přidáno do .env: {keys}"
 #: cli/txn.py
 msgid "after"
 msgstr "po"
+
+#: cli/entry.py
+msgid "aliases: kdx (short), korodexios (canonical).\nEvery command accepts the global flags above. Use --yes in CI to accept defaults."
+msgstr "aliasy: kdx (krátký), korodexios (kanonický).\nKaždý příkaz přijímá globální volby výše. V CI použijte --yes pro přijetí výchozích hodnot."
 
 #: cli/proposal.py
 msgid "already sent: {url} (--again sends it once more)"
@@ -1674,6 +1898,10 @@ msgstr "core.locale = {value} uloženo v {path}"
 msgid "covers"
 msgstr "pokrývá"
 
+#: modules/web_console/module.py
+msgid "create: {command}"
+msgstr "vytvoření: {command}"
+
 #: cli/users.py
 msgid "created"
 msgstr "vytvořeno"
@@ -1797,6 +2025,10 @@ msgstr "obsloužené chyby"
 #: cli/language.py
 msgid "every catalogue is complete"
 msgstr "každý katalog je úplný"
+
+#: modules/web_console/module.py
+msgid "every pair meets {level}"
+msgstr "každá dvojice splňuje {level}"
 
 #: modules/backup_engine/module.py
 msgid "every standing copy is inside the window"
@@ -1927,6 +2159,10 @@ msgid "interval seconds"
 msgstr "interval v sekundách"
 
 #: cli/proposal.py
+msgid "issue"
+msgstr "problém"
+
+#: cli/proposal.py
 msgid "issue created: {url}"
 msgstr "issue vytvořeno: {url}"
 
@@ -1973,6 +2209,10 @@ msgstr "známé klíče"
 #: modules/web_console/module.py
 msgid "known limits"
 msgstr "známá omezení"
+
+#: cli/entry.py
+msgid "korodexios-core chassis console: headless core, thin clients."
+msgstr "konzole jádra korodexios: bezhlavé jádro, tenčí klienti."
 
 #: cli/txn.py
 msgid "label"
@@ -2322,6 +2562,10 @@ msgstr "nic se nezapsalo"
 msgid "npm | bun | pnpm [from the lockfile, else npm]."
 msgstr "npm | bun | pnpm [podle lockfile, jinak npm]."
 
+#: cli/proposal.py
+msgid "number"
+msgstr "číslo"
+
 #: cli/language.py
 msgid "obsolete"
 msgstr "zastaralé"
@@ -2666,6 +2910,10 @@ msgstr "stav"
 msgid "static mounts"
 msgstr "statická připojení"
 
+#: cli/proposal.py
+msgid "status"
+msgstr "stav"
+
 #: cli/commands.py
 msgid "stderr encoding"
 msgstr "kódování stderr"
@@ -2854,6 +3102,10 @@ msgstr "wiki je v pořádku"
 msgid "the window is off: copies stand until the window opens or a sweep is asked for"
 msgstr "okno je vypnuté: kopie zůstávají, dokud se okno neotevře nebo se nepožádá o čištění"
 
+#: modules/web_console/module.py
+msgid "theme: {name}"
+msgstr "téma: {name}"
+
 #: cli/agents.py
 msgid "these read AGENTS.md directly: {names}"
 msgstr "tyto čtou AGENTS.md přímo: {names}"
@@ -2890,7 +3142,7 @@ msgstr "čas"
 msgid "timings"
 msgstr "časování"
 
-#: modules/web_console/module.py
+#: cli/proposal.py
 msgid "title"
 msgstr "název"
 
@@ -2917,6 +3169,10 @@ msgstr "typ"
 #: cli/commands.py
 msgid "ui"
 msgstr "ui"
+
+#: cli/commands.py
+msgid "unknown configuration key {key} [{origin}]"
+msgstr "neznámý konfigurační klíč {key} [{origin}]"
 
 #: cli/commands.py
 msgid "unknown dependencies"
@@ -3090,6 +3346,10 @@ msgstr "{job_id} je už {state}; není co zastavit"
 msgid "{job_id} started; Ctrl+C stops watching, not the job"
 msgstr "{job_id} se spustila; Ctrl+C zastaví sledování, ne úlohu"
 
+#: cli/jobs.py
+msgid "{job_id} {state} after {seconds}s"
+msgstr "{job_id} {state} po {seconds}s"
+
 #: cli/remote.py
 msgid "{key} changed on the daemon"
 msgstr "{key} změněno na démonu"
@@ -3145,6 +3405,10 @@ msgstr "{name}: {count} klíčů, povinné={required} tajné={secrets}"
 #: modules/web_console/module.py
 msgid "{note} no layout stored; the shell uses its defaults."
 msgstr "{note} není uloženo žádné rozvržení; shell použije výchozí."
+
+#: modules/web_console/module.py
+msgid "{n} pair(s) below {level}"
+msgstr "{n} dvojic pod {level}"
 
 #: cli/language.py
 msgid "{origin} still wins over kdx.local.yml; the new value applies once it is removed"

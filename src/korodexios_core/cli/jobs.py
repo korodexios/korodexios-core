@@ -201,7 +201,8 @@ def follow_job(
         if job["state"] in FINISHED_STATES:
             if job.get("error"):
                 write_line(f"{TAG_ERROR} {job['error']}")
-            summary = f"{job_id} {job['state']} after {job['seconds']}s"
+            summary = tr("{job_id} {state} after {seconds}s", job_id=job_id,
+                         state=job["state"], seconds=job["seconds"])
             write_line(f"{TAG_OK if job['state'] == 'done' else TAG_NOTE} {summary}")
             if job["state"] == "cancelled":
                 return int(ExitCode.ABORTED)

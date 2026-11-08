@@ -31,7 +31,7 @@ from .limiter import limiter_command
 from .playbook import playbook_command
 from .proposal import proposal_command
 from .remote import remote_commands
-from .render import set_translator, write_line
+from .render import set_translator, tr, translated_help, write_line
 from .reset import reset_command
 from .service import service_command
 from .surface import HANDLER_ATTR, ArgparseSurface
@@ -58,7 +58,7 @@ def global_flags() -> argparse.ArgumentParser:
     """Return a help-less parser holding only the global flags (usable as parent)."""
     parser = argparse.ArgumentParser(prog=DEFAULT_PROG, add_help=False)
     _add_global_flags(parser)
-    return parser
+    return translated_help(parser)
 
 
 def build_bootstrap_parser() -> argparse.ArgumentParser:
@@ -79,8 +79,8 @@ def build_root_parser(flags: argparse.ArgumentParser | None = None) -> argparse.
     """Parser used for the real dispatch pass (second parsing pass)."""
     return argparse.ArgumentParser(
         prog=console_prog(),
-        description="korodexios-core chassis console: headless core, thin clients.",
-        epilog=(
+        description=tr("korodexios-core chassis console: headless core, thin clients."),
+        epilog=tr(
             "aliases: kdx (short), korodexios (canonical).\n"
             "Every command accepts the global flags above. Use --yes in CI to accept defaults."
         ),

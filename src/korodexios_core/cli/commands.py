@@ -891,7 +891,7 @@ def _logs_command(request: CliRequest) -> int:
     if request.flag("rotate"):
         proceed = True
         if ux.is_interactive():
-            proceed = ux.confirm(f"Rotate log file {log_path}?", default=False)
+            proceed = ux.confirm(tr("Rotate log file {path}?", path=log_path), default=False)
         if not proceed:
             note("log file left alone")
             return int(ExitCode.SUCCESS)
@@ -910,7 +910,7 @@ def _logs_command(request: CliRequest) -> int:
     if request.flag("clear"):
         proceed = True
         if ux.is_interactive():
-            proceed = ux.confirm(f"Truncate log file {log_path}?", default=False)
+            proceed = ux.confirm(tr("Truncate log file {path}?", path=log_path), default=False)
         if not proceed:
             note("log file left alone")
             return int(ExitCode.SUCCESS)
@@ -1180,7 +1180,7 @@ def _modules_create_command(request: CliRequest) -> int:
             )
             write_line(f"{TAG_NOTE} pass --force to replace its files")
             return int(ExitCode.ERROR)
-        if not ux.confirm(f"Replace existing module {name}?", default=False):
+        if not ux.confirm(tr("Replace existing module {name}?", name=name), default=False):
             write_line(f"{TAG_NOTE} nothing written")
             return int(ExitCode.SUCCESS)
     try:
@@ -1454,11 +1454,9 @@ def _config_check_command(request: CliRequest) -> int:
             )
         )
     for key, hint in unknown:
-        write_status(
-            f"unknown configuration key {key} [{chassis.config.origin_of(key)}]"
-            + _advice_for(hint),
-            tag=TAG_ERROR,
-        )
+        known = tr("unknown configuration key {key} [{origin}]",
+                   key=key, origin=chassis.config.origin_of(key))
+        write_status(known + _advice_for(hint), tag=TAG_ERROR)
     for issue in issues:
         origin = issue.source or chassis.config.origin_of(issue.key)
         if not origin or origin == "unknown":
@@ -1679,8 +1677,8 @@ def _advice_for(hint: str) -> str:
     if not hint:
         return ""
     if hint.startswith("core."):
-        return f" (did you mean {hint}?)"
-    return f" (module {hint.partition('.')[2]} is discovered)"
+        return " " + tr("(did you mean {hint}?)", hint=hint)
+    return " " + tr("(module {name} is discovered)", name=hint.partition(".")[2])
 
 
 def _run_command(request: CliRequest) -> int:

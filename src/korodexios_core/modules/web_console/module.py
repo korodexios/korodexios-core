@@ -597,7 +597,7 @@ class WebConsoleModule(Module):
                 write_line(f"  + {line}")
             for line in tier["avoid_when"]:
                 write_line(f"  - {line}")
-            write_line(f"  create: {tier['init']}")
+            write_line("  " + tr("create: {command}", command=tier["init"]))
         print_section("how to decide")
         for line in data["decide"]:
             write_line(f"  {line}")
@@ -782,7 +782,7 @@ class WebConsoleModule(Module):
         if request.flag("as_json"):
             dump_json({"active": name})
         else:
-            write_line(f"{TAG_OK} theme: {name}")
+            write_line(f"{TAG_OK} " + tr("theme: {name}", name=name))
         return int(ExitCode.SUCCESS)
 
     def _theme_check(self, request: CliRequest) -> int:
@@ -809,10 +809,9 @@ class WebConsoleModule(Module):
                  for r in rows],
                 headers=("Pair", "Ratio", "Need", ""),
             )
-            if failed:
-                write_line(f"{TAG_ERROR} {len(failed)} pair(s) below {level}")
-            else:
-                write_line(f"{TAG_OK} every pair meets {level}")
+            ok = tr("every pair meets {level}", level=level)
+            bad = tr("{n} pair(s) below {level}", n=len(failed), level=level)
+            write_line(f"{TAG_ERROR} {bad}" if failed else f"{TAG_OK} {ok}")
         return int(ExitCode.SUCCESS if not failed else ExitCode.ERROR)
 
     def catalog(self) -> dict[str, Any]:

@@ -22,9 +22,17 @@ msgstr "'kdx container fix' l'explique et l'exécute pour vous"
 msgid "'kdx docs update' rewrites them from the installed core"
 msgstr "'kdx docs update' les réécrit à partir du noyau installé"
 
+#: cli/commands.py
+msgid "(did you mean {hint}?)"
+msgstr "(vouliez-vous dire {hint} ?)"
+
 #: renderer
 msgid "(empty)"
 msgstr "(vide)"
+
+#: cli/commands.py
+msgid "(module {name} is discovered)"
+msgstr "(le module {name} est découvert)"
 
 #: cli/commands.py
 msgid "+{hidden} more findings; pass --json for all of them"
@@ -82,6 +90,10 @@ msgstr "Un nom de thème ou un fichier .css/.json."
 msgid "AA is 4.5:1 [default], AAA is 7:1."
 msgstr "AA est 4,5:1 [par défaut], AAA est 7:1."
 
+#: cli/entry.py
+msgid "Accept defaults; never prompt (also auto-detected for non-TTY runs)."
+msgstr "Accepter les valeurs par défaut sans jamais demander (détecté aussi hors terminal)."
+
 #: cli/container_doctor.py
 msgid "Add the keys .env lacks (never overwrites)."
 msgstr "Ajouter les clés qui manquent à .env (n'écrase jamais)."
@@ -89,6 +101,10 @@ msgstr "Ajouter les clés qui manquent à .env (n'écrase jamais)."
 #: modules/job_queue/module.py
 msgid "Age in days."
 msgstr "Ancienneté en jours."
+
+#: cli/entry.py
+msgid "Allow anonymous /health and /api/v1/status reads."
+msgstr "Autoriser la lecture anonyme de /health et /api/v1/status."
 
 #: cli/agents.py
 msgid "Also overwrite a rule file a person wrote."
@@ -105,6 +121,10 @@ msgstr "Demande à une tâche de s'arrêter (sa commande décide quand elle le p
 #: cli/commands.py
 msgid "Ask a running daemon to re-read its configuration (SIGHUP over IPC)."
 msgstr "Demande à un démon en cours de relire sa configuration (SIGHUP via IPC)."
+
+#: cli/entry.py
+msgid "Ask before destructive module actions."
+msgstr "Demander avant les actions destructrices des modules."
 
 #: modules/backup_engine/module.py
 msgid "Backup engine: plan, run, or configure a backup."
@@ -126,6 +146,14 @@ msgstr "Rétention des sauvegardes"
 msgid "Brief file to use."
 msgstr "Fichier de brief à utiliser."
 
+#: cli/entry.py
+msgid "Budget for module stop() hooks [5.0]."
+msgstr "Budget pour les hooks stop() des modules [5.0]."
+
+#: cli/reset.py
+msgid "Bytes"
+msgstr "Octets"
+
 #: modules/system_info/module.py
 msgid "CPU"
 msgstr "CPU"
@@ -133,6 +161,10 @@ msgstr "CPU"
 #: modules/job_queue/module.py
 msgid "Cancel a queued task (a running one cannot be recalled)."
 msgstr "Annule une tâche en file (une tâche en cours ne peut pas être rappelée)."
+
+#: cli/entry.py
+msgid "Certificate to trust when calling a remote https control plane."
+msgstr "Certificat à approuver pour appeler un plan de contrôle https distant."
 
 #: cli/users.py
 msgid "Change a user's role."
@@ -170,9 +202,17 @@ msgstr "Change la taille des panneaux, masque ou affiche des panneaux, choisit l
 msgid "Chassis"
 msgstr "Châssis"
 
+#: cli/entry.py
+msgid "Chassis display name (banner, doctor)."
+msgstr "Nom du châssis affiché (bannière, doctor)."
+
 #: cli/commands.py
 msgid "Chassis primitives"
 msgstr "Primitives du châssis"
+
+#: cli/entry.py
+msgid "Chassis root directory."
+msgstr "Répertoire racine du châssis."
 
 #: modules/web_console/module.py
 msgid "Check the contrast of a theme or of a theme file (--level AAA for the 7:1 bar)."
@@ -193,6 +233,10 @@ msgstr "Choisit le thème actif ('system' suit le système d'exploitation)."
 #: cli/language.py
 msgid "Choose the language for this machine (writes kdx.local.yml)."
 msgstr "Choisit la langue de cette machine (écrit kdx.local.yml)."
+
+#: cli/entry.py
+msgid "Client timeout for control-plane reads [2.0]."
+msgstr "Délai du client pour lire le plan de contrôle [2.0]."
 
 #: cli/language.py
 msgid "Collect translatable strings into the template and update translations."
@@ -222,6 +266,10 @@ msgstr "Configuration"
 msgid "Configuration key, for example core.locale."
 msgstr "Clé de configuration, par exemple core.locale."
 
+#: cli/entry.py
+msgid "Console log level (diagnostics go to stderr)."
+msgstr "Niveau de journal de la console (les diagnostics vont sur stderr)."
+
 #: cli/commands.py
 msgid "Contracts"
 msgstr "Contrats"
@@ -229,6 +277,14 @@ msgstr "Contrats"
 #: cli/commands.py
 msgid "Control plane"
 msgstr "Plan de contrôle"
+
+#: cli/entry.py
+msgid "Control-plane bind address (0.0.0.0 for LAN access) [127.0.0.1]."
+msgstr "Adresse du plan de contrôle (0.0.0.0 pour un accès LAN) [127.0.0.1]."
+
+#: cli/entry.py
+msgid "Control-plane port (0 for ephemeral) [18123]."
+msgstr "Port du plan de contrôle (0 pour un port éphémère) [18123]."
 
 #: cli/db.py
 msgid "Copy a database with SQLite's online backup (safe while it is in use)."
@@ -278,6 +334,14 @@ msgstr "Créer l'issue sur github.com/{repo} ?"
 msgid "Database name (see 'kdx db list') [main]."
 msgstr "Nom de la base (voir 'kdx db list') [main]."
 
+#: cli/entry.py
+msgid "Debug logging and tracebacks."
+msgstr "Journal de débogage et tracebacks."
+
+#: cli/entry.py
+msgid "Delegate the command to a live daemon; never boot a chassis here."
+msgstr "Déléguer la commande à un daemon actif ; ne jamais démarrer de châssis ici."
+
 #: cli/users.py
 msgid "Delete a user; their token stops working at once."
 msgstr "Supprime un utilisateur ; son jeton cesse de fonctionner aussitôt."
@@ -302,13 +366,33 @@ msgstr "Diagnostic"
 msgid "Directory to create the module in."
 msgstr "Répertoire où créer le module."
 
+#: cli/entry.py
+msgid "Disable coloured output."
+msgstr "Désactiver la sortie en couleur."
+
+#: cli/entry.py
+msgid "Disable module auto-discovery for this run."
+msgstr "Désactiver la découverte automatique des modules pour cette exécution."
+
 #: modules/system_info/module.py
 msgid "Disk"
 msgstr "Disque"
 
+#: cli/entry.py
+msgid "Do not open the control plane in 'kdx run'."
+msgstr "Ne pas ouvrir le plan de contrôle dans 'kdx run'."
+
+#: modules/backup_engine/module.py
+msgid "Dry run (no files written)"
+msgstr "Essai à blanc (aucun fichier écrit)"
+
 #: modules/job_queue/module.py
 msgid "Durable work queue: list, submit, cancel, retry."
 msgstr "File de travail durable : lister, soumettre, annuler, réessayer."
+
+#: cli/entry.py
+msgid "Emit JSON log lines."
+msgstr "Lignes de journal en JSON."
 
 #: cli/agents.py
 msgid "Emit JSON."
@@ -370,6 +454,10 @@ msgstr "Émet l'instantané en JSON."
 msgid "End a cooldown early."
 msgstr "Termine un refroidissement avant l'heure."
 
+#: cli/wizard.py
+msgid "Enter accepts the default in brackets; choose by number or name."
+msgstr "Entrée accepte la valeur par défaut entre crochets ; choisissez par numéro ou par nom."
+
 #: modules/wiki/module.py
 msgid "Entry kind: update, query, lint, schema, ..."
 msgstr "Type d'entrée : update, query, lint, schema, ..."
@@ -402,6 +490,10 @@ msgstr "Exporte le wiki interne (il quitte le projet)."
 msgid "Extra host name or IP the certificate covers (repeatable)."
 msgstr "Nom d'hôte ou IP supplémentaire couvert par le certificat (répétable)."
 
+#: cli/entry.py
+msgid "Extra plugin directory (repeatable)."
+msgstr "Répertoire de plugins supplémentaire (répétable)."
+
 #: modules/backup_engine/module.py
 msgid "Fail if the copy exceeds SIZE, e.g. 500MB."
 msgstr "Échoue si la copie dépasse TAILLE, p. ex. 500MB."
@@ -422,9 +514,21 @@ msgstr "Termine ou annule chaque transaction qu'un plantage a laissée en cours.
 msgid "Folder in the target [the project name]."
 msgstr "Dossier dans la cible [le nom du projet]."
 
+#: cli/entry.py
+msgid "Follow poll interval for 'kdx logs' [0.5]."
+msgstr "Intervalle d'interrogation de 'kdx logs' en suivi [0.5]."
+
 #: cli/jobs.py
 msgid "Follow the daemon's live events (Ctrl+C to stop)."
 msgstr "Suit les événements en direct du démon (Ctrl+C pour arrêter)."
+
+#: cli/entry.py
+msgid "Force-disable one module (repeatable)."
+msgstr "Forcer la désactivation d'un module (répétable)."
+
+#: cli/entry.py
+msgid "Force-enable one module (repeatable)."
+msgstr "Forcer l'activation d'un module (répétable)."
 
 #: modules/web_console/module.py
 msgid "Forget the remembered choices (defaults stay unless named)."
@@ -433,6 +537,10 @@ msgstr "Oublier les choix mémorisés (les valeurs par défaut restent sauf si e
 #: modules/web_console/module.py
 msgid "Forget the stored window layout."
 msgstr "Oublie la disposition enregistrée de la fenêtre."
+
+#: modules/web_console/module.py
+msgid "From"
+msgstr "Origine"
 
 #: cli/commands.py
 msgid "GUI tier: none | static | react [none]; see 'kdx ui guide'"
@@ -546,6 +654,10 @@ msgstr "Garde les fichiers de règles de chaque agent IA alignés sur AGENTS.md.
 msgid "Keep the documents 'kdx init' seeded in step with the installed core."
 msgstr "Garde les documents semés par 'kdx init' en phase avec le noyau installé."
 
+#: cli/reset.py
+msgid "Kind"
+msgstr "Type"
+
 #: cli/commands.py
 msgid "Language"
 msgstr "Langue"
@@ -554,9 +666,25 @@ msgstr "Langue"
 msgid "Language code, such as de or pt_BR."
 msgstr "Code de langue, comme de ou pt_BR."
 
+#: cli/entry.py
+msgid "Language of messages, such as sk or sk_SK, or auto [en]."
+msgstr "Langue des messages, par exemple sk ou sk_SK, ou auto [en]."
+
 #: modules/wiki/module.py
 msgid "Language suffix, e.g. en, sk, de [modules.wiki.default_language]."
 msgstr "Suffixe de langue, p. ex. en, sk, de [modules.wiki.default_language]."
+
+#: cli/entry.py
+msgid "Let a second daemon share this chassis root."
+msgstr "Laisser un second daemon partager cette racine de châssis."
+
+#: cli/entry.py
+msgid "Let unauthenticated clients POST /api/v1/shutdown."
+msgstr "Laisser les clients non authentifiés faire POST sur /api/v1/shutdown."
+
+#: cli/entry.py
+msgid "Lifecycle tick interval [1.0]."
+msgstr "Intervalle du cycle de vie [1.0]."
 
 #: cli/limiter.py
 msgid "Limiter name (see 'kdx limiter list')."
@@ -650,6 +778,10 @@ msgstr "Liste, affiche, choisit ou vérifie les thèmes (jetons CSS lus par chaq
 msgid "List, then with --apply delete, the disposable development data."
 msgstr "Liste, et avec --apply supprime, les données de développement jetables."
 
+#: cli/entry.py
+msgid "Log warnings and errors only."
+msgstr "Journaliser seulement les avertissements et les erreurs."
+
 #: cli/commands.py
 msgid "Logging"
 msgstr "Journalisation"
@@ -661,6 +793,10 @@ msgstr "Zone principale en un seul volet (off) ou en deux, côte à côte ou emp
 #: cli/users.py
 msgid "Manage named control-plane users and their roles."
 msgstr "Gère les utilisateurs nommés du plan de contrôle et leurs rôles."
+
+#: cli/entry.py
+msgid "Map a legacy environment variable onto a config key (repeatable)."
+msgstr "Associer une ancienne variable d'environnement à une clé de configuration (répétable)."
 
 #: cli/commands.py
 msgid "Memory"
@@ -818,6 +954,18 @@ msgstr "Type de page : page, source, entity, concept, synthesis, decision, guide
 msgid "Pair"
 msgstr "Paire"
 
+#: cli/reset.py
+msgid "Path"
+msgstr "Chemin"
+
+#: cli/entry.py
+msgid "Path to a .env file."
+msgstr "Chemin d'un fichier .env."
+
+#: cli/entry.py
+msgid "Path to kdx.yml or korodexios.yml."
+msgstr "Chemin de kdx.yml ou korodexios.yml."
+
 #: cli/commands.py
 msgid "Paths"
 msgstr "Chemins"
@@ -901,6 +1049,10 @@ msgstr "Affiche le guide pour les agents IA (comment travailler dans un projet s
 #: cli/proposal.py
 msgid "Print the text 'send' would submit (nothing leaves the machine)."
 msgstr "Affiche le texte que 'send' enverrait (rien ne quitte la machine)."
+
+#: cli/entry.py
+msgid "Print the version and exit."
+msgstr "Afficher la version et quitter."
 
 #: cli/commands.py
 msgid "Project identity"
@@ -994,6 +1146,10 @@ msgstr "Remplace un certificat existant."
 msgid "Replace an existing module directory."
 msgstr "Remplace un répertoire de module existant."
 
+#: cli/commands.py
+msgid "Replace existing module {name}?"
+msgstr "Remplacer le module existant {name} ?"
+
 #: modules/system_info/module.py
 msgid "Report disk usage for a path."
 msgstr "Indique l'utilisation du disque pour un chemin."
@@ -1018,6 +1174,14 @@ msgstr "Indiquer ce que cette machine peut exécuter pour une interface : Node, 
 msgid "Report what would be copied without writing."
 msgstr "Indique ce qui serait copié, sans écrire."
 
+#: cli/entry.py
+msgid "Require the chassis-level instance lock (default)."
+msgstr "Exiger le verrou d'instance du châssis (par défaut)."
+
+#: cli/entry.py
+msgid "Require the shared token on control-plane reads."
+msgstr "Exiger le jeton partagé pour lire le plan de contrôle."
+
 #: cli/docs_sync.py
 msgid "Rewrite the conventions, the playbook and the spec template from the core."
 msgstr "Réécrit les conventions, le playbook et le modèle de spécification depuis le noyau."
@@ -1030,6 +1194,18 @@ msgstr "Barre d'icônes avec icônes seules ou avec libellés."
 msgid "Root of the wiki to merge into."
 msgstr "Racine du wiki dans lequel fusionner."
 
+#: cli/commands.py
+msgid "Rotate log file {path}?"
+msgstr "Faire tourner le fichier journal {path} ?"
+
+#: cli/entry.py
+msgid "Rotating log archives kept [5]."
+msgstr "Archives de journal tournantes conservées [5]."
+
+#: cli/entry.py
+msgid "Rotating log size limit [1048576]."
+msgstr "Taille limite du journal tournant [1048576]."
+
 #: cli/db.py
 msgid "Run ONE read-only SQL statement (SELECT, PRAGMA ...) and print the rows."
 msgstr "Exécuter UNE instruction SQL en lecture seule (SELECT, PRAGMA ...) et afficher les lignes."
@@ -1037,6 +1213,10 @@ msgstr "Exécuter UNE instruction SQL en lecture seule (SELECT, PRAGMA ...) et a
 #: cli/commands.py
 msgid "Run it as a job and print its output live; no timeout."
 msgstr "Le lance comme tâche et affiche sa sortie en direct ; sans délai."
+
+#: cli/entry.py
+msgid "Run module coroutines on a chassis-managed asyncio loop."
+msgstr "Exécuter les coroutines des modules sur une boucle asyncio gérée par le châssis."
 
 #: cli/commands.py
 msgid "Run one module command inside a live daemon instead of booting a chassis."
@@ -1057,6 +1237,10 @@ msgstr "Lancer l'installation du gestionnaire de paquets si node_modules manque.
 #: cli/container_doctor.py
 msgid "Run these commands now?"
 msgstr "Exécuter ces commandes maintenant ?"
+
+#: modules/backup_engine/module.py
+msgid "Run this backup now"
+msgstr "Lancer cette sauvegarde maintenant"
 
 #: modules/mcp_server/module.py
 msgid "Run tools here even when a daemon is running."
@@ -1097,6 +1281,10 @@ msgstr "Envoie même si la note mentionne déjà une issue."
 #: modules/webhooks/module.py
 msgid "Send one signed test event to every target and report the answer."
 msgstr "Envoie un événement de test signé à chaque cible et rapporte la réponse."
+
+#: cli/entry.py
+msgid "Serve the control plane over https (certificate from 'kdx tls init')."
+msgstr "Servir le plan de contrôle en https (certificat de 'kdx tls init')."
 
 #: modules/mcp_server/module.py
 msgid "Serve this project to AI agents over the Model Context Protocol."
@@ -1202,9 +1390,25 @@ msgstr "Affiche, prouve et valide la configuration résolue."
 msgid "Signals"
 msgstr "Signaux"
 
+#: cli/entry.py
+msgid "Skip destructive confirmations."
+msgstr "Ignorer les confirmations destructrices."
+
 #: modules/backup_engine/module.py
 msgid "Skip paths matching PATTERN (repeatable)."
 msgstr "Ignore les chemins correspondant à MOTIF (répétable)."
+
+#: cli/entry.py
+msgid "Skip the asyncio loop; 'run_async' uses a private loop per call."
+msgstr "Pas de boucle asyncio ; 'run_async' utilise une boucle propre à chaque appel."
+
+#: cli/init_project.py
+msgid "Skip the example modules for a bare chassis?"
+msgstr "Omettre les modules d'exemple pour un châssis nu ?"
+
+#: cli/entry.py
+msgid "Skip the rotating log file."
+msgstr "Ne pas écrire le journal tournant."
 
 #: modules/backup_engine/module.py
 msgid "Source directory to back up."
@@ -1229,6 +1433,10 @@ msgstr "Le démarre comme tâche et renvoie aussitôt son identifiant (voir 'kdx
 #: cli/service.py
 msgid "Start the daemon automatically at logon (Task Scheduler, systemd, launchd)."
 msgstr "Démarre le démon automatiquement à l'ouverture de session (Planificateur de tâches, systemd, launchd)."
+
+#: cli/entry.py
+msgid "Static shared secret for the control plane."
+msgstr "Secret partagé statique pour le plan de contrôle."
 
 #: cli/jobs.py
 msgid "Stop after this many events (scripts, tests)."
@@ -1266,6 +1474,10 @@ msgstr "Fichier cible (par défaut : data/db/backups/NAME-<heure>.sqlite3)."
 msgid "Task id (see 'kdx queue list')."
 msgstr "ID de la tâche (voir 'kdx queue list')."
 
+#: cli/entry.py
+msgid "Terminal table width for the CLI [100]."
+msgstr "Largeur des tableaux dans le terminal [100]."
+
 #: cli/brief.py
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "Les 3 à 5 choses qu'il doit faire, séparées par « ; »"
@@ -1291,6 +1503,10 @@ msgid "The source: an article, PDF, transcript, notes."
 msgstr "La source : un article, un PDF, une transcription, des notes."
 
 #: modules/web_console/module.py
+msgid "Theme"
+msgstr "Thème"
+
+#: modules/web_console/module.py
 msgid "Theme name [the active theme]."
 msgstr "Nom du thème [le thème actif]."
 
@@ -1305,6 +1521,10 @@ msgstr "ID de la transaction (voir 'kdx txn list')."
 #: modules/job_queue/module.py
 msgid "Tries before the task is marked failed."
 msgstr "Essais avant que la tâche soit marquée comme échouée."
+
+#: cli/commands.py
+msgid "Truncate log file {path}?"
+msgstr "Tronquer le fichier journal {path} ?"
 
 #: modules/system_info/module.py
 msgid "Uptime"
@@ -1449,6 +1669,10 @@ msgstr "ajouté à .env : {keys}"
 #: cli/txn.py
 msgid "after"
 msgstr "après"
+
+#: cli/entry.py
+msgid "aliases: kdx (short), korodexios (canonical).\nEvery command accepts the global flags above. Use --yes in CI to accept defaults."
+msgstr "alias : kdx (court), korodexios (canonique).\nToute commande accepte les options globales ci-dessus. En CI, utilisez --yes pour accepter les valeurs par défaut."
 
 #: cli/proposal.py
 msgid "already sent: {url} (--again sends it once more)"
@@ -1674,6 +1898,10 @@ msgstr "core.locale = {value} enregistré dans {path}"
 msgid "covers"
 msgstr "couvre"
 
+#: modules/web_console/module.py
+msgid "create: {command}"
+msgstr "créer : {command}"
+
 #: cli/users.py
 msgid "created"
 msgstr "créé"
@@ -1797,6 +2025,10 @@ msgstr "erreurs servies"
 #: cli/language.py
 msgid "every catalogue is complete"
 msgstr "chaque catalogue est complet"
+
+#: modules/web_console/module.py
+msgid "every pair meets {level}"
+msgstr "toutes les paires respectent {level}"
 
 #: modules/backup_engine/module.py
 msgid "every standing copy is inside the window"
@@ -1927,6 +2159,10 @@ msgid "interval seconds"
 msgstr "intervalle en secondes"
 
 #: cli/proposal.py
+msgid "issue"
+msgstr "problème"
+
+#: cli/proposal.py
 msgid "issue created: {url}"
 msgstr "issue créée : {url}"
 
@@ -1973,6 +2209,10 @@ msgstr "clés connues"
 #: modules/web_console/module.py
 msgid "known limits"
 msgstr "limites connues"
+
+#: cli/entry.py
+msgid "korodexios-core chassis console: headless core, thin clients."
+msgstr "console du châssis korodexios : noyau sans tête, clients légers."
 
 #: cli/txn.py
 msgid "label"
@@ -2322,6 +2562,10 @@ msgstr "rien d'écrit"
 msgid "npm | bun | pnpm [from the lockfile, else npm]."
 msgstr "npm | bun | pnpm [selon le lockfile, sinon npm]."
 
+#: cli/proposal.py
+msgid "number"
+msgstr "numéro"
+
 #: cli/language.py
 msgid "obsolete"
 msgstr "obsolète"
@@ -2666,6 +2910,10 @@ msgstr "état"
 msgid "static mounts"
 msgstr "montages statiques"
 
+#: cli/proposal.py
+msgid "status"
+msgstr "état"
+
 #: cli/commands.py
 msgid "stderr encoding"
 msgstr "encodage de stderr"
@@ -2854,6 +3102,10 @@ msgstr "le wiki est en ordre"
 msgid "the window is off: copies stand until the window opens or a sweep is asked for"
 msgstr "la fenêtre est désactivée : les copies restent jusqu'à l'ouverture de la fenêtre ou une demande de nettoyage"
 
+#: modules/web_console/module.py
+msgid "theme: {name}"
+msgstr "thème : {name}"
+
 #: cli/agents.py
 msgid "these read AGENTS.md directly: {names}"
 msgstr "ceux-ci lisent AGENTS.md directement : {names}"
@@ -2890,7 +3142,7 @@ msgstr "heure"
 msgid "timings"
 msgstr "durées"
 
-#: modules/web_console/module.py
+#: cli/proposal.py
 msgid "title"
 msgstr "titre"
 
@@ -2917,6 +3169,10 @@ msgstr "type"
 #: cli/commands.py
 msgid "ui"
 msgstr "ui"
+
+#: cli/commands.py
+msgid "unknown configuration key {key} [{origin}]"
+msgstr "clé de configuration inconnue {key} [{origin}]"
 
 #: cli/commands.py
 msgid "unknown dependencies"
@@ -3090,6 +3346,10 @@ msgstr "{job_id} est déjà {state} ; rien à arrêter"
 msgid "{job_id} started; Ctrl+C stops watching, not the job"
 msgstr "{job_id} démarrée ; Ctrl+C arrête le suivi, pas la tâche"
 
+#: cli/jobs.py
+msgid "{job_id} {state} after {seconds}s"
+msgstr "{job_id} {state} après {seconds}s"
+
 #: cli/remote.py
 msgid "{key} changed on the daemon"
 msgstr "{key} modifié sur le daemon"
@@ -3145,6 +3405,10 @@ msgstr "{name} : {count} clés, obligatoires={required} secrètes={secrets}"
 #: modules/web_console/module.py
 msgid "{note} no layout stored; the shell uses its defaults."
 msgstr "{note} aucune disposition enregistrée ; le shell utilise celle par défaut."
+
+#: modules/web_console/module.py
+msgid "{n} pair(s) below {level}"
+msgstr "{n} paire(s) sous {level}"
 
 #: cli/language.py
 msgid "{origin} still wins over kdx.local.yml; the new value applies once it is removed"
