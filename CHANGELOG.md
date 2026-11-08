@@ -5,6 +5,8 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.6.7] - 2026-11-08
+
 ### Added
 
 - `kdx docs check|update`, `kdx conventions --check` and `kdx playbook --check`: compare the documents `kdx init` seeds (conventions, playbook, spec template) with the installed core; exit 3 and a diff when one differs, `update` rewrites them.

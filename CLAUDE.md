@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.6 (0.6.7 work is unreleased).
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.7.
 
 ## Working preferences
 
@@ -52,7 +52,7 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 
 ## Current state (2026-11-08)
 
-- Unreleased, after v0.6.6 (owner asked for commit and push; no tag, no version bump): a downstream proposal done in full. Size numbers in the conventions are triggers for a decision, not caps (split by job, never by line); `kdx docs check|update`, `kdx conventions|playbook --check` (exit 3 + diff, `cli/docs_sync.py`); `kdx init` seeds `make check-docs`, a CI step and `tests/test_size_ratchet.py` (baselines at zero; debt may only shrink). Same afternoon: `kdx init` also seeds `tests/test_rules.py` (no cross-module imports, no stubs), a coverage floor, pip-audit, pre-commit (`cli/seed_quality.py`). The core runs both tests on itself (`tests/test_rules.py`, `tests/test_size_ratchet.py`; recorded debt 33 files / 132 functions / 29 signatures, may only shrink: lower the number when you clean something, never raise it).
+- v0.6.7 (owner asked for commit, version bump, tag and push; not merged into `main`, branch `feature/review-2026-11-08-fixes`): the review of 2026-11-08 fixed (B1-B5, S1, S5, R1-R4, K2-K4, I1-I5, T1-T3, part of D/X; left: K1, B6 release pin check, I6, R5, R6, S4, Q1, Q2, D9, D4, D7, D8, D11, D12, X3, X5, X6), and a downstream proposal done in full. Size numbers in the conventions are triggers for a decision, not caps (split by job, never by line); `kdx docs check|update`, `kdx conventions|playbook --check` (exit 3 + diff, `cli/docs_sync.py`); `kdx init` seeds `make check-docs`, a CI step and `tests/test_size_ratchet.py` (baselines at zero; debt may only shrink). Same afternoon: `kdx init` also seeds `tests/test_rules.py` (no cross-module imports, no stubs), a coverage floor, pip-audit, pre-commit (`cli/seed_quality.py`). The core runs both tests on itself (`tests/test_rules.py`, `tests/test_size_ratchet.py`; recorded debt 33 files / 132 functions / 29 signatures, may only shrink: lower the number when you clean something, never raise it).
 
 ## State on 2026-11-07
 
