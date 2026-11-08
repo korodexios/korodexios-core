@@ -447,9 +447,8 @@ class ModuleDiscovery:
 
     def _read_manifest(self, path: Path, name: str, report: DiscoveryReport) -> dict[str, Any]:
         try:
-            with path.open("rb") as handle:
-                data = tomllib.load(handle)
-        except (OSError, tomllib.TOMLDecodeError, EOFError) as exc:
+            data = tomllib.loads(path.read_text(encoding="utf-8-sig"))
+        except (OSError, tomllib.TOMLDecodeError, UnicodeDecodeError, EOFError) as exc:
             report.failures.append(
                 DiscoveryFailure(name, "manifest", f"{MANIFEST_NAME}: {exc}", str(path))
             )

@@ -25,7 +25,7 @@ _COMMENT_MARKERS = (" #", "\t#")
 def read_text(path: Path) -> str:
     """Read *path* as explicit UTF-8 text, mapping failures to ConfigFileError."""
     try:
-        return path.read_text(encoding=ENCODING)
+        return path.read_text(encoding=ENCODING + "-sig")
     except OSError as exc:
         raise ConfigFileError(
             f"cannot read {path}: {exc}", hint="Check the path and permissions."

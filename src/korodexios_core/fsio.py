@@ -39,6 +39,18 @@ def _replace(source: Path, target: Path) -> None:
             time.sleep(0.02)
 
 
+def _sync_directory(directory: Path) -> None:
+    """Flush a directory entry to disk on POSIX, so a renamed file survives a power cut."""
+    if os.name == "nt":
+        return
+    with contextlib.suppress(OSError):
+        descriptor = os.open(str(directory), os.O_RDONLY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+
+
 def _existing_mode(target: Path) -> int | None:
     """Return the permission bits of an existing *target* on POSIX, else None."""
     if os.name == "nt":
@@ -81,6 +93,8 @@ def atomic_write_bytes(
             if fsync:
                 os.fsync(handle.fileno())
         _replace(temporary, target)
+        if fsync:
+            _sync_directory(target.parent)
     except BaseException:
         with contextlib.suppress(OSError):
             temporary.unlink()

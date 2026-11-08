@@ -240,7 +240,7 @@ class WebSocket:
         raise WebSocketClosed(code, reason)
 
     def _read_exact(self, count: int) -> bytes:
-        data = b""
+        data = bytearray()
         while len(data) < count:
             try:
                 chunk = self._reader.read(count - len(data))
@@ -251,7 +251,7 @@ class WebSocket:
                 self._closed.set()
                 raise WebSocketClosed(CLOSE_GOING_AWAY, "connection ended")
             data += chunk
-        return data
+        return bytes(data)
 
     def _read_frame(self) -> tuple[bool, int, bytes]:
         first, second = self._read_exact(2)

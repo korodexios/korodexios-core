@@ -156,6 +156,8 @@ class NamedLock:
         if descriptor is None:
             return
         try:
+            with contextlib.suppress(OSError):
+                os.ftruncate(descriptor, 0)  # an empty file says "free", not "held by pid X"
             unlock_descriptor(descriptor)
         finally:
             with contextlib.suppress(OSError):
@@ -359,10 +361,9 @@ class NamedLockRegistry:
     ) -> NamedLock:
         """Take named lock *name*, or raise :class:`LockTimeoutError`.
 
-        Re-acquiring a name the calling thread already holds returns the same handle: a
-        lock is a resource, not a counter, so a second call cannot invite an
-        unbalanced release. Another thread of this process waits for the name, up to
-        *timeout*, the way another process would.
+        Re-acquiring a name the calling thread already holds returns the same handle (a lock
+        is a resource, not a counter); another thread of this process waits for the name,
+        up to *timeout*, the way another process would.
         """
         cleaned = lock_name(name)
         with self._free:
@@ -395,9 +396,8 @@ class NamedLockRegistry:
 
         Inspection and reservation happen in one guarded step, so two threads that
         call hold on the same name at the same moment cannot both pass a check and
-        then race into acquire: the loser waits for the name, up to *timeout*, and
-        never shares the critical section. Nesting the same lock in one thread is a
-        design smell worth a stack trace, not a double-hold.
+        then race into acquire: the loser waits for the name, up to *timeout*. Nesting the
+        same lock in one thread is a design smell worth a stack trace, not a double-hold.
         """
         cleaned = lock_name(name)
         handle = _LockHandle(self, cleaned, timeout, blocking, metadata)

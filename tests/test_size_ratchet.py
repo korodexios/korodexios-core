@@ -28,7 +28,7 @@ FILES: dict[str, int] = {
     "config/layered.py": 966,
     "kernel/chassis.py": 1548,
     "kernel/contract.py": 413,
-    "kernel/discovery.py": 666,
+    "kernel/discovery.py": 665,
     "kernel/instance_lock.py": 419,
     "kernel/ipc.py": 2191,
     "kernel/limiter.py": 441,

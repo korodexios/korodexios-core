@@ -369,3 +369,15 @@ def test_a_thread_can_take_its_own_name_again(tmp_path: Path) -> None:
     assert registry.release("job") is True
     assert registry.release("job") is False
     assert registry.acquire("job", timeout=0.0).held is True
+
+
+def test_a_released_lock_reads_as_free(tmp_path: Path) -> None:
+    """Review 2026-11-08, V5: a lock file nobody holds must not say "held by pid X"."""
+    registry = make_registry(tmp_path)
+    handle = registry.acquire("index")
+    assert "held" in handle.describe()
+    path = handle.path
+    registry.release("index")
+    assert path.read_text(encoding="utf-8") == ""
+    assert NamedLock(path).holder() is None
+    assert NamedLock(path).describe().endswith("free")

@@ -160,3 +160,25 @@ def test_the_first_audit_record_lands_in_a_file_that_is_already_restricted(
     log.record("rpc", caller=None, outcome="ok")
     assert sizes == [0], "restricted before the first record was written"
     assert (tmp_path / "audit.jsonl").read_text(encoding="utf-8").count("\n") == 1
+
+
+def test_a_byte_order_mark_does_not_break_a_manifest_or_a_config_file(tmp_path: Path) -> None:
+    """Review 2026-11-08, V6: Notepad and some editors prepend U+FEFF to UTF-8 files."""
+    from korodexios_core.config.loaders import read_text
+    from korodexios_core.kernel.discovery import ModuleDiscovery
+    from korodexios_core.paths import AppPaths
+    from tests.test_discovery import MANIFEST, build_plugins
+
+    bom = chr(0xFEFF)
+    config = tmp_path / "kdx.yml"
+    config.write_text(bom + "core:" + chr(10) + "  name: demo" + chr(10), encoding="utf-8")
+    assert read_text(config).startswith("core:")
+
+    plugins = build_plugins(tmp_path / "plugins")
+    (plugins / "probe" / "kdx_module.toml").write_text(bom + MANIFEST, encoding="utf-8")
+    root = tmp_path / "project"
+    root.mkdir()
+    paths = AppPaths.discover(root=str(root), environ={}, extra_module_dirs=[str(plugins)])
+    report = ModuleDiscovery(paths, logger=None).scan()
+    assert "probe" in report.names()
+    assert not [f for f in report.failures if f.name == "probe"]
