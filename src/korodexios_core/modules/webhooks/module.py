@@ -104,11 +104,10 @@ def verify(secret: str, timestamp: str, body: bytes, signature: str, *,
     """
     try:
         age = abs((time.time() if now is None else now) - float(timestamp))
-    except ValueError:
+        wanted = sign(secret, timestamp, body).encode("ascii")
+    except ValueError:  # not a number, or not ASCII (UnicodeEncodeError is a ValueError)
         return False
-    if age > tolerance:
-        return False
-    return hmac.compare_digest(sign(secret, timestamp, body), str(signature))
+    return age <= tolerance and hmac.compare_digest(wanted, str(signature).encode("utf-8"))
 
 
 def event_body(event: Event, delivery: str) -> bytes:

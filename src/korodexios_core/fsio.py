@@ -11,9 +11,31 @@ from __future__ import annotations
 import contextlib
 import os
 import threading
+import time
 from pathlib import Path
 
 from .paths import restrict_to_owner
+
+REPLACE_RETRY_SECONDS = 1.0
+
+
+def _replace(source: Path, target: Path) -> None:
+    """Rename *source* over *target*, waiting out a reader on Windows.
+
+    Windows refuses to replace a file another process has open (a status probe, an indexer,
+    an antivirus scan) with a sharing violation. That clears in milliseconds, so it is
+    retried for about a second before the error is raised.
+    """
+    deadline = time.monotonic() + REPLACE_RETRY_SECONDS
+    while True:
+        try:
+            os.replace(str(source), str(target))
+            return
+        except PermissionError as exc:
+            sharing = getattr(exc, "winerror", None) in (5, 32)
+            if not sharing or time.monotonic() >= deadline:
+                raise
+            time.sleep(0.02)
 
 
 def atomic_write_bytes(
@@ -40,7 +62,7 @@ def atomic_write_bytes(
                 os.fsync(handle.fileno())
         if private:
             restrict_to_owner(temporary)
-        os.replace(str(temporary), str(target))
+        _replace(temporary, target)
     except BaseException:
         with contextlib.suppress(OSError):
             temporary.unlink()

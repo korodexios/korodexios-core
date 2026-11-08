@@ -540,3 +540,17 @@ def test_secret_targets_are_masked_in_config_reports(project_root: Path) -> None
         assert "s3cret" not in rows["modules.webhooks.secret"]
     finally:
         chassis.shutdown()
+
+
+def test_verify_refuses_odd_timestamps_and_signatures() -> None:
+    """Review 2026-11-08, S5: nan is not fresh, and nothing odd raises instead of returning."""
+    body = b"{}"
+    now = 1_000_000.0
+    stamp = str(int(now))
+    good = sign("k", stamp, body)
+    assert verify("k", stamp, body, good, now=now)
+    old = str(int(now) - 3600)
+    assert not verify("k", old, body, sign("k", old, body), now=now)
+    for odd in ("nan", "inf", "-inf", "Ff11" * 10, ""):
+        assert verify("k", odd, body, sign("k", "0", body), now=now) is False
+    assert verify("k", stamp, body, "sha256=é", now=now) is False

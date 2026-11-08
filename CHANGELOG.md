@@ -29,6 +29,10 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - A calendar task runs once per allowed day: after `schedule_at("daily 04:00-05:00", ...)` ran, the next slot is searched from the end of that day (it used to roll a new random instant inside the same window, about 15 runs a day), and a wall clock stepped back before a slot no longer runs it twice. A manual `run_task` still leaves the day's slot alone.
 - `--json` without a running daemon (`jobs`, `events`, `stop`, `rpc`) prints `{"ok": false, "error": "no daemon is answering", "discovery_file": ...}` on stdout and exits 1, in English whatever the locale; `brief --check --json` with no brief file prints JSON too. Before, they printed prose.
 - `GET /api/v1/schema` declares the real keys: `allow_anonymous_shutdown` on the schema route, `jobs` and `running` on `/api/v1/jobs` (the job fields are in its summary), and the reload summary keys.
+- `webhooks.verify` returns `False` for a `nan`/`inf` timestamp and for a non-ASCII timestamp or signature instead of passing the freshness check or raising. A replay inside the five-minute window is still accepted by `verify`; `docs/INTEGRATIONS.md` says to drop a repeated `X-Kdx-Delivery`.
+- Atomic file writes wait up to a second for a reader on Windows (sharing violation, `WinError 5`/`32`) instead of failing; when the control plane cannot write its discovery file it stops listening instead of keeping a port nobody can find.
+- A task left `running` by a crashed worker whose process id was reused by an unrelated process is requeued by `recover()`: a process created after the claim cannot be the worker (`kernel/proc_start.py`, Windows and Linux; elsewhere the old pid-only rule stays).
+- `core.lifecycle.stop_timeout` is now the budget of the whole shutdown (it was the budget of every step and every module, so 3 slow modules took 3x as long); a stop requested during module start-up stops the remaining modules from starting.
 
 ## [0.6.6] - 2026-11-07
 

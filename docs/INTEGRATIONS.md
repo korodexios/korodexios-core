@@ -96,6 +96,8 @@ Headers: `X-Kdx-Event`, `X-Kdx-Delivery`, `X-Kdx-Timestamp`, and with a secret
 `X-Kdx-Signature: sha256=<hex>` = HMAC-SHA256 of `<timestamp>.<raw body>`. Verify it in an
 n8n *Code* node (set the Webhook node to keep the raw body):
 
+The signature and the five-minute timestamp window stop forgery and stale deliveries, not a replay inside the window: keep the `X-Kdx-Delivery` ids you have seen and drop a repeat.
+
 ```javascript
 const crypto = require('crypto');
 const stamp = $json.headers['x-kdx-timestamp'];

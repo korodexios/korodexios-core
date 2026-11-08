@@ -1942,15 +1942,13 @@ class IpcServer:
 
     def stop(self, timeout: float = 5.0) -> None:
         """Stop accepting requests, close the socket, remove the discovery file."""
-        httpd = self._httpd
-        self._httpd = None
+        httpd, self._httpd = self._httpd, None
         if httpd is not None:
             with contextlib.suppress(Exception):
                 httpd.shutdown()
             with contextlib.suppress(Exception):
                 httpd.server_close()
-        thread = self._thread
-        self._thread = None
+        thread, self._thread = self._thread, None
         if thread is not None and thread.is_alive():
             thread.join(timeout=max(0.0, float(timeout)))
         self._remove_discovery()
@@ -2134,10 +2132,9 @@ class IpcServer:
     def _write_discovery(self) -> None:
         """Publish the discovery file so a reader never finds it half written.
 
-        'kdx status' and an external health check read this file at any moment, including
-        the first millisecond of boot. Truncating it in place showed those readers an empty
-        file, which they read as a daemon that is not running, so the payload lands in a
-        sibling this process owns and is renamed into place in one filesystem step.
+        The payload lands in a sibling and is renamed into place in one step: truncating it
+        in place showed 'kdx status' an empty file, which it reads as no daemon. When the file
+        cannot be written the server is stopped, so no port listens that nobody can find.
         """
         target = self._options.discovery_path
         if target is None or self._discovery is None:
@@ -2146,14 +2143,17 @@ class IpcServer:
         payload = json.dumps(self._discovery.as_dict(), sort_keys=True) + "\n"
         # Owner-only before the rename, so the token is never readable at the final path
         # by anyone else - on Windows, too, where a 0600 mode means nothing.
-        atomic_write_text(target, payload, private=True, fsync=False)
+        try:
+            atomic_write_text(target, payload, private=True, fsync=False)
+        except OSError:
+            self.stop()
+            raise
 
     def _remove_discovery(self) -> None:
         target = self._options.discovery_path
-        if target is None:
-            return
-        with contextlib.suppress(OSError):
-            target.unlink()
+        if target is not None:
+            with contextlib.suppress(OSError):
+                target.unlink()
 
 
 __all__ = [

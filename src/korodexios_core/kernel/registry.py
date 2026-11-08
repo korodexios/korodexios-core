@@ -23,20 +23,16 @@ from .contracts import ContractRow, contract_rows
 from .diagnostics import DiagnosticCheck
 from .discovery import DiscoveryReport
 from .ipc import IpcRoute, IpcStaticMount
+from .shutdown import Budget
 
 _PHASE_EVENTS = {"init": "initialized", "start": "started", "stop": "stopped"}
 _PHASE_SUCCESS_STATE = {
-    "init": ModuleState.INITIALIZED,
-    "start": ModuleState.RUNNING,
-    "stop": ModuleState.STOPPED,
+    "init": ModuleState.INITIALIZED, "start": ModuleState.RUNNING, "stop": ModuleState.STOPPED,
 }
 
 
 def call_with_timeout(
-    func: Callable[[], None],
-    timeout: float | None,
-    *,
-    description: str = "call",
+    func: Callable[[], None], timeout: float | None, *, description: str = "call"
 ) -> tuple[bool, BaseException | None]:
     """Run *func* on a worker thread; return (completed, error)."""
     if not timeout or timeout <= 0:
@@ -580,22 +576,25 @@ class ModuleRegistry:
         """Collect the command tree for the kernel, with no user interface attached."""
         return self.collect_cli(HeadlessSurface())
 
-    def start_all(self) -> list[RegisteredModule]:
-        """Call start() on every initialized module, in load order."""
+    def start_all(self, halt: Callable[[], bool] | None = None) -> list[RegisteredModule]:
+        """Call start() on every initialized module, in load order, until *halt* says stop."""
         results: list[RegisteredModule] = []
         for record in self.ordered():
             if record.state is not ModuleState.INITIALIZED:
                 continue
+            if halt is not None and halt():
+                break
             results.append(self._run(record, "start", record.module.start))
         return results
 
     def stop_all(self, timeout: float | None = DEFAULT_STOP_TIMEOUT) -> list[RegisteredModule]:
-        """Call stop() on every initialized module, newest first, with a timeout."""
+        """Call stop() on every initialized module, newest first; *timeout* is all their time."""
         results: list[RegisteredModule] = []
+        budget = Budget(timeout)
         for record in reversed(self.ordered()):
             if not record.initialized or record.state is ModuleState.STOPPED:
                 continue
-            results.append(self._run(record, "stop", record.module.stop, timeout=timeout))
+            results.append(self._run(record, "stop", record.module.stop, timeout=budget.left()))
         return results
 
     def cli_collisions(self, reserved: Iterable[str] = ()) -> list[dict[str, str]]:

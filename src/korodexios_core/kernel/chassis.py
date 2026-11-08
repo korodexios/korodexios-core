@@ -75,6 +75,7 @@ from .registry import ModuleRegistry
 from .reload import reload_guarded, serve_reload_request
 from .rpc_output import capture_output, captured_text
 from .scheduler import TaskScheduler
+from .shutdown import Budget
 from .signals import SignalCoordinator, signal_name
 from .supervision import WorkerRecord, WorkerSupervisor
 from .users import USERS_FILE_NAME, UserStore, current_caller, role_rank
@@ -467,7 +468,7 @@ class Chassis:
         runtime = self.async_runtime
         if runtime is not None:
             runtime.start()
-        self.registry.start_all()
+        self.registry.start_all(lambda: self.signals.shutdown_requested)
         self._watch_module_workers()
         self.ipc_routes = tuple(self.registry.ipc_routes())
         self.ipc_static = tuple(self.registry.static_dirs())
@@ -1371,15 +1372,14 @@ class Chassis:
             {"signal": self.signals.signal_number, "exit_code": code},
             source="chassis",
         )
-        timeout = self.config.get_float("core.lifecycle.stop_timeout", 5.0)
-        self.stop_ipc(timeout=timeout)
-        self._stop_jobs(timeout=timeout)
-        self._stop_children(timeout=timeout)
-        self.stop_scheduler(timeout=timeout)
-        self.registry.stop_all(timeout=timeout)
-        runtime = self.async_runtime
-        if runtime is not None:
-            runtime.stop()
+        budget = Budget(self.config.get_float("core.lifecycle.stop_timeout", 5.0))
+        self.stop_ipc(timeout=budget.left())
+        self._stop_jobs(timeout=budget.left())
+        self._stop_children(timeout=budget.left())
+        self.stop_scheduler(timeout=budget.left())
+        self.registry.stop_all(timeout=budget.left())
+        if self.async_runtime is not None:
+            self.async_runtime.stop()
         self._release_named_locks()
         self._release_instance_lock()
         self.state = ChassisState.STOPPED

@@ -26,6 +26,7 @@ from pathlib import Path
 from typing import Any, Final
 
 from .instance_lock import pid_alive
+from .proc_start import started_after
 
 __all__ = [
     "ACTIVE_STATES",
@@ -76,12 +77,8 @@ def worker_identity() -> str:
     return f"{socket.gethostname().strip().lower()}:{os.getpid()}"
 
 
-def _owner_alive(owner: str) -> bool:
-    """Return True when *owner* is another live process on this machine.
-
-    A task claimed on another host cannot be probed from here and is treated as
-    interrupted, which is what a single shared queue file has always assumed.
-    """
+def _owner_alive(owner: str, claimed_at: float | None = None) -> bool:
+    """Return True for a live process here that began before *claimed_at* (not a reused pid)."""
     host, _, pid_text = str(owner).rpartition(":")
     if not host or host != socket.gethostname().strip().lower():
         return False
@@ -89,7 +86,8 @@ def _owner_alive(owner: str) -> bool:
         pid = int(pid_text)
     except ValueError:
         return False
-    return pid != os.getpid() and pid_alive(pid)
+    reused = claimed_at is not None and started_after(pid, claimed_at)
+    return pid != os.getpid() and pid_alive(pid) and not reused
 
 
 class PermanentJobError(Exception):
@@ -344,10 +342,10 @@ class JobQueue:
         recovered = 0
         with self._guard, self._connect() as db:
             rows = db.execute(
-                "SELECT id, attempts, max_attempts, owner FROM tasks WHERE state='running'"
+                "SELECT * FROM tasks WHERE state='running'"
             ).fetchall()
             for row in rows:
-                if _owner_alive(str(row["owner"] or "")):
+                if _owner_alive(str(row["owner"] or ""), row["started_at"]):
                     continue
                 if int(row["attempts"]) < int(row["max_attempts"]):
                     db.execute(

@@ -64,8 +64,11 @@ Two things happen around that sequence in Core API v2:
   `core.instance.lock` (CLI `--no-instance-lock`) turns the claim off for one-shot work.
 
 Shutdown reverses step 9, then closes logging. `stop()` runs even after a failed
-`start()`, bounded by `core.lifecycle.stop_timeout`, and releases the lock last so a
-restarting daemon can claim it again.
+`start()`, and releases the lock last so a restarting daemon can claim it again.
+`core.lifecycle.stop_timeout` is the budget of the whole shutdown, not of each step: the control
+plane, jobs, children, the scheduler and every module share one deadline (`kernel/shutdown.py`),
+each step getting what is left, at least 0.1 s. A stop requested while modules start halts the
+start-up: modules not yet started are left alone.
 
 ## 3. Layered configuration flow
 
