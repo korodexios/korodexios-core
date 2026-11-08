@@ -61,7 +61,6 @@ def test_holder_shape_and_liveness() -> None:
     assert LockHolder(pid=0).uptime() == 0.0
 
 
-@pytest.mark.posix
 def test_acquire_release_cycle(tmp_path: Path) -> None:
     path = tmp_path / "chassis.lock"
     lock = InstanceLock(path, metadata={"label": "kdx", "port": 18123})
@@ -87,7 +86,6 @@ def test_acquire_release_cycle(tmp_path: Path) -> None:
     lock.release()
 
 
-@pytest.mark.posix
 def test_second_holder_is_rejected_by_name(tmp_path: Path) -> None:
     path = tmp_path / "chassis.lock"
     first = InstanceLock(path, metadata={"label": "first"})
@@ -102,7 +100,6 @@ def test_second_holder_is_rejected_by_name(tmp_path: Path) -> None:
     first.release()
 
 
-@pytest.mark.posix
 def test_stale_metadata_is_detected(tmp_path: Path) -> None:
     path = tmp_path / "chassis.lock"
     path.write_text(
@@ -119,7 +116,6 @@ def test_stale_metadata_is_detected(tmp_path: Path) -> None:
     lock.release()
 
 
-@pytest.mark.posix
 def test_dead_pid_stale_lock_is_taken_over_cleanly(tmp_path: Path) -> None:
     """A lock left behind by a killed daemon is adopted, not treated as a failure.
 
@@ -164,7 +160,6 @@ def test_context_manager_releases_the_lock(tmp_path: Path) -> None:
     assert path.exists()
 
 
-@pytest.mark.posix
 def test_lock_survives_a_second_process(tmp_path: Path) -> None:
     """A real second process cannot take the lock while the first holds it."""
     script = (
@@ -197,9 +192,41 @@ def test_lock_survives_a_second_process(tmp_path: Path) -> None:
     assert free.stdout.strip() == "acquired"
 
 
-@pytest.mark.posix
 def test_lock_creates_its_directory(tmp_path: Path) -> None:
     path = tmp_path / "nested" / "state" / "chassis.lock"
     with InstanceLock(path) as lock:
         assert path.exists()
         assert lock.holder() is not None
+
+
+def test_another_process_can_read_who_holds_the_lock(tmp_path: Path) -> None:
+    """Review 2026-11-08, R5: the lock must not cover the payload, or `kdx doctor` sees "free"."""
+    import subprocess
+    import sys
+
+    path = tmp_path / "chassis.lock"
+    lock = InstanceLock(path, metadata={"label": "owner", "port": 1})
+    lock.acquire()
+    try:
+        script = (
+            "import sys\n"
+            "from pathlib import Path\n"
+            "from korodexios_core.kernel.instance_lock import InstanceLock, InstanceLockError\n"
+            "other = InstanceLock(Path(sys.argv[1]))\n"
+            "holder = other.holder()\n"
+            "print(holder.label if holder else 'NONE', holder.pid if holder else 0)\n"
+            "print(other.describe())\n"
+            "try:\n"
+            "    other.acquire()\n"
+            "    print('ACQUIRED')\n"
+            "except InstanceLockError:\n"
+            "    print('REFUSED')\n"
+        )
+        done = subprocess.run(
+            [sys.executable, "-c", script, str(path)], capture_output=True, text=True, timeout=60
+        )
+    finally:
+        lock.release()
+    lines = done.stdout.splitlines()
+    assert lines[0] == f"owner {os.getpid()}", done.stdout + done.stderr
+    assert "held by" in lines[1] and lines[2] == "REFUSED"

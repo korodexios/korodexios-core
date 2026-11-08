@@ -14,6 +14,9 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - The seeded `.gitignore` ignores `data/db/` (every database under it, with its `-wal` and `-shm` files), not only `data/db/backups/`.
 - The seeded `Makefile` resolves its Python itself, `uv run python` when uv is on `PATH` and `python3` (an active virtual environment) otherwise, as the core's own Makefile does.
 - The conventions and the playbook list all four roles, `viewer < contributor < operator < admin`; run `kdx docs update` in a seeded project to take them over.
+- On Windows the instance lock and the named locks lock one byte at the end of the first 4 KiB instead of the whole of it, so another process can read who holds a lock: `kdx doctor` and `kdx status` no longer report a held lock as free, and a second daemon names the first in its refusal. The byte lies inside the range 0.6.6 locked, so an old and a new daemon still exclude each other during an upgrade. The POSIX-only markers on the lock tests are gone.
+- Stopping the control plane waits, inside the shutdown budget, for the requests being answered (an RPC, a module route) instead of cutting their threads at exit; streams (server-sent events, WebSocket) are not waited for.
+- A second stop signal more than 1.5 s after the first, while the shutdown is still running, ends the process at once with `128 + signal` (130 or 143) after flushing the log. A task that never returns can no longer make the daemon unkillable from its own terminal.
 
 ## [0.6.7] - 2026-11-08
 

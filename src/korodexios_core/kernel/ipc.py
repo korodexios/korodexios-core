@@ -30,7 +30,7 @@ import urllib.parse
 import urllib.request
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler
 from pathlib import Path, PurePosixPath
 from typing import Any, Final, cast
 
@@ -42,6 +42,7 @@ from ..version import CORE_API_VERSION
 from .audit import AuditLog
 from .instance_lock import pid_alive
 from .jobs import JobLimitError
+from .request_tracker import TrackedHTTPServer
 from .users import OWNER_NAME, ROLES, Caller, UserStore, acting_as
 from .websocket import IpcWebSocket, WebSocket, accept_key, offered_protocols, protocol_token
 
@@ -927,7 +928,7 @@ class IpcOptions:
     tls_key: Path | None = None
 
 
-class _ControlServer(ThreadingHTTPServer):
+class _ControlServer(TrackedHTTPServer):
     """ThreadingHTTPServer that knows which chassis control plane it serves."""
 
     kdx_ipc: IpcServer
@@ -945,9 +946,8 @@ def _is_teardown_error(exc: BaseException) -> bool:
     answering a client: the peer goes away, the descriptor goes away, and the handler is
     left holding a write nobody will read. That is an ending, not a fault.
     """
-    if isinstance(
-        exc, (BrokenPipeError, ConnectionResetError, ConnectionAbortedError, TimeoutError)
-    ):
+    ended = (BrokenPipeError, ConnectionResetError, ConnectionAbortedError, TimeoutError)
+    if isinstance(exc, ended):
         return True
     return isinstance(exc, OSError) and int(getattr(exc, "errno", 0) or 0) in _TEARDOWN_ERRNOS
 
@@ -1900,11 +1900,7 @@ class IpcServer:
         )
         self._bound_host = bound_host
         httpd.kdx_ipc = self
-        self._thread = threading.Thread(
-            target=httpd.serve_forever,
-            name="kdx-ipc",
-            daemon=True,
-        )
+        self._thread = threading.Thread(target=httpd.serve_forever, name="kdx-ipc", daemon=True)
         self._thread.start()
         self._write_discovery()
         if self.logger is not None:
@@ -1946,6 +1942,7 @@ class IpcServer:
         if httpd is not None:
             with contextlib.suppress(Exception):
                 httpd.shutdown()
+                httpd.wait_idle(lambda: self.open_streams, timeout)
             with contextlib.suppress(Exception):
                 httpd.server_close()
         thread, self._thread = self._thread, None

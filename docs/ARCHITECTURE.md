@@ -256,6 +256,10 @@ The chassis installs handlers so an interactive Ctrl-C never leaves a traceback:
 | `Chassis.request_clean_stop()` | in-process stop | `0` |
 | `SIGHUP` | configuration reload on POSIX; the daemon keeps running, also when the new configuration is refused | - |
 
+A second stop signal that arrives more than 1.5 s after the first, while the shutdown is
+still running, ends the process at once with the same `128 + signal` code (the usual "second
+Ctrl+C forces it"): a task that never returns cannot make the daemon unkillable.
+
 Both stop paths route into the same stop sequence: modules stop in reverse order,
 logging is flushed and closed, and the process exits with the conventional
 `128 + signum`. Windows delivers `SIGBREAK` too, and it is not a fifth exit code: the

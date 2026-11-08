@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import logging
+import os
 import signal
 import threading
+import time
 from collections.abc import Callable
 from types import FrameType
-from typing import Final
+from typing import Final, NoReturn
 
 from ..constants import TAG_NOTE
 from ..logging.engine import KorodexiosLogger
@@ -36,6 +39,10 @@ def _canonical_signal(signum: int) -> int:
         return int(signal.SIGINT)
     return int(signum)
 
+FORCE_AFTER_SECONDS: Final[float] = 1.5
+"""A second stop signal this long after the first ends the process at once; sooner it is a
+duplicate (a terminal and a supervisor can both deliver the same Ctrl+C)."""
+
 _EXTRA_SIGNALS: tuple[str, ...] = ("SIGINT", "SIGTERM", "SIGBREAK")
 _RELOAD_SIGNALS: tuple[str, ...] = ("SIGHUP",)
 
@@ -58,8 +65,11 @@ class SignalCoordinator:
         signals: tuple[str, ...] = _EXTRA_SIGNALS,
         reload_signals: tuple[str, ...] = _RELOAD_SIGNALS,
         reload_enabled: bool = True,
+        force_exit: Callable[[int], NoReturn] = os._exit,
     ) -> None:
         self._logger = logger
+        self._force_exit = force_exit
+        self._first_at: float | None = None
         self._requested_names = tuple(signals)
         self._requested_reload_names = tuple(reload_signals) if reload_enabled else ()
         self._reload_enabled = bool(reload_enabled)
@@ -127,9 +137,25 @@ class SignalCoordinator:
 
     def _build_handler(self, signum: int) -> Callable[[int, FrameType | None], None]:
         def _handler(number: int, _frame: FrameType | None) -> None:
+            self.force_if_repeated(int(number) or signum)
             self.record(int(number) or signum)
 
         return _handler
+
+    def force_if_repeated(self, signum: int) -> None:
+        """End the process at once when a stop was asked for earlier and is taking too long.
+
+        The usual "second Ctrl+C forces it": a task that never returns, or a module that
+        cannot stop, must not make the daemon unkillable from its own terminal. Logs are
+        flushed first; the exit code is the same 128 + signal the clean path would give.
+        """
+        first = self._first_at
+        if first is None or time.monotonic() - first < FORCE_AFTER_SECONDS:
+            return
+        name = signal_name(int(signum))
+        self._logger.warning(f"{TAG_NOTE} second {name} while stopping: exiting now", signal=name)
+        logging.shutdown()
+        self._force_exit(128 + _canonical_signal(int(signum)))
 
     def _build_reload_handler(
         self, signum: int
@@ -186,6 +212,7 @@ class SignalCoordinator:
             self._count += 1
             first = self._signal_number is None
             if first:
+                self._first_at = time.monotonic()
                 self._signal_number = _canonical_signal(int(signum))
             count = self._count
         name = signal_name(int(signum))
@@ -214,6 +241,7 @@ class SignalCoordinator:
         """Clear shutdown state so the chassis can be reused in-process."""
         with self._lock:
             self._signal_number = None
+            self._first_at = None
             self._count = 0
             self._reload_count = 0
             self._clean_stop = False

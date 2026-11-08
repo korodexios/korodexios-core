@@ -41,7 +41,7 @@ __all__ = [
     "unlock_descriptor",
 ]
 
-_LOCK_BYTES: int = 4096
+_LOCK_OFFSET, _LOCK_BYTES = 4095, 1  # one byte past the payload, inside 0.6.6's 0-4095 range
 
 
 if sys.platform == "win32":  # pragma: no cover - Windows only
@@ -49,13 +49,13 @@ if sys.platform == "win32":  # pragma: no cover - Windows only
 
     def _lock_exclusive(descriptor: int, *, block: bool) -> None:
         """Claim a Windows byte-range lock, restarting the seek each time."""
-        os.lseek(descriptor, 0, os.SEEK_SET)
+        os.lseek(descriptor, _LOCK_OFFSET, os.SEEK_SET)
         mode = msvcrt.LK_LOCK if block else msvcrt.LK_NBLCK
         msvcrt.locking(descriptor, mode, _LOCK_BYTES)
 
     def _unlock_exclusive(descriptor: int) -> None:
         """Release the Windows byte-range lock on *descriptor*."""
-        os.lseek(descriptor, 0, os.SEEK_SET)
+        os.lseek(descriptor, _LOCK_OFFSET, os.SEEK_SET)
         msvcrt.locking(descriptor, msvcrt.LK_UNLCK, _LOCK_BYTES)
 
 else:
