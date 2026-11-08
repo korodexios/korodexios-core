@@ -21,6 +21,7 @@ from korodexios_core.config.layered import (
     redact_value,
 )
 from korodexios_core.config.schema import ConfigField, ConfigSchema
+from korodexios_core.config.unloaded import declare_loaded_modules
 from korodexios_core.kernel.cli_contract import CliRequest
 from korodexios_core.kernel.ipc import (
     MAX_STREAMS,
@@ -101,6 +102,7 @@ def test_schema_declared_secrets_are_masked_whatever_their_name() -> None:
 
 
 def test_url_passwords_are_masked_under_any_key() -> None:
+    declare_loaded_modules(["x"])  # keys of a module that is not loaded are masked wholesale
     assert mask_url_credentials("postgres://app:hunter2@db/app") == (
         "postgres://app:***redacted***@db/app"
     )

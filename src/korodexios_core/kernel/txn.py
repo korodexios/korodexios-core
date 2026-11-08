@@ -157,8 +157,8 @@ class TransactionManager:
         *checkpoint* callback is told each phase boundary, which is how a test crashes a
         transaction on purpose.
         """
-        planned = self._plan(ops)
         with self._locked():
+            planned = self._plan(ops)
             journal = self._prepare(planned, label)
             try:
                 self._checkpoint("prepared")
@@ -415,11 +415,11 @@ class TransactionManager:
     @contextlib.contextmanager
     def _locked(self) -> Iterator[None]:
         self.journal_dir.mkdir(parents=True, exist_ok=True)
-        lock = self._locks.acquire(LOCK_NAME, timeout=LOCK_TIMEOUT)
+        self._locks.acquire(LOCK_NAME, timeout=LOCK_TIMEOUT)
         try:
             yield
         finally:
-            lock.release()
+            self._locks.release(LOCK_NAME)
 
 
 def _no_checkpoint(phase: str) -> None:

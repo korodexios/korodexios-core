@@ -72,6 +72,7 @@ from .locks import NamedLock, NamedLockRegistry
 from .process import ProcessSupervisor
 from .project import ProjectIdentity, project_identity
 from .registry import ModuleRegistry
+from .reload import reload_guarded, serve_reload_request
 from .rpc_output import capture_output, captured_text
 from .scheduler import TaskScheduler
 from .signals import SignalCoordinator, signal_name
@@ -528,7 +529,7 @@ class Chassis:
             routes=routes,
             static_dirs=statics,
             rpc_fn=self.dispatch_rpc if rpc_enabled else None,
-            reload_fn=self.reload_config,
+            reload_fn=lambda: reload_guarded(self),
             submit_fn=self.submit_job if rpc_enabled else None,
             jobs_fn=self.job_report if rpc_enabled else None,
             cancel_fn=self.cancel_job if rpc_enabled else None,
@@ -833,11 +834,7 @@ class Chassis:
 
     def _serve_reload_request(self) -> dict[str, Any] | None:
         """Serve a pending SIGHUP or IPC reload request; None when none is pending."""
-        if not self.signals.reload_requested:
-            return None
-        summary = self.reload_config()
-        self.signals.clear_reload()
-        return summary
+        return serve_reload_request(self)
 
     def reload_config(self) -> dict[str, Any]:
         """Re-read the configuration layers while the daemon keeps running.

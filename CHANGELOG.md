@@ -18,6 +18,16 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ### Added
 
+### Security
+
+- `kdx wiki ingest` over the control plane (RPC, MCP, WebSocket) reads a relative path against the project root and only accepts a file inside the project: runtime state (`var/`), `data/users.json`, `data/audit.jsonl`, `data/db/`, `kdx.local.*` and dotfiles are refused, and a missing file and a refused one answer alike. A local terminal call is unchanged. Before, an operator token could copy `var/chassis.ipc` (the admin token) into the committed wiki.
+- `kdx config show`, the web console and the MCP config tool mask string values under `modules.<name>.*` while module `<name>` is not loaded (disabled, or `--no-autodiscover`): its schema is what says which values are secret.
+
+### Fixed
+
+- Named locks exclude the threads of one process as well: a second thread asking for a held name waits up to its `timeout` (or is refused at once with `timeout=0`) instead of entering the critical section; the owning thread asking again still gets its handle. `hold()` waits likewise. The transaction manager now plans (and hashes `before`) under its lock, so two concurrent transactions serialise and the later one can still be undone.
+- A configuration that fails to load on `kdx reload`, `POST /api/v1/reload` or SIGHUP is refused and the daemon keeps running with the old one. The control plane answers `422` with `{"reloaded": false, "error", "hint"}` (audited as `refused`), `kdx reload` exits 3, the bus carries `core.config.reload_failed` (error class only) and reloads run one at a time. Before, a SIGHUP with a typo ended the daemon with exit 3 and the HTTP reload dropped the connection.
+
 - Panels may use `{node}` (the tree node chosen in the side list) in `source`, `detail` source and `args`; the shell redraws them when the choice changes.
 - Tree answers can page: a `more` node with a `next` cursor, `?after=<cursor>`, `kernel.ui_tree.page_nodes`; the shell shows "Load more".
 - Row and key/value views draw long text as a wrapped block and fold lists and objects; `detail.kinds` forces `text` or `line` per field.

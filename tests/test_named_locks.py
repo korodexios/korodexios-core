@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import threading
 import time
 from pathlib import Path
 
@@ -295,3 +296,79 @@ def test_named_lock_files_ignores_files_a_lock_cannot_name(tmp_path: Path) -> No
     assert is_lock_file_name("bad:lock.lock") is False
     assert is_lock_file_name("notes.txt") is False
     assert is_lock_file_name("notes.lock.lock") is True
+
+
+# -- threads of one process (review 2026-11-08, B3) -----------------------------------------
+
+
+def _run_in_section(
+    registry: NamedLockRegistry, delay: float, hold_for: float, log: list[tuple[str, float]]
+) -> None:
+    time.sleep(delay)
+    registry.acquire("job", timeout=5.0)
+    log.append(("in", time.monotonic()))
+    time.sleep(hold_for)
+    log.append(("out", time.monotonic()))
+    registry.release("job")
+
+
+def test_a_second_thread_waits_for_a_held_name(tmp_path: Path) -> None:
+    registry = make_registry(tmp_path)
+    log: list[tuple[str, float]] = []
+    first = threading.Thread(target=_run_in_section, args=(registry, 0.0, 0.3, log))
+    second = threading.Thread(target=_run_in_section, args=(registry, 0.05, 0.0, log))
+    first.start()
+    second.start()
+    first.join(10)
+    second.join(10)
+    assert [event for event, _ in log] == ["in", "out", "in", "out"], "sections never overlap"
+    assert log[2][1] >= log[1][1] - 0.01, "the second thread entered after the first left"
+    assert registry.names() == ()
+
+
+def test_hold_from_a_second_thread_waits_instead_of_failing(tmp_path: Path) -> None:
+    registry = make_registry(tmp_path)
+    order: list[str] = []
+
+    def worker() -> None:
+        with registry.hold("job", timeout=5.0):
+            order.append("worker")
+
+    with registry.hold("job", timeout=5.0):
+        thread = threading.Thread(target=worker)
+        thread.start()
+        time.sleep(0.2)
+        assert order == [], "the worker is still waiting for the name"
+        order.append("main")
+    thread.join(10)
+    assert order == ["main", "worker"]
+    assert registry.names() == ()
+
+
+def test_a_non_blocking_request_from_another_thread_is_refused_at_once(tmp_path: Path) -> None:
+    registry = make_registry(tmp_path)
+    registry.acquire("job")
+    refused: list[str] = []
+
+    def worker() -> None:
+        started = time.monotonic()
+        try:
+            registry.acquire("job", timeout=0.0)
+        except LockTimeoutError as exc:
+            refused.append(exc.message)
+        assert time.monotonic() - started < 1.0
+
+    thread = threading.Thread(target=worker)
+    thread.start()
+    thread.join(10)
+    assert refused and "another thread" in refused[0]
+    assert registry.held("job") is True
+
+
+def test_a_thread_can_take_its_own_name_again(tmp_path: Path) -> None:
+    registry = make_registry(tmp_path)
+    first = registry.acquire("job")
+    assert registry.acquire("job", timeout=0.0) is first
+    assert registry.release("job") is True
+    assert registry.release("job") is False
+    assert registry.acquire("job", timeout=0.0).held is True

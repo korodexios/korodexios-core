@@ -19,7 +19,6 @@ import os
 import threading
 import time
 from collections.abc import Mapping
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -33,6 +32,7 @@ from ..constants import (
 from ..exceptions import LockTimeoutError
 from ..paths import is_lock_file_name, lock_name
 from .instance_lock import LockHolder, lock_descriptor, pid_alive, unlock_descriptor
+from .lock_owners import _LockHandle, wait_until_free
 
 __all__ = [
     "DEFAULT_LOCK_TIMEOUT",
@@ -43,53 +43,6 @@ __all__ = [
     "NamedLockRegistry",
     "lock_name",
 ]
-
-
-@dataclass(slots=True)
-class _LockHandle:
-    """Context manager returned by :meth:`NamedLockRegistry.hold`.
-
-    The name is already reserved by the time this object exists, so taking it is
-    one NamedLock.acquire call and the registry stays honest about names that
-    nobody holds.
-    """
-
-    registry: NamedLockRegistry
-    name: str
-    timeout: float | None = DEFAULT_LOCK_TIMEOUT
-    blocking: bool = True
-    metadata: Mapping[str, Any] | None = field(default=None)
-    # Set by NamedLockRegistry.hold when it reserves the name; None until then.
-    lock: NamedLock | None = None
-
-    def __enter__(self) -> NamedLock:
-        reserved = self.lock
-        if reserved is None:
-            # Constructed without a reservation: the registry takes the name and
-            # records it, which is also the re-entrant path 'acquire' documents.
-            self.lock = self.registry.acquire(
-                self.name,
-                timeout=self.timeout,
-                blocking=self.blocking,
-                metadata=self.metadata,
-            )
-            return self.lock
-        try:
-            self.lock = reserved.acquire(timeout=self.timeout, blocking=self.blocking)
-        except LockTimeoutError:
-            # The reservation was this call's alone: hand the name back so the
-            # registry never lists a lock nobody holds.
-            self.registry.release(self.name)
-            self.lock = None
-            raise
-        return self.lock
-
-    def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
-        if self.lock is not None:
-            # Released and forgotten: a registry that still listed a free lock
-            # would report a name nobody holds.
-            self.registry.release(self.name)
-            self.lock = None
 
 
 class NamedLock:
@@ -382,7 +335,10 @@ class NamedLockRegistry:
         self._logger = logger
         self._poll = max(0.005, float(poll_interval))
         self._held: dict[str, NamedLock] = {}
+        self._owners: dict[str, int] = {}
+        self._reserved: set[str] = set()
         self._guard = threading.RLock()
+        self._free = threading.Condition(self._guard)
 
     @property
     def directory(self) -> Path:
@@ -403,15 +359,17 @@ class NamedLockRegistry:
     ) -> NamedLock:
         """Take named lock *name*, or raise :class:`LockTimeoutError`.
 
-        Re-acquiring a name this registry already holds returns the same handle: a
+        Re-acquiring a name the calling thread already holds returns the same handle: a
         lock is a resource, not a counter, so a second call cannot invite an
-        unbalanced release.
+        unbalanced release. Another thread of this process waits for the name, up to
+        *timeout*, the way another process would.
         """
         cleaned = lock_name(name)
-        with self._guard:
-            existing = self._held.get(cleaned)
-            if existing is not None and existing.held:
-                return existing
+        with self._free:
+            if self._busy(cleaned):
+                if self._owners.get(cleaned) == threading.get_ident():
+                    return self._held[cleaned]
+                self._wait(cleaned, timeout, blocking)
         handle = NamedLock(
             self.path_for(cleaned),
             name=cleaned,
@@ -422,6 +380,7 @@ class NamedLockRegistry:
         handle.acquire(timeout=timeout, blocking=blocking)
         with self._guard:
             self._held[cleaned] = handle
+            self._owners[cleaned] = threading.get_ident()
         return handle
 
     def hold(
@@ -436,21 +395,22 @@ class NamedLockRegistry:
 
         Inspection and reservation happen in one guarded step, so two threads that
         call hold on the same name at the same moment cannot both pass a check and
-        then race into acquire: the loser gets the collision error immediately
-        instead of a timeout that depends on who won the file lock first. Nesting
-        the same lock is a design smell worth a stack trace, not a double-hold.
+        then race into acquire: the loser waits for the name, up to *timeout*, and
+        never shares the critical section. Nesting the same lock in one thread is a
+        design smell worth a stack trace, not a double-hold.
         """
         cleaned = lock_name(name)
         handle = _LockHandle(self, cleaned, timeout, blocking, metadata)
-        with self._guard:
-            current = self._held.get(cleaned)
-            if current is not None:
-                raise LockTimeoutError(
-                    f"named lock {cleaned!r} is already held by this process",
-                    name=cleaned,
-                    timeout=timeout,
-                    hint="release it before nesting 'with registry.hold(...)'",
-                )
+        with self._free:
+            if self._busy(cleaned):
+                if self._owners.get(cleaned) == threading.get_ident():
+                    raise LockTimeoutError(
+                        f"named lock {cleaned!r} is already held by this process",
+                        name=cleaned,
+                        timeout=timeout,
+                        hint="release it before nesting 'with registry.hold(...)'",
+                    )
+                self._wait(cleaned, timeout, blocking)
             handle.lock = NamedLock(
                 self.path_for(cleaned),
                 name=cleaned,
@@ -459,7 +419,34 @@ class NamedLockRegistry:
                 poll_interval=self._poll,
             )
             self._held[cleaned] = handle.lock
+            self._owners[cleaned] = threading.get_ident()
+            self._reserved.add(cleaned)
         return handle
+
+    def settle(self, name: str) -> None:
+        """Mark a reserved name as really held (the reservation became a lock)."""
+        with self._guard:
+            self._reserved.discard(name)
+
+    def _busy(self, name: str) -> bool:
+        """Return True while some thread holds *name* or has just reserved it."""
+        handle = self._held.get(name)
+        return handle is not None and (handle.held or name in self._reserved)
+
+    def _wait(self, name: str, timeout: float | None, blocking: bool) -> None:
+        """Wait (guard held) until another thread lets go of *name*, or refuse."""
+        wait_until_free(
+            self._free, lambda: self._busy(name), timeout, blocking,
+            lambda: self._refusal(name, timeout),
+        )
+
+    def _refusal(self, name: str, timeout: float | None) -> LockTimeoutError:
+        return LockTimeoutError(
+            f"named lock {name!r} is held by another thread of this process",
+            name=name,
+            timeout=timeout,
+            hint="wait for the owner, raise the timeout, or run 'kdx doctor' to see the holder",
+        )
 
     def get(self, name: str) -> NamedLock | None:
         """Return the handle this registry holds for *name*, or None."""
@@ -479,8 +466,11 @@ class NamedLockRegistry:
     def release(self, name: str) -> bool:
         """Release *name*; return whether this registry held it."""
         cleaned = lock_name(name)
-        with self._guard:
+        with self._free:
             handle = self._held.pop(cleaned, None)
+            self._owners.pop(cleaned, None)
+            self._reserved.discard(cleaned)
+            self._free.notify_all()
         if handle is None:
             return False
         handle.release()
@@ -488,9 +478,12 @@ class NamedLockRegistry:
 
     def release_all(self) -> int:
         """Release every name this registry holds; return how many went free."""
-        with self._guard:
+        with self._free:
             handles = list(self._held.values())
             self._held.clear()
+            self._owners.clear()
+            self._reserved.clear()
+            self._free.notify_all()
         for handle in handles:
             handle.release()
         return len(handles)

@@ -1113,9 +1113,9 @@ class _ControlHandler(BaseHTTPRequestHandler):
                 self._reply(405, {"error": "reload expects POST"})
                 return
             answer = ipc.request_reload()
-            ipc.audit_event(RELOAD_PATH, caller, "ok", detail=answer.get("changed"),
-                            address=self._address())
-            self._reply(200, answer)
+            ipc.audit_event(RELOAD_PATH, caller, "refused" if "error" in answer else "ok",
+                            detail=answer.get("changed"), address=self._address())
+            self._reply(422 if "error" in answer else 200, answer)  # 422: old config still runs
             return
         if path == RPC_PATH:
             if method != "POST":

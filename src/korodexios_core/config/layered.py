@@ -30,6 +30,7 @@ from .loaders import (
     split_list_value,
     unflatten_mapping,
 )
+from .unloaded import is_unloaded_module_key
 
 ALIAS_KEY: str = "core.env.aliases"
 """The chassis key that maps a legacy environment name to a canonical dotted key."""
@@ -129,9 +130,8 @@ def is_secret_key(key: str) -> bool:
     declared ``secret=True`` is sensitive too (see :func:`declare_secret_keys`).
     """
     lowered = str(key).strip().lower()
-    with _DECLARED_LOCK:
-        if lowered in _DECLARED_SECRETS:
-            return True
+    if lowered in declared_secret_keys():
+        return True
     segments = [part.strip() for part in lowered.split(KEY_SEPARATOR) if part.strip()]
     for segment in segments:
         if segment in SECRET_KEY_SEGMENTS:
@@ -174,7 +174,7 @@ def mask_url_credentials(value: Any, *, marker: str = REDACTION) -> Any:
 
 def redact_for_display(key: str, value: Any) -> Any:
     """Return *value* the way a report may show it: secret keys masked, URL passwords hidden."""
-    if is_secret_key(key):
+    if is_secret_key(key) or is_unloaded_module_key(key):
         return redact_value(value)
     return mask_url_credentials(value)
 

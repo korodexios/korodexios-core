@@ -12,6 +12,7 @@ from typing import Any
 from ..config.keys import MODULE_SETTINGS
 from ..config.layered import declare_secret_keys
 from ..config.schema import ConfigField, ConfigIssue, ConfigSchema, schema_from_mapping
+from ..config.unloaded import declare_loaded_modules
 from ..constants import DEFAULT_STOP_TIMEOUT
 from ..events.bus import EventBus
 from ..exceptions import ModuleContractError
@@ -238,10 +239,8 @@ def _call_hook(module: Any, name: str, logger: Any) -> Any:
     try:
         return hook()
     except ModuleContractError as exc:
-        logger.debug(
-            f"module hook {name} ran before init(context): {exc}",
-            module=getattr(module, "name", "?"),
-        )
+        logger.debug(f"module hook {name} ran before init(context): {exc}",
+                     module=getattr(module, "name", "?"))
         return None
     except Exception as exc:
         logger.error(
@@ -253,6 +252,7 @@ def _call_hook(module: Any, name: str, logger: Any) -> Any:
 
 def collect_schema(module: Any, name: str, logger: Any) -> ConfigSchema | None:
     """Normalize whatever config_schema() returns into a ConfigSchema."""
+    declare_loaded_modules([name])
     schema = _normalize_schema(_call_hook(module, "config_schema", logger), name, logger)
     if schema is not None:
         declare_secret_keys(f"modules.{name}.{key}" for key in schema.secrets())

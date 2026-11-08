@@ -439,6 +439,10 @@ key is `cli.collisions`). Pick another name; the full current list is `kdx --hel
 - `danger=True` marks a command that changes files or state. It still runs remotely, but the
   web console asks for a second click first. Both flags set on a group cover every command
   below it.
+- A command that reads or writes a path given by the caller must confine it to the project
+  when `request.caller` is set (the call came over the control plane); a local terminal call is
+  the user's own. `wiki ingest` does so in `modules/wiki/sources.py`, and answers "missing" and
+  "not allowed" alike.
 
 `CliArgument` fields: positional `flags` tuple (e.g. `("--json",)` or
 `("-n", "--lines")`), `dest`, `metavar`, `type` (`str|int|float|path|flag`),

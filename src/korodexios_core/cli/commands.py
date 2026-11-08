@@ -1542,7 +1542,7 @@ def _reload_command(request: CliRequest) -> int:
         return int(ExitCode.ERROR)
     if code >= 400:
         write_line(f"{TAG_ERROR} " + tr("reload failed: {payload}", payload=payload))
-        return int(ExitCode.ERROR)
+        return int(ExitCode.CONFIG_ERROR if code == 422 else ExitCode.ERROR)  # 422: bad config
     if request.flag("as_json"):
         dump_json(payload)
         return int(ExitCode.SUCCESS)

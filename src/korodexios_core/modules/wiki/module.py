@@ -50,6 +50,7 @@ from .pages import (
     search,
     valid_slug,
 )
+from .sources import ingest_source
 
 SCOPES = ("public", "internal")
 DEFAULT_DIRS = {"public": "docs/wiki", "internal": "docs-dev/wiki"}
@@ -125,9 +126,7 @@ class WikiModule(Module):
             )
         except (OSError, subprocess.SubprocessError):
             return None
-        if completed.returncode == 128:  # not a git repository
-            return None
-        return completed.returncode == 0
+        return None if completed.returncode == 128 else completed.returncode == 0  # 128: no repo
 
     def mcp_resources(self) -> list[McpResource]:
         """Offer each scope's index and schema to MCP clients, read fresh every time."""
@@ -345,9 +344,9 @@ class WikiModule(Module):
         return int(ExitCode.SUCCESS)
 
     def _ingest(self, request: CliRequest) -> int:
-        source = Path(str(request.option("file") or ""))
-        if not source.is_file():
-            write_line(f"{TAG_ERROR} " + tr("{path} not found", path=source))
+        source = ingest_source(request, self.root(), self.require_context().paths)
+        if source is None or not source.is_file():
+            write_line(f"{TAG_ERROR} " + tr("{path} not found", path=request.option("file", "")))
             return int(ExitCode.ERROR)
         scope = self._scope(request)
         directory = self.directory(scope)

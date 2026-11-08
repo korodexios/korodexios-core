@@ -111,6 +111,10 @@ kdx reload                      # ask the running daemon to re-read its configur
 kdx reload --json               # {"reloaded": true, "changed": [...]}
 ```
 
+A configuration that does not load (a typo in `kdx.yml`) is refused: the daemon keeps the
+one it has, `POST /api/v1/reload` answers `422` with `{"reloaded": false, "error", "hint"}`,
+and `kdx reload` exits `3`. The same refusal on SIGHUP is logged and the daemon carries on.
+
 The daemon stays up: the layers are re-read with the same precedence, the changed keys
 are published as `core.config.reloaded`, and every module's optional `on_config_reload`
 hook runs with its scoped view. Log level changes apply immediately; moving a path role

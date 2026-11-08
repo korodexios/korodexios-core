@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import threading
+import time
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -255,3 +257,39 @@ def test_receipt_of_an_unknown_id(tree: Path) -> None:
     assert caught.value.code == "txn-unknown"
     assert manager(tree).receipts() == []
     assert manager(tree).recover() == []
+
+
+def test_concurrent_transactions_are_serialised_and_both_undo(tree: Path) -> None:
+    """Review 2026-11-08, B3: the plan is read under the lock, so a later undo still works."""
+    inside = 0
+    peak = 0
+    guard = threading.Lock()
+
+    def checkpoint(phase: str) -> None:
+        nonlocal inside, peak
+        if phase == "prepared":
+            with guard:
+                inside += 1
+                peak = max(peak, inside)
+            time.sleep(0.3)
+        elif phase == "finalized":
+            with guard:
+                inside -= 1
+
+    mgr = manager(tree, checkpoint=checkpoint)
+    ids: dict[str, str] = {}
+
+    def run(name: str, delay: float) -> None:
+        time.sleep(delay)
+        ids[name] = mgr.run([TxnOp.write("a.txt", name)], label=name).txn_id
+
+    threads = [threading.Thread(target=run, args=("A", 0.0)),
+               threading.Thread(target=run, args=("B", 0.1))]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(30)
+    assert peak == 1, "one transaction at a time"
+    assert (tree / "a.txt").read_text(encoding="utf-8") == "B"
+    mgr.undo(ids["B"])
+    assert (tree / "a.txt").read_text(encoding="utf-8") == "A"

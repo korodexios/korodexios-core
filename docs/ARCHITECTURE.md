@@ -251,7 +251,7 @@ The chassis installs handlers so an interactive Ctrl-C never leaves a traceback:
 | `SIGBREAK` | Windows console close; joins the same gate as `SIGINT` | `130` |
 | `POST /api/v1/shutdown` | planned stop | `0` |
 | `Chassis.request_clean_stop()` | in-process stop | `0` |
-| `SIGHUP` | configuration reload on POSIX; the daemon keeps running | - |
+| `SIGHUP` | configuration reload on POSIX; the daemon keeps running, also when the new configuration is refused | - |
 
 Both stop paths route into the same stop sequence: modules stop in reverse order,
 logging is flushed and closed, and the process exits with the conventional
