@@ -867,7 +867,7 @@ def _logs_command(request: CliRequest) -> int:
     timeout = float(str(timeout_value)) if timeout_value is not None else None
 
     def emit(line: str) -> None:
-        write_line(line)
+        write_line(line, raw=True)
 
     def note(message: str) -> None:
         if not raw:
@@ -1653,7 +1653,7 @@ def render_rpc_reply(payload: Mapping[str, Any], command: str, *, as_json: bool)
     if ok and isinstance(result, dict):
         output = str(result.get("output") or "")
         if output:
-            write_line(output.rstrip("\n"))
+            write_line(output.rstrip("\n"), raw=True)
         print_key_values(
             [
                 ("command", str(result.get("path") or command)),

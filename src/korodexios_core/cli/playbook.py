@@ -13,7 +13,7 @@ from pathlib import Path
 from ..constants import TAG_ERROR, TAG_OK, ExitCode
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
 from .docs_sync import check_one
-from .render import tr, write_line
+from .render import plain, tr, write_line
 
 RESOURCES = Path(__file__).resolve().parent.parent / "resources"
 
@@ -55,14 +55,14 @@ def _playbook(request: CliRequest) -> int:
     target = request.option("write")
     if not target:
         for line in text.splitlines():
-            write_line(line)
+            write_line(line, raw=True)
         return int(ExitCode.SUCCESS)
     path = Path(str(target))
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
     except OSError as exc:
-        reason = tr("{path} could not be written: {reason}", path=path, reason=exc)
+        reason = plain("{path} could not be written: {reason}", path=path, reason=exc)
         write_line(f"{TAG_ERROR} {reason}", stream=sys.stderr)
         return int(ExitCode.ERROR)
     write_line(f"{TAG_OK} " + tr("{path} created", path=path))

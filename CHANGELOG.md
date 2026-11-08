@@ -33,6 +33,10 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - Atomic file writes wait up to a second for a reader on Windows (sharing violation, `WinError 5`/`32`) instead of failing; when the control plane cannot write its discovery file it stops listening instead of keeping a port nobody can find.
 - A task left `running` by a crashed worker whose process id was reused by an unrelated process is requeued by `recover()`: a process created after the claim cannot be the worker (`kernel/proc_start.py`, Windows and Linux; elsewhere the old pid-only rule stays).
 - `core.lifecycle.stop_timeout` is now the budget of the whole shutdown (it was the budget of every step and every module, so 3 slow modules took 3x as long); a stop requested during module start-up stops the remaining modules from starting.
+- Data that only passes through the CLI is no longer run through the translator: a delegated command's output (`kdx rpc`, `kdx --remote`, job output, `kdx logs`), `kdx playbook`, `kdx conventions` and the diff of `kdx docs check` print as written, so `kdx --locale sk rpc mod status | grep running` works (`write_line(..., raw=True)`).
+- Diagnostics on stderr (`agents sync`, `brief`, `conventions`, `playbook`, `docs`) stay English whatever the locale (`render.plain`), as the stderr rule says; their catalogue entries became obsolete.
+- `kdx locale extract` said `no translation of {domain} ...` with a `{domain}` field that `translate(domain=)` swallowed, so the note was never filled; it is `{name}` now. It also refuses a source without Python strings (the web domain's strings are in JavaScript) instead of replacing its template with the fixed words and turning the web translations obsolete.
+- The `.po` reader (`kernel/po.py`, behind the same `parse_po`/`PoEntry`) no longer pastes the lines of a `msgid_plural`, `msgstr[n]` or `msgctxt` onto the entry above it, an entry with a context no longer replaces the plain one of the same text, and a byte-order mark no longer hides the first entry. Plural and context entries are still not used by the chassis.
 
 ## [0.6.6] - 2026-11-07
 

@@ -1454,10 +1454,6 @@ msgstr "Kontrollebene hier binden (0.0.0.0 für Zugriff im LAN)"
 msgid "brief is complete: {path}"
 msgstr "Brief ist vollständig: {path}"
 
-#: cli/brief.py
-msgid "brief is incomplete: {titles}"
-msgstr "Brief ist unvollständig: {titles}"
-
 #: cli/language.py
 msgid "broken"
 msgstr "fehlerhaft"
@@ -2050,6 +2046,10 @@ msgstr "weiter: Zusammenfassung schreiben, betroffene Seiten anpassen, dann kdx 
 msgid "no"
 msgstr "nein"
 
+#: cli/language.py
+msgid "no Python strings to extract under {path}"
+msgstr "Keine Python-Zeichenketten zum Extrahieren unter {path}"
+
 #: cli/users.py
 msgid "no audit records yet in {path}"
 msgstr "noch keine Audit-Einträge in {path}"
@@ -2175,8 +2175,8 @@ msgid "no transactions recorded"
 msgstr "keine Transaktionen aufgezeichnet"
 
 #: cli/language.py
-msgid "no translation of {domain} found under {path}"
-msgstr "keine Übersetzung der Domäne {domain} unter {path} gefunden"
+msgid "no translation of {name} found under {path}"
+msgstr "Keine Übersetzung für {name} unter {path} gefunden"
 
 #: cli/language.py
 msgid "no translations to check; only the source language exists"
@@ -2445,10 +2445,6 @@ msgstr "benötigt Core"
 #: cli/commands.py
 msgid "resident"
 msgstr "resident"
-
-#: cli/conventions.py
-msgid "resource missing: {path}"
-msgstr "Ressource fehlt: {path}"
 
 #: modules/mcp_server/module.py
 msgid "restart the agent so it picks up the kdx server"
@@ -2826,10 +2822,6 @@ msgstr "Typ"
 msgid "ui"
 msgstr "ui"
 
-#: cli/agents.py
-msgid "unknown agent: {names}"
-msgstr "unbekannter Agent: {names}"
-
 #: cli/commands.py
 msgid "unknown dependencies"
 msgstr "unbekannte Abhängigkeiten"
@@ -3066,17 +3058,13 @@ msgstr "{path} kann nicht als JSON gelesen werden: {reason}"
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr "{path} kann nicht gelesen werden und blieb unverändert: {reason}"
 
-#: cli/brief.py
+#: cli/language.py
 msgid "{path} could not be written: {reason}"
 msgstr "{path} konnte nicht geschrieben werden: {reason}"
 
 #: cli/conventions.py
 msgid "{path} created"
 msgstr "{path} erstellt"
-
-#: cli/brief.py
-msgid "{path} does not exist"
-msgstr "{path} existiert nicht"
 
 #: cli/language.py
 msgid "{path} does not exist; run kdx locale extract"
@@ -3098,7 +3086,7 @@ msgstr "{path} ist aktuell"
 msgid "{path} must hold a JSON object"
 msgstr "{path} muss ein JSON-Objekt enthalten"
 
-#: cli/agents.py
+#: modules/wiki/module.py
 msgid "{path} not found"
 msgstr "{path} nicht gefunden"
 
@@ -3141,33 +3129,3 @@ msgstr "{value} ist keine Sprache, in die übersetzt werden kann"
 #: cli/users.py
 msgid "{verb}; this token is shown only now - hand it over privately"
 msgstr "{verb}; dieser Token wird nur jetzt angezeigt - gib ihn privat weiter"
-
-#~ msgid "Create a page with its header (title, tags, summary)."
-#~ msgstr "Legt eine Seite mit Kopf an (Titel, Schlagwörter, Zusammenfassung)."
-
-#~ msgid "Create the wiki folders and keep the internal one out of git."
-#~ msgstr "Legt die Wiki-Ordner an und hält den internen aus git heraus."
-
-#~ msgid "GUI tier: none | static [none]; 'kdx ui guide' says which to pick"
-#~ msgstr "GUI-Stufe: none | static [none]; 'kdx ui guide' sagt, welche passt"
-
-#~ msgid "List pages with their languages and tags."
-#~ msgstr "Listet Seiten mit ihren Sprachen und Schlagwörtern auf."
-
-#~ msgid "Report broken links, missing headers and translations."
-#~ msgstr "Meldet kaputte Links, fehlende Köpfe und Übersetzungen."
-
-#~ msgid "The project wiki: public and internal pages, per language."
-#~ msgstr "Das Projekt-Wiki: öffentliche und interne Seiten, je Sprache."
-
-#~ msgid "Write INDEX.md for each wiki (what an agent reads first)."
-#~ msgstr "Schreibt INDEX.md für jedes Wiki (was ein Agent zuerst liest)."
-
-#~ msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
-#~ msgstr "nav, panels, buttons, values, defaults, settings; ohne Angabe: alles außer defaults."
-
-#~ msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
-#~ msgstr "nichts zu ändern: gib --side, --bottom, --inspector, --hide, --show oder --ribbon an"
-
-#~ msgid "python | fullstack"
-#~ msgstr "python | fullstack"

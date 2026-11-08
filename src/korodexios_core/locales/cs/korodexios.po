@@ -1454,10 +1454,6 @@ msgstr "zpřístupní řídicí rovinu zde (0.0.0.0 pro přístup z LAN)"
 msgid "brief is complete: {path}"
 msgstr "zadání je úplné: {path}"
 
-#: cli/brief.py
-msgid "brief is incomplete: {titles}"
-msgstr "zadání je neúplné: {titles}"
-
 #: cli/language.py
 msgid "broken"
 msgstr "porušené"
@@ -2050,6 +2046,10 @@ msgstr "dále: napište shrnutí, upravte dotčené stránky, pak kdx wiki index
 msgid "no"
 msgstr "ne"
 
+#: cli/language.py
+msgid "no Python strings to extract under {path}"
+msgstr "v {path} nebyly nalezeny žádné řetězce Pythonu k extrakci"
+
 #: cli/users.py
 msgid "no audit records yet in {path}"
 msgstr "v {path} zatím nejsou žádné záznamy auditu"
@@ -2175,8 +2175,8 @@ msgid "no transactions recorded"
 msgstr "nejsou zaznamenány žádné transakce"
 
 #: cli/language.py
-msgid "no translation of {domain} found under {path}"
-msgstr "nenalezen žádný překlad domény {domain} v {path}"
+msgid "no translation of {name} found under {path}"
+msgstr "v {path} nebyl nalezen žádný překlad pro {name}"
 
 #: cli/language.py
 msgid "no translations to check; only the source language exists"
@@ -2445,10 +2445,6 @@ msgstr "vyžaduje core"
 #: cli/commands.py
 msgid "resident"
 msgstr "rezidentní"
-
-#: cli/conventions.py
-msgid "resource missing: {path}"
-msgstr "chybí zdroj: {path}"
 
 #: modules/mcp_server/module.py
 msgid "restart the agent so it picks up the kdx server"
@@ -2826,10 +2822,6 @@ msgstr "typ"
 msgid "ui"
 msgstr "ui"
 
-#: cli/agents.py
-msgid "unknown agent: {names}"
-msgstr "neznámý agent: {names}"
-
 #: cli/commands.py
 msgid "unknown dependencies"
 msgstr "neznámé závislosti"
@@ -3066,17 +3058,13 @@ msgstr "{path} nelze přečíst jako JSON: {reason}"
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr "{path} nelze přečíst, proto jsem ho nechal beze změny: {reason}"
 
-#: cli/brief.py
+#: cli/language.py
 msgid "{path} could not be written: {reason}"
 msgstr "{path} se nepodařilo zapsat: {reason}"
 
 #: cli/conventions.py
 msgid "{path} created"
 msgstr "{path} byl vytvořen"
-
-#: cli/brief.py
-msgid "{path} does not exist"
-msgstr "{path} neexistuje"
 
 #: cli/language.py
 msgid "{path} does not exist; run kdx locale extract"
@@ -3098,7 +3086,7 @@ msgstr "{path} je aktuální"
 msgid "{path} must hold a JSON object"
 msgstr "{path} musí obsahovat objekt JSON"
 
-#: cli/agents.py
+#: modules/wiki/module.py
 msgid "{path} not found"
 msgstr "{path} nenalezen"
 
@@ -3141,33 +3129,3 @@ msgstr "{value} není jazyk, do kterého lze překládat"
 #: cli/users.py
 msgid "{verb}; this token is shown only now - hand it over privately"
 msgstr "{verb}; tento token se zobrazí pouze teď - předej ho soukromě"
-
-#~ msgid "Create a page with its header (title, tags, summary)."
-#~ msgstr "Vytvoří stránku s hlavičkou (název, štítky, shrnutí)."
-
-#~ msgid "Create the wiki folders and keep the internal one out of git."
-#~ msgstr "Vytvoří složky wiki a interní část vyloučí z gitu."
-
-#~ msgid "GUI tier: none | static [none]; 'kdx ui guide' says which to pick"
-#~ msgstr "úroveň GUI: none | static [none]; 'kdx ui guide' poradí, kterou vybrat"
-
-#~ msgid "List pages with their languages and tags."
-#~ msgstr "Vypíše stránky s jejich jazyky a štítky."
-
-#~ msgid "Report broken links, missing headers and translations."
-#~ msgstr "Nahlásí rozbité odkazy, chybějící hlavičky a překlady."
-
-#~ msgid "The project wiki: public and internal pages, per language."
-#~ msgstr "Wiki projektu: veřejné a interní stránky, po jazycích."
-
-#~ msgid "Write INDEX.md for each wiki (what an agent reads first)."
-#~ msgstr "Zapíše INDEX.md pro každou wiki (to, co agent čte jako první)."
-
-#~ msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
-#~ msgstr "nav, panels, buttons, values, defaults, settings; bez názvu se myslí vše kromě defaults."
-
-#~ msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
-#~ msgstr "není co měnit: zadej --side, --bottom, --inspector, --hide, --show nebo --ribbon"
-
-#~ msgid "python | fullstack"
-#~ msgstr "python | fullstack"

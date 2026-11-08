@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING, cast
 from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
 from ..fsio import atomic_write_text
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
-from .render import dump_json, tr, write_line
+from .render import dump_json, plain, tr, write_line
 
 if TYPE_CHECKING:
     from ..kernel.chassis import Chassis
@@ -190,13 +190,13 @@ def _sync(request: CliRequest) -> int:
     unknown = [item for item in only if item not in {target.key for target in TARGETS}]
     if unknown:
         write_line(
-            f"{TAG_ERROR} " + tr("unknown agent: {names}", names=", ".join(unknown)),
+            f"{TAG_ERROR} " + plain("unknown agent: {names}", names=", ".join(unknown)),
             stream=sys.stderr,
         )
         return int(ExitCode.USAGE_ERROR)
     if not (root / SOURCE_NAME).is_file():
         write_line(
-            f"{TAG_ERROR} " + tr("{path} not found", path=root / SOURCE_NAME), stream=sys.stderr
+            f"{TAG_ERROR} " + plain("{path} not found", path=root / SOURCE_NAME), stream=sys.stderr
         )
         write_line(f"{TAG_NOTE} " + tr("write AGENTS.md first ('kdx init' seeds one)"))
         return int(ExitCode.ERROR)

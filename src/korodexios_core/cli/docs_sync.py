@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING, cast
 from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
 from ..fsio import atomic_write_text
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
-from .render import dump_json, tr, write_line
+from .render import dump_json, plain, tr, write_line
 
 if TYPE_CHECKING:
     from ..kernel.chassis import Chassis
@@ -108,7 +108,7 @@ def _report(rows: list[DocRow], *, as_json: bool, show_diff: bool) -> None:
         write_line(f"{tag} {row.path}: {_label(row.state)}")
         if show_diff and row.diff:
             for line in row.diff.splitlines():
-                write_line(line)
+                write_line(line, raw=True)
     if any(row.state in ("stale", "missing") for row in rows):
         write_line(f"{TAG_NOTE} " + tr("'kdx docs update' rewrites them from the installed core"))
 
@@ -182,7 +182,7 @@ def _update(request: CliRequest) -> int:
     try:
         rows = update_documents(root, seeded_documents())
     except OSError as exc:
-        reason = tr("{path} could not be written: {reason}", path=root, reason=exc)
+        reason = plain("{path} could not be written: {reason}", path=root, reason=exc)
         write_line(f"{TAG_ERROR} {reason}", stream=sys.stderr)
         return int(ExitCode.ERROR)
     _report(rows, as_json=request.flag("as_json"), show_diff=False)

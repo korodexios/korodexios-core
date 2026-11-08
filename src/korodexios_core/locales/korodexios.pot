@@ -1452,10 +1452,6 @@ msgstr ""
 msgid "brief is complete: {path}"
 msgstr ""
 
-#: cli/brief.py
-msgid "brief is incomplete: {titles}"
-msgstr ""
-
 #: cli/language.py
 msgid "broken"
 msgstr ""
@@ -2048,6 +2044,10 @@ msgstr ""
 msgid "no"
 msgstr ""
 
+#: cli/language.py
+msgid "no Python strings to extract under {path}"
+msgstr ""
+
 #: cli/users.py
 msgid "no audit records yet in {path}"
 msgstr ""
@@ -2173,7 +2173,7 @@ msgid "no transactions recorded"
 msgstr ""
 
 #: cli/language.py
-msgid "no translation of {domain} found under {path}"
+msgid "no translation of {name} found under {path}"
 msgstr ""
 
 #: cli/language.py
@@ -2442,10 +2442,6 @@ msgstr ""
 
 #: cli/commands.py
 msgid "resident"
-msgstr ""
-
-#: cli/conventions.py
-msgid "resource missing: {path}"
 msgstr ""
 
 #: modules/mcp_server/module.py
@@ -2824,10 +2820,6 @@ msgstr ""
 msgid "ui"
 msgstr ""
 
-#: cli/agents.py
-msgid "unknown agent: {names}"
-msgstr ""
-
 #: cli/commands.py
 msgid "unknown dependencies"
 msgstr ""
@@ -3064,16 +3056,12 @@ msgstr ""
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr ""
 
-#: cli/brief.py
+#: cli/language.py
 msgid "{path} could not be written: {reason}"
 msgstr ""
 
 #: cli/conventions.py
 msgid "{path} created"
-msgstr ""
-
-#: cli/brief.py
-msgid "{path} does not exist"
 msgstr ""
 
 #: cli/language.py
@@ -3096,7 +3084,7 @@ msgstr ""
 msgid "{path} must hold a JSON object"
 msgstr ""
 
-#: cli/agents.py
+#: modules/wiki/module.py
 msgid "{path} not found"
 msgstr ""
 

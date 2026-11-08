@@ -24,13 +24,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
+from .po import PoEntry as PoEntry
+from .po import parse_po as parse_po
+
 DEFAULT_LOCALE: Final[str] = "en"
 CORE_DOMAIN: Final[str] = "korodexios"
 AUTO_LOCALE: Final[str] = "auto"
 ENVIRONMENT_KEYS: Final[tuple[str, ...]] = ("LC_ALL", "LC_MESSAGES", "LANG")
 """Consulted, in order, when the configured locale is ``auto``."""
 
-_ESCAPES: Final[dict[str, str]] = {"n": "\n", "t": "\t", "r": "\r", '"': '"', "\\": "\\"}
 _LOCALE_SHAPE: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z]{2,3}(?:_[A-Za-z0-9]{2,4})?$")
 _FIELD: Final[re.Pattern[str]] = re.compile(r"\{(\w+)\}")
 
@@ -51,86 +53,6 @@ def locale_chain(locale: str) -> tuple[str, ...]:
         return ()
     language = cleaned.partition("_")[0]
     return (cleaned,) if cleaned == language else (cleaned, language)
-
-
-def _unquote(raw: str) -> str:
-    body = raw.strip()
-    if len(body) < 2 or body[0] != '"' or body[-1] != '"':
-        return ""
-    text, out, index = body[1:-1], [], 0
-    while index < len(text):
-        char = text[index]
-        if char == "\\" and index + 1 < len(text):
-            out.append(_ESCAPES.get(text[index + 1], text[index + 1]))
-            index += 2
-            continue
-        out.append(char)
-        index += 1
-    return "".join(out)
-
-
-@dataclass(frozen=True, slots=True)
-class PoEntry:
-    """One entry of a gettext source file."""
-
-    msgid: str
-    msgstr: str
-    fuzzy: bool = False
-    line: int = 0
-    where: str = ""
-
-    @property
-    def translated(self) -> bool:
-        """Return True when the entry carries a usable translation."""
-        return bool(self.msgstr) and not self.fuzzy
-
-
-def parse_po(text: str) -> list[PoEntry]:
-    """Parse gettext source *text* into entries; the header (empty msgid) is skipped.
-
-    Supports comments, the ``fuzzy`` flag, and strings continued over several lines.
-    Plural forms and contexts are not used by the chassis and are ignored.
-    """
-    entries: list[PoEntry] = []
-    msgid: str | None = None
-    msgstr = ""
-    target = ""
-    fuzzy = False
-    start = 0
-    pending_fuzzy = False
-    pending_where = ""
-    where = ""
-
-    def flush() -> None:
-        nonlocal msgid, msgstr, fuzzy
-        if msgid:
-            entries.append(PoEntry(msgid, msgstr, fuzzy, start, where))
-        msgid, msgstr, fuzzy = None, "", False
-
-    for number, raw in enumerate(text.splitlines(), start=1):
-        line = raw.strip()
-        if not line:
-            continue
-        if line.startswith("#"):
-            if line.startswith("#,") and "fuzzy" in line:
-                pending_fuzzy = True
-            elif line.startswith("#:"):
-                pending_where = line[2:].strip()
-            continue
-        if line.startswith("msgid "):
-            flush()
-            msgid, target, start = _unquote(line[6:]), "id", number
-            fuzzy, pending_fuzzy = pending_fuzzy, False
-            where, pending_where = pending_where, ""
-        elif line.startswith("msgstr "):
-            msgstr, target = _unquote(line[7:]), "str"
-        elif line.startswith('"'):
-            if target == "id" and msgid is not None:
-                msgid += _unquote(line)
-            elif target == "str":
-                msgstr += _unquote(line)
-    flush()
-    return entries
 
 
 @dataclass(frozen=True, slots=True)

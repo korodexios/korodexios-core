@@ -1454,10 +1454,6 @@ msgstr "sprístupní riadiacu rovinu tu (0.0.0.0 pre prístup z LAN)"
 msgid "brief is complete: {path}"
 msgstr "zadanie je úplné: {path}"
 
-#: cli/brief.py
-msgid "brief is incomplete: {titles}"
-msgstr "zadanie je neúplné: {titles}"
-
 #: cli/language.py
 msgid "broken"
 msgstr "pokazené"
@@ -2050,6 +2046,10 @@ msgstr "ďalej: napíšte zhrnutie, upravte dotknuté stránky, potom kdx wiki i
 msgid "no"
 msgstr "nie"
 
+#: cli/language.py
+msgid "no Python strings to extract under {path}"
+msgstr "v {path} sa nenašli žiadne reťazce Pythonu na extrakciu"
+
 #: cli/users.py
 msgid "no audit records yet in {path}"
 msgstr "v {path} zatiaľ nie sú žiadne záznamy auditu"
@@ -2175,8 +2175,8 @@ msgid "no transactions recorded"
 msgstr "nie sú zaznamenané žiadne transakcie"
 
 #: cli/language.py
-msgid "no translation of {domain} found under {path}"
-msgstr "nenašiel sa žiadny preklad domény {domain} v {path}"
+msgid "no translation of {name} found under {path}"
+msgstr "nenašiel sa žiadny preklad pre {name} v {path}"
 
 #: cli/language.py
 msgid "no translations to check; only the source language exists"
@@ -2445,10 +2445,6 @@ msgstr "vyžaduje core"
 #: cli/commands.py
 msgid "resident"
 msgstr "rezidentná"
-
-#: cli/conventions.py
-msgid "resource missing: {path}"
-msgstr "chýba zdroj: {path}"
 
 #: modules/mcp_server/module.py
 msgid "restart the agent so it picks up the kdx server"
@@ -2826,10 +2822,6 @@ msgstr "typ"
 msgid "ui"
 msgstr "ui"
 
-#: cli/agents.py
-msgid "unknown agent: {names}"
-msgstr "neznámy agent: {names}"
-
 #: cli/commands.py
 msgid "unknown dependencies"
 msgstr "neznáme závislosti"
@@ -3066,17 +3058,13 @@ msgstr "{path} sa nedá prečítať ako JSON: {reason}"
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr "{path} sa nedá prečítať, preto som ho nechal bez zmeny: {reason}"
 
-#: cli/brief.py
+#: cli/language.py
 msgid "{path} could not be written: {reason}"
 msgstr "{path} sa nepodarilo zapísať: {reason}"
 
 #: cli/conventions.py
 msgid "{path} created"
 msgstr "{path} bol vytvorený"
-
-#: cli/brief.py
-msgid "{path} does not exist"
-msgstr "{path} neexistuje"
 
 #: cli/language.py
 msgid "{path} does not exist; run kdx locale extract"
@@ -3098,7 +3086,7 @@ msgstr "{path} je aktuálny"
 msgid "{path} must hold a JSON object"
 msgstr "{path} musí obsahovať objekt JSON"
 
-#: cli/agents.py
+#: modules/wiki/module.py
 msgid "{path} not found"
 msgstr "{path} sa nenašiel"
 
@@ -3141,33 +3129,3 @@ msgstr "{value} nie je jazyk, do ktorého sa dá prekladať"
 #: cli/users.py
 msgid "{verb}; this token is shown only now - hand it over privately"
 msgstr "{verb}; tento token sa zobrazí iba teraz - odovzdaj ho súkromne"
-
-#~ msgid "Create a page with its header (title, tags, summary)."
-#~ msgstr "Vytvorí stránku s hlavičkou (názov, štítky, zhrnutie)."
-
-#~ msgid "Create the wiki folders and keep the internal one out of git."
-#~ msgstr "Vytvorí priečinky wiki a internú časť vylúči z gitu."
-
-#~ msgid "GUI tier: none | static [none]; 'kdx ui guide' says which to pick"
-#~ msgstr "úroveň GUI: none | static [none]; 'kdx ui guide' poradí, ktorú vybrať"
-
-#~ msgid "List pages with their languages and tags."
-#~ msgstr "Vypíše stránky s ich jazykmi a štítkami."
-
-#~ msgid "Report broken links, missing headers and translations."
-#~ msgstr "Nahlási rozbité odkazy, chýbajúce hlavičky a preklady."
-
-#~ msgid "The project wiki: public and internal pages, per language."
-#~ msgstr "Wiki projektu: verejné a interné stránky, po jazykoch."
-
-#~ msgid "Write INDEX.md for each wiki (what an agent reads first)."
-#~ msgstr "Zapíše INDEX.md pre každú wiki (to, čo agent číta ako prvé)."
-
-#~ msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
-#~ msgstr "nav, panels, buttons, values, defaults, settings; bez názvu sa myslia všetky okrem defaults."
-
-#~ msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
-#~ msgstr "nie je čo meniť: zadaj --side, --bottom, --inspector, --hide, --show alebo --ribbon"
-
-#~ msgid "python | fullstack"
-#~ msgstr "python | fullstack"

@@ -35,6 +35,7 @@ from ..kernel.i18n_extract import (
     tidy_po,
     todo_items,
 )
+from .locale_refresh import refresh_catalogs
 from .render import dump_json, print_key_values, print_table, write_line
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -344,6 +345,10 @@ def _extract(request: CliRequest) -> int:
         write_line(f"{TAG_ERROR} " + _t(request, "{path} is not a directory", path=source))
         return int(ExitCode.USAGE_ERROR)
     messages = scan_tree(source)
+    if not scan_tree(source, extra=()):  # JavaScript-only domains (web): never wipe
+        write_line(f"{TAG_ERROR} " + _t(request, "no Python strings to extract under {path}",
+                                        path=source))
+        return int(ExitCode.USAGE_ERROR)
     template = directory / f"{domain}.pot"
     wanted = render_pot(domain, messages)
     current = template.read_text(encoding="utf-8") if template.exists() else ""
@@ -360,24 +365,11 @@ def _extract(request: CliRequest) -> int:
                                  count=len(messages), path=template))
     translations = [loc for loc in service.locales(domain) if loc != DEFAULT_LOCALE]
     if not translations:
-        write_line(f"{TAG_NOTE} " + _t(request, "no translation of {domain} found under {path}",
-                                       domain=domain, path=directory))
-    for locale in service.locales(domain):
-        catalog = service.catalog(domain, locale)
-        if catalog is None or catalog.path is None:
-            continue
-        before = catalog.path.read_text(encoding="utf-8")
-        text, _, _ = compose_po(domain, locale, wanted, before, {})
-        if text != before:
-            catalog.path.write_text(text, encoding="utf-8", newline="\n")
-        had = {entry.msgid for entry in parse_po(before)}
-        added = len(messages.keys() - had)
-        stale = len(had - messages.keys())
-        write_line(
-            f"{TAG_NOTE} "
-            + _t(request, "{locale}: {added} new, {stale} obsolete", locale=locale,
-                 added=added, stale=stale)
-        )
+        write_line(f"{TAG_NOTE} " + _t(request, "no translation of {name} found under {path}",
+                                       name=domain, path=directory))
+    for locale, added, stale in refresh_catalogs(service, domain, wanted, messages.keys()):
+        write_line(f"{TAG_NOTE} " + _t(request, "{locale}: {added} new, {stale} obsolete",
+                                       locale=locale, added=added, stale=stale))
     return int(ExitCode.SUCCESS)
 
 

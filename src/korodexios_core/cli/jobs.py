@@ -196,7 +196,7 @@ def follow_job(
             return _failed(code, job)
         output = str(job.get("output") or "")
         if len(output) > shown:
-            write_line(output[shown:].rstrip("\n"))
+            write_line(output[shown:].rstrip("\n"), raw=True)
             shown = len(output)
         if job["state"] in FINISHED_STATES:
             if job.get("error"):
@@ -238,7 +238,7 @@ def _show(request: CliRequest) -> int:
     )
     output = str(job.get("output") or "").rstrip("\n")
     if output:
-        write_line(output)
+        write_line(output, raw=True)
     if job["state"] in ("running", "cancelling"):
         write_line(
             f"{TAG_NOTE} "

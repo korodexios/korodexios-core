@@ -1454,10 +1454,6 @@ msgstr "nasłuchuj płaszczyzny sterowania tutaj (0.0.0.0 dla dostępu z sieci L
 msgid "brief is complete: {path}"
 msgstr "brief jest kompletny: {path}"
 
-#: cli/brief.py
-msgid "brief is incomplete: {titles}"
-msgstr "brief jest niekompletny: {titles}"
-
 #: cli/language.py
 msgid "broken"
 msgstr "uszkodzony"
@@ -2050,6 +2046,10 @@ msgstr "dalej: napisz podsumowanie, zaktualizuj dotknięte strony, potem kdx wik
 msgid "no"
 msgstr "nie"
 
+#: cli/language.py
+msgid "no Python strings to extract under {path}"
+msgstr "Brak ciągów Pythona do wyodrębnienia w {path}"
+
 #: cli/users.py
 msgid "no audit records yet in {path}"
 msgstr "brak jeszcze rekordów audytu w {path}"
@@ -2175,8 +2175,8 @@ msgid "no transactions recorded"
 msgstr "brak zapisanych transakcji"
 
 #: cli/language.py
-msgid "no translation of {domain} found under {path}"
-msgstr "nie znaleziono tłumaczenia domeny {domain} w {path}"
+msgid "no translation of {name} found under {path}"
+msgstr "Nie znaleziono tłumaczenia dla {name} w {path}"
 
 #: cli/language.py
 msgid "no translations to check; only the source language exists"
@@ -2445,10 +2445,6 @@ msgstr "wymaga rdzenia"
 #: cli/commands.py
 msgid "resident"
 msgstr "rezydentna"
-
-#: cli/conventions.py
-msgid "resource missing: {path}"
-msgstr "brak zasobu: {path}"
 
 #: modules/mcp_server/module.py
 msgid "restart the agent so it picks up the kdx server"
@@ -2826,10 +2822,6 @@ msgstr "typ"
 msgid "ui"
 msgstr "ui"
 
-#: cli/agents.py
-msgid "unknown agent: {names}"
-msgstr "nieznany agent: {names}"
-
 #: cli/commands.py
 msgid "unknown dependencies"
 msgstr "nieznane zależności"
@@ -3066,17 +3058,13 @@ msgstr "{path} nie da się odczytać jako JSON: {reason}"
 msgid "{path} cannot be read, so it was left alone: {reason}"
 msgstr "{path} nie da się odczytać, więc go nie ruszono: {reason}"
 
-#: cli/brief.py
+#: cli/language.py
 msgid "{path} could not be written: {reason}"
 msgstr "{path} nie udało się zapisać: {reason}"
 
 #: cli/conventions.py
 msgid "{path} created"
 msgstr "{path} utworzono"
-
-#: cli/brief.py
-msgid "{path} does not exist"
-msgstr "{path} nie istnieje"
 
 #: cli/language.py
 msgid "{path} does not exist; run kdx locale extract"
@@ -3098,7 +3086,7 @@ msgstr "{path} jest aktualny"
 msgid "{path} must hold a JSON object"
 msgstr "{path} musi zawierać obiekt JSON"
 
-#: cli/agents.py
+#: modules/wiki/module.py
 msgid "{path} not found"
 msgstr "nie znaleziono {path}"
 
@@ -3141,33 +3129,3 @@ msgstr "{value} nie jest językiem, na który można tłumaczyć"
 #: cli/users.py
 msgid "{verb}; this token is shown only now - hand it over privately"
 msgstr "{verb}; ten token jest pokazywany tylko teraz - przekaż go prywatnie"
-
-#~ msgid "Create a page with its header (title, tags, summary)."
-#~ msgstr "Tworzy stronę z nagłówkiem (tytuł, tagi, podsumowanie)."
-
-#~ msgid "Create the wiki folders and keep the internal one out of git."
-#~ msgstr "Tworzy foldery wiki i wyłącza wewnętrzny z gita."
-
-#~ msgid "GUI tier: none | static [none]; 'kdx ui guide' says which to pick"
-#~ msgstr "poziom GUI: none | static [none]; 'kdx ui guide' podpowie, który wybrać"
-
-#~ msgid "List pages with their languages and tags."
-#~ msgstr "Wypisuje strony z ich językami i tagami."
-
-#~ msgid "Report broken links, missing headers and translations."
-#~ msgstr "Zgłasza zepsute linki, brakujące nagłówki i tłumaczenia."
-
-#~ msgid "The project wiki: public and internal pages, per language."
-#~ msgstr "Wiki projektu: strony publiczne i wewnętrzne, według języka."
-
-#~ msgid "Write INDEX.md for each wiki (what an agent reads first)."
-#~ msgstr "Zapisuje INDEX.md dla każdego wiki (to, co agent czyta najpierw)."
-
-#~ msgid "nav, panels, buttons, values, defaults, settings; none means all but defaults."
-#~ msgstr "nav, panels, buttons, values, defaults, settings; bez wskazania: wszystko oprócz defaults."
-
-#~ msgid "nothing to change: give --side, --bottom, --inspector, --hide, --show or --ribbon"
-#~ msgstr "nic do zmiany: podaj --side, --bottom, --inspector, --hide, --show lub --ribbon"
-
-#~ msgid "python | fullstack"
-#~ msgstr "python | fullstack"

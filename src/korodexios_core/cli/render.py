@@ -27,6 +27,17 @@ def set_translator(translator: Callable[..., str] | None) -> None:
     _translator = translator
 
 
+def plain(message: str, /, **fields: Any) -> str:
+    """Return *message* filled with *fields*, never translated.
+
+    For what goes to stderr, logs and machine payloads: those stay English in every language,
+    so a CI job can grep them (the stderr rule of the project).
+    """
+    if not fields:
+        return message
+    return message.format(**{key: str(value) for key, value in fields.items()})
+
+
 def tr(message: str, /, **fields: Any) -> str:
     """Return *message* translated and filled with *fields*; the source text when untranslated.
 
@@ -66,10 +77,15 @@ def _ascii_tags(message: str, stream: Any) -> str:
     return message
 
 
-def write_line(message: str = "", *, stream: Any = None) -> None:
-    """Write one line to stdout (the UI channel) unless *stream* says otherwise."""
+def write_line(message: str = "", *, stream: Any = None, raw: bool = False) -> None:
+    """Write one line to stdout (the UI channel) unless *stream* says otherwise.
+
+    A static message is translated on stdout. Pass ``raw=True`` for data that only passes
+    through (a daemon's output, a log line, a document, a diff): ``running`` stays ``running``
+    in every language, so a script can grep it.
+    """
     target = sys.stdout if stream is None else stream
-    shown = _tr_message(message) if target is sys.stdout else message
+    shown = message if raw or target is not sys.stdout else _tr_message(message)
     print(_ascii_tags(shown, target), file=target)
 
 

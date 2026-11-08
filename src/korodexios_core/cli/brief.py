@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
-from .render import dump_json, tr, write_line
+from .render import dump_json, plain, tr, write_line
 
 if TYPE_CHECKING:
     from ..kernel.chassis import Chassis
@@ -199,7 +199,7 @@ def _report(path: Path, answers: dict[str, str], request: CliRequest, *, written
         dump_json({"file": str(path), "complete": not missing, "pending": missing})
     elif missing:
         titles = ", ".join(by_key(key).title for key in missing)
-        reason = tr("brief is incomplete: {titles}", titles=titles)
+        reason = plain("brief is incomplete: {titles}", titles=titles)
         write_line(f"{TAG_ERROR} {reason}", stream=sys.stderr)
         write_line(f"{TAG_NOTE} " + tr("run 'kdx brief' to answer the questions"))
     elif written:
@@ -217,7 +217,7 @@ def _brief(request: CliRequest) -> int:
             if request.flag("as_json"):
                 dump_json({"file": str(path), "complete": False, "pending": [], "exists": False})
                 return int(ExitCode.ERROR)
-            reason = tr("{path} does not exist", path=path)
+            reason = plain("{path} does not exist", path=path)
             write_line(f"{TAG_ERROR} {reason}", stream=sys.stderr)
             write_line(f"{TAG_NOTE} " + tr("run 'kdx brief' to create it"))
             return int(ExitCode.ERROR)
@@ -227,7 +227,7 @@ def _brief(request: CliRequest) -> int:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(render_brief(answers), encoding="utf-8")
     except OSError as exc:
-        reason = tr("{path} could not be written: {reason}", path=path, reason=exc)
+        reason = plain("{path} could not be written: {reason}", path=path, reason=exc)
         write_line(f"{TAG_ERROR} {reason}", stream=sys.stderr)
         return int(ExitCode.ERROR)
     return _report(path, answers, request, written=True)
