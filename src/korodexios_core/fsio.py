@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import contextlib
 import os
+import stat
 import threading
 import time
 from pathlib import Path
@@ -38,30 +39,47 @@ def _replace(source: Path, target: Path) -> None:
             time.sleep(0.02)
 
 
+def _existing_mode(target: Path) -> int | None:
+    """Return the permission bits of an existing *target* on POSIX, else None."""
+    if os.name == "nt":
+        return None
+    try:
+        return stat.S_IMODE(target.stat().st_mode)
+    except OSError:
+        return None
+
+
 def atomic_write_bytes(
     path: str | os.PathLike[str], data: bytes, *, private: bool = False, fsync: bool = True
 ) -> Path:
     """Replace *path* with *data* in one filesystem step; return the path.
 
-    The parent directory is created. With *private* the sibling is owner-only before the
-    rename, so a secret is never readable at the final path by anyone else. With *fsync*
-    the data reaches the disk before the rename, so a crash leaves the old file or the new
-    one, never a torn mixture. On failure the sibling is removed and the target is left as
-    it was.
+    The parent directory is created. With *private* the sibling is created empty and made
+    owner-only BEFORE the secret is written to it, so the bytes are never readable by
+    anyone else, not even for the moment the ACL tool takes on Windows; where owner-only
+    cannot be had on POSIX the write is refused. Without *private* the mode of an existing
+    target is kept (a hand-locked file stays locked). With *fsync* the data reaches the disk
+    before the rename, so a crash leaves the old file or the new one, never a torn mixture.
+    On failure the sibling is removed and the target is left as it was.
     """
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     temporary = target.parent / f"{target.name}.tmp.{os.getpid()}.{threading.get_ident()}"
-    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0)
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0)
     try:
-        descriptor = os.open(str(temporary), flags, 0o600 if private else 0o644)
+        with contextlib.suppress(FileNotFoundError):
+            temporary.unlink()  # a sibling a crash left behind: start from a file we created
+        kept = None if private else _existing_mode(target)
+        descriptor = os.open(str(temporary), flags, 0o600 if private else (kept or 0o644))
         with os.fdopen(descriptor, "wb") as handle:
+            if private and not restrict_to_owner(temporary) and os.name != "nt":
+                raise PermissionError(f"cannot make {temporary} owner-only")
+            if kept is not None:
+                os.chmod(temporary, kept)
             handle.write(data)
             handle.flush()
             if fsync:
                 os.fsync(handle.fileno())
-        if private:
-            restrict_to_owner(temporary)
         _replace(temporary, target)
     except BaseException:
         with contextlib.suppress(OSError):

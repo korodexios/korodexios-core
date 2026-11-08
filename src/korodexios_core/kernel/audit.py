@@ -72,10 +72,11 @@ class AuditLog:
                 self._rotate_if_full(len(line))
                 fresh = not self.path.exists()
                 self.path.parent.mkdir(parents=True, exist_ok=True)
+                if fresh:  # owner-only before the first record, not after it
+                    self.path.touch(mode=0o600)
+                    restrict_to_owner(self.path)
                 with self.path.open("a", encoding="utf-8", newline="\n") as handle:
                     handle.write(line)
-                if fresh:
-                    restrict_to_owner(self.path)
                 self.records += 1
             except OSError:
                 self.failures += 1

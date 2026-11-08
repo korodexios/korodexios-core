@@ -17,6 +17,7 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - On Windows the instance lock and the named locks lock one byte at the end of the first 4 KiB instead of the whole of it, so another process can read who holds a lock: `kdx doctor` and `kdx status` no longer report a held lock as free, and a second daemon names the first in its refusal. The byte lies inside the range 0.6.6 locked, so an old and a new daemon still exclude each other during an upgrade. The POSIX-only markers on the lock tests are gone.
 - Stopping the control plane waits, inside the shutdown budget, for the requests being answered (an RPC, a module route) instead of cutting their threads at exit; streams (server-sent events, WebSocket) are not waited for.
 - A second stop signal more than 1.5 s after the first, while the shutdown is still running, ends the process at once with `128 + signal` (130 or 143) after flushing the log. A task that never returns can no longer make the daemon unkillable from its own terminal.
+- A secret file (`users.json`, the discovery file, the audit log) is made owner-only before its first byte is written, not after: the temporary sibling is created empty (`O_EXCL`), restricted, then filled. On POSIX a write that cannot be made owner-only is refused; on Windows the `icacls` step stays best effort (a drive without ACLs must not stop the daemon). A rewrite without `private` keeps the mode of the existing file, so `kdx config set` no longer opens a hand-locked `kdx.local.yml`.
 
 ## [0.6.7] - 2026-11-08
 
