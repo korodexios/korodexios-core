@@ -127,7 +127,7 @@ def test_the_seeded_size_ratchet_runs_and_catches_growth(tmp_path: Path) -> None
 
     def pytest_run() -> subprocess.CompletedProcess[str]:
         return subprocess.run(
-            [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",
+            [sys.executable, "-B", "-m", "pytest", "-q", "-p", "no:cacheprovider",
              str(tmp_path / "tests" / "test_size_ratchet.py")],
             cwd=tmp_path, capture_output=True, text=True, check=False,
         )

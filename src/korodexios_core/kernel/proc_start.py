@@ -17,26 +17,28 @@ _QUERY_LIMITED = 0x1000
 
 
 def _windows_created_at(pid: int) -> float | None:
-    import ctypes
-    from ctypes import wintypes
+    """Return when process *pid* was created, from GetProcessTimes; None elsewhere or on error."""
+    created_at: float | None = None
+    if sys.platform == "win32":  # folded away by the type checker on other platforms
+        import ctypes
+        from ctypes import wintypes
 
-    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
-    kernel.OpenProcess.restype = wintypes.HANDLE
-    handle = kernel.OpenProcess(_QUERY_LIMITED, False, pid)
-    if not handle:
-        return None
-    try:
-        created, exited, kernel_time, user_time = (wintypes.FILETIME() for _ in range(4))
-        ok = kernel.GetProcessTimes(
-            handle, ctypes.byref(created), ctypes.byref(exited),
-            ctypes.byref(kernel_time), ctypes.byref(user_time),
-        )
-        if not ok:
-            return None
-        ticks = (created.dwHighDateTime << 32) | created.dwLowDateTime
-        return ticks / 10_000_000 - _EPOCH_DELTA_SECONDS
-    finally:
-        kernel.CloseHandle(handle)
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.OpenProcess.restype = wintypes.HANDLE
+        handle = kernel.OpenProcess(_QUERY_LIMITED, False, pid)
+        if handle:
+            try:
+                created, exited, kernel_time, user_time = (wintypes.FILETIME() for _ in range(4))
+                ok = kernel.GetProcessTimes(
+                    handle, ctypes.byref(created), ctypes.byref(exited),
+                    ctypes.byref(kernel_time), ctypes.byref(user_time),
+                )
+                if ok:
+                    ticks = (created.dwHighDateTime << 32) | created.dwLowDateTime
+                    created_at = ticks / 10_000_000 - _EPOCH_DELTA_SECONDS
+            finally:
+                kernel.CloseHandle(handle)
+    return created_at
 
 
 def _linux_created_at(pid: int) -> float | None:
