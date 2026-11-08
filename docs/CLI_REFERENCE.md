@@ -536,6 +536,10 @@ kdx daemon config set core.locale sk                 # change one setting (admin
 kdx daemon audit -n 50                               # its audit records (admin)
 ```
 
+`kdx events` rides the core route `GET /api/v1/events` (role viewer), so it works with the web
+console disabled; the browser keeps `/api/v1/ui/events`. `kdx publish` needs the `webhooks`
+module (its inbound route) and the contributor role.
+
 Every command takes `--target URL --token T` for another machine. `kdx rpc --follow` has no
 timeout: it starts a job and polls it, so a long backup is fine; Ctrl+C stops watching, not
 the job. A job's exit code becomes the command's exit code; a cancelled job exits `130`.
@@ -777,7 +781,9 @@ caller only. `--locale` (global) picks the language of the manifest titles.
 commands bring them into a project created earlier and keep them current. The seeded
 `Makefile` runs `kdx docs check` as `make check-docs` (part of `make check`), and the seeded
 `tests/test_size_ratchet.py` records every file, function and signature over its size trigger
-so the excess can only shrink.
+so the excess can only shrink. `tests/test_rules.py` fails on a module importing a sibling
+module and on a stub or `TODO` comment; the seed also carries a coverage floor, `pip-audit`
+(`make audit`, CI) and `.pre-commit-config.yaml` (`make hooks`).
 
 | Command | Effect |
 | --- | --- |

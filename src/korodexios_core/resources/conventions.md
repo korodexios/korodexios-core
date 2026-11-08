@@ -48,6 +48,8 @@ Module rules:
   `kdx_module.toml` manifest. The core discovers it by itself; nobody edits a central list.
 - Modules **never import each other**. They talk through the event bus, the registry, or
   the control plane. Then any module can be removed, replaced, or tested alone.
+  `tests/test_rules.py` (seeded by `kdx init`) fails on a cross-module import and on a stub
+  (a function that is only `pass`, `...` or `raise NotImplementedError`, or a `TODO` comment).
 - A module declares its settings (`config_schema`), reads them only through the core,
   and releases everything it started in `stop()`.
 - A module writes diagnostics to stderr and never prints to stdout; only the CLI layer
@@ -239,24 +241,22 @@ change. These rules make that loud and early:
 
 ### Tools that guard quality
 
-Some of these are already in place in the core and in a seeded project; the rest are
-recommended. Adding a tool is a dependency decision (section 7): ask first.
+**Already in a seeded project** (`make check` and CI run them; nothing to install by hand):
 
 | Need | Tool | What it does for you |
 | --- | --- | --- |
-| Style, bugs, formatting | **ruff** (in place) | One fast tool for lint and format. Turn on more rule sets over time: `S` (security, from bandit), `PTH` (safe paths), `PT` (pytest style). |
-| Types | **mypy --strict** (in place) | Catches wrong calls before they run. |
-| Behaviour | **pytest + coverage floor** (in place) | The floor only goes up. |
-| Vulnerable dependencies | **pip-audit** (in place in CI) | Fails when a locked dependency has a known hole. |
-| Auto-run checks at commit | **pre-commit** | Runs ruff and friends on every `git commit`, so a broken change never gets committed. |
-| Secrets in git | **gitleaks** or GitHub secret scanning | Blocks a committed password or token. |
-| Dependency updates | **Dependabot** or Renovate | Opens small update pull requests; the checks decide. |
-| Code security scan | **CodeQL** (GitHub) | Finds injection and unsafe-input patterns. |
-| Module isolation | **import-linter** | Turns "modules never import each other" into a failing check instead of a hope. |
-| Tests that find the unexpected | **Hypothesis** | Generates odd inputs automatically (empty, huge, unicode) for parsers and validators. |
-| Do the tests really test? | **mutmut** (mutation testing) | Breaks the code on purpose; a test suite that does not notice is weak. Run it now and then, not on every change. |
-| Flaky or order-dependent tests | **pytest-randomly**, **pytest-timeout** | Shuffles test order and stops hangs. |
-| Dead code, unused dependencies | **vulture**, **deptry** | Keeps the code small, which keeps agents accurate. |
+| Style, bugs | **ruff** | One fast tool for lint and format. Turn on more rule sets over time (`S` security, `PTH` paths, `PT` pytest style). |
+| Types | **mypy --strict** | Catches wrong calls before they run. |
+| Behaviour | **pytest + coverage floor** | The floor (`fail_under` in `pyproject.toml`) only goes up. |
+| Structure | **`tests/test_rules.py`, `tests/test_size_ratchet.py`** | Modules never import each other; no stubs; the size excess may only shrink. |
+| Documents | **`kdx docs check`**, **`kdx agents sync --check`** | The conventions, the playbook and every agent's rule file are current. |
+| Vulnerable dependencies | **pip-audit** (CI, `make audit`) | Fails when a locked dependency has a known hole. |
+| Auto-run at commit | **pre-commit** (`make hooks`, optional) | Runs the cheap checks on commit and `make check` on push. |
+
+**Worth adding when the project needs it** (a dependency decision, section 7: ask first):
+**gitleaks** or GitHub secret scanning for committed secrets, **Dependabot** or Renovate
+for small update pull requests, **CodeQL** for injection patterns, **Hypothesis** for
+parsers and validators, **mutmut** now and then to see whether the tests really test.
 
 When working with an AI agent, also: keep `AGENTS.md` short and current, give one small
 task at a time, ask it to show the failing test and then the passing run, and run the
@@ -332,35 +332,20 @@ their own small tasks.
 
 ## 16. Building a larger GUI (recommendation)
 
-Section 14 says a GUI is only another door. This section says how to build one when it
-grows past the small built-in console (`kdx ui`) into a real application.
+Section 14 says a GUI is only another door. When one grows past the built-in console
+(`kdx ui`), keep these:
 
-- **Extend before you add.** The core ships a web console (`modules/web_console`: plain
-  HTML, CSS and JavaScript, no build step). Read it first. If the need is a few more
-  panels, extend it rather than starting a second, parallel front end.
-- **Python stays the runtime.** The engine must never need bun or node to run. The GUI is
-  built into static files and the core serves them (`ipc_static_dirs` / `IpcStaticMount`).
-  The JavaScript toolchain exists only on the machine of whoever develops the GUI.
-- **Recommended toolchain for a complex GUI** (the front-end counterpart of uv and ruff):
-  `bun` for packages, scripts and runtime; Vite + TypeScript for dev server and build; Biome
-  for lint and formatting. The framework (React, Svelte, other) is a per-project choice
-  made when the GUI starts, not a rule of the core.
-- **Same bar as Python.** Strict TypeScript, Biome clean, a build that succeeds, and tests
-  for any non-trivial front-end logic. A GUI change is not done until those pass, in
-  addition to `make check`.
-- **Types come from the contract.** Generate or hand-write client types from
-  `GET /api/v1/schema`; never guess a payload shape. When a route changes, the GUI build
-  should fail, not the user's screen.
+- **Extend before you add.** Read `modules/web_console` first (plain HTML, CSS and
+  JavaScript, no build step); a few more panels belong there, not in a second front end.
+- **Python stays the runtime.** The GUI is built into static files the core serves
+  (`ipc_static_dirs` / `IpcStaticMount`); bun or node exist only on the developer's machine.
+  If the project wants a toolchain: bun, Vite + TypeScript, Biome, with the framework chosen
+  per project. Same bar as Python: strict types, lint clean, a build that succeeds.
+- **Types come from the contract.** Build client types from `GET /api/v1/schema`; when a
+  route changes, the GUI build fails, not the user's screen.
 - **No logic in the screen.** Validation, permissions, long jobs and state live in the
-  module. The GUI renders, sends a command, and listens to events (section 14). If a
-  button needs a rule, the rule goes into the module so CLI and API get it too.
-- **Safe rendering.** Values from the daemon are text, never HTML (no `innerHTML`, no
-  `dangerouslySetInnerHTML`). Keep the token out of URLs and logs, and respect the roles
-  the API reports.
-- **Text goes through i18n.** User-visible strings use a catalogue (domain
-  `korodexios-web`, see `kdx locale`), not literals scattered in components.
-- **Built output is not hand-edited.** Commit the sources and lockfile (`bun.lock`);
-  decide per project whether the build output is committed or produced by a build step,
-  and never edit it by hand.
-- **Terminal parity check.** Before calling a GUI feature done, run the same action from
-  `kdx ... --json` and confirm the result matches what the screen shows.
+  module, so CLI and API get them too (section 14).
+- **Safe and translated.** Values from the daemon are text, never HTML (no `innerHTML`); the
+  token stays out of URLs and logs; user-visible strings use the `korodexios-web` catalogue.
+- **Terminal parity check.** Before calling a GUI feature done, run the same action as
+  `kdx ... --json` and confirm the result matches the screen.

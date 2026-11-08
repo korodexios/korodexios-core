@@ -9,12 +9,16 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 - `kdx docs check|update`, `kdx conventions --check` and `kdx playbook --check`: compare the documents `kdx init` seeds (conventions, playbook, spec template) with the installed core; exit 3 and a diff when one differs, `update` rewrites them.
 - `kdx init` seeds `make check-docs` (part of `make check`), a CI step for it and `tests/test_size_ratchet.py` (baselines at zero; the size excess may only shrink).
+
+- `kdx init` also seeds `tests/test_rules.py` (modules never import each other; no stub, no `TODO` comment; standard library only), a coverage floor (`pytest-cov`, `fail_under` in `pyproject.toml`), `pip-audit` in CI and `make audit`, `.pre-commit-config.yaml` with `make hooks`, and `kdx agents sync --check` in CI. The seed files live in `cli/seed_quality.py`.
+- The core runs the same `tests/test_rules.py` and `tests/test_size_ratchet.py` against itself; its recorded size excess (33 files, 132 functions, 29 signatures) may only shrink.
 - `tests/test_snapshots.py` pins the public shapes as `tests/snapshots/*.json` (trees of keys and types, no values): the `--json` output of `doctor`, `status`, `modules list`, `config check`, `docs check` and `locale show`, the core routes, the `ExitCode` values and the signatures of the functions in `korodexios_core.__all__`. Refresh with `KDX_UPDATE_SNAPSHOTS=1` and add a CHANGELOG line.
 - `tests/test_seed_commands.py` seeds a project (plain, `--container`, `--ui static`) and checks that every `kdx ...` command its Makefile, CI and pre-commit run exists in this core, so a seed can no longer call a command its pinned tag lacks unnoticed.
 - `kdx whoami`, `kdx api schema`, `kdx publish NAME [--payload JSON]` and `kdx daemon logs|audit|config show|set|unset` (all with `--json`, `--target URL --token T`): the terminal twins of `/api/v1/whoami`, `/api/v1/schema`, the inbound webhook route and the web console's log, audit and configuration routes, so a remote daemon can be read and tuned without a browser.
 
 ### Changed
 
+- The conventions name only tools that really are in a seeded project as "in place" (the coverage floor and `pip-audit` were claimed but missing), and sections 13 and 16 are shorter.
 - The size numbers in the conventions and the playbook are triggers for a decision, not caps: splitting a module is a decision about jobs, never about lines.
 
 ### Security

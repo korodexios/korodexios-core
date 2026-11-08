@@ -35,12 +35,14 @@ language they write in. Keep explanations plain; show commands and results, not 
   (conventions section 2). `tests/test_size_ratchet.py` records the excess; it may only shrink.
 - **Modules never import each other.** Cooperate through the event bus
   (`self.bus.publish/subscribe`), the registry, or the control plane. Shared pure helpers
-  go in a small neutral package, not in a module.
+  go in a small neutral package, not in a module. `tests/test_rules.py` fails on a sibling
+  import: fix the code, never the test.
 - A module declares settings in `config_schema()` and reads them only via
   `self.config`. Never `os.environ`, never hard-coded paths or ports.
 - Whatever `start()` acquires, `stop()` releases within the stop timeout. No daemon
   threads that outlive `stop()`.
-- No stubs, no `TODO`, no `pass` placeholders, no mocked return values in `src/`.
+- No stubs, no `TODO`, no `pass` placeholders, no mocked return values in `src/`
+  (`tests/test_rules.py` catches the first three).
 
 ## 2. The loop for every change (do not skip steps)
 

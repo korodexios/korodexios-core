@@ -52,7 +52,7 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 
 ## Current state (2026-11-08)
 
-- Unreleased, after v0.6.6 (owner asked for commit and push; no tag, no version bump): a downstream proposal done in full. Size numbers in the conventions are triggers for a decision, not caps (split by job, never by line); `kdx docs check|update`, `kdx conventions|playbook --check` (exit 3 + diff, `cli/docs_sync.py`); `kdx init` seeds `make check-docs`, a CI step and `tests/test_size_ratchet.py` (baselines at zero; debt may only shrink). The core's own code is not under that ratchet.
+- Unreleased, after v0.6.6 (owner asked for commit and push; no tag, no version bump): a downstream proposal done in full. Size numbers in the conventions are triggers for a decision, not caps (split by job, never by line); `kdx docs check|update`, `kdx conventions|playbook --check` (exit 3 + diff, `cli/docs_sync.py`); `kdx init` seeds `make check-docs`, a CI step and `tests/test_size_ratchet.py` (baselines at zero; debt may only shrink). Same afternoon: `kdx init` also seeds `tests/test_rules.py` (no cross-module imports, no stubs), a coverage floor, pip-audit, pre-commit (`cli/seed_quality.py`). The core runs both tests on itself (`tests/test_rules.py`, `tests/test_size_ratchet.py`; recorded debt 33 files / 132 functions / 29 signatures, may only shrink: lower the number when you clean something, never raise it).
 
 ## State on 2026-11-07
 

@@ -19,6 +19,7 @@ from ..kernel.ui_tiers import PACKAGE_MANAGERS, tier_names
 from ..validate import ValidationResult
 from ..version import __version__ as CORE_VERSION
 from .container import container_files
+from .seed_quality import coverage_config, pre_commit_config, rules_test, size_ratchet_test
 from .ui_react import PM_COMMANDS, react_files
 from .ux import UserExperience
 
@@ -50,6 +51,9 @@ CHASSIS_SOURCES: dict[str, str] = {
 """How a seeded project names its chassis dependency."""
 
 CHASSIS_SOURCE_DEFAULT = "git"
+
+COVERAGE_FLOOR = 80
+"""Coverage floor a seeded project starts with: under what the skeleton measures."""
 """The chassis is not on an index yet, so seeds pin it to the repository."""
 ECOSYSTEMS: dict[str, str] = {
     "python": "Python (uv-managed)",
@@ -388,7 +392,9 @@ def build_files(project: ProjectTemplate) -> dict[str, str]:
         f"src/{package}/i18n.py": _i18n_source(project),
         f"src/{package}/locales/{package}.pot": _locales_template(project),
         "tests/test_smoke.py": _smoke_test(project),
-        "tests/test_size_ratchet.py": _size_ratchet_test(project),
+        "tests/test_size_ratchet.py": size_ratchet_test(project.package),
+        "tests/test_rules.py": rules_test(project.package),
+        ".pre-commit-config.yaml": pre_commit_config(),
         ".mcp.json": _mcp_json(project),
     }
     files.update(_agent_rule_files(files["AGENTS.md"]))
@@ -447,7 +453,10 @@ def _pyproject(project: ProjectTemplate) -> str:
             f'"{project.script}" = "{project.package}.cli:main"',
             "",
             "[project.optional-dependencies]",
-            'dev = ["hatchling>=1.24", "mypy>=1.10", "pytest>=8.0", "ruff>=0.6"]',
+            "dev = [",
+            '  "hatchling>=1.24", "mypy>=1.10", "pip-audit>=2.7", "pre-commit>=3.7",',
+            '  "pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.6",',
+            "]",
             "",
             "[tool.hatch.metadata]",
             "allow-direct-references = true",
@@ -460,6 +469,7 @@ def _pyproject(project: ProjectTemplate) -> str:
             'testpaths = ["tests"]',
             'addopts = "-q"',
             "",
+            *coverage_config(project.package, COVERAGE_FLOOR),
             "[tool.ruff]",
             "line-length = 100",
             'src = ["src", "tests"]',
@@ -1054,8 +1064,10 @@ def _ci_workflow(project: ProjectTemplate) -> str:
             "      - run: uv sync --extra dev",
             "      - run: uv run ruff check src tests",
             "      - run: uv run mypy",
-            "      - run: uv run pytest -q",
+            "      - run: uv run pytest -q --cov",
             "      - run: uv run kdx docs check",
+            "      - run: uv run kdx agents sync --check",
+            "      - run: uv run pip-audit",
             "",
         ]
     )
@@ -1073,7 +1085,7 @@ def _agents(project: ProjectTemplate) -> str:
         "## Commands",
         "",
         "@BT@@BT@@BT@bash",
-        "make check      # ruff + mypy --strict + pytest",
+        "make check      # ruff + mypy --strict + pytest (coverage floor) + docs",
         "make lint       # ruff check src tests",
         "make typecheck  # mypy",
         "make test       # pytest -q",
@@ -1103,6 +1115,10 @@ def _agents(project: ProjectTemplate) -> str:
         "   never raise a stack trace at the operator.",
         "7. **Language belongs to the project.** The chassis writes English diagnostics",
         "   and machine payloads; user-facing strings go through @BT@i18n.translate()@BT@.",
+        "8. **Size is a trigger, not a cap.** About 40 lines a function, 400 a file, 5",
+        "   arguments start a decision, never an automatic split: split by job, not by line.",
+        "   @BT@tests/test_size_ratchet.py@BT@ records the excess; it may only shrink.",
+        "   @BT@tests/test_rules.py@BT@ fails on a cross-module import or a stub: fix the code.",
         "",
         "## Docs",
         "",
@@ -1159,102 +1175,25 @@ def _agent_rule_files(agents_text: str) -> dict[str, str]:
     return {target.path: target.render(agents_text) for target in TARGETS}
 
 
-_SIZE_RATCHET_TEST = '''\
-"""Size ratchet: conventions section 2 sizes are triggers, and the excess may only shrink.
-
-Every file over 400 lines, function over 40 lines and signature over 5 arguments is recorded
-below with its measured size. The test fails when a new one appears, when a recorded one
-grows, or when a recorded number is left higher than reality: clean something, lower the
-number; never raise it (the same ratchet the coverage floor uses). Splitting a module is a
-decision about jobs, never about lines; nothing here asks permission or stops anyone.
-"""
-
-from __future__ import annotations
-
-import ast
-from pathlib import Path
-
-SOURCE = Path(__file__).resolve().parents[1] / "src" / "__PACKAGE__"
-FILE_LINES = 400
-FUNCTION_LINES = 40
-ARGUMENTS = 5
-
-FILES: dict[str, int] = {}
-"""File (relative to the package) -> its line count, for files over FILE_LINES."""
-FUNCTIONS: dict[str, int] = {}
-"""'file::function' -> its line count, for functions over FUNCTION_LINES."""
-SIGNATURES: dict[str, int] = {}
-"""'file::function' -> its argument count, for signatures over ARGUMENTS."""
-
-
-def _measure() -> tuple[dict[str, int], dict[str, int], dict[str, int]]:
-    files: dict[str, int] = {}
-    functions: dict[str, int] = {}
-    signatures: dict[str, int] = {}
-    for path in sorted(SOURCE.rglob("*.py")):
-        name = path.relative_to(SOURCE).as_posix()
-        text = path.read_text(encoding="utf-8")
-        if len(text.splitlines()) > FILE_LINES:
-            files[name] = len(text.splitlines())
-        for node in ast.walk(ast.parse(text)):
-            if not isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
-                continue
-            key = f"{name}::{node.name}"
-            length = (node.end_lineno or node.lineno) - node.lineno + 1
-            if length > FUNCTION_LINES:
-                functions[key] = max(functions.get(key, 0), length)
-            args = node.args
-            named = [a.arg for a in (*args.posonlyargs, *args.args, *args.kwonlyargs)]
-            count = len([n for n in named if n not in ("self", "cls")])
-            count += int(args.vararg is not None) + int(args.kwarg is not None)
-            if count > ARGUMENTS:
-                signatures[key] = max(signatures.get(key, 0), count)
-    return files, functions, signatures
-
-
-def _problems(kind: str, actual: dict[str, int], recorded: dict[str, int]) -> list[str]:
-    problems: list[str] = []
-    for name, size in sorted(actual.items()):
-        if name not in recorded:
-            problems.append(f"{kind} {name}: {size} is over the trigger and not recorded")
-        elif size > recorded[name]:
-            problems.append(f"{kind} {name}: grew from {recorded[name]} to {size}")
-    for name, size in sorted(recorded.items()):
-        now = actual.get(name, 0)
-        if now < size:
-            problems.append(f"{kind} {name}: recorded {size}, now {now}; lower the entry")
-    return problems
-
-
-def test_size_debt_only_shrinks() -> None:
-    """No new excess, no growth, and no recorded number left higher than reality."""
-    files, functions, signatures = _measure()
-    problems = [
-        *_problems("file", files, FILES),
-        *_problems("function", functions, FUNCTIONS),
-        *_problems("signature", signatures, SIGNATURES),
-    ]
-    assert not problems, "\\n".join(problems)
-'''
-
-
-def _size_ratchet_test(project: ProjectTemplate) -> str:
-    return _SIZE_RATCHET_TEST.replace("__PACKAGE__", project.package)
-
-
 def _makefile(project: ProjectTemplate) -> str:
     python = "$(PYTHON)"
     return "\n".join(
         [
             "PYTHON ?= python3",
             "",
-            ".PHONY: check check-docs lint format typecheck test run clean",
+            ".PHONY: check check-docs audit hooks lint format typecheck test run clean",
             "",
             "check: lint typecheck test check-docs",
-            f'\t@echo "{project.distribution}: ruff, mypy, pytest, docs all green"',
+            f'\t@echo "{project.distribution}: ruff, mypy, pytest + coverage, docs all green"',
             "",
             "check-docs:",
             f"\t{python} -m korodexios_core docs check",
+            "",
+            "audit:",
+            f"\t{python} -m pip_audit",
+            "",
+            "hooks:",
+            f"\t{python} -m pre_commit install --install-hooks -t pre-commit -t pre-push",
             "",
             "lint:",
             f"\t{python} -m ruff check src tests",
@@ -1266,7 +1205,7 @@ def _makefile(project: ProjectTemplate) -> str:
             f"\t{python} -m mypy",
             "",
             "test:",
-            f"\t{python} -m pytest -q",
+            f"\t{python} -m pytest -q --cov",
             "",
             "run:",
             f"\t{python} -m {project.package}.cli run",
