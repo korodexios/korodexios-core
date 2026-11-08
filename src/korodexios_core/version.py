@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import Final, NamedTuple
 
-__version__: Final[str] = "0.6.8"
+__version__: Final[str] = "0.6.9"
 CORE_API_VERSION: Final[str] = "2"
 
 _VERSION_PATTERN = re.compile(

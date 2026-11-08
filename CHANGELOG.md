@@ -5,6 +5,17 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.6.9] - 2026-11-09
+
+### Fixed
+
+- CI on Linux and macOS (red since 0.6.7, so 0.6.7 and 0.6.8 published no release artifacts): the
+  process-creation probe of the durable queue no longer names `ctypes.WinDLL` outside a
+  `sys.platform == "win32"` branch, which `mypy --strict` refused on every other platform; and the
+  seeded size-ratchet test runs its subprocess with `-B`, because it rewrote the ratchet twice
+  within one second at the same size and the second run read stale bytecode. Nothing else
+  changed since 0.6.8.
+
 ## [0.6.8] - 2026-11-08
 
 ### Changed
