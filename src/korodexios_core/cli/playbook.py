@@ -12,6 +12,7 @@ from pathlib import Path
 
 from ..constants import TAG_ERROR, TAG_OK, ExitCode
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
+from .docs_sync import check_one
 from .render import tr, write_line
 
 RESOURCES = Path(__file__).resolve().parent.parent / "resources"
@@ -37,11 +38,19 @@ def playbook_command() -> CliCommand:
                 metavar="FILE",
                 help="Write the playbook to FILE instead of printing it.",
             ),
+            CliArgument(
+                ("--check",),
+                dest="check",
+                action="store_true",
+                help="Change nothing; exit 3 and print a diff when AGENT_PLAYBOOK.md differs.",
+            ),
         ),
     )
 
 
 def _playbook(request: CliRequest) -> int:
+    if request.flag("check"):
+        return check_one(request, "playbook")
     text = agent_playbook()
     target = request.option("write")
     if not target:

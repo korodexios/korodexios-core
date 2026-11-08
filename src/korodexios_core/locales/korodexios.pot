@@ -16,6 +16,10 @@ msgstr ""
 msgid "'kdx container fix' explains and runs this for you"
 msgstr ""
 
+#: cli/docs_sync.py
+msgid "'kdx docs update' rewrites them from the installed core"
+msgstr ""
+
 #: renderer
 msgid "(empty)"
 msgstr ""
@@ -130,6 +134,18 @@ msgstr ""
 
 #: cli/agents.py
 msgid "Change nothing; exit 1 when a file is missing or stale (for CI)."
+msgstr ""
+
+#: cli/playbook.py
+msgid "Change nothing; exit 3 and print a diff when AGENT_PLAYBOOK.md differs."
+msgstr ""
+
+#: cli/docs_sync.py
+msgid "Change nothing; exit 3 and print a diff when a seeded document differs."
+msgstr ""
+
+#: cli/conventions.py
+msgid "Change nothing; exit 3 and print a diff when docs/CONVENTIONS.md differs."
 msgstr ""
 
 #: cli/language.py
@@ -502,6 +518,10 @@ msgstr ""
 
 #: cli/agents.py
 msgid "Keep every AI agent's rule file in step with AGENTS.md."
+msgstr ""
+
+#: cli/docs_sync.py
+msgid "Keep the documents 'kdx init' seeded in step with the installed core."
 msgstr ""
 
 #: cli/commands.py
@@ -934,6 +954,10 @@ msgstr ""
 
 #: modules/backup_engine/module.py
 msgid "Report what would be copied without writing."
+msgstr ""
+
+#: cli/docs_sync.py
+msgid "Rewrite the conventions, the playbook and the spec template from the core."
 msgstr ""
 
 #: modules/web_console/module.py
@@ -1614,6 +1638,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "description"
+msgstr ""
+
+#: cli/docs_sync.py
+msgid "differs from the installed core"
 msgstr ""
 
 #: cli/commands.py

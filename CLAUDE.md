@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.6.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.6 (0.6.7 work is unreleased).
 
 ## Working preferences
 
@@ -50,7 +50,11 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 - Never commit control-plane users or the audit log (see commit f78f747); keep
   `var/` and runtime state out of git.
 
-## Current state (2026-11-07)
+## Current state (2026-11-08)
+
+- Unreleased, after v0.6.6 (owner asked for commit and push; no tag, no version bump): a downstream proposal done in full. Size numbers in the conventions are triggers for a decision, not caps (split by job, never by line); `kdx docs check|update`, `kdx conventions|playbook --check` (exit 3 + diff, `cli/docs_sync.py`); `kdx init` seeds `make check-docs`, a CI step and `tests/test_size_ratchet.py` (baselines at zero; debt may only shrink). The core's own code is not under that ratchet.
+
+## State on 2026-11-07
 
 - v0.6.6 (owner asked for commit, tag and push): shell panels may use `{node}`, tree answers page (`more` node, `page_nodes`), long values fold in detail views (`detail.kinds`), phone layout under 700 px; fixed the text-column cell crash. Verified in the browser pane on a scratch module only.
 - v0.6.5 (owner asked for version, tag and push): shell completed (palette, shortcut sheet, split panes, language, neutral icons). v0.6.4 (pushed): the one-window shell. Backend:

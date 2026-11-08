@@ -25,6 +25,7 @@ from .commands import core_commands, render_rpc_reply, wizard_command
 from .container_doctor import container_command
 from .conventions import conventions_command
 from .db import db_command
+from .docs_sync import docs_command
 from .jobs import events_command, jobs_command, stop_command
 from .language import locale_command
 from .limiter import limiter_command
@@ -653,6 +654,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         surface.add_command(playbook_command())
         surface.add_command(agents_command())
         surface.add_command(conventions_command())
+        surface.add_command(docs_command())
         surface.add_command(brief_command())
         surface.add_command(proposal_command())
         surface.add_command(reset_command())

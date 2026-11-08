@@ -13,6 +13,7 @@ from pathlib import Path
 
 from ..constants import TAG_ERROR, TAG_OK, ExitCode
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
+from .docs_sync import check_one
 from .render import tr, write_line
 
 RESOURCES = Path(__file__).resolve().parent.parent / "resources"
@@ -53,11 +54,19 @@ def conventions_command() -> CliCommand:
                 metavar="FILE",
                 help="Write the conventions to FILE instead of printing them (overwrites).",
             ),
+            CliArgument(
+                ("--check",),
+                dest="check",
+                action="store_true",
+                help="Change nothing; exit 3 and print a diff when docs/CONVENTIONS.md differs.",
+            ),
         ),
     )
 
 
 def _conventions(request: CliRequest) -> int:
+    if request.flag("check"):
+        return check_one(request, "conventions")
     text = conventions_text()
     target = request.option("write")
     if not target:

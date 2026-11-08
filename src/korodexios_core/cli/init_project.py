@@ -388,6 +388,7 @@ def build_files(project: ProjectTemplate) -> dict[str, str]:
         f"src/{package}/i18n.py": _i18n_source(project),
         f"src/{package}/locales/{package}.pot": _locales_template(project),
         "tests/test_smoke.py": _smoke_test(project),
+        "tests/test_size_ratchet.py": _size_ratchet_test(project),
         ".mcp.json": _mcp_json(project),
     }
     files.update(_agent_rule_files(files["AGENTS.md"]))
@@ -1054,6 +1055,7 @@ def _ci_workflow(project: ProjectTemplate) -> str:
             "      - run: uv run ruff check src tests",
             "      - run: uv run mypy",
             "      - run: uv run pytest -q",
+            "      - run: uv run kdx docs check",
             "",
         ]
     )
@@ -1157,16 +1159,102 @@ def _agent_rule_files(agents_text: str) -> dict[str, str]:
     return {target.path: target.render(agents_text) for target in TARGETS}
 
 
+_SIZE_RATCHET_TEST = '''\
+"""Size ratchet: conventions section 2 sizes are triggers, and the excess may only shrink.
+
+Every file over 400 lines, function over 40 lines and signature over 5 arguments is recorded
+below with its measured size. The test fails when a new one appears, when a recorded one
+grows, or when a recorded number is left higher than reality: clean something, lower the
+number; never raise it (the same ratchet the coverage floor uses). Splitting a module is a
+decision about jobs, never about lines; nothing here asks permission or stops anyone.
+"""
+
+from __future__ import annotations
+
+import ast
+from pathlib import Path
+
+SOURCE = Path(__file__).resolve().parents[1] / "src" / "__PACKAGE__"
+FILE_LINES = 400
+FUNCTION_LINES = 40
+ARGUMENTS = 5
+
+FILES: dict[str, int] = {}
+"""File (relative to the package) -> its line count, for files over FILE_LINES."""
+FUNCTIONS: dict[str, int] = {}
+"""'file::function' -> its line count, for functions over FUNCTION_LINES."""
+SIGNATURES: dict[str, int] = {}
+"""'file::function' -> its argument count, for signatures over ARGUMENTS."""
+
+
+def _measure() -> tuple[dict[str, int], dict[str, int], dict[str, int]]:
+    files: dict[str, int] = {}
+    functions: dict[str, int] = {}
+    signatures: dict[str, int] = {}
+    for path in sorted(SOURCE.rglob("*.py")):
+        name = path.relative_to(SOURCE).as_posix()
+        text = path.read_text(encoding="utf-8")
+        if len(text.splitlines()) > FILE_LINES:
+            files[name] = len(text.splitlines())
+        for node in ast.walk(ast.parse(text)):
+            if not isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+                continue
+            key = f"{name}::{node.name}"
+            length = (node.end_lineno or node.lineno) - node.lineno + 1
+            if length > FUNCTION_LINES:
+                functions[key] = max(functions.get(key, 0), length)
+            args = node.args
+            named = [a.arg for a in (*args.posonlyargs, *args.args, *args.kwonlyargs)]
+            count = len([n for n in named if n not in ("self", "cls")])
+            count += int(args.vararg is not None) + int(args.kwarg is not None)
+            if count > ARGUMENTS:
+                signatures[key] = max(signatures.get(key, 0), count)
+    return files, functions, signatures
+
+
+def _problems(kind: str, actual: dict[str, int], recorded: dict[str, int]) -> list[str]:
+    problems: list[str] = []
+    for name, size in sorted(actual.items()):
+        if name not in recorded:
+            problems.append(f"{kind} {name}: {size} is over the trigger and not recorded")
+        elif size > recorded[name]:
+            problems.append(f"{kind} {name}: grew from {recorded[name]} to {size}")
+    for name, size in sorted(recorded.items()):
+        now = actual.get(name, 0)
+        if now < size:
+            problems.append(f"{kind} {name}: recorded {size}, now {now}; lower the entry")
+    return problems
+
+
+def test_size_debt_only_shrinks() -> None:
+    """No new excess, no growth, and no recorded number left higher than reality."""
+    files, functions, signatures = _measure()
+    problems = [
+        *_problems("file", files, FILES),
+        *_problems("function", functions, FUNCTIONS),
+        *_problems("signature", signatures, SIGNATURES),
+    ]
+    assert not problems, "\\n".join(problems)
+'''
+
+
+def _size_ratchet_test(project: ProjectTemplate) -> str:
+    return _SIZE_RATCHET_TEST.replace("__PACKAGE__", project.package)
+
+
 def _makefile(project: ProjectTemplate) -> str:
     python = "$(PYTHON)"
     return "\n".join(
         [
             "PYTHON ?= python3",
             "",
-            ".PHONY: check lint format typecheck test run clean",
+            ".PHONY: check check-docs lint format typecheck test run clean",
             "",
-            "check: lint typecheck test",
-            f'\t@echo "{project.distribution}: ruff, mypy, pytest all green"',
+            "check: lint typecheck test check-docs",
+            f'\t@echo "{project.distribution}: ruff, mypy, pytest, docs all green"',
+            "",
+            "check-docs:",
+            f"\t{python} -m korodexios_core docs check",
             "",
             "lint:",
             f"\t{python} -m ruff check src tests",

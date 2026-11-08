@@ -5,6 +5,15 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Added
+
+- `kdx docs check|update`, `kdx conventions --check` and `kdx playbook --check`: compare the documents `kdx init` seeds (conventions, playbook, spec template) with the installed core; exit 3 and a diff when one differs, `update` rewrites them.
+- `kdx init` seeds `make check-docs` (part of `make check`), a CI step for it and `tests/test_size_ratchet.py` (baselines at zero; the size excess may only shrink).
+
+### Changed
+
+- The size numbers in the conventions and the playbook are triggers for a decision, not caps: splitting a module is a decision about jobs, never about lines.
+
 ## [0.6.6] - 2026-11-07
 
 ### Added

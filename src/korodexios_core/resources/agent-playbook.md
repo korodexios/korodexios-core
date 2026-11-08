@@ -31,7 +31,8 @@ language they write in. Keep explanations plain; show commands and results, not 
 - All product code is a **module**: `src/<package>/modules/<name>/module.py` +
   `kdx_module.toml` (+ `__init__.py`). Create one with `kdx modules create <name>`.
 - One module = one job in one sentence. Function <= ~40 lines, file <= ~400 lines,
-  <= 5 parameters. Over the limit: split, do not argue.
+  <= 5 parameters are triggers for a decision, not caps: split by job, never by line count
+  (conventions section 2). `tests/test_size_ratchet.py` records the excess; it may only shrink.
 - **Modules never import each other.** Cooperate through the event bus
   (`self.bus.publish/subscribe`), the registry, or the control plane. Shared pure helpers
   go in a small neutral package, not in a module.

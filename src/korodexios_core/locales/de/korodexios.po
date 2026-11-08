@@ -18,6 +18,10 @@ msgstr "  [übersprungen] {name}: {reason}"
 msgid "'kdx container fix' explains and runs this for you"
 msgstr "'kdx container fix' erklärt und führt das für dich aus"
 
+#: cli/docs_sync.py
+msgid "'kdx docs update' rewrites them from the installed core"
+msgstr "'kdx docs update' überschreibt sie aus dem installierten Kern"
+
 #: renderer
 msgid "(empty)"
 msgstr "(leer)"
@@ -133,6 +137,18 @@ msgstr "Ändert die Rolle eines Benutzers."
 #: cli/agents.py
 msgid "Change nothing; exit 1 when a file is missing or stale (for CI)."
 msgstr "Ändert nichts; endet mit 1, wenn eine Datei fehlt oder veraltet ist (für CI)."
+
+#: cli/playbook.py
+msgid "Change nothing; exit 3 and print a diff when AGENT_PLAYBOOK.md differs."
+msgstr "Ändert nichts; endet mit Code 3 und gibt einen Diff aus, wenn AGENT_PLAYBOOK.md abweicht."
+
+#: cli/docs_sync.py
+msgid "Change nothing; exit 3 and print a diff when a seeded document differs."
+msgstr "Ändert nichts; endet mit Code 3 und gibt einen Diff aus, wenn ein angelegtes Dokument abweicht."
+
+#: cli/conventions.py
+msgid "Change nothing; exit 3 and print a diff when docs/CONVENTIONS.md differs."
+msgstr "Ändert nichts; endet mit Code 3 und gibt einen Diff aus, wenn docs/CONVENTIONS.md abweicht."
 
 #: cli/language.py
 msgid "Change nothing; exit 3 when the template is out of date."
@@ -505,6 +521,10 @@ msgstr "Job-ID, zum Beispiel job-3."
 #: cli/agents.py
 msgid "Keep every AI agent's rule file in step with AGENTS.md."
 msgstr "Hält die Regeldateien aller KI-Agenten mit AGENTS.md synchron."
+
+#: cli/docs_sync.py
+msgid "Keep the documents 'kdx init' seeded in step with the installed core."
+msgstr "Hält die von 'kdx init' angelegten Dokumente im Einklang mit dem installierten Kern."
 
 #: cli/commands.py
 msgid "Language"
@@ -937,6 +957,10 @@ msgstr "Zeigen, was dieser Rechner für eine GUI kann: Node, Bun, Browser, Displ
 #: modules/backup_engine/module.py
 msgid "Report what would be copied without writing."
 msgstr "Meldet, was kopiert würde, ohne zu schreiben."
+
+#: cli/docs_sync.py
+msgid "Rewrite the conventions, the playbook and the spec template from the core."
+msgstr "Schreibt die Konventionen, das Playbook und die Spec-Vorlage aus dem Kern neu."
 
 #: modules/web_console/module.py
 msgid "Ribbon with icons only or with labels."
@@ -1617,6 +1641,10 @@ msgstr "hängt ab von"
 #: cli/commands.py
 msgid "description"
 msgstr "Beschreibung"
+
+#: cli/docs_sync.py
+msgid "differs from the installed core"
+msgstr "weicht vom installierten Kern ab"
 
 #: cli/commands.py
 msgid "discovery file"

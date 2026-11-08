@@ -757,11 +757,16 @@ caller only. `--locale` (global) picks the language of the manifest titles.
 
 | Command | Effect |
 | --- | --- |
-| `kdx playbook [--write FILE]` | print (or write) the playbook for AI agents |
-| `kdx conventions [--write FILE]` | print (or write, overwriting) the rules every project follows |
+| `kdx playbook [--write FILE \| --check]` | print (or write) the playbook for AI agents; `--check` exits 3 with a diff when `AGENT_PLAYBOOK.md` differs |
+| `kdx conventions [--write FILE \| --check]` | print (or write, overwriting) the rules every project follows; `--check` exits 3 with a diff when `docs/CONVENTIONS.md` differs |
+| `kdx docs check [--json]` | compare the playbook, the conventions and the spec template of the project with the installed core; exit 3 and a diff when one differs or is missing |
+| `kdx docs update [--json]` | rewrite those three documents from the installed core |
 
 `kdx init` seeds `AGENT_PLAYBOOK.md`, `docs/CONVENTIONS.md` and `docs/specs/TEMPLATE.md`; the
-two commands bring them into a project created earlier.
+commands bring them into a project created earlier and keep them current. The seeded
+`Makefile` runs `kdx docs check` as `make check-docs` (part of `make check`), and the seeded
+`tests/test_size_ratchet.py` records every file, function and signature over its size trigger
+so the excess can only shrink.
 
 | Command | Effect |
 | --- | --- |

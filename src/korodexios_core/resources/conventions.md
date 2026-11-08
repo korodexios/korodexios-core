@@ -18,14 +18,29 @@ agent at the start of a session: *"Read AGENTS.md and docs/CONVENTIONS.md first.
 
 ## 2. Structure: small pieces
 
-AI agents (and people) make fewer mistakes in small pieces of code, so size is a rule:
+AI agents (and people) make fewer mistakes in small pieces of code. What actually hurts
+is **more than one reason to change per file**, not the line count: a 1300-line file of
+small functions around one job is safer to change than a 380-line file holding three
+jobs. So these numbers are **triggers for a decision, not caps**:
 
-| Thing | Limit | If it grows |
+| Thing | Trigger | When it fires |
 | --- | --- | --- |
-| a function | about 40 lines | split it |
-| a file | about 400 lines | split into two modules |
+| a function | about 40 lines | split it, or say why it stays whole |
+| a file | about 400 lines | ask how many jobs it holds; split by job, not by line |
 | a module | one job, described in one sentence | make a second module |
-| a function's arguments | at most 5 | group them in a small data class |
+| a function's arguments | more than 5 | group them in a small data class |
+
+- **Splitting a module is a decision about jobs, never about lines.** A module boundary
+  costs a manifest, a config namespace, a durable-state owner and `peer()` calls; it pays
+  for itself only when a piece can be removed, replaced or tested alone. A long file with
+  one job is split into files inside the module, not into a second module.
+- **The debt is measured and may only shrink.** `tests/test_size_ratchet.py` (seeded by
+  `kdx init`) names every file, function and signature over its trigger and fails when
+  the list grows, or when a recorded number is left higher than reality. Clean something,
+  lower the number; never raise it: the same ratchet the coverage floor uses.
+
+Nothing else about size is a rule: no comment to ask permission, no stop to ask the
+owner, no module split to please a counter.
 
 Module rules:
 

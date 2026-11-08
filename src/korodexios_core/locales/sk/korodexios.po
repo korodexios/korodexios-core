@@ -18,6 +18,10 @@ msgstr "  [preskočené] {name}: {reason}"
 msgid "'kdx container fix' explains and runs this for you"
 msgstr "'kdx container fix' to vysvetlí a spustí za teba"
 
+#: cli/docs_sync.py
+msgid "'kdx docs update' rewrites them from the installed core"
+msgstr "'kdx docs update' ich prepíše z nainštalovaného jadra"
+
 #: renderer
 msgid "(empty)"
 msgstr "(prázdne)"
@@ -133,6 +137,18 @@ msgstr "Zmení rolu používateľa."
 #: cli/agents.py
 msgid "Change nothing; exit 1 when a file is missing or stale (for CI)."
 msgstr "Nič nemení; skončí s kódom 1, keď súbor chýba alebo je zastaraný (pre CI)."
+
+#: cli/playbook.py
+msgid "Change nothing; exit 3 and print a diff when AGENT_PLAYBOOK.md differs."
+msgstr "Nič nemení; skončí s kódom 3 a vypíše rozdiely, keď sa AGENT_PLAYBOOK.md líši."
+
+#: cli/docs_sync.py
+msgid "Change nothing; exit 3 and print a diff when a seeded document differs."
+msgstr "Nič nemení; skončí s kódom 3 a vypíše rozdiely, keď sa nasadený dokument líši."
+
+#: cli/conventions.py
+msgid "Change nothing; exit 3 and print a diff when docs/CONVENTIONS.md differs."
+msgstr "Nič nemení; skončí s kódom 3 a vypíše rozdiely, keď sa docs/CONVENTIONS.md líši."
 
 #: cli/language.py
 msgid "Change nothing; exit 3 when the template is out of date."
@@ -505,6 +521,10 @@ msgstr "Id úlohy, napríklad job-3."
 #: cli/agents.py
 msgid "Keep every AI agent's rule file in step with AGENTS.md."
 msgstr "Udržiava súbory s pravidlami všetkých AI agentov v súlade s AGENTS.md."
+
+#: cli/docs_sync.py
+msgid "Keep the documents 'kdx init' seeded in step with the installed core."
+msgstr "Udržiava dokumenty, ktoré 'kdx init' nasadil, v súlade s nainštalovaným jadrom."
 
 #: cli/commands.py
 msgid "Language"
@@ -937,6 +957,10 @@ msgstr "Ukázať, čo tento stroj zvládne pre GUI: Node, Bun, prehliadače, dis
 #: modules/backup_engine/module.py
 msgid "Report what would be copied without writing."
 msgstr "Ohlási, čo by sa skopírovalo, bez zápisu."
+
+#: cli/docs_sync.py
+msgid "Rewrite the conventions, the playbook and the spec template from the core."
+msgstr "Prepíše konvencie, playbook a šablónu špecifikácie z jadra."
 
 #: modules/web_console/module.py
 msgid "Ribbon with icons only or with labels."
@@ -1617,6 +1641,10 @@ msgstr "závisí od"
 #: cli/commands.py
 msgid "description"
 msgstr "popis"
+
+#: cli/docs_sync.py
+msgid "differs from the installed core"
+msgstr "líši sa od nainštalovaného jadra"
 
 #: cli/commands.py
 msgid "discovery file"
