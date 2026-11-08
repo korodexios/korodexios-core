@@ -66,7 +66,7 @@ people and agents *editing* that repository; this guide is the contract for *usi
    (including `POST /api/v1/shutdown`) exits 0. Never surface a `KeyboardInterrupt`
    traceback.
 7. **Crash-proof CLI.** Numbered menus, `[default]` in brackets, `while True`
-   validation loops, `[OK] [?] [!] [i]` tags, `--yes` plus automatic non-TTY detection.
+   validation loops, `[✓] [?] [!] [i]` tags, `--yes` plus automatic non-TTY detection.
 8. **Discovery is the extension point.** Adding a directory under a module root is the
    intended way to grow the system; `kernel/` never learns a product name.
 9. **Verification before claims.** Quote the failing command before and after a fix.
@@ -1108,7 +1108,7 @@ happen at all still shed archives - and what the sweep took back is reported by 
 (`prune_reclaimed_bytes`, `prune_reclaimed`) and by the `retention` diagnostic row. At the
 default `0.0` there is no extra task and a copy prunes inline, exactly as before.
 
-Spreading and calendar slots (`v0.5.1`, additive):
+Spreading and calendar slots (`v0.5.0`, additive):
 
 ```python
 context.schedule(60.0, self.poll, jitter=0.4)                 # every 36-84 s, never in lockstep
@@ -1136,7 +1136,7 @@ passed while the daemon was down is not replayed. `ScheduledTask.as_dict()` and
 | `core.scheduler.threaded` | `false` | run the scheduler on its own thread instead |
 | `core.ipc.static` | `true` | publish module `static_dirs()` mounts on the control plane |
 
-### 16.5 Outbound limits, child processes, durable queue (`v0.5.1`)
+### 16.5 Outbound limits, child processes, durable queue (`v0.5.0`)
 
 ```python
 api = context.limiter("external-api", min_interval=4.0, jitter=0.5, daily_budget=6000)
@@ -1185,7 +1185,7 @@ task = queue.submit("render", {"id": 7}, max_attempts=3)
   kinds it registered a handler for. This is separate from `kdx jobs`, which are in-memory
   background RPC commands that end with the daemon.
 
-### 16.4 Durable database - only when it earns its place
+### 16.6 Durable database - only when it earns its place
 
 A database is **opt-in**: `context.db(name="main")` returns a handle for `data/db/<name>.sqlite3`
 and creates nothing until a statement runs, so a project that never asks has no database.

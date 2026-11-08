@@ -50,8 +50,9 @@ core:
 
 Every module command is a tool: its name (`backup plan` -> `backup_plan`), description,
 arguments, choices and required role come from the declarative CLI contract, so a module
-you add is a tool with no extra code. Three read-only tools are always there:
-`kdx_health`, `kdx_logs`, `kdx_config` (secrets masked). Resources: `kdx://playbook`,
+you add is a tool with no extra code. Four read-only tools are always there:
+`kdx_health`, `kdx_logs`, `kdx_config` (secrets masked) and `kdx_metrics`; `kdx_proposal_draft`
+writes a local note for the owner and sends nothing. Resources: `kdx://playbook`,
 `kdx://conventions`, and `kdx://project/agents` / `kdx://project/brief` when the project
 has them. A command marked `danger` is a tool only for the admin role and is annotated
 `destructiveHint`; a command marked `remote=False` is never a tool.

@@ -9,13 +9,21 @@ of its own. Built-in; discovered from `korodexios_core/modules/web_console/`.
 - Static mount: `/ui/` serves `static/` (`index.html`, `app.js`, `app.css`). The files hold
   no secret, so the mount needs no token; a strict Content-Security-Policy allows only the
   page's own scripts and same-origin requests, and every daemon value is written as text.
-- Routes (token required, read-only):
+- Routes (token required):
   - `GET /api/v1/ui/catalog` - every runnable module command with its declared
     `CliArgument`s; the page builds a form per command from it.
   - `GET /api/v1/ui/logs?lines=N` - the last `N` lines (1..5000) of the log file.
   - `GET /api/v1/ui/config` - every resolved key with its layer; secrets masked.
+  - `GET /api/v1/ui/config/schema` - the declared settings with value and layer; the
+    `settings` panel types its form from it.
+  - `POST /api/v1/ui/config/edit` (admin, audited) - change the local layer
+    (`kdx.local.yml`) and reload; the same code as `kdx config set|unset`.
+  - `GET /api/v1/ui/audit` (admin) - the newest audit records.
   - `GET /api/v1/ui/events` - bus events as server-sent events (`IpcStream`); the page
-    reads it with `fetch`, so the token travels in a header, never in a URL.
+    reads it with `fetch`, so the token travels in a header, never in a URL. The terminal
+    follows the core route `GET /api/v1/events` instead (`kdx events`).
+  - `GET /api/v1/ui/theme` - the active theme with its tokens and CSS, and the themes on offer.
+  - `GET /api/v1/ui/i18n` - the shell's texts in the caller's language (domain `korodexios-web`).
 - Module panels: `GET /api/v1/ui/manifest?locale=` returns the GUI every loaded module
   declares in its `[ui]` table (or `Module.ui_spec()`), validated by
   `kernel/ui_manifest.py`; `static/modules.js` draws one tab per module (table, keyvalue,
@@ -29,8 +37,10 @@ of its own. Built-in; discovered from `korodexios_core/modules/web_console/`.
   `GET /api/v1/jobs?id=`), so output appears while it grows. The catalog carries each
   command's `remote` and `danger` flags: a `danger` command needs a second click, a
   `remote=False` one is shown as terminal-only.
-- CLI contributed: `kdx ui [--no-browser]`, `kdx ui manifest [--json]`,
-  `kdx ui prefs show|patch|reset`. With a live daemon it opens the console; with
+- CLI contributed: `kdx ui [--no-browser] [--shell]`, `kdx ui manifest [--json]`,
+  `kdx ui doctor|test|guide`, `kdx ui prefs show|patch|reset`, `kdx ui layout show|set|reset`
+  and `kdx ui theme list|show|set|check`. `--shell` opens the one-window shell (ribbon, side
+  list, panels, split panes) instead of the classic console at `/ui/`. With a live daemon it opens the console; with
   none it boots the chassis in the foreground and opens the console once the control plane
   is up. The token rides in the URL fragment (`/ui/#token=...`), which a browser never
   sends to a server; the page moves it into `sessionStorage` and clears the address bar.

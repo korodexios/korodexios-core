@@ -35,7 +35,7 @@ contract, orders startup, and cleans up.
 `Chassis.create()` performs, in order:
 
 1. **Discover paths** - `AppPaths.discover()` walks up to a root marker, then resolves
-   `var/`, `logs/`, `data/`, and the config candidates.
+   `var/` (logs under `var/log`), `data/`, and the config candidates.
 2. **Load configuration** - `LayeredConfig.load()` merges defaults, config file, local
    override, `.env`, process environment, and CLI overrides.
 3. **Build logging** - console handler on stderr plus an optional rotating file, levels

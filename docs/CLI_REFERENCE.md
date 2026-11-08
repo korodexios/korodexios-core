@@ -414,7 +414,7 @@ The chassis primitives, and the keys that configure them:
 | Point at the verified file set | `core.project.contract_dir` | `KDX_CORE__PROJECT__CONTRACT_DIR` | `contracts` under the home |
 | Declare *no opinion* tokens | `core.config.sentinels` | `KDX_CORE__CONFIG__SENTINELS` | `[]` |
 
-Named locks live in `&lt;state_dir&gt;/locks/&lt;name&gt;.lock`: `kdx doctor` lists them, and shutdown
+Named locks live in `<state_dir>/locks/<name>.lock`: `kdx doctor` lists them, and shutdown
 releases every name the chassis took. Files that must outlive a moved `var/` belong under
 `core.paths.durable_dir` (default `data/`), and recurring work belongs in
 `context.schedule(interval_seconds, callback)`.
@@ -488,8 +488,8 @@ for LAN access.
 
 `--no-auth` opens **reads** only. `POST /api/v1/rpc` and `POST /api/v1/reload` always need
 the token, and shutdown needs it unless `core.ipc.allow_anonymous_shutdown` is set. The
-control plane speaks plain HTTP: on a LAN the token travels in clear, so reach a remote
-daemon over a VPN (WireGuard, Tailscale), an SSH tunnel
+control plane speaks plain HTTP unless `core.ipc.tls` is on (`kdx tls init`): on a LAN
+without TLS the token travels in clear, so reach a remote daemon over TLS, a VPN (WireGuard, Tailscale), an SSH tunnel
 (`ssh -L 18123:127.0.0.1:18123 host`), or a TLS reverse proxy rather than an open network.
 
 ## Start at logon (`kdx service`)
@@ -561,7 +561,7 @@ kdx db backup [NAME] [--to FILE]           # SQLite online backup, safe while in
 ```
 
 A database exists only when a module asked for one (`context.db()`, `docs/AGENTS_GUIDE.md`
-section 16.4), so `kdx db list` is often empty. The commands are terminal-only and read-only
+section 16.6), so `kdx db list` is often empty. The commands are terminal-only and read-only
 apart from `backup`; schema changes are a module's migrations, never an ad-hoc command.
 
 ## Containers (`kdx init --container`)
@@ -774,7 +774,7 @@ caller only. `--locale` (global) picks the language of the manifest titles.
 | --- | --- |
 | `kdx playbook [--write FILE \| --check]` | print (or write) the playbook for AI agents; `--check` exits 1 with a diff when `AGENT_PLAYBOOK.md` differs |
 | `kdx conventions [--write FILE \| --check]` | print (or write, overwriting) the rules every project follows; `--check` exits 1 with a diff when `docs/CONVENTIONS.md` differs |
-| `kdx docs check [--json]` | compare the playbook, the conventions and the spec template of the project with the installed core; exit 1 and a diff when one differs or is missing |
+| `kdx docs check [--json]` | compare the playbook, the conventions and the spec template of the project with the installed core; exit 1 and a diff when one differs or is missing; `--json` prints `{"documents": [{"document", "path", "state"}]}` with `state` one of `current`, `stale`, `missing`, `written` |
 | `kdx docs update [--json]` | rewrite those three documents from the installed core |
 
 `kdx init` seeds `AGENT_PLAYBOOK.md`, `docs/CONVENTIONS.md` and `docs/specs/TEMPLATE.md`; the
@@ -864,8 +864,11 @@ See [TRANSLATING.md](TRANSLATING.md).
   second answer on a socket the chassis will not reuse.
 - Non-TTY runs never prompt; `--yes` also forces defaults in a TTY.
 - `--json` is available on `doctor`, `status`, `modules list`, `modules show`,
-  `modules create`, `config show`, `config check`, `reload`, `rpc`, and the module status
-  commands.
+  `modules create`, `config show|check|schema`, `reload`, `rpc`, `jobs`, `events`, `whoami`,
+  `api schema`, `publish`, `daemon ...`, `locale`, `docs check`, `queue`, `users`, `audit`,
+  `txn`, `db`, `container`, `ui ...`, `wiki`, `metrics`, `mcp tools` and the module status
+  commands. Without a running daemon the client commands answer
+  `{"ok": false, "error": "no daemon is answering", ...}` on stdout.
 - `kdx reload` exits `0` even with no daemon running; `kdx rpc` and `kdx --remote` exit `1`
   when nothing answers, because the operator asked for work that did not happen.
 - A module command's exit code is the integer its handler returned, verdict codes

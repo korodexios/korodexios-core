@@ -296,12 +296,18 @@ def test_static_head_conditional_and_error_semantics(tmp_path: Path, ui_dir: Pat
         code, _headers, body = http_call(base, "/ui/missing.css", token=None)
         assert code == 404
         assert b"no such file" in body
-        code, _headers, body = http_call(base, "/ui/../kdx.yml", token=None)
-        assert code in {403, 404}
-        code, _headers, body = http_call(
-            base, "/ui/%%2e%%2e%%2f%%2e%%2e%%2fsecret", token=None
-        )
-        assert code in {200, 403, 404}
+        (ui_dir.parent / "secret").write_text("TOP-SECRET", encoding="utf-8")
+        for path in (
+            "/ui/../kdx.yml",
+            "/ui/../secret",
+            "/ui/%2e%2e/secret",
+            "/ui/%2e%2e%2fsecret",
+            "/ui/..%2fsecret",
+            "/ui/%252e%252e/secret",
+        ):
+            code, _headers, body = http_call(base, path, token=None)
+            assert code in {400, 403, 404}, (path, code)
+            assert b"TOP-SECRET" not in body, path
         code, _headers, body = http_call(base, "/ui/app.css", token=None, method="POST")
         assert code == 405
         assert "GET" in str(body)
@@ -437,5 +443,21 @@ def test_the_control_plane_still_answers_json(tmp_path: Path) -> None:
         assert code == 200
         assert headers["content-type"] == CONTENT_JSON
         assert json.loads(body)["app"]["state"] == "running"
+    finally:
+        server.stop()
+
+
+@pytest.mark.posix
+def test_a_symlink_cannot_lead_out_of_a_static_mount(tmp_path: Path, ui_dir: Path) -> None:
+    """Review 2026-11-08, X3: a link inside the mount to a file outside it is not served."""
+    outside = tmp_path / "outside-secret.txt"
+    outside.write_text("TOP-SECRET", encoding="utf-8")
+    (ui_dir / "link.txt").symlink_to(outside)
+    server = make_server(tmp_path, static_dirs=(IpcStaticMount("/ui", ui_dir),))
+    try:
+        base = str(server.discovery.base_url())
+        code, _headers, body = http_call(base, "/ui/link.txt", token=None)
+        assert code in {403, 404}
+        assert b"TOP-SECRET" not in body
     finally:
         server.stop()

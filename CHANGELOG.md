@@ -18,6 +18,8 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - Stopping the control plane waits, inside the shutdown budget, for the requests being answered (an RPC, a module route) instead of cutting their threads at exit; streams (server-sent events, WebSocket) are not waited for.
 - A second stop signal more than 1.5 s after the first, while the shutdown is still running, ends the process at once with `128 + signal` (130 or 143) after flushing the log. A task that never returns can no longer make the daemon unkillable from its own terminal.
 - A secret file (`users.json`, the discovery file, the audit log) is made owner-only before its first byte is written, not after: the temporary sibling is created empty (`O_EXCL`), restricted, then filled. On POSIX a write that cannot be made owner-only is refused; on Windows the `icacls` step stays best effort (a drive without ACLs must not stop the daemon). A rewrite without `private` keeps the mode of the existing file, so `kdx config set` no longer opens a hand-locked `kdx.local.yml`.
+- Documentation: the seed section of the README, the system_info and web_console module READMEs (keys, routes, CLI, the load watcher thread), the MCP tool list, the roadmap (phases 36 and 39), the exit-code tables, `--json` coverage, TLS in the control-plane note, section numbers and version tags in the agent guide, and the shape of `kdx docs check --json` match the code.
+- The static-mount traversal test asserts the refusal of percent-encoded and double-encoded `..` paths against a secret that exists (it accepted a 200 before), and a symlink out of a mount is covered on POSIX.
 
 ## [0.6.7] - 2026-11-08
 
@@ -26,7 +28,7 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 - `kdx docs check|update`, `kdx conventions --check` and `kdx playbook --check`: compare the documents `kdx init` seeds (conventions, playbook, spec template) with the installed core; exit 3 and a diff when one differs, `update` rewrites them.
 - `kdx init` seeds `make check-docs` (part of `make check`), a CI step for it and `tests/test_size_ratchet.py` (baselines at zero; the size excess may only shrink).
 
-- `kdx init` also seeds `tests/test_rules.py` (modules never import each other; no stub, no `TODO` comment; standard library only), a coverage floor (`pytest-cov`, `fail_under` in `pyproject.toml`), `pip-audit` in CI and `make audit`, `.pre-commit-config.yaml` with `make hooks`, and `kdx agents sync --check` in CI. The seed files live in `cli/seed_quality.py`.
+- `kdx init` also seeds `tests/test_rules.py` (modules never import each other; no stub, no `TODO` comment; the test itself uses only the standard library), a coverage floor (`pytest-cov`, `fail_under` in `pyproject.toml`), `pip-audit` in CI and `make audit`, `.pre-commit-config.yaml` with `make hooks`, and `kdx agents sync --check` in CI. The seed files live in `cli/seed_quality.py`.
 - The core runs the same `tests/test_rules.py` and `tests/test_size_ratchet.py` against itself; its recorded size excess (33 files, 132 functions, 29 signatures) may only shrink.
 - `tests/test_snapshots.py` pins the public shapes as `tests/snapshots/*.json` (trees of keys and types, no values): the `--json` output of `doctor`, `status`, `modules list`, `config check`, `docs check` and `locale show`, the core routes, the `ExitCode` values and the signatures of the functions in `korodexios_core.__all__`. Refresh with `KDX_UPDATE_SNAPSHOTS=1` and add a CHANGELOG line.
 - `tests/test_seed_commands.py` seeds a project (plain, `--container`, `--ui static`) and checks that every `kdx ...` command its Makefile, CI and pre-commit run exists in this core, so a seed can no longer call a command its pinned tag lacks unnoticed.
@@ -85,7 +87,7 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 ### Added
 
 - Shell: command palette (`Ctrl+K`: areas, panels, view toggles, themes), shortcut sheet (`?`),
-  split main surface (off, side by side, stacked; prefs `layout.split`, `kdx ui layout set
+  split main surface (off, vertical, horizontal; prefs `layout.split`, `kdx ui layout set
   --split`), language selector, and every shell text in the `korodexios-web` catalogue (sk, cs, de,
   es, fr, pl; machine translations, not reviewed by a native speaker).
 

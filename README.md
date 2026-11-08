@@ -36,8 +36,8 @@ coloured installer in English or Slovak (`--dry-run` shows the steps without run
 | [.agents/skills/](.agents/skills/) | AI agents | playbooks: project setup, CLI wizard UX, verification |
 
 `docs/AGENTS_GUIDE.md` and `llms.txt` are kept byte-identical by a test, so an agent can
-read either and hold the same contract. `kdx init` seeds both documents, tailored, into
-every project it generates.
+read either and hold the same contract. `kdx init` seeds a tailored `docs/AGENTS_GUIDE.md`
+(and `AGENTS.md` with the rule files of every agent) into each project it generates.
 
 ---
 
