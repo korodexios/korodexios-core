@@ -138,7 +138,7 @@ A change is done only when **all** of these are true:
 - **Secrets** live in environment variables or `.env` (never committed; `.env.example`
   lists the names only). Logs, errors, and `--json` output never contain secrets.
 - **Default closed**: listen on `127.0.0.1`, require a token, give each person the lowest
-  role that works (viewer < operator < admin). Turning protection off is explicit.
+  role that works (viewer < contributor < operator < admin). Turning protection off is explicit.
 - **Check all input** at the edge (CLI arguments, files, network). Never build shell
   commands or file paths from unchecked text; never use `eval`/`exec`.
 - **Few dependencies**: standard library first; a new dependency needs a written reason,
@@ -280,7 +280,7 @@ agent, with identical results.
 - **Typed, validated input.** Each command and route declares its arguments, and the
   core checks them at the edge. A GUI form, a CLI flag, and an API field are validated by
   the same rule.
-- **Same permissions everywhere.** Roles (viewer, operator, admin) and the token apply to
+- **Same permissions everywhere.** Roles (viewer, contributor, operator, admin) and the token apply to
   every door equally; a GUI is never a way around them. The caller is recorded in the
   audit log.
 - **Long work is a job.** A task that takes more than a moment runs as a background job or

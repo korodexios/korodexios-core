@@ -5,6 +5,12 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Fixed
+
+- The seeded `.gitignore` ignores `data/db/` (every database under it, with its `-wal` and `-shm` files), not only `data/db/backups/`.
+- The seeded `Makefile` resolves its Python itself, `uv run python` when uv is on `PATH` and `python3` (an active virtual environment) otherwise, as the core's own Makefile does.
+- The conventions and the playbook list all four roles, `viewer < contributor < operator < admin`; run `kdx docs update` in a seeded project to take them over.
+
 ## [0.6.7] - 2026-11-08
 
 ### Added

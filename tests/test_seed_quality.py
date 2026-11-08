@@ -117,3 +117,16 @@ def test_the_seed_measures_coverage_audits_and_offers_hooks() -> None:
     assert "--cov" in workflow
     assert "make check" in files[".pre-commit-config.yaml"]
     assert "Size is a trigger, not a cap" in files["AGENTS.md"]
+
+
+def test_the_seed_ignores_the_databases_and_resolves_its_python(tmp_path: Path) -> None:
+    """Review 2026-11-08, Q1 and Q2."""
+    from korodexios_core.cli.init_project import _gitignore, _makefile, project_from_inputs
+
+    ignored = _gitignore().splitlines()
+    assert "data/db/" in ignored, "a project database is user data and stays out of git"
+    project = project_from_inputs("seeded")
+    makefile = _makefile(project)
+    first = makefile.splitlines()[0]
+    assert first.startswith("PYTHON ?=") and "uv run python" in first
+    assert "\tpython3" not in makefile, "recipes call $(PYTHON), never a bare python3"

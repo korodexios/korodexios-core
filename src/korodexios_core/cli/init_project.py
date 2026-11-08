@@ -1179,7 +1179,7 @@ def _makefile(project: ProjectTemplate) -> str:
     python = "$(PYTHON)"
     return "\n".join(
         [
-            "PYTHON ?= python3",
+            "PYTHON ?= $(if $(shell command -v uv 2>/dev/null),uv run python,python3)",
             "",
             ".PHONY: check check-docs audit hooks lint format typecheck test run clean",
             "",
@@ -1244,7 +1244,7 @@ def _gitignore() -> str:
             "data/audit.jsonl.1",
             "data/jobs/",
             "data/limiters/",
-            "data/db/backups/",
+            "data/db/",
             "node_modules/",
             "web/dist/",
             "web/test-results/",
