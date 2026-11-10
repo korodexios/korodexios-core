@@ -5,6 +5,17 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-11-10
+
+### Fixed
+
+- Shell, narrow window (under 700 px): the areas ribbon stays on the left as a 44 px bar and the side
+  list slides over the content from beside it (hamburger, the crumbs or an area opens it; a pick, Back
+  or a tap on the content closes it; the shell starts on the content). A panel picked from the list now
+  takes the page; before, the list stayed on screen and the panel never showed.
+- The shell's links to the classic console (System area, command palette) pointed at `./`, which is the
+  shell itself since 0.7.0; they go to `console.html`.
+
 ## [0.7.0] - 2026-11-10
 
 ### Changed

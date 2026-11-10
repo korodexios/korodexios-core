@@ -518,3 +518,13 @@ def test_shell_script_parses_when_node_is_installed() -> None:
         timeout=60,
     )
     assert result.returncode == 0, result.stderr
+
+
+def test_shell_links_console_by_name_and_a_picked_panel_takes_the_narrow_page() -> None:
+    from korodexios_core.modules.web_console.module import STATIC_DIR
+
+    script = (STATIC_DIR / "shell.js").read_text(encoding="utf-8")
+    assert 'href: "./"' not in script and 'location.href = "./"' not in script
+    assert script.count('"console.html"') == 2
+    opened = script[script.index("function openPanel"):script.index("function closeTab")]
+    assert 'classList.add("hide-side")' in opened

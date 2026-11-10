@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.7.0.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.7.1.
 
 ## Working preferences
 
@@ -52,7 +52,7 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 
 ## Current state (2026-11-10)
 
-- v0.7.0 is tagged and pushed (owner asked for tag and push). One front end, from a downstream proposal:
+- v0.7.1 is tagged and pushed (narrow shell: ribbon on the left, side list as a drawer; classic-console links fixed). v0.7.0 (tagged, pushed): one front end, from a downstream proposal:
   `/ui` redirects to `/ui/` (301); `Range`/206/416 on static mounts and `IpcResponse.file(range_header=)`
   (`kernel/http_files.py`); panel type `embed` (`kernel/ui_embed.py`, `renderEmbed` in `shell.js`, token
   by `postMessage`, mounts opt in with `embeddable=True`); `/ui/` serves the shell, the classic console

@@ -481,7 +481,7 @@
       });
     }
     if (area.id === "system") {
-      const link = el("a", { class: "tree-node link-row", href: "./" });
+      const link = el("a", { class: "tree-node link-row", href: "console.html" });
       link.append(chevron(false, true), el("span", { class: "name", text: "Classic console (commands, events, audit)" }));
       parts.push(link);
     }
@@ -601,6 +601,7 @@
     const key = `${area.id}:${panel.id}`;
     if (!state.tabs.some((tab) => tab.key === key)) state.tabs.push({ key, area: area.id, panel, title: panel.title || panel.id });
     activate(key);
+    if (narrow()) $("app").classList.add("hide-side"); // a panel picked from the list takes the page
   }
 
   function closeTab(key) {
@@ -1228,6 +1229,7 @@
     const wanted = layout().area;
     renderRibbon();
     selectArea(all.some((a) => a.id === wanted) ? wanted : all[0].id);
+    if (narrow()) $("app").classList.add("hide-side"); // start on the content, the list is a tap away
     await refreshStatus();
     try { await refreshBadges(); } catch (error) { /* a badge never blocks the shell */ }
     setInterval(() => { refreshStatus().catch(() => {}); refreshBadges().catch(() => {}); }, BADGE_MS);
@@ -1257,7 +1259,7 @@
     items.push({ kind: "View", translated: true, label: "Focus: hide or show all panels", run: () => togglePane("focus") },
       { kind: "View", translated: true, label: "Split view: off, side by side, stacked", run: () => togglePane("split") });
     ((state.themes && state.themes.themes) || []).forEach((theme) => items.push({ kind: "Theme", label: tf("Theme: {name}", { name: theme.name }), run: () => chooseTheme(theme.name).catch((e) => toast(e.message, true)) }));
-    items.push({ kind: "Help", translated: true, label: "Keyboard shortcuts", run: openShortcuts }, { kind: "Help", translated: true, label: "Classic console", run: () => { location.href = "./"; } });
+    items.push({ kind: "Help", translated: true, label: "Keyboard shortcuts", run: openShortcuts }, { kind: "Help", translated: true, label: "Classic console", run: () => { location.href = "console.html"; } });
     return items;
   }
 
@@ -1365,6 +1367,8 @@
   });
   $("btn-list").append(icon("list", 20));
   $("btn-list").addEventListener("click", () => $("app").classList.remove("hide-side"));
+  document.querySelector(".center").addEventListener("click", () => { if (narrow()) $("app").classList.add("hide-side"); });
+  document.querySelector(".crumbs").addEventListener("click", () => { if (narrow()) $("app").classList.remove("hide-side"); });
   $("side-back").addEventListener("click", () => $("app").classList.add("hide-side"));
   $("brand-logo").append(icon("logo", 20));
   markStatic();
