@@ -123,7 +123,7 @@ def test_config_check_reports_module_schemas(capsys, project_root) -> None:
         "heartbeat: 1 keys",
         "job_queue: 4 keys",
         "system_info: 5 keys",
-        "web_console: 1 keys",
+        "web_console: 2 keys",
     ):
         assert declared in captured.out, declared
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+        content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; frame-src 'self'; base-uri 'none'; form-action 'none'">
   <meta name="referrer" content="no-referrer">
   <title>Korodexios Shell</title>
   <link rel="stylesheet" href="shell.css">
@@ -21,7 +21,7 @@
       <select id="theme-select" aria-label="Theme" title="Theme"></select>
       <select id="lang" aria-label="Language" title="Language"><option value="en">English</option></select>
       <span id="state-pill" class="pill">offline</span>
-      <a class="link-button" href="./" title="The classic console: commands, logs, config, events">Classic console</a>
+      <a class="link-button" href="console.html" title="The classic console: commands, logs, config, events">Classic console</a>
     </header>
 
     <div class="body">
@@ -63,7 +63,7 @@
 
   <section id="token-gate" class="gate" hidden>
     <h2>Session token needed</h2>
-    <p>Open the shell with "kdx ui --shell", or paste a token.</p>
+    <p>Open the shell with "kdx ui", or paste a token.</p>
     <form id="token-form" class="row">
       <input id="token-input" type="password" autocomplete="off" placeholder="token" aria-label="token">
       <button type="submit">Connect</button>

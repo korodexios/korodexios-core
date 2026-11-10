@@ -13,7 +13,7 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 | Distribution | `korodexios-core` |
 | Import root | `korodexios_core` |
 | Console scripts | `kdx` (primary short alias), `korodexios` (canonical) |
-| Version | `0.6.9` (production), core API frozen at `v2` (additive changes only inside v2) |
+| Version | `0.7.0` (production), core API frozen at `v2` (additive changes only inside v2) |
 | Runtime | CPython 3.11+, stdlib first (PyYAML for config, rich for the CLI surface) |
 | Config file | `kdx.yml` / `kdx.yaml` / `kdx.json` (then `korodexios.*`) |
 | Env prefix | `KDX_` primary; `KORODEXIOS_` is the canonical long prefix |
@@ -527,7 +527,7 @@ order = 40                   # lower comes first; ties by module name
 
 [[ui.panels]]
 id = "tasks"                 # ^[a-z][a-z0-9_-]*$, unique inside the module
-type = "table"              # table | keyvalue | log | text | form | actions | settings
+type = "table"              # table | keyvalue | log | text | form | actions | settings | embed
 title = "Latest tasks"
 source = "/api/v1/queue"    # a control-plane route under /api/v1/ (GET)
 path = "tasks"              # dotted key into the JSON answer
@@ -544,6 +544,19 @@ refresh = 5                  # seconds; 0 (default) loads once
 | `form` | `command`, `args`, `fields` | a form built from the command's declared `CliArgument`s |
 | `actions` | `buttons = [{ id, label, command, args, confirm, danger }]` | buttons that run commands |
 | `settings` | `module = "name"` or `group = "core.log"` | a typed form of the declared config keys (see 8.2) |
+| `embed` | `src = "/player/"`, `height` (120-2000, default 360) | a page of a static mount of yours, in a sandboxed same-origin iframe (see below) |
+
+An `embed` panel needs a mount registered with `context.register_static_dir(prefix, dir,
+embeddable=True)`; without it the browser refuses to frame the page. The embedded page gets the
+session token by message, never in its URL:
+
+```js
+window.addEventListener("message", (event) => {
+  if (event.source !== window.parent || event.origin !== location.origin) return;
+  if (event.data && event.data.type === "kdx-embed-token") start(event.data.token);
+});
+window.parent.postMessage({ type: "kdx-embed-ready" }, location.origin);
+```
 
 Rules the validator enforces (a broken panel is dropped and listed under `issues`; it never
 takes the GUI down): a `command` must be a runnable command path (`queue purge`), a `source`

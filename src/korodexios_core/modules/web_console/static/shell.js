@@ -716,9 +716,30 @@
       case "data": renderData(content, dig(await api(withNode(panel.source)), panel.path)); return;
       case "form": renderForm(content, panel, area); return;
       case "actions": renderActions(content, panel); return;
+      case "embed": renderEmbed(content, panel); return;
       case "settings": await renderSettings(content, panel, area); return;
       default: content.replaceChildren(el("p", { class: "muted", text: tf("Unknown panel type {type}.", { type: panel.type }) }));
     }
+  }
+
+  // An embed panel frames a page another module serves from this daemon. The token never goes
+  // into the URL: the page asks for it with a message and gets it only if the asker is the very
+  // frame this panel created and shares this origin.
+  function renderEmbed(content, panel) {
+    const frame = el("iframe", {
+      class: "embed", src: panel.src, title: panel.title || panel.id,
+      sandbox: "allow-scripts allow-same-origin allow-forms allow-downloads",
+      referrerpolicy: "no-referrer",
+    });
+    frame.style.height = `${panel.height || 360}px`;
+    const listen = (event) => {
+      if (!frame.isConnected) { window.removeEventListener("message", listen); return; }
+      if (event.source !== frame.contentWindow || event.origin !== location.origin) return;
+      if (!event.data || event.data.type !== "kdx-embed-ready") return;
+      frame.contentWindow.postMessage({ type: "kdx-embed-token", token: state.token }, location.origin);
+    };
+    window.addEventListener("message", listen);
+    content.replaceChildren(frame);
   }
 
   function chip(text, tones) {

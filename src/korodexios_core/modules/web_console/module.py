@@ -75,6 +75,7 @@ from ...kernel.ui_theme import (
 from ...kernel.ui_tiers import guide, probe_environment
 from ...kernel.users import current_caller, role_rank
 from ...logging.engine import tail_lines
+from .describe import describe_argument
 
 UI_PREFIX = "/ui"
 CATALOG_PATH = "/api/v1/ui/catalog"
@@ -90,6 +91,8 @@ PREFS_PATH = "/api/v1/ui/prefs"
 THEME_PATH = "/api/v1/ui/theme"
 SYSTEM_THEME = "system"
 SHELL_PAGE = "shell.html"
+CONSOLE_PAGE = "console.html"
+FRONTENDS = {"shell": SHELL_PAGE, "console": CONSOLE_PAGE}
 WEB_DOMAIN = "korodexios-web"
 WEB_LOCALES_DIR = Path(__file__).resolve().parent / "locales"
 EVENT_QUEUE_SIZE = 500
@@ -159,12 +162,25 @@ class WebConsoleModule(Module):
                     default=True,
                     description="Whether 'kdx ui' opens a browser or only prints the URL.",
                 ),
+                ConfigField(
+                    "frontend",
+                    kind=ConfigKind.STR,
+                    default="shell",
+                    choices=tuple(FRONTENDS),
+                    description="Which page /ui/ serves: the one-window shell or the classic "
+                    "console (both stay reachable by name).",
+                ),
             ),
         )
 
     def static_dirs(self) -> tuple[IpcStaticMount, ...]:
         """Serve the page's files; they hold no secret, so they need no token."""
-        return (IpcStaticMount(route_prefix=UI_PREFIX, directory=STATIC_DIR, auth=False),)
+        page = FRONTENDS.get(self.config.get_str("frontend", "shell"), SHELL_PAGE)
+        return (
+            IpcStaticMount(
+                route_prefix=UI_PREFIX, directory=STATIC_DIR, auth=False, index_names=(page,)
+            ),
+        )
 
     def ipc_routes(self) -> tuple[IpcRoute, ...]:
         """Answer the page's reads: the command catalog, the log tail, the config."""
@@ -263,13 +279,10 @@ class WebConsoleModule(Module):
                         action="store_true",
                         help="Print the console URL instead of opening a browser.",
                     ),
-                    CliArgument(
-                        ("--shell",),
-                        dest="shell",
-                        action="store_true",
-                        help="Open the one-window shell (ribbon, side list, panels) instead "
-                        "of the classic console.",
-                    ),
+                    CliArgument(("--shell",), dest="shell", action="store_true",
+                                help="Open the one-window shell, whatever frontend is set."),
+                    CliArgument(("--console",), dest="console", action="store_true",
+                                help="Open the classic console (commands, logs, config)."),
                 ),
                 subcommands=(
                     CliCommand(
@@ -716,7 +729,7 @@ class WebConsoleModule(Module):
     def theme_payload(self, user: str | None, name: str | None = None) -> dict[str, Any]:
         """Return the theme for *user* (or the previewed *name*) with every choice."""
         available, problems = self.themes.themes()
-        chosen = name or self.prefs.load(user)["settings"].get("theme") or DEFAULT_THEME
+        chosen = name or self.prefs.load(user)["settings"].get("theme") or SYSTEM_THEME
         following = chosen == SYSTEM_THEME
         if following:
             theme = available[DEFAULT_THEME]
@@ -1059,7 +1072,11 @@ class WebConsoleModule(Module):
         open_browser = self.config.get_bool("open_browser", True) and not request.flag(
             "no_browser"
         )
-        page = SHELL_PAGE if request.flag("shell") else ""
+        page = ""
+        if request.flag("shell"):
+            page = SHELL_PAGE
+        elif request.flag("console"):
+            page = CONSOLE_PAGE
         discovery = IpcDiscovery.load(context.paths.state_dir / DISCOVERY_NAME)
         if discovery is not None and discovery.is_process_alive():
             self._announce(console_url(discovery, page), open_browser)
@@ -1118,30 +1135,6 @@ def console_url(discovery: IpcDiscovery, page: str = "") -> str:
     """Return the console URL with the token in its fragment, never in its query."""
     base = f"{discovery.base_url()}{UI_PREFIX}/{page}"
     return f"{base}#token={discovery.token}" if discovery.token else base
-
-
-def describe_argument(argument: CliArgument) -> dict[str, Any]:
-    """Describe one declared argument the way the page renders a form field."""
-    flag_like = argument.type == "flag" or argument.action in ("store_true", "store_false")
-    default = argument.default
-    if default is not None and not isinstance(default, str | int | float | bool | list):
-        default = str(default)
-    return {
-        "dest": argument.destination(),
-        "flags": list(argument.flags),
-        "positional": argument.is_positional,
-        "kind": "flag" if flag_like else argument.type,
-        "action": argument.action,
-        "nargs": argument.nargs,
-        "choices": list(argument.choices),
-        "default": default,
-        "required": argument.required,
-        "help": argument.help,
-        "metavar": argument.metavar,
-        "minimum": argument.minimum,
-        "maximum": argument.maximum,
-        "step": argument.step,
-    }
 
 
 def _pane_list(value: Any) -> list[str]:

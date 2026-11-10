@@ -264,12 +264,12 @@ def test_theme_route_follows_the_callers_choice_and_survives_a_missing_theme(
     chassis.initialize()
     try:
         console = console_of(chassis)
-        assert console.theme_payload("ann")["active"] == "graphite"
+        assert console.theme_payload("ann")["active"] == "system"
         console.prefs.patch("ann", {"settings": {"theme": "light"}})
         light = console.theme_payload("ann")
         assert light["active"] == "light" and light["tokens"]["bg"] == "#f6f5fa"
         assert "--kdx-bg: #f6f5fa;" in light["css"]
-        assert console.theme_payload("bob")["active"] == "graphite"  # per person
+        assert console.theme_payload("bob")["active"] == "system"  # per person
         assert console.theme_payload("ann", "contrast")["active"] == "contrast"
         console.prefs.patch("ann", {"settings": {"theme": "system"}})
         system = console.theme_payload("ann")

@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.6.9.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.7.0.
 
 ## Working preferences
 
@@ -50,9 +50,19 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 - Never commit control-plane users or the audit log (see commit f78f747); keep
   `var/` and runtime state out of git.
 
-## Current state (2026-11-08)
+## Current state (2026-11-10)
 
-- v0.6.9 is tagged and merged into `main` (owner asked for the version, tag and push). It only fixes the CI that was red on Linux/macOS since 0.6.7 (so 0.6.7 and 0.6.8 have tags but no release artifacts): `ctypes.WinDLL` behind a platform check, and the seeded size-ratchet test without stale bytecode. Lesson: run `mypy` and the tests on the Linux test host before a release, not only on Windows. v0.6.8 held the rest of the review of 2026-11-08: K1 `docs check` exits 1, R5 one-byte Windows lock, R6 wait for requests on stop, second signal forces exit, S4 secrets owner-only before they are written, I6 global help and the interactive layer translated, D/X/V items. Not done: V2, V3, V4, V7, V9-V11, V13, `kdx ui guide` tier texts, doctor value labels. v0.6.7 held the review's phases 1-5 and a downstream proposal done in full. Size numbers in the conventions are triggers for a decision, not caps (split by job, never by line); `kdx docs check|update`, `kdx conventions|playbook --check` (exit 1 + diff since 0.6.8, `cli/docs_sync.py`); `kdx init` seeds `make check-docs`, a CI step and `tests/test_size_ratchet.py` (baselines at zero; debt may only shrink). Same afternoon: `kdx init` also seeds `tests/test_rules.py` (no cross-module imports, no stubs), a coverage floor, pip-audit, pre-commit (`cli/seed_quality.py`). The core runs both tests on itself (`tests/test_rules.py`, `tests/test_size_ratchet.py`; recorded debt 33 files / 132 functions / 29 signatures, may only shrink: lower the number when you clean something, never raise it).
+- v0.7.0 is tagged and pushed (owner asked for tag and push). One front end, from a downstream proposal:
+  `/ui` redirects to `/ui/` (301); `Range`/206/416 on static mounts and `IpcResponse.file(range_header=)`
+  (`kernel/http_files.py`); panel type `embed` (`kernel/ui_embed.py`, `renderEmbed` in `shell.js`, token
+  by `postMessage`, mounts opt in with `embeddable=True`); `/ui/` serves the shell, the classic console
+  is `console.html`, config key `modules.web_console.frontend`, `kdx ui --console`; the shell follows the
+  system theme by default. Size debt went down, not up. Verified in the browser pane on a scratch
+  daemon (light and dark); not yet against a real project.
+
+## State on 2026-11-08
+
+- v0.6.9 is tagged and merged into `main` (owner asked for the version, tag and push). It only fixes the CI that was red on Linux/macOS since 0.6.7 (so 0.6.7 and 0.6.8 have tags but no release artifacts): `ctypes.WinDLL` behind a platform check, and the seeded size-ratchet test without stale bytecode. Lesson: run `mypy` and the tests on the Linux test host before a release, not only on Windows. v0.6.8 held the rest of the review of 2026-11-08: K1 `docs check` exits 1, R5 one-byte Windows lock, R6 wait for requests on stop, second signal forces exit, S4 secrets owner-only before they are written, I6 global help and the interactive layer translated, D/X/V items. Not done: V2, V3, V4, V7, V9-V11, V13, `kdx ui guide` tier texts, doctor value labels. v0.6.7 held the review's phases 1-5 and a downstream proposal done in full. Size numbers in the conventions are triggers for a decision, not caps (split by job, never by line); `kdx docs check|update`, `kdx conventions|playbook --check` (exit 1 + diff since 0.6.8, `cli/docs_sync.py`); `kdx init` seeds `make check-docs`, a CI step and `tests/test_size_ratchet.py` (baselines at zero; debt may only shrink). Same afternoon: `kdx init` also seeds `tests/test_rules.py` (no cross-module imports, no stubs), a coverage floor, pip-audit, pre-commit (`cli/seed_quality.py`). The core runs both tests on itself (`tests/test_rules.py`, `tests/test_size_ratchet.py`; recorded debt 33 files / 130 functions / 28 signatures, may only shrink: lower the number when you clean something, never raise it).
 
 ## State on 2026-11-07
 

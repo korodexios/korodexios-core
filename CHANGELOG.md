@@ -5,6 +5,34 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-10
+
+### Changed
+
+- The shell follows the system's light or dark setting until a person picks a theme (it was always
+  dark `graphite`); its token gate and first paint have the light fallback too.
+- `/ui/` serves the one-window shell; the classic console moved to `/ui/console.html` (it was
+  `index.html`). `modules.web_console.frontend = shell | console` (default `shell`) picks the page
+  `/ui/` serves, `kdx ui --shell` and `kdx ui --console` open either by name, and the two pages
+  link to each other. `/ui/shell.html` stays as an alias.
+
+### Added
+
+- A static mount answers `/ui` (no slash) with a 301 to `/ui/` (query kept); until now relative
+  assets resolved against `/` and the page came up unstyled.
+- `Range` on static mounts and on `IpcResponse.file(path, range_header=...)`: 206 with
+  `Content-Range`, 416 past the end, `Accept-Ranges: bytes` on every file answer. Helpers in the new
+  `kernel/http_files.py`, which also took over the content-type table from `ipc.py`.
+- Panel type `embed` (`src`, `height`): a page of a static mount another module registered, framed
+  in a sandboxed same-origin iframe. The page asks for the token with a
+  `{type: "kdx-embed-ready"}` message and receives `{type: "kdx-embed-token", token}` only when it
+  is the frame the shell made, on the same origin; the token is never in the URL. The shell's CSP
+  gains `frame-src 'self'`. A mount can be framed only when registered with `embeddable=True`
+  (it then sends `frame-ancestors 'self'` and `X-Frame-Options: SAMEORIGIN`); every other page keeps
+  `DENY`.
+- `register_static_dir(..., **options)` and `IpcStaticMount.create(...)`: one factory for the chassis
+  and the control plane (a signature of seven arguments is gone from the size debt).
+
 ## [0.6.9] - 2026-11-09
 
 ### Fixed

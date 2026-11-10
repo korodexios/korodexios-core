@@ -41,8 +41,10 @@ from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
+from . import ui_embed
+
 MANIFEST_VERSION = 1
-PANEL_TYPES = ("table", "keyvalue", "log", "text", "form", "actions", "settings")
+PANEL_TYPES = ("table", "keyvalue", "log", "text", "form", "actions", "settings", "embed")
 CELL_KINDS = ("text", "chip", "bytes", "duration", "time", "link", "code")
 TONES = ("ok", "warn", "bad", "busy", "muted")
 FIELD_KINDS = ("text", "textarea", "number", "slider", "select")
@@ -433,14 +435,6 @@ def _table(raw: Mapping[str, Any], panel: dict[str, Any], build: _Build, ident: 
     return True
 
 
-def _keyvalue(raw: Mapping[str, Any], panel: dict[str, Any], build: _Build, ident: str) -> bool:
-    return _source(raw, panel, build, ident)
-
-
-def _log(raw: Mapping[str, Any], panel: dict[str, Any], build: _Build, ident: str) -> bool:
-    return _source(raw, panel, build, ident)
-
-
 def _text(raw: Mapping[str, Any], panel: dict[str, Any], build: _Build, ident: str) -> bool:
     text = build.say(raw.get("text"))
     if not text:
@@ -571,12 +565,13 @@ def _actions(raw: Mapping[str, Any], panel: dict[str, Any], build: _Build, ident
 
 _TYPES: dict[str, Callable[[Mapping[str, Any], dict[str, Any], _Build, str], bool]] = {
     "table": _table,
-    "keyvalue": _keyvalue,
-    "log": _log,
+    "keyvalue": _source,
+    "log": _source,
     "text": _text,
     "form": _form,
     "actions": _actions,
     "settings": _settings,
+    "embed": ui_embed.declare,
 }
 
 

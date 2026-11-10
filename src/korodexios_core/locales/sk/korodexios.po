@@ -910,13 +910,17 @@ msgstr "Iba záznamy tohto používateľa."
 msgid "Open the browser console (starts the daemon when none is running)."
 msgstr "Otvorí konzolu v prehliadači (ak démon nebeží, spustí ho)."
 
+#: modules/web_console/module.py
+msgid "Open the classic console (commands, logs, config)."
+msgstr "Otvorí klasickú konzolu (príkazy, logy, konfigurácia)."
+
 #: cli/commands.py
 msgid "Open the interactive command wizard."
 msgstr "Otvorí interaktívneho sprievodcu príkazmi."
 
 #: modules/web_console/module.py
-msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
-msgstr "Otvorí jednookienkový shell (ikonový pruh, bočný zoznam, panely) namiesto klasickej konzoly."
+msgid "Open the one-window shell, whatever frontend is set."
+msgstr "Otvorí jednookienkový shell bez ohľadu na nastavenie frontend."
 
 #: modules/system_info/module.py
 msgid "Operating system"
@@ -3497,3 +3501,6 @@ msgstr "{value} nie je jazyk, do ktorého sa dá prekladať"
 #: cli/users.py
 msgid "{verb}; this token is shown only now - hand it over privately"
 msgstr "{verb}; tento token sa zobrazí iba teraz - odovzdaj ho súkromne"
+
+#~ msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
+#~ msgstr "Otvorí jednookienkový shell (ikonový pruh, bočný zoznam, panely) namiesto klasickej konzoly."

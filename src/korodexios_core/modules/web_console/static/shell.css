@@ -20,6 +20,17 @@
   color-scheme: dark;
 }
 
+/* The same fallback for a light system, so the token gate and the first paint match the
+   'light' theme the shell applies once it is signed in. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --kdx-bg: #f6f5fa; --kdx-panel: #ecebf3; --kdx-sel: #ddd9ee; --kdx-text: #1d1b26;
+    --kdx-muted: #5b5870; --kdx-line: #cfcce0; --kdx-accent: #5b3fd1; --kdx-on-accent: #ffffff;
+    --kdx-ok: #17794a; --kdx-warn: #85560a; --kdx-bad: #b42323;
+    color-scheme: light;
+  }
+}
+
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body {
@@ -275,3 +286,4 @@ details.fold[open] > summary { margin-bottom: 4px; }
   .pane-head { height: 48px; }
   .pane-head button.plain { min-height: 40px; height: 40px; }
 }
+.card .content iframe.embed { display: block; width: 100%; border: 0; border-radius: 4px; background: var(--kdx-bg, transparent); }

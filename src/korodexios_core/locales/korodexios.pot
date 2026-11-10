@@ -908,12 +908,16 @@ msgstr ""
 msgid "Open the browser console (starts the daemon when none is running)."
 msgstr ""
 
+#: modules/web_console/module.py
+msgid "Open the classic console (commands, logs, config)."
+msgstr ""
+
 #: cli/commands.py
 msgid "Open the interactive command wizard."
 msgstr ""
 
 #: modules/web_console/module.py
-msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
+msgid "Open the one-window shell, whatever frontend is set."
 msgstr ""
 
 #: modules/system_info/module.py

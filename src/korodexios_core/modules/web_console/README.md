@@ -37,10 +37,11 @@ of its own. Built-in; discovered from `korodexios_core/modules/web_console/`.
   `GET /api/v1/jobs?id=`), so output appears while it grows. The catalog carries each
   command's `remote` and `danger` flags: a `danger` command needs a second click, a
   `remote=False` one is shown as terminal-only.
-- CLI contributed: `kdx ui [--no-browser] [--shell]`, `kdx ui manifest [--json]`,
+- CLI contributed: `kdx ui [--no-browser] [--shell|--console]`, `kdx ui manifest [--json]`,
   `kdx ui doctor|test|guide`, `kdx ui prefs show|patch|reset`, `kdx ui layout show|set|reset`
-  and `kdx ui theme list|show|set|check`. `--shell` opens the one-window shell (ribbon, side
-  list, panels, split panes) instead of the classic console at `/ui/`. With a live daemon it opens the console; with
+  and `kdx ui theme list|show|set|check`. `/ui/` is the one-window shell (ribbon, side
+  list, panels, split panes); the classic console is `/ui/console.html` and `modules.web_console.frontend`
+  (`shell` | `console`) picks which one `/ui/` serves. `--shell` and `--console` open either by name. With a live daemon it opens the page; with
   none it boots the chassis in the foreground and opens the console once the control plane
   is up. The token rides in the URL fragment (`/ui/#token=...`), which a browser never
   sends to a server; the page moves it into `sessionStorage` and clears the address bar.

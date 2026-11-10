@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import http.client
 import json
 import urllib.error
 import urllib.request
@@ -22,6 +23,7 @@ from korodexios_core.kernel.ipc import (
     IpcServer,
     IpcStaticMount,
     guess_content_type,
+    parse_byte_range,
 )
 
 TOKEN_HEADER = "X-Kdx-Token"
@@ -459,5 +461,107 @@ def test_a_symlink_cannot_lead_out_of_a_static_mount(tmp_path: Path, ui_dir: Pat
         code, _headers, body = http_call(base, "/ui/link.txt", token=None)
         assert code in {403, 404}
         assert b"TOP-SECRET" not in body
+    finally:
+        server.stop()
+
+
+def raw_call(
+    base: str, route: str, headers: dict[str, str] | None = None
+) -> tuple[int, dict[str, str], bytes]:
+    """Issue one GET without following redirects."""
+    host, _, port = base.removeprefix("http://").partition(":")
+    connection = http.client.HTTPConnection(host, int(port.rstrip("/")), timeout=5)
+    try:
+        connection.request("GET", route, headers=headers or {})
+        response = connection.getresponse()
+        return (
+            response.status,
+            {k.lower(): v for k, v in response.getheaders()},
+            response.read(),
+        )
+    finally:
+        connection.close()
+
+
+def test_mount_prefix_without_slash_redirects(tmp_path: Path, ui_dir: Path) -> None:
+    server = make_server(tmp_path, static_dirs=(IpcStaticMount("/ui", ui_dir),))
+    try:
+        base = str(server.discovery.base_url())
+        code, headers, _body = raw_call(base, "/ui")
+        assert (code, headers["location"]) == (301, "/ui/")
+        code, headers, _body = raw_call(base, "/ui?a=1")
+        assert (code, headers["location"]) == (301, "/ui/?a=1")
+        code, _headers, body = raw_call(base, "/ui/")
+        assert code == 200
+        assert body.startswith(b"<!doctype html>")
+    finally:
+        server.stop()
+
+
+def test_static_files_honour_byte_ranges(tmp_path: Path, ui_dir: Path) -> None:
+    server = make_server(tmp_path, static_dirs=(IpcStaticMount("/ui", ui_dir),))
+    try:
+        base = str(server.discovery.base_url())
+        code, headers, body = raw_call(base, "/ui/app.css")
+        assert (code, headers["accept-ranges"], len(body)) == (200, "bytes", 18)
+        code, headers, body = raw_call(base, "/ui/app.css", {"Range": "bytes=0-3"})
+        assert (code, body) == (206, b"body")
+        assert headers["content-range"] == "bytes 0-3/18"
+        code, headers, body = raw_call(base, "/ui/app.css", {"Range": "bytes=-3"})
+        assert (code, body, headers["content-range"]) == (206, b"0 }", "bytes 15-17/18")
+        code, headers, _body = raw_call(base, "/ui/app.css", {"Range": "bytes=40-"})
+        assert (code, headers["content-range"]) == (416, "bytes */18")
+        code, _headers, body = raw_call(base, "/ui/app.css", {"Range": "bytes=0-1,4-5"})
+        assert (code, len(body)) == (200, 18)
+    finally:
+        server.stop()
+
+
+def test_parse_byte_range_edges() -> None:
+    assert parse_byte_range(None, 10) is None
+    assert parse_byte_range("items=0-1", 10) is None
+    assert parse_byte_range("bytes=abc", 10) is None
+    assert parse_byte_range("bytes=5-2", 10) is None
+    assert parse_byte_range("bytes=2-", 10) == (2, 9)
+    assert parse_byte_range("bytes=2-99", 10) == (2, 9)
+    assert parse_byte_range("bytes=-99", 10) == (0, 9)
+    assert parse_byte_range("bytes=-0", 10) == "unsatisfiable"
+    assert parse_byte_range("bytes=-5", 0) == "unsatisfiable"
+    assert parse_byte_range("bytes=10-", 10) == "unsatisfiable"
+
+
+def test_file_response_serves_ranges(tmp_path: Path) -> None:
+    source = tmp_path / "clip.bin"
+    source.write_bytes(bytes(range(20)))
+    whole = IpcResponse.file(source)
+    assert whole.status == 200
+    assert ("Accept-Ranges", "bytes") in whole.headers
+    part = IpcResponse.file(source, range_header="bytes=2-4")
+    assert (part.status, part.body) == (206, bytes([2, 3, 4]))
+    assert ("Content-Range", "bytes 2-4/20") in part.headers
+    late = IpcResponse.file(source, range_header="bytes=30-")
+    assert (late.status, late.body) == (416, b"")
+    assert ("Content-Range", "bytes */20") in late.headers
+
+
+def test_only_an_embeddable_mount_may_be_framed(tmp_path: Path, ui_dir: Path) -> None:
+    other = tmp_path / "other"
+    other.mkdir()
+    (other / "index.html").write_text("<p>x</p>", encoding="utf-8")
+    server = make_server(
+        tmp_path,
+        static_dirs=(
+            IpcStaticMount("/ui", ui_dir),
+            IpcStaticMount.create("/widget", other, embeddable=True),
+        ),
+    )
+    try:
+        base = str(server.discovery.base_url())
+        _code, headers, _body = raw_call(base, "/ui/")
+        assert headers["x-frame-options"] == "DENY"
+        assert headers["content-security-policy"] == "frame-ancestors 'none'"
+        _code, headers, _body = raw_call(base, "/widget/")
+        assert headers["x-frame-options"] == "SAMEORIGIN"
+        assert headers["content-security-policy"] == "frame-ancestors 'self'"
     finally:
         server.stop()

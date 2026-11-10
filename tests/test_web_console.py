@@ -46,9 +46,9 @@ def request_for(path: str, **query: str) -> IpcRequest:
 
 
 def test_static_files_ship_with_the_module() -> None:
-    for name in ("index.html", "app.js", "app.css"):
+    for name in ("console.html", "shell.html", "app.js", "app.css"):
         assert (STATIC_DIR / name).is_file(), name
-    page = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    page = (STATIC_DIR / "console.html").read_text(encoding="utf-8")
     assert "Content-Security-Policy" in page
     assert "script-src 'self'" in page
     script = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
@@ -140,6 +140,8 @@ def test_daemon_serves_the_page_and_guards_its_data(project_root) -> None:
         with urllib.request.urlopen(base + "/ui/", timeout=5) as response:
             assert response.status == 200
             assert response.headers["Content-Type"].startswith("text/html")
+            assert b"Korodexios Shell" in response.read()
+        with urllib.request.urlopen(base + "/ui/console.html", timeout=5) as response:
             assert b"Korodexios Console" in response.read()
         assert http_call(base, CATALOG_PATH)[0] == 401
         code, payload = http_call(base, CATALOG_PATH, token=discovery.token)
@@ -284,10 +286,40 @@ def test_every_static_text_of_the_page_has_a_message() -> None:
     from korodexios_core.modules.web_console.module import WEB_LOCALES_DIR
 
     known = {e.msgid for e in parse_po((WEB_LOCALES_DIR / "korodexios-web.pot").read_text("utf-8"))}
-    page = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    page = (STATIC_DIR / "console.html").read_text(encoding="utf-8")
     for match in re.finditer(r'(?:placeholder|aria-label)="([^"]+)"', page):
         assert match.group(1) in known, match.group(1)
     for locale in ("sk", "cs", "de", "es", "fr", "pl"):
         text = (WEB_LOCALES_DIR / locale / "korodexios-web.po").read_text("utf-8")
         done = {e.msgid for e in parse_po(text) if e.translated}
         assert known <= done, (locale, sorted(known - done))
+
+
+def test_the_frontend_key_picks_the_page_served_at_ui(project_root) -> None:
+    from korodexios_core.kernel.chassis import ChassisOptions
+    from korodexios_core.paths import AppPaths
+
+    paths = AppPaths.discover(root=str(project_root), environ={})
+    chassis = Chassis.create(
+        ChassisOptions(
+            home=paths.root,
+            environ={},
+            cli_overrides={
+                "core.log.file_enabled": False,
+                "core.ipc.enabled": True,
+                "core.ipc.port": 0,
+                "modules.web_console.frontend": "console",
+            },
+            install_signals=False,
+        )
+    )
+    chassis.initialize()
+    chassis.start()
+    try:
+        base = chassis.ipc.discovery.base_url()  # type: ignore[union-attr]
+        with urllib.request.urlopen(base + "/ui/", timeout=5) as response:
+            assert b"Korodexios Console" in response.read()
+        with urllib.request.urlopen(base + "/ui/shell.html", timeout=5) as response:
+            assert b"Korodexios Shell" in response.read()
+    finally:
+        chassis.shutdown()

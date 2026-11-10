@@ -264,7 +264,7 @@ def _json_part(output: str) -> str:
 
 
 def test_the_page_loads_modules_js_and_never_writes_html() -> None:
-    page = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    page = (STATIC_DIR / "console.html").read_text(encoding="utf-8")
     assert 'src="modules.js"' in page
     script = (STATIC_DIR / "modules.js").read_text(encoding="utf-8")
     assert "innerHTML" not in script
@@ -420,3 +420,30 @@ def test_the_console_scripts_stay_free_of_innerhtml_and_unsafe_links() -> None:
     script = (STATIC_DIR / "modules.js").read_text(encoding="utf-8")
     assert "innerHTML" not in script
     assert "safeHref" in script  # a link cell never follows a javascript: address
+
+
+# -- embed panel -----------------------------------------------------------------
+
+
+def test_an_embed_panel_is_a_path_on_this_daemon_with_a_clamped_height() -> None:
+    panel = {"id": "player", "type": "embed", "src": "/player/", "height": 9000}
+    manifest = one({"panels": [panel]})
+    built = manifest["modules"][0]["panels"][0]
+    assert (built["src"], built["height"]) == ("/player/", 2000)
+    manifest = one({"panels": [{"id": "player", "type": "embed", "src": "/player/"}]})
+    assert manifest["modules"][0]["panels"][0]["height"] == 360
+
+
+@pytest.mark.parametrize(
+    "src", ["", "player", "//evil.example/x", "https://evil.example/", "/a/../b", "/api/v1/status"]
+)
+def test_an_embed_panel_refuses_anything_but_a_local_mount(src: str) -> None:
+    manifest = one({"panels": [{"id": "player", "type": "embed", "src": src}]})
+    assert manifest["issues"]
+    assert not manifest["modules"]
+
+
+def test_the_shell_may_frame_embeds_but_the_pages_stay_unframable() -> None:
+    shell = (STATIC_DIR / "shell.html").read_text(encoding="utf-8")
+    assert "frame-src 'self'" in shell
+    assert "frame-ancestors" not in shell  # a meta CSP ignores it; the header says 'none'

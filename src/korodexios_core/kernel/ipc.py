@@ -16,7 +16,6 @@ import functools
 import hmac
 import ipaddress
 import json
-import mimetypes
 import os
 import re
 import secrets
@@ -40,6 +39,14 @@ from ..fsio import atomic_write_text
 from ..units import page_size
 from ..version import CORE_API_VERSION
 from .audit import AuditLog
+from .http_files import (
+    CONTENT_OCTET_STREAM,
+    EMBEDDABLE_HEADERS,
+    guess_content_type,
+    parse_byte_range,
+    range_headers,
+    read_window,
+)
 from .instance_lock import pid_alive
 from .jobs import JobLimitError
 from .request_tracker import TrackedHTTPServer
@@ -140,7 +147,6 @@ and DEL. A CR or LF inside a path is a header-splitting hazard on the way out, a
 space makes the request line ambiguous for anything sitting in front of the daemon."""
 
 CONTENT_JSON = "application/json"
-CONTENT_OCTET_STREAM = "application/octet-stream"
 CONTENT_PLAIN = "text/plain; charset=utf-8"
 CONTENT_HTML = "text/html; charset=utf-8"
 STATIC_METHODS = ("GET", "HEAD")
@@ -163,35 +169,6 @@ SECURITY_HEADERS: Final[tuple[tuple[str, str], ...]] = (
 'frame-ancestors' only works as a header - a <meta> CSP ignores it - so the chassis sends
 it: no foreign page may frame the console and steer a click onto 'Stop daemon'. A
 module that answers with its own Content-Security-Policy keeps it unchanged."""
-
-_EXTRA_CONTENT_TYPES: dict[str, str] = {
-    ".css": "text/css",
-    ".csv": "text/csv",
-    ".htm": "text/html",
-    ".html": "text/html",
-    ".js": "text/javascript",
-    ".mjs": "text/javascript",
-    ".json": "application/json",
-    ".svg": "image/svg+xml",
-    ".txt": "text/plain",
-    ".wasm": "application/wasm",
-}
-
-
-def guess_content_type(name: str) -> str:
-    """Return the media type for *name*, defaulting to octet-stream.
-
-    The small table settles the extensions mimetypes answers differently per
-    platform - '.js' is the usual offender, and on Windows '.csv' comes back as
-    'application/vnd.ms-excel' - so a dashboard gets the same type on every host,
-    and a static build keeps caching it.
-    """
-    suffix = Path(str(name)).suffix.lower()
-    if suffix in _EXTRA_CONTENT_TYPES:
-        return _EXTRA_CONTENT_TYPES[suffix]
-    guessed, _encoding = mimetypes.guess_type(str(name))
-    return guessed or CONTENT_OCTET_STREAM
-
 
 def normalize_route_path(path: str) -> str:
     """Return *path* without a query string and with one trailing slash at most."""
@@ -412,18 +389,29 @@ class IpcResponse:
         content_type: str | None = None,
         status: int = 200,
         cache_control: str = "no-cache",
+        range_header: str | None = None,
     ) -> IpcResponse:
-        """Return the contents of *path* on disk, labelled with its own type."""
+        """Return the contents of *path* on disk, labelled with its own type.
+
+        Pass the request's ``Range`` header as *range_header* to serve a seekable file:
+        a satisfiable range answers 206 with only those bytes read from disk, one past
+        the end answers 416, and every answer carries ``Accept-Ranges: bytes``.
+        """
         target = Path(path)
+        headers: list[tuple[str, str]] = [("Accept-Ranges", "bytes")]
+        if cache_control:
+            headers.append(("Cache-Control", cache_control))
         try:
-            raw = target.read_bytes()
+            size = target.stat().st_size
+            window = parse_byte_range(range_header, size)
+            raw = b"" if isinstance(window, str) else read_window(target, window)
         except OSError as exc:
             raise IpcError(
                 f"cannot read {target}: {exc}", hint="serve a file that exists on this host"
             ) from exc
-        headers: list[tuple[str, str]] = []
-        if cache_control:
-            headers.append(("Cache-Control", cache_control))
+        if window is not None:
+            status = 416 if isinstance(window, str) else 206
+        headers.extend(range_headers(window, size))
         return cls(raw, content_type or guess_content_type(target.name), status, tuple(headers))
 
 
@@ -458,6 +446,7 @@ class IpcStaticMount:
     cache_control: str = "no-cache"
     auth: bool = False
     module: str = ""
+    embeddable: bool = False  # the same origin (the shell's embed panel) may frame it
 
     def __post_init__(self) -> None:
         prefix = normalize_route_path(self.route_prefix).rstrip("/")
@@ -481,6 +470,20 @@ class IpcStaticMount:
         object.__setattr__(self, "directory", root)
         if not tuple(self.index_names):
             object.__setattr__(self, "index_names", ("index.html",))
+
+    @classmethod
+    def create(
+        cls, route_prefix: str, directory: str | Path, **options: Any
+    ) -> IpcStaticMount:
+        """Build a mount from keyword options; ``index`` may be one name or several."""
+        index = options.pop("index", "index.html")
+        names = (str(index),) if isinstance(index, str) else tuple(str(item) for item in index)
+        return cls(
+            route_prefix,
+            Path(directory),
+            index_names=names or ("index.html",),
+            **options,
+        )
 
     @property
     def prefix(self) -> str:
@@ -1263,52 +1266,65 @@ class _ControlHandler(BaseHTTPRequestHandler):
     ) -> None:
         """Serve one file from a mounted static directory, with its own media type."""
         if not mount.allows(method):
-            self._reply(
-                405,
-                {
-                    "error": f"{mount.prefix} serves {', '.join(STATIC_METHODS)}",
-                    "method": method,
-                },
-            )
+            message = f"{mount.prefix} serves {', '.join(STATIC_METHODS)}"
+            self._reply(405, {"error": message, "method": method})
             return
         if mount.auth and (caller is None or not caller.allows("viewer")):
             self._refuse(ipc, mount.prefix, caller, "viewer")
             return
         target = mount.resolve(subpath)
         if target is None:
-            self._reply(
-                403,
-                {
-                    "error": f"{subpath!r} cannot read outside the mounted directory",
-                    "prefix": mount.prefix,
-                },
-            )
+            message = f"{subpath!r} cannot read outside the mounted directory"
+            self._reply(403, {"error": message, "prefix": mount.prefix})
             return
         if target.is_dir():
             target = _index_file(mount, target)
         if target is None or not target.is_file():
             self._reply(404, {"error": f"no such file below {mount.prefix}", "path": f"/{subpath}"})
             return
+        if not subpath.strip("/") and not str(self.path).split("?", 1)[0].endswith("/"):
+            # '/ui' is the directory itself; without the slash a browser resolves the
+            # page's relative assets against '/', so the client is sent to '/ui/'.
+            query = f"?{self.path.split('?', 1)[1]}" if "?" in str(self.path) else ""
+            location = (("Location", f"{mount.prefix}/{query}"),)
+            self._send(301, b"", CONTENT_PLAIN, location, body=False)
+            return
+        self._send_static_file(ipc, mount, target, method)
+
+    def _send_static_file(
+        self, ipc: IpcServer, mount: IpcStaticMount, target: Path, method: str
+    ) -> None:
+        """Answer with *target*: conditional (304), whole (200) or one byte range (206, 416)."""
         try:
-            data = target.read_bytes()
             stamp = target.stat()
         except OSError as exc:
             ipc.count_error()
             self._reply(500, {"error": f"cannot read {target.name}: {exc}", "prefix": mount.prefix})
             return
-        etag = f'W/"{int(stamp.st_mtime)}-{len(data)}"'
+        size = stamp.st_size
+        etag = f'W/"{int(stamp.st_mtime)}-{size}"'
         headers: tuple[tuple[str, str], ...] = (
             ("Cache-Control", mount.cache_control),
             ("ETag", etag),
+            ("Accept-Ranges", "bytes"),
+            *(EMBEDDABLE_HEADERS if mount.embeddable else ()),
         )
         if str(self.headers.get("If-None-Match") or "").strip() == etag:
             self._send(304, b"", CONTENT_PLAIN, headers, body=False)
             return
+        window = parse_byte_range(self.headers.get("Range"), size)
+        try:
+            data = b"" if isinstance(window, str) else read_window(target, window)
+        except OSError as exc:
+            ipc.count_error()
+            self._reply(500, {"error": f"cannot read {target.name}: {exc}", "prefix": mount.prefix})
+            return
+        status = 416 if isinstance(window, str) else 200 if window is None else 206
         self._send(
-            200,
+            status,
             data,
             guess_content_type(target.name),
-            headers,
+            (*headers, *range_headers(window, size)),
             body=str(method).upper() != "HEAD",
         )
 
@@ -1591,32 +1607,16 @@ class IpcServer:
         return self
 
     def register_static_dir(
-        self,
-        route_prefix: str,
-        directory: str | Path,
-        *,
-        index: str | Sequence[str] = "index.html",
-        cache_control: str = "no-cache",
-        auth: bool = False,
-        module: str = "",
+        self, route_prefix: str, directory: str | Path, **options: Any
     ) -> IpcStaticMount:
         """Serve *directory* under *route_prefix*; return the mount created.
 
         The chassis owns the socket, so a module gets a dashboard or an asset tree
         onto the same port as its JSON without opening a second server. Prefix
         collisions replace, so a module that re-registers on reload stays honest.
+        *options*: ``index``, ``cache_control``, ``auth``, ``module``, ``embeddable``.
         """
-        names: tuple[str, ...] = (
-            (str(index),) if isinstance(index, str) else tuple(str(item) for item in index)
-        )
-        mount = IpcStaticMount(
-            route_prefix,
-            Path(directory),
-            index_names=names or ("index.html",),
-            cache_control=cache_control,
-            auth=auth,
-            module=module,
-        )
+        mount = IpcStaticMount.create(route_prefix, directory, **options)
         self.add_static_dir(mount)
         return mount
 

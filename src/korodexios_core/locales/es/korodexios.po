@@ -910,13 +910,17 @@ msgstr "Solo los registros de este usuario."
 msgid "Open the browser console (starts the daemon when none is running)."
 msgstr "Abre la consola en el navegador (inicia el demonio si no hay ninguno)."
 
+#: modules/web_console/module.py
+msgid "Open the classic console (commands, logs, config)."
+msgstr "Abre la consola clásica (comandos, registros, configuración)."
+
 #: cli/commands.py
 msgid "Open the interactive command wizard."
 msgstr "Abre el asistente interactivo de comandos."
 
 #: modules/web_console/module.py
-msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
-msgstr "Abre el shell de una sola ventana (barra de iconos, lista lateral, paneles) en lugar de la consola clásica."
+msgid "Open the one-window shell, whatever frontend is set."
+msgstr "Abre el shell de una sola ventana, sea cual sea el ajuste frontend."
 
 #: modules/system_info/module.py
 msgid "Operating system"
@@ -3497,3 +3501,6 @@ msgstr "{value} no es un idioma al que se pueda traducir"
 #: cli/users.py
 msgid "{verb}; this token is shown only now - hand it over privately"
 msgstr "{verb}; este token solo se muestra ahora - entrégalo en privado"
+
+#~ msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
+#~ msgstr "Abre el shell de una sola ventana (barra de iconos, lista lateral, paneles) en lugar de la consola clásica."

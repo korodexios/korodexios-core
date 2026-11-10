@@ -910,13 +910,17 @@ msgstr "Tylko rekordy tego użytkownika."
 msgid "Open the browser console (starts the daemon when none is running)."
 msgstr "Otwórz konsolę w przeglądarce (uruchamia demona, jeśli żaden nie działa)."
 
+#: modules/web_console/module.py
+msgid "Open the classic console (commands, logs, config)."
+msgstr "Otwiera klasyczną konsolę (polecenia, logi, konfiguracja)."
+
 #: cli/commands.py
 msgid "Open the interactive command wizard."
 msgstr "Otwórz interaktywnego kreatora poleceń."
 
 #: modules/web_console/module.py
-msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
-msgstr "Otwiera jednookienkową powłokę (pasek ikon, lista boczna, panele) zamiast klasycznej konsoli."
+msgid "Open the one-window shell, whatever frontend is set."
+msgstr "Otwiera powłokę jednookienkową niezależnie od ustawienia frontend."
 
 #: modules/system_info/module.py
 msgid "Operating system"
@@ -3497,3 +3501,6 @@ msgstr "{value} nie jest językiem, na który można tłumaczyć"
 #: cli/users.py
 msgid "{verb}; this token is shown only now - hand it over privately"
 msgstr "{verb}; ten token jest pokazywany tylko teraz - przekaż go prywatnie"
+
+#~ msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
+#~ msgstr "Otwiera jednookienkową powłokę (pasek ikon, lista boczna, panele) zamiast klasycznej konsoli."

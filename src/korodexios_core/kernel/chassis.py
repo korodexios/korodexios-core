@@ -756,16 +756,7 @@ class Chassis:
         route: the mount is kept in the chassis list and published on the live
         server when one runs.
         """
-        mount = IpcStaticMount(
-            route_prefix,
-            Path(directory),
-            index_names=tuple(kwargs.get("index", ("index.html",)))
-            if not isinstance(kwargs.get("index", "index.html"), str)
-            else (str(kwargs.get("index")),),
-            cache_control=str(kwargs.get("cache_control", "no-cache")),
-            auth=bool(kwargs.get("auth", False)),
-            module=str(kwargs.get("module", "")),
-        )
+        mount = IpcStaticMount.create(route_prefix, directory, **kwargs)
         kept = tuple(item for item in self.ipc_static if item.prefix != mount.prefix)
         self.ipc_static = (*kept, mount)
         server = self.ipc
