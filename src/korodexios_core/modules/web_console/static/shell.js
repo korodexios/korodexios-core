@@ -6,7 +6,6 @@
 
 (function () {
   const TOKEN_HEADER = "X-Kdx-Token";
-  const STORE_KEY = "kdx-console-token"; // shared with the classic console (same origin)
   const SAVE_DELAY_MS = 400;
   const BADGE_MS = 15000;
   const STEP = 12;
@@ -149,11 +148,20 @@
     const hash = new URLSearchParams(location.hash.slice(1));
     const fromHash = hash.get("token");
     if (fromHash) {
-      try { sessionStorage.setItem(STORE_KEY, fromHash); } catch (e) { /* private mode */ }
+      KdxToken.ready.then(() => KdxToken.remember(fromHash, KdxToken.defaultChoice()));
       history.replaceState(null, "", location.pathname + location.search);
       return fromHash;
     }
-    try { return sessionStorage.getItem(STORE_KEY) || ""; } catch (e) { return ""; }
+    return KdxToken.read();
+  }
+
+  // the gate offers only the durations the server's policy allows (token-store.js)
+  function fillKeep() {
+    const select = $("token-keep");
+    const options = KdxToken.options();
+    select.replaceChildren(...options.map((item) => el("option", { value: item.id, text: t(item.label) })));
+    select.value = KdxToken.defaultChoice();
+    select.closest("label").hidden = options.length < 2;
   }
 
   class AuthError extends Error {}
@@ -1354,9 +1362,15 @@
   $("token-form").addEventListener("submit", (event) => {
     event.preventDefault();
     state.token = $("token-input").value.trim();
-    try { sessionStorage.setItem(STORE_KEY, state.token); } catch (e) { /* private mode */ }
+    const choice = $("token-keep").value;
     $("token-input").value = "";
-    boot();
+    KdxToken.remember(state.token, choice).catch(() => {}).then(() => {
+      if (KdxToken.policy.cookie) state.token = "";
+      boot();
+    });
+  });
+  $("token-forget").addEventListener("click", () => {
+    KdxToken.forget().then(() => { state.token = ""; showGate(t("Token forgotten.")); });
   });
   $("theme-select").addEventListener("change", (event) => chooseTheme(event.target.value).catch((e) => toast(e.message, true)));
   $("btn-collapse").append(icon("collapse", 16));
@@ -1382,6 +1396,9 @@
   document.addEventListener("keydown", shortcuts);
   window.addEventListener("resize", () => { if (state.prefs) applyLayout(); });
   renderInspector([]);
-  state.token = readToken();
-  if (!state.token) showGate(""); else boot();
+  KdxToken.ready.then(async () => {
+    state.token = readToken();
+    fillKeep();
+    if (state.token || await KdxToken.probe()) boot(); else showGate("");
+  });
 })();

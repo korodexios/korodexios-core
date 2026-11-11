@@ -755,3 +755,35 @@ msgstr ""
 #: static/shell.html
 msgid "Back"
 msgstr ""
+
+#: static/token-store.js
+msgid "Remember"
+msgstr ""
+
+#: static/token-store.js
+msgid "Forget"
+msgstr ""
+
+#: static/token-store.js
+msgid "Token forgotten."
+msgstr ""
+
+#: static/token-store.js
+msgid "until I forget it"
+msgstr ""
+
+#: static/token-store.js
+msgid "7 days"
+msgstr ""
+
+#: static/token-store.js
+msgid "12 hours"
+msgstr ""
+
+#: static/token-store.js
+msgid "this tab only"
+msgstr ""
+
+#: static/token-store.js
+msgid "do not remember"
+msgstr ""

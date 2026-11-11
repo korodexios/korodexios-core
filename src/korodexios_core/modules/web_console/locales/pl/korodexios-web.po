@@ -757,3 +757,35 @@ msgstr "Pokaż listę boczną"
 #: static/shell.html
 msgid "Back"
 msgstr "Wstecz"
+
+#: static/token-store.js
+msgid "Remember"
+msgstr "Zapamiętaj"
+
+#: static/token-store.js
+msgid "Forget"
+msgstr "Zapomnij"
+
+#: static/token-store.js
+msgid "Token forgotten."
+msgstr "Token zapomniany."
+
+#: static/token-store.js
+msgid "until I forget it"
+msgstr "dopóki go nie zapomnę"
+
+#: static/token-store.js
+msgid "7 days"
+msgstr "7 dni"
+
+#: static/token-store.js
+msgid "12 hours"
+msgstr "12 godzin"
+
+#: static/token-store.js
+msgid "this tab only"
+msgstr "tylko ta karta"
+
+#: static/token-store.js
+msgid "do not remember"
+msgstr "nie zapamiętuj"

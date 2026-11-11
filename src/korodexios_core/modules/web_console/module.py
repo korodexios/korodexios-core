@@ -76,6 +76,7 @@ from ...kernel.ui_tiers import guide, probe_environment
 from ...kernel.users import current_caller, role_rank
 from ...logging.engine import tail_lines
 from .describe import describe_argument
+from .token_session import token_routes
 
 UI_PREFIX = "/ui"
 CATALOG_PATH = "/api/v1/ui/catalog"
@@ -207,8 +208,7 @@ class WebConsoleModule(Module):
                 path=CONFIG_SCHEMA_PATH,
                 handler=self._config_schema_route,
                 module=self.name,
-                summary="declared settings per module joined with value and layer "
-                "('?module=NAME', '?group=core.log')",
+                summary="declared settings with value and layer ('?module=NAME', '?group=...')",
             ),
             IpcRoute(
                 path=CONFIG_EDIT_PATH,
@@ -216,8 +216,7 @@ class WebConsoleModule(Module):
                 methods=("POST",),
                 module=self.name,
                 role="admin",
-                summary="set or unset keys of the local layer, then reload; "
-                "body {set: {key: value}, unset: [key]}",
+                summary="set or unset keys of the local layer, then reload: {set: {}, unset: []}",
             ),
             IpcRoute(
                 path=I18N_PATH,
@@ -240,6 +239,7 @@ class WebConsoleModule(Module):
                 role="viewer",
                 summary="the caller's own GUI preferences: read, replace, merge, reset",
             ),
+            *token_routes(self.name, lambda: self.require_context().config),
             IpcRoute(
                 path=THEME_PATH,
                 handler=self._theme_route,

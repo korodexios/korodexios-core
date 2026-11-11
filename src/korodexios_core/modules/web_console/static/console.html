@@ -50,7 +50,9 @@
         token an admin created for you with <code>kdx users add</code>.</p>
       <form id="token-form" class="row">
         <input id="token-input" type="password" autocomplete="off" placeholder="token" aria-label="token">
+        <label class="keep">Remember <select id="token-keep"></select></label>
         <button type="submit">Connect</button>
+        <button id="token-forget" type="button">Forget</button>
       </form>
       <p id="token-error" class="error" hidden></p>
     </section>
@@ -170,6 +172,7 @@
   </main>
 
   <div id="toast" class="toast" role="status" hidden></div>
+  <script src="token-store.js"></script>
   <script src="app.js"></script>
   <script src="modules.js"></script>
 </body>

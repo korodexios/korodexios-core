@@ -12,14 +12,11 @@ from __future__ import annotations
 
 import contextlib
 import errno
-import functools
 import hmac
-import ipaddress
 import json
 import os
 import re
 import secrets
-import socket
 import ssl
 import sys
 import threading
@@ -48,6 +45,13 @@ from .http_files import (
     read_window,
 )
 from .instance_lock import pid_alive
+from .ipc_hosts import (
+    LOOPBACK_HOSTS,
+    cookie_token,
+    host_refusal,
+    is_loopback_host,
+    origin_refusal,
+)
 from .jobs import JobLimitError
 from .request_tracker import TrackedHTTPServer
 from .users import OWNER_NAME, ROLES, Caller, UserStore, acting_as
@@ -59,7 +63,6 @@ DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 18123
 DEFAULT_TOKEN_BYTES = 16
 WILDCARD_HOSTS = ("0.0.0.0", "::")
-LOOPBACK_HOSTS = ("127.0.0.1", "localhost", "::1")
 MAX_SEGMENT_LENGTH: Final[int] = 255
 """Longest single path segment a static mount will look at."""
 
@@ -572,7 +575,7 @@ def _inside_directory(candidate: Path, root: Path) -> bool:
     return folded.is_relative_to(PurePosixPath(root.as_posix().casefold()))
 
 
-def presented_token(headers: Mapping[str, str] | Any) -> str:
+def presented_token(headers: Mapping[str, str] | Any, *, cookie: bool = False) -> str:
     """Return the token a request presents: 'X-Kdx-Token', else 'Authorization: Bearer'.
 
     The chassis header is the documented one. The bearer form is what automation tools
@@ -586,7 +589,12 @@ def presented_token(headers: Mapping[str, str] | Any) -> str:
     if scheme.lower() == "bearer":
         return credential.strip()
     # A browser WebSocket cannot set a header; it offers 'kdx.token.<TOKEN>' instead.
-    return protocol_token(headers)
+    offered = protocol_token(headers)
+    if offered:
+        return offered
+    # Last: the HttpOnly session cookie, honoured only while core.ipc.ui_token_cookie is on.
+    return cookie_token(headers) if cookie else ""
+
 
 
 def new_token() -> str:
@@ -597,47 +605,6 @@ def new_token() -> str:
 def is_wildcard_host(host: str) -> bool:
     """Return True when the bind address accepts every interface."""
     return str(host).strip() in WILDCARD_HOSTS
-
-
-def is_loopback_host(host: str) -> bool:
-    """Return True when only this machine can reach the bind address."""
-    return str(host).strip() in LOOPBACK_HOSTS
-
-
-def _host_name(host_header: str) -> str:
-    """Return the host part of a 'Host' header: 'a:1' -> 'a', '[::1]:1' -> '::1'."""
-    text = host_header.strip().lower()
-    if text.startswith("["):
-        return text[1:].split("]", 1)[0]
-    return text.rsplit(":", 1)[0] if text.count(":") == 1 else text
-
-
-def _is_ip_literal(name: str) -> bool:
-    """Return True when *name* is an IPv4 or IPv6 address, not a DNS name."""
-    try:
-        ipaddress.ip_address(str(name).strip().strip("[]").split("%", 1)[0])
-    except ValueError:
-        return False
-    return True
-
-
-@functools.lru_cache(maxsize=1)
-def _own_host_names() -> frozenset[str]:
-    """Return the names this machine calls itself: its hostname and '<host>.local'.
-
-    Only the local hostname is read - never DNS. A reverse lookup ('socket.getfqdn')
-    can stall for seconds (it did on macOS), and it would run inside the first request
-    that carries a foreign Host header. A DNS name the machine is reached by belongs in
-    core.ipc.allowed_hosts.
-    """
-    names: set[str] = set()
-    with contextlib.suppress(OSError):
-        host = socket.gethostname().strip().lower()
-        short = host.split(".", 1)[0]
-        for name in {host, short}:
-            if name:
-                names.update({name, f"{name}.local"})
-    return frozenset(names)
 
 
 class IpcError(ValueError):
@@ -926,6 +893,8 @@ class IpcOptions:
     allow_anonymous_shutdown: bool = False
     allowed_hosts: tuple[str, ...] = ()
     """Host names a LAN-bound control plane answers to; empty accepts any name."""
+    cookie_auth: bool = False
+    """Accept the console's HttpOnly session cookie as the token (core.ipc.ui_token_cookie)."""
     fallback_attempts: int = 5
     tls_cert: Path | None = None
     tls_key: Path | None = None
@@ -1032,7 +1001,7 @@ class _ControlHandler(BaseHTTPRequestHandler):
                 },
             )
             return
-        caller = ipc.identify(presented_token(self.headers))
+        caller = ipc.identify(presented_token(self.headers, cookie=ipc.cookie_auth))
         with acting_as(caller):
             self._route_as(ipc, method, caller)
 
@@ -1709,6 +1678,21 @@ class IpcServer:
                 detail=detail, address=address,
             )
 
+    @property
+    def cookie_auth(self) -> bool:
+        """Return True when the console's session cookie counts as the token."""
+        return bool(self._options.cookie_auth)
+
+    def set_cookie_auth(self, enabled: bool) -> None:
+        """Turn the session cookie on or off as a token, without a restart."""
+        self._options.cookie_auth = bool(enabled)
+
+    def set_allowed_hosts(self, hosts: Iterable[str]) -> None:
+        """Replace the Host names a LAN-bound control plane answers to, without a restart."""
+        self._options.allowed_hosts = tuple(
+            str(item).strip() for item in hosts if str(item).strip()
+        )
+
     def cross_origin_refusal(self, host: str | None, origin: str | None) -> str | None:
         """Return why a browser-borne request must be refused, or None to serve it.
 
@@ -1720,36 +1704,16 @@ class IpcServer:
         a Docker probe, so refusing them costs no legitimate client anything.
         """
         host_text = str(host or "").strip()
-        if host_text and is_loopback_host(self._bound_host or self._options.host):
-            name = _host_name(host_text)
-            if not is_loopback_host(name):
-                return f"Host {host_text!r} is not a loopback name for a loopback control plane"
-        elif host_text:
-            # On a LAN bind a rebinding page sends its own name as Host and Origin alike;
-            # only the names this machine really answers to tell the two apart. Without an
-            # explicit list, an address literal is safe (rebinding needs a DNS name) and so
-            # are this machine's own names; any other name must be listed.
-            name = _host_name(host_text)
-            if self._options.allowed_hosts:
-                allowed = {str(item).strip().lower() for item in self._options.allowed_hosts}
-                if not is_loopback_host(name) and name not in allowed:
-                    return f"Host {host_text!r} is not in core.ipc.allowed_hosts"
-            elif not (
-                is_loopback_host(name) or _is_ip_literal(name) or name in _own_host_names()
-            ):
-                return (
-                    f"Host {host_text!r} is not an address or a name of this machine; "
-                    "list it in core.ipc.allowed_hosts"
-                )
+        if host_text:
+            refusal = host_refusal(
+                host_text,
+                loopback_bind=is_loopback_host(self._bound_host or self._options.host),
+                allowed=self._options.allowed_hosts,
+            )
+            if refusal:
+                return refusal
         origin_text = str(origin or "").strip()
-        if not origin_text:
-            return None
-        parsed = urllib.parse.urlsplit(origin_text)
-        if parsed.scheme not in ("http", "https") or not parsed.netloc:
-            return f"Origin {origin_text!r} is not a web origin this control plane serves"
-        if not host_text or parsed.netloc.lower() != host_text.lower():
-            return f"Origin {origin_text!r} is not this control plane's own origin"
-        return None
+        return origin_refusal(origin_text, host_text) if origin_text else None
 
     def open_stream(self) -> bool:
         """Reserve one long-lived stream slot (SSE, WebSocket); False when all are taken."""

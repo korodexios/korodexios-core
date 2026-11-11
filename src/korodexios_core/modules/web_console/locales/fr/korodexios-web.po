@@ -757,3 +757,35 @@ msgstr "Afficher la liste latérale"
 #: static/shell.html
 msgid "Back"
 msgstr "Retour"
+
+#: static/token-store.js
+msgid "Remember"
+msgstr "Mémoriser"
+
+#: static/token-store.js
+msgid "Forget"
+msgstr "Oublier"
+
+#: static/token-store.js
+msgid "Token forgotten."
+msgstr "Jeton oublié."
+
+#: static/token-store.js
+msgid "until I forget it"
+msgstr "jusqu'à ce que je l'oublie"
+
+#: static/token-store.js
+msgid "7 days"
+msgstr "7 jours"
+
+#: static/token-store.js
+msgid "12 hours"
+msgstr "12 heures"
+
+#: static/token-store.js
+msgid "this tab only"
+msgstr "cet onglet seulement"
+
+#: static/token-store.js
+msgid "do not remember"
+msgstr "ne pas mémoriser"

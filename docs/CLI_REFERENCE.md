@@ -20,8 +20,8 @@ docs. `kdx --help` lists every command, including the ones modules contributed.
 | uv, in the chassis repository | `uv venv --python 3.13 && uv sync --extra dev && uv run kdx doctor` | uv (Astral) owns the environment; `make` resolves to `uv run` when uv is on `PATH` |
 | guided installer | `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) | four coloured steps - check, install, verify, first project; asks before installing uv; `--lang sk`, `--yes`, `--dry-run` (`-Language`, `-Yes`, `-DryRun` on Windows) |
 | uv tool | `uv tool install korodexios-core` | a global `kdx` on PATH, no project involved |
-| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.7.1"` | the documented pin before an index publish; needs network |
-| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.7.1"` | what `kdx init --chassis-source git` writes into the seed |
+| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.7.2"` | the documented pin before an index publish; needs network |
+| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.7.2"` | what `kdx init --chassis-source git` writes into the seed |
 | pipx, or venv + pip | `pipx install korodexios-core`; `python3 -m venv .venv && pip install -e ".[dev]"` | the fallback when uv is absent - and it fails as written on a PEP 668 `EXTERNALLY-MANAGED` interpreter with no `pip` and no `ensurepip` |
 | from an index | `uv pip install korodexios-core`, or `pip install korodexios-core` | once published; a consumer pins it with `uv lock` |
 
@@ -363,7 +363,7 @@ The seed ships `kdx.yml`, `.env.example`, `Makefile`, `README.md`, `AGENTS.md`,
 smoke tests. It passes `make check` on arrival.
 
 The chassis dependency is pinned to the repository by default
-(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.7.1`), so a fresh
+(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.7.2`), so a fresh
 venv can `pip install -e .` the seeded project before any index publish. Pass
 `--chassis-source index` once the package is on an index; an unknown choice is refused
 with a hint. A git pin needs network and uv at install time - `uv venv`,
@@ -466,12 +466,33 @@ kdx status --target http://HOST:18123 --token my-static-lan-key
 | Shared secret | `core.ipc.token` | `KDX_CORE__IPC__TOKEN` | `--ipc-token` |
 | Anonymous stop | `core.ipc.allow_anonymous_shutdown` | `KDX_CORE__IPC__ALLOW_ANONYMOUS_SHUTDOWN` | - |
 | LAN host names | `core.ipc.allowed_hosts` | `KDX_CORE__IPC__ALLOWED_HOSTS` | - |
+| Console token memory | `core.ipc.ui_token_store` (`always` default, `ttl`, `tab`, `none`) | `KDX_CORE__IPC__UI_TOKEN_STORE` | `kdx config set` |
+| Console token lifetime | `core.ipc.ui_token_ttl` (`""` = no expiry, or `45m`, `12h`, `7d`) | `KDX_CORE__IPC__UI_TOKEN_TTL` | `kdx config set` |
+| Console session cookie | `core.ipc.ui_token_cookie` (default `false`) | `KDX_CORE__IPC__UI_TOKEN_COOKIE` | `kdx config set` |
 
 A wildcard bind (`0.0.0.0`, `::`) is announced as `127.0.0.1` in `var/chassis.ipc`, so
 local clients need no change; remote clients pass `--target`. On a LAN bind, list the
 names and addresses clients dial in `core.ipc.allowed_hosts` (for example
 `[nas.lan, 192.168.1.20]`): a request with any other `Host` is refused with `403`, which
-closes DNS rebinding. Loopback names are always accepted.
+closes DNS rebinding. Loopback names and this machine's own names are always accepted, and
+`kdx reload` (or `POST /api/v1/reload`) applies a changed list at once, with no restart.
+
+**How long the console remembers its token.** The server sets the ceiling, the person picks
+inside it on the token gate (`GET /api/v1/ui/token-policy` tells the page what is allowed):
+
+| `ui_token_store` | Browser keeps the token |
+| --- | --- |
+| `always` (default) | in `localStorage`, across tabs and browser restarts, until the person forgets it (or `ui_token_ttl` passes) |
+| `ttl` | like `always`, but it expires after `ui_token_ttl` (default 12 h when unset) |
+| `tab` | in `sessionStorage`: gone when the tab closes |
+| `none` | nowhere: the gate asks at every load |
+
+`ui_token_cookie: true` is the mode for a console reachable beyond a trusted network: after the
+first sign-in the daemon sets an `HttpOnly; SameSite=Lax` cookie (`kdx_session`), no script can
+read the token, and the browser does the remembering (`Max-Age` follows the lifetime above). The
+header `X-Kdx-Token`, `Authorization: Bearer`, `#token=` in the address, the CLI and `--remote`
+are unchanged in every mode. Both consoles share `static/token-store.js`, and a reload applies
+all three keys without a restart.
 
 ### https in three commands
 

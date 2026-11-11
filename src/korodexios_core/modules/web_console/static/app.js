@@ -4,7 +4,6 @@
 
 (function () {
   const TOKEN_HEADER = "X-Kdx-Token";
-  const STORE_KEY = "kdx-console-token";
   const REFRESH_MS = 5000;
   const FOLLOW_MS = 2000;
   const JOB_POLL_MS = 500;
@@ -118,11 +117,20 @@
     const hash = new URLSearchParams(location.hash.slice(1));
     const fromHash = hash.get("token");
     if (fromHash) {
-      try { sessionStorage.setItem(STORE_KEY, fromHash); } catch (e) { /* private mode */ }
+      KdxToken.ready.then(() => KdxToken.remember(fromHash, KdxToken.defaultChoice()));
       history.replaceState(null, "", location.pathname + location.search);
       return fromHash;
     }
-    try { return sessionStorage.getItem(STORE_KEY) || ""; } catch (e) { return ""; }
+    return KdxToken.read();
+  }
+
+  // the gate offers only the durations the server's policy allows (token-store.js)
+  function fillKeep() {
+    const select = $("token-keep");
+    const options = KdxToken.options();
+    select.replaceChildren(...options.map((item) => el("option", { value: item.id, text: t(item.label) })));
+    select.value = KdxToken.defaultChoice();
+    select.closest("label").hidden = options.length < 2;
   }
 
   class AuthError extends Error {}
@@ -177,9 +185,15 @@
   $("token-form").addEventListener("submit", (event) => {
     event.preventDefault();
     state.token = $("token-input").value.trim();
-    try { sessionStorage.setItem(STORE_KEY, state.token); } catch (e) { /* private mode */ }
+    const choice = $("token-keep").value;
     $("token-input").value = "";
-    refreshAll();
+    KdxToken.remember(state.token, choice).catch(() => {}).then(() => {
+      if (KdxToken.policy.cookie) { state.cookie = true; state.token = ""; }
+      refreshAll();
+    });
+  });
+  $("token-forget").addEventListener("click", () => {
+    KdxToken.forget().then(() => { state.token = ""; state.cookie = false; showGate(t("Token forgotten.")); });
   });
 
   async function guarded(task) {
@@ -581,7 +595,7 @@
   // fetch() streaming rather than EventSource: EventSource cannot send the token header,
   // and a token in the URL would land in history and logs.
   async function streamEvents() {
-    if (state.streaming || !state.token) return;
+    if (state.streaming || (!state.token && !state.cookie)) return;
     state.streaming = true;
     $("events-state").textContent = "connected";
     renderEvents();
@@ -742,8 +756,12 @@
   };
 
   markStatic();
-  state.token = readToken();
-  if (!state.token) showGate("");
-  refreshAll();
-  setInterval(() => { if (state.token && $("token-gate").hidden) guarded(loadStatus); }, REFRESH_MS);
+  KdxToken.ready.then(async () => {
+    state.token = readToken();
+    fillKeep();
+    state.cookie = !state.token && await KdxToken.probe();
+    if (!state.token && !state.cookie) showGate("");
+    refreshAll();
+  });
+  setInterval(() => { if ((state.token || state.cookie) && $("token-gate").hidden) guarded(loadStatus); }, REFRESH_MS);
 })();

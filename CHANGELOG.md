@@ -5,6 +5,27 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-11-11
+
+### Added
+
+- The console remembers its token the way the server allows: `core.ipc.ui_token_store`
+  (`always` default, `ttl`, `tab`, `none`), `core.ipc.ui_token_ttl` (`45m`, `12h`, `7d`; empty is no
+  expiry) and `core.ipc.ui_token_cookie` (an `HttpOnly; SameSite=Lax` session cookie, so no script
+  can read the token). The token gate offers only the durations the policy permits and has a
+  Forget button. `GET /api/v1/ui/token-policy` (no token needed, nothing secret) tells the page the
+  ceiling; `POST|GET|DELETE /api/v1/ui/session` sets, checks and clears the cookie. The default
+  changed from "this tab only" to `always` (`localStorage`); set `ui_token_store: tab` for the old
+  behaviour. All of it is settable from the terminal (`kdx config set`).
+- `static/token-store.js`: one helper both consoles use, so they can no longer disagree.
+- `kernel/ipc_hosts.py`: the `Host`, `Origin` and cookie rules as plain functions.
+
+### Fixed
+
+- `kdx reload` now applies a changed `core.ipc.allowed_hosts` (and `ui_token_cookie`) to the running
+  control plane; before it reported the change and answered 403 until a restart.
+- Listing a first `core.ipc.allowed_hosts` entry no longer locks out this machine's own host name.
+
 ## [0.7.1] - 2026-11-10
 
 ### Fixed

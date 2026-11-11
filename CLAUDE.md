@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.7.1.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.7.2.
 
 ## Working preferences
 
@@ -50,7 +50,16 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 - Never commit control-plane users or the audit log (see commit f78f747); keep
   `var/` and runtime state out of git.
 
-## Current state (2026-11-10)
+## Current state (2026-11-11)
+
+- v0.7.2 (owner asked for tag, commit and push; from a downstream proposal N4/N5): the console remembers its
+  token by server policy (`core.ipc.ui_token_store|ui_token_ttl|ui_token_cookie`, default `always` in
+  `localStorage`; `token-store.js` shared by both consoles; `/api/v1/ui/token-policy` and `/ui/session`
+  in `modules/web_console/token_session.py`), and `reload` applies `core.ipc.allowed_hosts` and
+  the cookie option live (`kernel/ipc_hosts.py`, `reload.apply_live_ipc`); a machine's own host names stay
+  valid when allowed_hosts is set. Not verified in a real browser, only by tests and Python-level HTTP calls.
+
+## State on 2026-11-10
 
 - v0.7.1 is tagged and pushed (narrow shell: ribbon on the left, side list as a drawer; classic-console links fixed). v0.7.0 (tagged, pushed): one front end, from a downstream proposal:
   `/ui` redirects to `/ui/` (301); `Range`/206/416 on static mounts and `IpcResponse.file(range_header=)`

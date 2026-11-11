@@ -73,7 +73,7 @@ from .locks import NamedLock, NamedLockRegistry
 from .process import ProcessSupervisor
 from .project import ProjectIdentity, project_identity
 from .registry import ModuleRegistry
-from .reload import reload_guarded, serve_reload_request
+from .reload import apply_live_ipc, ipc_allowed_hosts, reload_guarded, serve_reload_request
 from .rpc_output import capture_output, captured_text
 from .scheduler import TaskScheduler
 from .shutdown import Budget
@@ -509,11 +509,8 @@ class Chassis:
             allow_anonymous_shutdown=self.config.get_bool(
                 "core.ipc.allow_anonymous_shutdown", False
             ),
-            allowed_hosts=tuple(
-                str(item).strip()
-                for item in self.config.get_list("core.ipc.allowed_hosts", []) or []
-                if str(item).strip()
-            ),
+            allowed_hosts=ipc_allowed_hosts(self.config),
+            cookie_auth=self.config.get_bool("core.ipc.ui_token_cookie", False),
             tls_cert=self.tls_files()[0],
             tls_key=self.tls_files()[1],
         )
@@ -854,8 +851,7 @@ class Chassis:
             for key in set(previous) | set(current)
             if previous.get(key, _UNSET) != current.get(key, _UNSET)
         )
-        self.config = reloaded
-        self.context.config = reloaded
+        self.config = self.context.config = reloaded
         self.reloads += 1
         self.last_reload = {
             "reloads": self.reloads,
@@ -865,6 +861,7 @@ class Chassis:
         }
         if "core.log.level" in changed:
             self._apply_log_level(reloaded.get_str("core.log.level"))
+        apply_live_ipc(self.ipc, reloaded, changed)
         self.registry.notify_config_reload(reloaded)
         summary = dict(self.last_reload)
         summary["changed"] = list(changed)

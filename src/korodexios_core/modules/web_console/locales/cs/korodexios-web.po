@@ -757,3 +757,35 @@ msgstr "Zobrazit seznam"
 #: static/shell.html
 msgid "Back"
 msgstr "Zpět"
+
+#: static/token-store.js
+msgid "Remember"
+msgstr "Pamatovat"
+
+#: static/token-store.js
+msgid "Forget"
+msgstr "Zapomenout"
+
+#: static/token-store.js
+msgid "Token forgotten."
+msgstr "Token zapomenut."
+
+#: static/token-store.js
+msgid "until I forget it"
+msgstr "dokud ho nezapomenu"
+
+#: static/token-store.js
+msgid "7 days"
+msgstr "7 dní"
+
+#: static/token-store.js
+msgid "12 hours"
+msgstr "12 hodin"
+
+#: static/token-store.js
+msgid "this tab only"
+msgstr "jen tato karta"
+
+#: static/token-store.js
+msgid "do not remember"
+msgstr "nepamatovat"

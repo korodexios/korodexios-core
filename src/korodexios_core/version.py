@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import Final, NamedTuple
 
-__version__: Final[str] = "0.7.1"
+__version__: Final[str] = "0.7.2"
 CORE_API_VERSION: Final[str] = "2"
 
 _VERSION_PATTERN = re.compile(
@@ -22,7 +22,7 @@ class VersionInfo(NamedTuple):
     prerelease: str = ""
 
     def as_tuple(self) -> tuple[int, int, int, int, tuple[str, ...]]:
-        """Return a tuple usable for ordering comparisons: 0.7.1rc1 sorts below 0.7.1."""
+        """Return a tuple usable for ordering comparisons: 0.7.2rc1 sorts below 0.7.2."""
         pre: tuple[str, ...] = (self.prerelease,) if self.prerelease else ()
         return (self.major, self.minor, self.patch, 0 if pre else 1, pre)
 

@@ -278,7 +278,7 @@ def test_own_host_names_never_ask_dns(monkeypatch: pytest.MonkeyPatch) -> None:
     """A reverse lookup stalled the first foreign-Host request past a client timeout on macOS."""
     import socket as socket_module
 
-    from korodexios_core.kernel import ipc as ipc_module
+    from korodexios_core.kernel import ipc_hosts as hosts_module
 
     def no_dns(*_args: object) -> str:
         raise AssertionError("the control plane must not ask DNS for its own names")
@@ -286,9 +286,9 @@ def test_own_host_names_never_ask_dns(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(socket_module, "getfqdn", no_dns)
     monkeypatch.setattr(socket_module, "gethostbyaddr", no_dns)
     monkeypatch.setattr(socket_module, "gethostname", lambda: "Mac-mini.local")
-    ipc_module._own_host_names.cache_clear()
+    hosts_module.own_host_names.cache_clear()
     try:
-        names = ipc_module._own_host_names()
+        names = hosts_module.own_host_names()
         assert {"mac-mini.local", "mac-mini"} <= names
         started = time.monotonic()
         server = IpcServer(
@@ -299,4 +299,4 @@ def test_own_host_names_never_ask_dns(monkeypatch: pytest.MonkeyPatch) -> None:
         assert server.cross_origin_refusal("mac-mini:18123", None) is None
         assert time.monotonic() - started < 1.0
     finally:
-        ipc_module._own_host_names.cache_clear()
+        hosts_module.own_host_names.cache_clear()

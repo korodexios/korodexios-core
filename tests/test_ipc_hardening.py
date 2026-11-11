@@ -18,6 +18,7 @@ from korodexios_core.kernel.ipc import (
     IpcOptions,
     IpcServer,
 )
+from korodexios_core.kernel.ipc_hosts import host_name
 
 
 def start(
@@ -180,7 +181,7 @@ def test_a_lan_bind_answers_addresses_but_not_foreign_names(tmp_path: Path) -> N
     ],
 )
 def test_host_header_names_are_parsed(header: str, name: str) -> None:
-    assert ipc_module._host_name(header) == name
+    assert host_name(header) == name
 
 
 def test_a_stalled_connection_is_dropped(tmp_path: Path, monkeypatch) -> None:

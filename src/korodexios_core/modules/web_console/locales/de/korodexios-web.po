@@ -757,3 +757,35 @@ msgstr "Seitenliste anzeigen"
 #: static/shell.html
 msgid "Back"
 msgstr "Zurück"
+
+#: static/token-store.js
+msgid "Remember"
+msgstr "Merken"
+
+#: static/token-store.js
+msgid "Forget"
+msgstr "Vergessen"
+
+#: static/token-store.js
+msgid "Token forgotten."
+msgstr "Token vergessen."
+
+#: static/token-store.js
+msgid "until I forget it"
+msgstr "bis ich ihn vergesse"
+
+#: static/token-store.js
+msgid "7 days"
+msgstr "7 Tage"
+
+#: static/token-store.js
+msgid "12 hours"
+msgstr "12 Stunden"
+
+#: static/token-store.js
+msgid "this tab only"
+msgstr "nur dieser Tab"
+
+#: static/token-store.js
+msgid "do not remember"
+msgstr "nicht merken"

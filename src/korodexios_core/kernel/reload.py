@@ -14,7 +14,9 @@ from typing import TYPE_CHECKING, Any
 from ..exceptions import KorodexiosError
 
 if TYPE_CHECKING:
+    from ..config.layered import LayeredConfig
     from .chassis import Chassis
+    from .ipc import IpcServer
 
 RELOAD_FAILED_EVENT = "core.config.reload_failed"
 _SERIAL = threading.RLock()
@@ -38,6 +40,22 @@ def reload_guarded(chassis: Chassis) -> dict[str, Any]:
                 RELOAD_FAILED_EVENT, {"error": type(exc).__name__}, source="chassis"
             )
             return {"reloaded": False, "error": exc.message, "hint": exc.hint or ""}
+
+
+def ipc_allowed_hosts(config: LayeredConfig) -> tuple[str, ...]:
+    """Return core.ipc.allowed_hosts as clean strings."""
+    items = config.get_list("core.ipc.allowed_hosts", []) or []
+    return tuple(str(item).strip() for item in items if str(item).strip())
+
+
+def apply_live_ipc(ipc: IpcServer | None, config: LayeredConfig, changed: list[str]) -> None:
+    """Move the running control plane to the reloaded names and cookie rule, no restart."""
+    if ipc is None:
+        return
+    if "core.ipc.allowed_hosts" in changed:
+        ipc.set_allowed_hosts(ipc_allowed_hosts(config))
+    if "core.ipc.ui_token_cookie" in changed:
+        ipc.set_cookie_auth(config.get_bool("core.ipc.ui_token_cookie", False))
 
 
 def serve_reload_request(chassis: Chassis) -> dict[str, Any] | None:

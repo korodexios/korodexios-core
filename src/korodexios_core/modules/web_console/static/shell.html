@@ -66,7 +66,9 @@
     <p>Open the shell with "kdx ui", or paste a token.</p>
     <form id="token-form" class="row">
       <input id="token-input" type="password" autocomplete="off" placeholder="token" aria-label="token">
+      <label class="keep">Remember <select id="token-keep"></select></label>
       <button type="submit">Connect</button>
+      <button id="token-forget" type="button" class="plain">Forget</button>
     </form>
     <p id="token-error" class="error" hidden></p>
   </section>
@@ -87,6 +89,7 @@
   </div>
 
   <div id="toast" class="toast" role="status" hidden></div>
+  <script src="token-store.js"></script>
   <script src="shell.js"></script>
 </body>
 </html>
