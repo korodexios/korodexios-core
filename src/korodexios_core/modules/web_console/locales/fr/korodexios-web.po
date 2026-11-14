@@ -789,3 +789,15 @@ msgstr "cet onglet seulement"
 #: static/token-store.js
 msgid "do not remember"
 msgstr "ne pas mémoriser"
+
+#: app tiers (web/src)
+msgid "Sign in"
+msgstr "Se connecter"
+
+#: app tiers (web/src)
+msgid "Paste the token from 'kdx ui --no-browser' or var/chassis.ipc."
+msgstr "Collez le jeton de 'kdx ui --no-browser' ou de var/chassis.ipc."
+
+#: app tiers (web/src)
+msgid "Settings are edited in the built-in console or in the terminal:"
+msgstr "Les réglages se modifient dans la console intégrée ou dans le terminal :"

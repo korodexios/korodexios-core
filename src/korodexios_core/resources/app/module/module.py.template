@@ -1,0 +1,28 @@
+"""Serves the built web app (web/dist) on the control plane at /app/."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from korodexios_core.kernel.contract import Module
+from korodexios_core.kernel.ipc import IpcStaticMount
+
+
+class WebAppModule(Module):
+    """Publishes web/dist once it has been built; before that it serves nothing."""
+
+    name = "web_app"
+    description = "Serves the built @FRAMEWORK@ app (web/dist) at /app/ on the control plane."
+    version = "0.1.0"
+
+    def static_dirs(self) -> tuple[IpcStaticMount, ...]:
+        """Mount web/dist when it exists; the files carry no secret, so no token is needed."""
+        if self.context is None:
+            return ()
+        dist = Path(self.paths.root) / "web" / "dist"
+        if not dist.is_dir():
+            return ()
+        return (IpcStaticMount(route_prefix="/app", directory=dist, auth=False),)
+
+
+MODULE = WebAppModule()

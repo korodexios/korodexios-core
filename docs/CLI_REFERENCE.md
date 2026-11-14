@@ -20,8 +20,8 @@ docs. `kdx --help` lists every command, including the ones modules contributed.
 | uv, in the chassis repository | `uv venv --python 3.13 && uv sync --extra dev && uv run kdx doctor` | uv (Astral) owns the environment; `make` resolves to `uv run` when uv is on `PATH` |
 | guided installer | `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) | four coloured steps - check, install, verify, first project; asks before installing uv; `--lang sk`, `--yes`, `--dry-run` (`-Language`, `-Yes`, `-DryRun` on Windows) |
 | uv tool | `uv tool install korodexios-core` | a global `kdx` on PATH, no project involved |
-| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.7.2"` | the documented pin before an index publish; needs network |
-| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.7.2"` | what `kdx init --chassis-source git` writes into the seed |
+| git pin, the consumer path | `uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.7.3"` | the documented pin before an index publish; needs network |
+| git bootstrap, ssh form | `pip install "korodexios-core @ git+ssh://git@github.com/korodexios/korodexios-core.git@v0.7.3"` | what `kdx init --chassis-source git` writes into the seed |
 | pipx, or venv + pip | `pipx install korodexios-core`; `python3 -m venv .venv && pip install -e ".[dev]"` | the fallback when uv is absent - and it fails as written on a PEP 668 `EXTERNALLY-MANAGED` interpreter with no `pip` and no `ensurepip` |
 | from an index | `uv pip install korodexios-core`, or `pip install korodexios-core` | once published; a consumer pins it with `uv lock` |
 
@@ -363,7 +363,7 @@ The seed ships `kdx.yml`, `.env.example`, `Makefile`, `README.md`, `AGENTS.md`,
 smoke tests. It passes `make check` on arrival.
 
 The chassis dependency is pinned to the repository by default
-(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.7.2`), so a fresh
+(`korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.7.3`), so a fresh
 venv can `pip install -e .` the seeded project before any index publish. Pass
 `--chassis-source index` once the package is on an index; an unknown choice is refused
 with a hint. A git pin needs network and uv at install time - `uv venv`,
@@ -752,15 +752,31 @@ Choosing a GUI for a project is a decision for the person or the AI agent, so th
 publishes the facts instead of guessing:
 
 ```bash
-kdx ui guide [--json]     # the tiers (none, static, react), when to pick each, the rules
+kdx ui guide [--json]     # the tiers (none, static, react, vue), when to pick each, the rules
 kdx ui doctor [--json]    # Node/npm/Bun/pnpm, browsers, a display, headless and headed testing
-kdx init NAME --ui none|static|react [--pm npm|bun|pnpm]   # default tier: none
+kdx init NAME --ui none|static|react|vue [--pm npm|bun|pnpm]   # default tier: none
+kdx ui add static|react|vue [--pm npm|bun|pnpm] [--dry-run] [--path DIR] [--json]
+kdx ui types [--out FILE] [--check] [--from FILE] [--target URL --token T]
 ```
 
 `--ecosystem fullstack` remains as an alias of `--ui static`; the two must not contradict
 each other. `--ui react` seeds `web/` (Vite, React, TypeScript, Vitest, Playwright) that draws
-the module manifest, plus a `web_app` module that serves `web/dist` at `/app/`; `--pm` only
-applies to it (default `npm`). Test the GUI headless first (API and HTML over HTTP, no
+the module manifest, plus a `web_app` module that serves `web/dist` at `/app/`; `--ui vue` does the
+same with Vue 3 (`vue-tsc`, Vitest with `@vue/test-utils`). Both carry the same client in
+`web/src/kdx/` (API, auth, embed handshake, live events, media). `--pm` only applies to an app tier
+(default `npm`).
+
+`kdx ui add <tier>` gives a project that started with `--ui none` (or another tier) the files
+`kdx init --ui <tier>` would have written, for the package found in `pyproject.toml`. It refuses
+when any of them exists and writes nothing then; missing web ignore rules are appended to
+`.gitignore`; `--dry-run` lists the files. It prints the next commands (install, typecheck, test,
+build, `ui types`).
+
+`kdx ui types` writes TypeScript route types from a daemon's `GET /api/v1/schema` (the live local
+daemon, `--target`, or a file saved with `kdx api schema --json` via `--from`): a `RoutePath`
+union, a `ROUTES` table (methods, auth, role, module), the fields the core documents, and
+`route()`, which accepts only a served path. Without `--out` it prints to stdout; `--check` exits
+1 when the file at `--out` is stale. The output is sorted and has no timestamp. Test the GUI headless first (API and HTML over HTTP, no
 browser; Vitest in jsdom; Playwright headless). `doctor` says whether a headless or headed
 browser is available here; in the react app `PW_HEADED=1` opens the window and
 `PW_CHANNEL=chrome` uses an installed browser instead of a download.

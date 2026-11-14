@@ -787,3 +787,15 @@ msgstr ""
 #: static/token-store.js
 msgid "do not remember"
 msgstr ""
+
+#: app tiers (web/src)
+msgid "Sign in"
+msgstr ""
+
+#: app tiers (web/src)
+msgid "Paste the token from 'kdx ui --no-browser' or var/chassis.ipc."
+msgstr ""
+
+#: app tiers (web/src)
+msgid "Settings are edited in the built-in console or in the terminal:"
+msgstr ""

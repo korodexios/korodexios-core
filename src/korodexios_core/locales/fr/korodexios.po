@@ -74,6 +74,10 @@ msgstr "--rotate et --clear s'excluent mutuellement"
 msgid "... and {count} more"
 msgstr "... et {count} de plus"
 
+#: modules/web_console/tier_commands.py
+msgid ".gitignore gains: {rules}"
+msgstr ".gitignore reçoit : {rules}"
+
 #: cli/config_edit.py
 msgid "A dotted key, e.g. core.log.level."
 msgstr "Une clé pointée, p. ex. core.log.level."
@@ -110,7 +114,7 @@ msgstr "Autoriser la lecture anonyme de /health et /api/v1/status."
 msgid "Also overwrite a rule file a person wrote."
 msgstr "Écrase aussi un fichier de règles écrit par une personne."
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Also run the e2e tests with a visible browser window (needs a display)."
 msgstr "Lancer aussi les tests e2e avec une fenêtre de navigateur visible (nécessite un écran)."
 
@@ -478,7 +482,11 @@ msgstr "Nom de l'événement, par exemple order.paid."
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr "Motif d'événements : 'backup.*', 'core.job.**', '*' pour tous [*]."
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
+msgid "Exit 1 when --out differs from the daemon's contract."
+msgstr "Sortir avec 1 quand --out diffère du contrat du démon."
+
+#: modules/web_console/tier_commands.py
 msgid "Explain the GUI tiers a project can choose and when to pick each."
 msgstr "Expliquer les niveaux d'interface qu'un projet peut choisir et quand prendre chacun."
 
@@ -543,8 +551,16 @@ msgid "From"
 msgstr "Origine"
 
 #: cli/commands.py
-msgid "GUI tier: none | static | react [none]; see 'kdx ui guide'"
-msgstr "niveau d'interface : none | static | react [none] ; voir 'kdx ui guide'"
+msgid "GUI tier: none | static | react | vue [none]; see 'kdx ui guide'"
+msgstr "niveau d'interface : none | static | react | vue [none] ; voir 'kdx ui guide'"
+
+#: modules/web_console/tier_commands.py
+msgid "Generate TypeScript route types from a daemon's /api/v1/schema."
+msgstr "Générer les types de routes TypeScript depuis /api/v1/schema d'un démon."
+
+#: modules/web_console/tier_commands.py
+msgid "Give an existing project a GUI tier (the files 'kdx init --ui' writes); never overwrites a file."
+msgstr "Donner à un projet existant un niveau d'interface (les fichiers qu'écrit 'kdx init --ui') ; n'écrase jamais un fichier."
 
 #: modules/job_queue/module.py
 msgid "Handler kind."
@@ -738,6 +754,10 @@ msgstr "Liste les cibles configurées (URL masquées)."
 msgid "List the databases with size and schema version."
 msgstr "Lister les bases avec taille et version du schéma."
 
+#: modules/web_console/tier_commands.py
+msgid "List the files without writing them."
+msgstr "Lister les fichiers sans les écrire."
+
 #: cli/language.py
 msgid "List the languages that have a catalogue, per message domain."
 msgstr "Liste les langues qui ont un catalogue, par domaine de messages."
@@ -930,6 +950,10 @@ msgstr "Système d'exploitation"
 msgid "Outbound webhooks for bus events (n8n, Zapier, Make, Slack, ...)."
 msgstr "Webhooks sortants pour les événements du bus (n8n, Zapier, Make, Slack, ...)."
 
+#: modules/web_console/tier_commands.py
+msgid "Package manager of an app tier's web/ [npm]."
+msgstr "Gestionnaire de paquets du web/ d'un niveau application [npm]."
+
 #: modules/wiki/module.py
 msgid "Page name [from the file name]."
 msgstr "Nom de la page [d'après le nom du fichier]."
@@ -1062,7 +1086,7 @@ msgstr "Afficher la version et quitter."
 msgid "Project identity"
 msgstr "Identité du projet"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Project root [the chassis root]."
 msgstr "Racine du projet [la racine du chassis]."
 
@@ -1113,6 +1137,10 @@ msgstr "Lit les journaux, la configuration et l'audit d'un daemon en cours d'ex�
 #: cli/remote.py
 msgid "Read or change the daemon's configuration."
 msgstr "Lit ou modifie la configuration du daemon."
+
+#: modules/web_console/tier_commands.py
+msgid "Read the contract from a file ('kdx api schema --json') instead of a daemon."
+msgstr "Lire le contrat depuis un fichier ('kdx api schema --json') au lieu d'un démon."
 
 #: modules/wiki/module.py
 msgid "Record the check in log.md."
@@ -1170,7 +1198,7 @@ msgstr "Indique la fenêtre de rétention, les copies en place et le journal de 
 msgid "Report uid, gid, id mapping and rootless readiness; propose a free subuid range if one is needed."
 msgstr "Indiquer uid, gid, correspondance des id et disponibilité rootless ; proposer une plage subuid libre si besoin."
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Report what this machine can run for a GUI: Node, Bun, browsers, a display, headless testing."
 msgstr "Indiquer ce que cette machine peut exécuter pour une interface : Node, Bun, navigateurs, écran, tests headless."
 
@@ -1226,7 +1254,7 @@ msgstr "Exécuter les coroutines des modules sur une boucle asyncio gérée par 
 msgid "Run one module command inside a live daemon instead of booting a chassis."
 msgstr "Exécute une commande de module dans un démon actif au lieu de démarrer un châssis."
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Run the GUI tests this machine can run: manifest, then the web app's type check, component tests and headless e2e (--headed adds a window)."
 msgstr "Lancer les tests d'interface que cette machine peut exécuter : manifeste, puis vérification des types de l'app web, tests de composants et e2e headless (--headed ajoute une fenêtre)."
 
@@ -1234,7 +1262,7 @@ msgstr "Lancer les tests d'interface que cette machine peut exécuter : manifest
 msgid "Run the backup (copies files unless --dry-run)."
 msgstr "Lance la sauvegarde (copie les fichiers sauf avec --dry-run)."
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Run the package manager's install if node_modules is missing."
 msgstr "Lancer l'installation du gestionnaire de paquets si node_modules manque."
 
@@ -1486,6 +1514,10 @@ msgstr "Largeur des tableaux dans le terminal [100]."
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "Les 3 à 5 choses qu'il doit faire, séparées par « ; »"
 
+#: modules/web_console/tier_commands.py
+msgid "The GUI tier to add."
+msgstr "Le niveau d'interface à ajouter."
+
 #: cli/remote.py
 msgid "The event's payload as a JSON value [{}]."
 msgstr "La charge de l'événement comme valeur JSON [{}]."
@@ -1610,6 +1642,10 @@ msgstr "Écrit les règles CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf et Cl
 msgid "Write down what the project must do (interview), or check that it is complete."
 msgstr "Consigne ce que le projet doit faire (entretien) ou vérifie qu'il est complet."
 
+#: modules/web_console/tier_commands.py
+msgid "Write here, e.g. web/src/kdx/schema.ts [print to stdout]."
+msgstr "Écrire ici, p. ex. web/src/kdx/schema.ts [afficher sur stdout]."
+
 #: modules/wiki/module.py
 msgid "Write index.md for each wiki (what an agent reads first)."
 msgstr "Écrit index.md pour chaque wiki (ce qu'un agent lit d'abord)."
@@ -1665,6 +1701,10 @@ msgstr "actif"
 #: cli/users.py
 msgid "add one with: kdx users add NAME --role operator"
 msgstr "ajoutez-en un avec : kdx users add NOM --role operator"
+
+#: modules/web_console/tier_commands.py
+msgid "add to a project: {command}"
+msgstr "ajouter à un projet : {command}"
 
 #: cli/container_doctor.py
 msgid "added to .env: {keys}"
@@ -1762,7 +1802,7 @@ msgstr "cassé"
 msgid "browser:  open http://HOST:18123/ui/ and paste the token"
 msgstr "navigateur :  ouvrez http://HOST:18123/ui/ et collez le jeton"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "browsers"
 msgstr "navigateurs"
 
@@ -1781,6 +1821,10 @@ msgstr "peut"
 #: modules/backup_engine/module.py
 msgid "cancelled after {copied} file(s); the partial copy stays at {target}"
 msgstr "annulé après {copied} fichier(s) ; la copie partielle reste dans {target}"
+
+#: modules/web_console/tier_commands.py
+msgid "cannot read {path}: {exc}"
+msgstr "impossible de lire {path} : {exc}"
 
 #: cli/tls.py
 msgid "certificate"
@@ -1862,7 +1906,7 @@ msgstr "console"
 msgid "container"
 msgstr "conteneur"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "container engines"
 msgstr "moteurs de conteneurs"
 
@@ -1902,7 +1946,7 @@ msgstr "core.locale = {value} enregistré dans {path}"
 msgid "covers"
 msgstr "couvre"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "create: {command}"
 msgstr "créer : {command}"
 
@@ -1958,7 +2002,7 @@ msgstr "fichier de découverte"
 msgid "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir"
 msgstr "la découverte a besoin de {parent} dans core.modules.extra_paths ou passé via --modules-dir"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "display"
 msgstr "écran"
 
@@ -1997,6 +2041,10 @@ msgstr "p. ex. '{\"defaults\": {\"job_queue.submit\": {\"kind\": \"demo\"}}}'."
 #: cli/commands.py
 msgid "ecosystem"
 msgstr "écosystème"
+
+#: modules/web_console/tier_commands.py
+msgid "embed protocol"
+msgstr "protocole embed"
 
 #: cli/commands.py
 msgid "endpoint"
@@ -2074,7 +2122,7 @@ msgstr "suivez-la : kdx jobs show {job_id} --follow"
 msgid "following events at {base_url} (Ctrl+C to stop)"
 msgstr "suivi des événements sur {base_url} (Ctrl+C pour arrêter)"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "for browser tests: {setting}={value}"
 msgstr "pour les tests navigateur : {setting}={value}"
 
@@ -2102,11 +2150,11 @@ msgstr "donnez une valeur : kdx daemon config set KEY VALUE"
 msgid "handler errors"
 msgstr "erreurs de gestionnaires"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "headed browser tests: {state}"
 msgstr "tests navigateur avec écran : {state}"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "headless browser tests: {state}"
 msgstr "tests navigateur headless : {state}"
 
@@ -2126,7 +2174,7 @@ msgstr "heartbeat {version} est {value}"
 msgid "how the project resolves the chassis: git | index [git]"
 msgstr "comment le projet obtient le châssis : git | index [git]"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "how to decide"
 msgstr "comment décider"
 
@@ -2210,7 +2258,7 @@ msgstr "type"
 msgid "known keys"
 msgstr "clés connues"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "known limits"
 msgstr "limites connues"
 
@@ -2349,6 +2397,10 @@ msgstr "verrous nommés"
 #: modules/web_console/module.py
 msgid "nav, panels, buttons, values, defaults, settings, layout; none means all but defaults."
 msgstr "nav, panels, buttons, values, defaults, settings, layout ; sans nom, tout sauf defaults."
+
+#: modules/web_console/tier_commands.py
+msgid "next"
+msgstr "ensuite"
 
 #: cli/commands.py
 msgid "next: cd {root} && uv sync --extra dev && uv run {script} run"
@@ -2562,7 +2614,7 @@ msgstr "rien n'a été envoyé ; lisez le texte puis relancez avec --confirm ou 
 msgid "nothing written"
 msgstr "rien d'écrit"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "npm | bun | pnpm [from the lockfile, else npm]."
 msgstr "npm | bun | pnpm [selon le lockfile, sinon npm]."
 
@@ -2619,8 +2671,8 @@ msgid "package"
 msgstr "paquet"
 
 #: cli/commands.py
-msgid "package manager of the react tier: npm | bun | pnpm [npm]"
-msgstr "gestionnaire de paquets du niveau react : npm | bun | pnpm [npm]"
+msgid "package manager of an app tier (react, vue): npm | bun | pnpm [npm]"
+msgstr "gestionnaire de paquets d'un niveau application (react, vue) : npm | bun | pnpm [npm]"
 
 #: modules/wiki/module.py
 msgid "page"
@@ -2666,7 +2718,7 @@ msgstr "paramètres substituables"
 msgid "platform"
 msgstr "plateforme"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "playwright browsers"
 msgstr "navigateurs Playwright"
 
@@ -2802,7 +2854,7 @@ msgstr "route"
 msgid "rows"
 msgstr "lignes"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "rules"
 msgstr "règles"
 
@@ -2818,7 +2870,7 @@ msgstr "lancez « kdx brief » pour le créer"
 msgid "running"
 msgstr "en cours"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "running inside"
 msgstr "s'exécute dans"
 
@@ -3134,9 +3186,17 @@ msgstr "ticker planifié"
 msgid "ticks"
 msgstr "ticks"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "tier {name}: {state}"
 msgstr "niveau {name} : {state}"
+
+#: modules/web_console/tier_commands.py
+msgid "tier {tier}: would write {count} files"
+msgstr "niveau {tier} : écrirait {count} fichiers"
+
+#: modules/web_console/tier_commands.py
+msgid "tier {tier}: wrote {count} files"
+msgstr "niveau {tier} : {count} fichiers écrits"
 
 #: cli/jobs.py
 msgid "time"
@@ -3257,6 +3317,10 @@ msgstr "écrit dans un répertoire qui contient déjà des fichiers"
 #: cli/agents.py
 msgid "written"
 msgstr "écrit"
+
+#: modules/web_console/tier_commands.py
+msgid "wrote {path}"
+msgstr "{path} écrit"
 
 #: renderer
 msgid "yes"
@@ -3474,6 +3538,14 @@ msgstr "{path} : déclaré mais introuvable"
 msgid "{path}: declared {declared}..., read {actual}..."
 msgstr "{path} : déclaré {declared}..., lu {actual}..."
 
+#: modules/web_console/tier_commands.py
+msgid "{path}: stale; run without --check to write it"
+msgstr "{path} : périmé ; lancez sans --check pour l’écrire"
+
+#: modules/web_console/tier_commands.py
+msgid "{path}: up to date"
+msgstr "{path} : à jour"
+
 #: cli/service.py
 msgid "{program} could not run: {exc}"
 msgstr "{program} n'a pas pu s'exécuter : {exc}"
@@ -3502,5 +3574,11 @@ msgstr "{value} n'est pas une langue vers laquelle traduire"
 msgid "{verb}; this token is shown only now - hand it over privately"
 msgstr "{verb} ; ce jeton n'est affiché qu'une fois - transmettez-le en privé"
 
+#~ msgid "GUI tier: none | static | react [none]; see 'kdx ui guide'"
+#~ msgstr "niveau d'interface : none | static | react [none] ; voir 'kdx ui guide'"
+
 #~ msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
 #~ msgstr "Ouvre le shell à fenêtre unique (barre d'icônes, liste latérale, panneaux) au lieu de la console classique."
+
+#~ msgid "package manager of the react tier: npm | bun | pnpm [npm]"
+#~ msgstr "gestionnaire de paquets du niveau react : npm | bun | pnpm [npm]"

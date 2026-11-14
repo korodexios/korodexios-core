@@ -1,0 +1,8 @@
+[module]
+name = "web_app"
+description = "Serves the built @FRAMEWORK@ app (web/dist) at /app/ on the control plane."
+entrypoint = "module.MODULE"
+version = "0.1.0"
+priority = 90
+requires_core = ">=0.1,<1.0"
+depends_on = []

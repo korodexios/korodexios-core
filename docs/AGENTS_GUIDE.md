@@ -13,7 +13,7 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 | Distribution | `korodexios-core` |
 | Import root | `korodexios_core` |
 | Console scripts | `kdx` (primary short alias), `korodexios` (canonical) |
-| Version | `0.7.2` (production), core API frozen at `v2` (additive changes only inside v2) |
+| Version | `0.7.3` (production), core API frozen at `v2` (additive changes only inside v2) |
 | Runtime | CPython 3.11+, stdlib first (PyYAML for config, rich for the CLI surface) |
 | Config file | `kdx.yml` / `kdx.yaml` / `kdx.json` (then `korodexios.*`) |
 | Env prefix | `KDX_` primary; `KORODEXIOS_` is the canonical long prefix |
@@ -40,8 +40,8 @@ section is a contract, not a suggestion. Human-oriented narrative lives in
 You are expected to install and configure this chassis yourself, so decide from facts, not guesses:
 `kdx doctor --json` (environment), `kdx ui doctor --json` (Node, Bun, browsers, display, container
 engines), `kdx ui guide --json` (tiers, limits, where each kind of state belongs) and, when
-containers are wanted, `kdx container doctor --json`. Then `kdx init NAME --ui none|static|react
-[--pm ...] [--container]`. Anything that changes the system outside the project (installing
+containers are wanted, `kdx container doctor --json`. Then `kdx init NAME --ui none|static|react|vue
+[--pm ...] [--container]` (an existing project adopts a tier with `kdx ui add <tier>`). Anything that changes the system outside the project (installing
 packages, `/etc/subuid`, sudo) needs an explicit answer from the person: show them the command and
 why, let `kdx container fix` ask, never run it for them, and never handle their password. Say what
 was skipped or could not be verified. `AGENTS.md` in a repository is the working agreement for the
@@ -533,6 +533,7 @@ source = "/api/v1/queue"    # a control-plane route under /api/v1/ (GET)
 path = "tasks"              # dotted key into the JSON answer
 columns = ["id", "kind", "state"]   # table only; strings or { key, label }
 refresh = 5                  # seconds; 0 (default) loads once
+# refresh_on = ["queue."]   # bus event name prefixes ("*" = all) that load it again at once
 ```
 
 | Panel type | Fields | Draws |
@@ -548,15 +549,42 @@ refresh = 5                  # seconds; 0 (default) loads once
 
 An `embed` panel needs a mount registered with `context.register_static_dir(prefix, dir,
 embeddable=True)`; without it the browser refuses to frame the page. The embedded page gets the
-session token by message, never in its URL:
+session by message, never in its URL - **embed protocol v1** (`kernel/ui_embed.py`, also in
+`kdx ui guide --json` under `embed`):
+
+```text
+frame -> host   {type: "kdx-embed-ready"}
+host  -> frame  {type: "kdx-embed-token", version: 1, token: "<string>", cookie: <bool>}
+```
+
+- `token` non-empty: send it as `X-Kdx-Token`.
+- `token` empty and `cookie: true`: the HttpOnly session cookie (`core.ipc.ui_token_cookie`)
+  already authenticates same-origin requests; send no header.
+- `token` empty and `cookie: false`: nobody is signed in; show a signed-out state.
+- Both sides check `event.source` and `event.origin`. Ask once, keep at most one ask open, and
+  never retry a token the server already refused (a 401 to it). A page that reads only `token`
+  keeps working: `version` and `cookie` are additive.
 
 ```js
+let asked = false;
 window.addEventListener("message", (event) => {
   if (event.source !== window.parent || event.origin !== location.origin) return;
-  if (event.data && event.data.type === "kdx-embed-token") start(event.data.token);
+  const data = event.data || {};
+  if (data.type !== "kdx-embed-token") return;
+  if (data.token) start({ header: data.token });
+  else if (data.cookie) start({ header: "" });        // the cookie answers; send no header
+  else showSignedOut();
 });
-window.parent.postMessage({ type: "kdx-embed-ready" }, location.origin);
+if (!asked) { asked = true; window.parent.postMessage({ type: "kdx-embed-ready" }, location.origin); }
 ```
+
+The app tiers ship this as `askHost()` / `serveEmbed()` in `web/src/kdx/auth.ts`; a static page
+can copy the snippet above.
+
+**Live panels.** `refresh_on = ["queue.", "player.track"]` on any panel names bus event prefixes;
+a renderer reloads the panel when a matching event arrives on `GET /api/v1/ui/events` (the shell
+and both app tiers share one stream for all such panels). It works beside `refresh`, needs no
+polling, and older renderers ignore it.
 
 Rules the validator enforces (a broken panel is dropped and listed under `issues`; it never
 takes the GUI down): a `command` must be a runnable command path (`queue purge`), a `source`
@@ -565,13 +593,16 @@ must live under `/api/v1/`, ids are unique, and everything is plain data. Check 
 
 **The `/ui/` prefix is reserved for the UI.** The console's files are served under `/ui/` and its
 own routes under `/api/v1/ui/`; a module that mounts a static directory or a single-page app must
-pick another prefix (the `react` tier uses `/app/`), so its client routes can never collide with
+pick another prefix (the `react` and `vue` tiers use `/app/`), so its client routes can never collide with
 `/api/v1/` or with the console.
 
 **Typed cells, row actions and detail (table).** A column is a string or a table
 `{ key, label, kind, tones }`; `kind` is `text` (default), `chip`, `bytes`, `duration` (seconds),
 `time` (epoch seconds or an ISO string), `link` (only `http(s)` or a path of the same host is ever
-followed) or `code`. A `chip` takes `tones = { done = "ok", failed = "bad" }` with the tones `ok`,
+followed), `code` or `media` (a path under a static mount of this daemon, such as
+`/takes/a.mp3`: audio and video play, images show, anything else is a link; with the session
+cookie the element loads the path itself with Range requests, with a header token the file is
+fetched once and played from a blob; another host or an `/api/` path is shown as text). A `chip` takes `tones = { done = "ok", failed = "bad" }` with the tones `ok`,
 `warn`, `bad`, `busy`, `muted`; common words (`done`, `failed`, `queued`) get a tone without any
 declaration, and the colours are the renderer's business. `actions = [{ id, label, command, args,
 confirm, danger }]` puts buttons in every row; an `args` value may hold `{column}` placeholders
@@ -614,11 +645,22 @@ environment or the command line still wins over the file). Comments in a hand-ed
 **Choosing a GUI tier.** Start with no GUI files: the built-in console already draws every
 module's `[ui]` panels. Run `kdx ui guide --json` for the tiers and when to pick each, and
 `kdx ui doctor --json` for what this machine can run (Node, Bun, browsers, a display). Create a
-project with `kdx init NAME --ui none|static|react [--pm npm|bun|pnpm]`, record the choice in
-`docs/BRIEF.md`, and test headless first: assert `kdx ui manifest --json` and the HTTP answers
-(`static`), or run Vitest and Playwright headless (`react`); run a headed check only when
-`doctor` reports a display. The `react` tier draws the same manifest as the built-in console,
-so a module's `[ui]` table needs no React; override a single panel with `overridePanel()`.
+project with `kdx init NAME --ui none|static|react|vue [--pm npm|bun|pnpm]`, or give an existing
+project a tier with `kdx ui add static|react|vue [--pm ...] [--dry-run]` (the same files, never
+overwriting one). Record the choice in `docs/BRIEF.md`, and test headless first: assert `kdx ui
+manifest --json` and the HTTP answers (`static`), or run Vitest and Playwright headless (`react`,
+`vue`); run a headed check only when `doctor` reports a display. The app tiers draw the same
+manifest as the built-in console, so a module's `[ui]` table needs no framework code; override a
+single panel with `overridePanel()`.
+
+**The app tiers share one client.** `web/src/kdx/` is identical in `react` and `vue` (only the
+panel drawing differs): `api()`, `manifest()`, `prefs()`; the auth rules (the token header only
+while a token is held; a 401 to a request that carried it drops that token and retries once on
+the session cookie; `#token=` read once and removed from the address; the embed handshake);
+`events()` / `onTopics()` for `refresh_on`; media cells. Keep project code out of it. After a
+route changes, `kdx ui types --out web/src/kdx/schema.ts` regenerates the route types from the
+daemon's `/api/v1/schema`; name routes with `route("/api/v1/...")` and a removed route fails the
+type check (`--check` exits 1 on a stale file, for CI).
 
 **Run `kdx ui test` before you say a GUI change is done.** It runs the manifest check, the web
 app's type check, component tests and headless e2e, and with `--headed` a visible-window run when
@@ -646,9 +688,11 @@ the commands and asks first - never run it for the person, let them answer. `kdx
 --write` adds `KDX_UID`/`KDX_GID` to `.env` without overwriting existing keys.
 
 **Known limits - read before you build.** `kdx ui guide --json` lists them under `notes`; they are
-also in the seeded `web/README.md`. In short: the `react` app only *reads* the saved layout
+also in the seeded `web/README.md`. In short: an app tier only *reads* the saved layout
 (renaming, hiding and shortcut buttons are edited in the built-in console or with `kdx ui prefs
-patch`); npm is verified, bun and pnpm are not (run typecheck and tests first); a newer npm may
+patch`); npm, pnpm 12 and bun 1.4 were verified by hand on Linux, but the chassis tests run none
+of them (run typecheck and tests first; with pnpm the seeded `web/pnpm-workspace.yaml` allows
+esbuild's build script); a newer npm may
 block esbuild's install script (`npm install-scripts approve esbuild`); `<pm> run e2e` starts the
 project's daemon with `uv run`, so run `uv sync --extra dev` first; and the browser setting for
 Playwright comes from `kdx ui doctor` (`recommended`: `PW_CHANNEL=chrome|msedge`, or `npx

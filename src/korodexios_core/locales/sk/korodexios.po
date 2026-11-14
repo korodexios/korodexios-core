@@ -74,6 +74,10 @@ msgstr "--rotate a --clear sa navzájom vylučujú"
 msgid "... and {count} more"
 msgstr "... a ďalších {count}"
 
+#: modules/web_console/tier_commands.py
+msgid ".gitignore gains: {rules}"
+msgstr ".gitignore dostane: {rules}"
+
 #: cli/config_edit.py
 msgid "A dotted key, e.g. core.log.level."
 msgstr "Kľúč s bodkami, napr. core.log.level."
@@ -110,7 +114,7 @@ msgstr "Povoliť anonymné čítanie /health a /api/v1/status."
 msgid "Also overwrite a rule file a person wrote."
 msgstr "Prepíše aj súbor s pravidlami, ktorý napísal človek."
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Also run the e2e tests with a visible browser window (needs a display)."
 msgstr "Spustiť e2e testy aj s viditeľným oknom prehliadača (vyžaduje displej)."
 
@@ -478,7 +482,11 @@ msgstr "Názov udalosti, napríklad order.paid."
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr "Vzor udalostí: 'backup.*', 'core.job.**', '*' pre všetky [*]."
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
+msgid "Exit 1 when --out differs from the daemon's contract."
+msgstr "Skončiť s kódom 1, keď sa --out líši od kontraktu daemona."
+
+#: modules/web_console/tier_commands.py
 msgid "Explain the GUI tiers a project can choose and when to pick each."
 msgstr "Vysvetliť úrovne GUI, ktoré si projekt môže zvoliť, a kedy ktorú vybrať."
 
@@ -543,8 +551,16 @@ msgid "From"
 msgstr "Zdroj"
 
 #: cli/commands.py
-msgid "GUI tier: none | static | react [none]; see 'kdx ui guide'"
-msgstr "úroveň GUI: none | static | react [none]; pozri 'kdx ui guide'"
+msgid "GUI tier: none | static | react | vue [none]; see 'kdx ui guide'"
+msgstr "úroveň GUI: none | static | react | vue [none]; pozri 'kdx ui guide'"
+
+#: modules/web_console/tier_commands.py
+msgid "Generate TypeScript route types from a daemon's /api/v1/schema."
+msgstr "Vygenerovať typy trás v TypeScripte z /api/v1/schema daemona."
+
+#: modules/web_console/tier_commands.py
+msgid "Give an existing project a GUI tier (the files 'kdx init --ui' writes); never overwrites a file."
+msgstr "Pridať existujúcemu projektu úroveň GUI (súbory, ktoré zapíše 'kdx init --ui'); nikdy neprepíše súbor."
 
 #: modules/job_queue/module.py
 msgid "Handler kind."
@@ -738,6 +754,10 @@ msgstr "Vypíše nastavené ciele (URL maskované)."
 msgid "List the databases with size and schema version."
 msgstr "Vypísať databázy s veľkosťou a verziou schémy."
 
+#: modules/web_console/tier_commands.py
+msgid "List the files without writing them."
+msgstr "Vypísať súbory bez zápisu."
+
 #: cli/language.py
 msgid "List the languages that have a catalogue, per message domain."
 msgstr "Vypíše jazyky, ktoré majú katalóg, podľa domény správ."
@@ -930,6 +950,10 @@ msgstr "Operačný systém"
 msgid "Outbound webhooks for bus events (n8n, Zapier, Make, Slack, ...)."
 msgstr "Odchádzajúce webhooky pre udalosti zbernice (n8n, Zapier, Make, Slack, ...)."
 
+#: modules/web_console/tier_commands.py
+msgid "Package manager of an app tier's web/ [npm]."
+msgstr "Správca balíkov pre web/ aplikačnej úrovne [npm]."
+
 #: modules/wiki/module.py
 msgid "Page name [from the file name]."
 msgstr "Názov stránky [podľa názvu súboru]."
@@ -1062,7 +1086,7 @@ msgstr "Vypísať verziu a skončiť."
 msgid "Project identity"
 msgstr "Identita projektu"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Project root [the chassis root]."
 msgstr "Koreň projektu [koreň chassis]."
 
@@ -1113,6 +1137,10 @@ msgstr "Prečíta logy, konfiguráciu a audit bežiaceho démona."
 #: cli/remote.py
 msgid "Read or change the daemon's configuration."
 msgstr "Prečíta alebo zmení konfiguráciu démona."
+
+#: modules/web_console/tier_commands.py
+msgid "Read the contract from a file ('kdx api schema --json') instead of a daemon."
+msgstr "Načítať kontrakt zo súboru ('kdx api schema --json') namiesto z daemona."
 
 #: modules/wiki/module.py
 msgid "Record the check in log.md."
@@ -1170,7 +1198,7 @@ msgstr "Ohlási okno uchovávania, platné kópie a záznam o čistení."
 msgid "Report uid, gid, id mapping and rootless readiness; propose a free subuid range if one is needed."
 msgstr "Ukázať uid, gid, mapovanie id a pripravenosť rootless; v prípade potreby navrhnúť voľný rozsah subuid."
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Report what this machine can run for a GUI: Node, Bun, browsers, a display, headless testing."
 msgstr "Ukázať, čo tento stroj zvládne pre GUI: Node, Bun, prehliadače, displej, headless testovanie."
 
@@ -1226,7 +1254,7 @@ msgstr "Spúšťať korutiny modulov v asyncio slučke spravovanej jadrom."
 msgid "Run one module command inside a live daemon instead of booting a chassis."
 msgstr "Spustí príkaz modulu v bežiacom démonovi namiesto štartu šasi."
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Run the GUI tests this machine can run: manifest, then the web app's type check, component tests and headless e2e (--headed adds a window)."
 msgstr "Spustiť GUI testy, ktoré tento stroj zvládne: manifest, potom kontrolu typov web aplikácie, testy komponentov a headless e2e (--headed pridá okno)."
 
@@ -1234,7 +1262,7 @@ msgstr "Spustiť GUI testy, ktoré tento stroj zvládne: manifest, potom kontrol
 msgid "Run the backup (copies files unless --dry-run)."
 msgstr "Spustí zálohu (kopíruje súbory, ak nie je --dry-run)."
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Run the package manager's install if node_modules is missing."
 msgstr "Spustiť install správcu balíčkov, ak chýba node_modules."
 
@@ -1486,6 +1514,10 @@ msgstr "Šírka tabuliek v termináli [100]."
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "3 až 5 vecí, ktoré musí robiť, oddelené „;“"
 
+#: modules/web_console/tier_commands.py
+msgid "The GUI tier to add."
+msgstr "Úroveň GUI, ktorá sa má pridať."
+
 #: cli/remote.py
 msgid "The event's payload as a JSON value [{}]."
 msgstr "Obsah udalosti ako JSON hodnota [{}]."
@@ -1610,6 +1642,10 @@ msgstr "Zapíše pravidlá CLAUDE.md, GEMINI.md, Cursor, Copilot, Windsurf a Cli
 msgid "Write down what the project must do (interview), or check that it is complete."
 msgstr "Zapíše, čo má projekt robiť (rozhovor), alebo skontroluje, či je úplné."
 
+#: modules/web_console/tier_commands.py
+msgid "Write here, e.g. web/src/kdx/schema.ts [print to stdout]."
+msgstr "Zapísať sem, napr. web/src/kdx/schema.ts [vypísať na stdout]."
+
 #: modules/wiki/module.py
 msgid "Write index.md for each wiki (what an agent reads first)."
 msgstr "Zapíše index.md pre každú wiki (to, čo agent číta ako prvé)."
@@ -1665,6 +1701,10 @@ msgstr "aktívny"
 #: cli/users.py
 msgid "add one with: kdx users add NAME --role operator"
 msgstr "pridaj ho cez: kdx users add MENO --role operator"
+
+#: modules/web_console/tier_commands.py
+msgid "add to a project: {command}"
+msgstr "pridanie do projektu: {command}"
 
 #: cli/container_doctor.py
 msgid "added to .env: {keys}"
@@ -1762,7 +1802,7 @@ msgstr "pokazené"
 msgid "browser:  open http://HOST:18123/ui/ and paste the token"
 msgstr "prehliadač: otvor http://HOST:18123/ui/ a vlož token"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "browsers"
 msgstr "prehliadače"
 
@@ -1781,6 +1821,10 @@ msgstr "môže"
 #: modules/backup_engine/module.py
 msgid "cancelled after {copied} file(s); the partial copy stays at {target}"
 msgstr "zrušené po {copied} súbore(och); čiastočná kópia ostáva v {target}"
+
+#: modules/web_console/tier_commands.py
+msgid "cannot read {path}: {exc}"
+msgstr "nedá sa načítať {path}: {exc}"
 
 #: cli/tls.py
 msgid "certificate"
@@ -1862,7 +1906,7 @@ msgstr "konzola"
 msgid "container"
 msgstr "kontajner"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "container engines"
 msgstr "kontajnerové nástroje"
 
@@ -1902,7 +1946,7 @@ msgstr "core.locale = {value} uložené v {path}"
 msgid "covers"
 msgstr "pokrýva"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "create: {command}"
 msgstr "vytvorenie: {command}"
 
@@ -1958,7 +2002,7 @@ msgstr "súbor objavovania"
 msgid "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir"
 msgstr "objavovanie potrebuje {parent} v core.modules.extra_paths alebo zadané cez --modules-dir"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "display"
 msgstr "displej"
 
@@ -1997,6 +2041,10 @@ msgstr "napr. '{\"defaults\": {\"job_queue.submit\": {\"kind\": \"demo\"}}}'."
 #: cli/commands.py
 msgid "ecosystem"
 msgstr "ekosystém"
+
+#: modules/web_console/tier_commands.py
+msgid "embed protocol"
+msgstr "protokol embed"
 
 #: cli/commands.py
 msgid "endpoint"
@@ -2074,7 +2122,7 @@ msgstr "sleduj ju: kdx jobs show {job_id} --follow"
 msgid "following events at {base_url} (Ctrl+C to stop)"
 msgstr "sledujem udalosti na {base_url} (zastavíš Ctrl+C)"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "for browser tests: {setting}={value}"
 msgstr "pre testy v prehliadači: {setting}={value}"
 
@@ -2102,11 +2150,11 @@ msgstr "zadajte hodnotu: kdx daemon config set KEY VALUE"
 msgid "handler errors"
 msgstr "chyby obslužných funkcií"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "headed browser tests: {state}"
 msgstr "testy v prehliadači s displejom: {state}"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "headless browser tests: {state}"
 msgstr "headless testy v prehliadači: {state}"
 
@@ -2126,7 +2174,7 @@ msgstr "heartbeat {version} je {value}"
 msgid "how the project resolves the chassis: git | index [git]"
 msgstr "ako projekt získa šasi: git | index [git]"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "how to decide"
 msgstr "ako sa rozhodnúť"
 
@@ -2210,7 +2258,7 @@ msgstr "druh"
 msgid "known keys"
 msgstr "známe kľúče"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "known limits"
 msgstr "známe obmedzenia"
 
@@ -2349,6 +2397,10 @@ msgstr "pomenované zámky"
 #: modules/web_console/module.py
 msgid "nav, panels, buttons, values, defaults, settings, layout; none means all but defaults."
 msgstr "nav, panels, buttons, values, defaults, settings, layout; bez názvu sa myslia všetky okrem defaults."
+
+#: modules/web_console/tier_commands.py
+msgid "next"
+msgstr "ďalej"
 
 #: cli/commands.py
 msgid "next: cd {root} && uv sync --extra dev && uv run {script} run"
@@ -2562,7 +2614,7 @@ msgstr "nič sa neodoslalo; prečítajte si text a spustite znova s --confirm al
 msgid "nothing written"
 msgstr "nič sa nezapísalo"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "npm | bun | pnpm [from the lockfile, else npm]."
 msgstr "npm | bun | pnpm [podľa lockfile, inak npm]."
 
@@ -2619,8 +2671,8 @@ msgid "package"
 msgstr "balík"
 
 #: cli/commands.py
-msgid "package manager of the react tier: npm | bun | pnpm [npm]"
-msgstr "správca balíčkov úrovne react: npm | bun | pnpm [npm]"
+msgid "package manager of an app tier (react, vue): npm | bun | pnpm [npm]"
+msgstr "správca balíkov aplikačnej úrovne (react, vue): npm | bun | pnpm [npm]"
 
 #: modules/wiki/module.py
 msgid "page"
@@ -2666,7 +2718,7 @@ msgstr "zástupné polia"
 msgid "platform"
 msgstr "platforma"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "playwright browsers"
 msgstr "prehliadače Playwright"
 
@@ -2802,7 +2854,7 @@ msgstr "routa"
 msgid "rows"
 msgstr "riadky"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "rules"
 msgstr "pravidlá"
 
@@ -2818,7 +2870,7 @@ msgstr "spustite „kdx brief“, aby sa vytvorilo"
 msgid "running"
 msgstr "beží"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "running inside"
 msgstr "beží v"
 
@@ -3134,9 +3186,17 @@ msgstr "ticker naplánovaný"
 msgid "ticks"
 msgstr "tiky"
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "tier {name}: {state}"
 msgstr "úroveň {name}: {state}"
+
+#: modules/web_console/tier_commands.py
+msgid "tier {tier}: would write {count} files"
+msgstr "úroveň {tier}: zapísalo by sa {count} súborov"
+
+#: modules/web_console/tier_commands.py
+msgid "tier {tier}: wrote {count} files"
+msgstr "úroveň {tier}: zapísaných {count} súborov"
 
 #: cli/jobs.py
 msgid "time"
@@ -3257,6 +3317,10 @@ msgstr "zapíše do adresára, ktorý už obsahuje súbory"
 #: cli/agents.py
 msgid "written"
 msgstr "zapísaný"
+
+#: modules/web_console/tier_commands.py
+msgid "wrote {path}"
+msgstr "zapísané {path}"
 
 #: renderer
 msgid "yes"
@@ -3474,6 +3538,14 @@ msgstr "{path}: deklarovaný, ale nenájdený"
 msgid "{path}: declared {declared}..., read {actual}..."
 msgstr "{path}: deklarované {declared}..., načítané {actual}..."
 
+#: modules/web_console/tier_commands.py
+msgid "{path}: stale; run without --check to write it"
+msgstr "{path}: zastarané; spustite bez --check, aby sa zapísalo"
+
+#: modules/web_console/tier_commands.py
+msgid "{path}: up to date"
+msgstr "{path}: aktuálne"
+
 #: cli/service.py
 msgid "{program} could not run: {exc}"
 msgstr "{program} sa nepodarilo spustiť: {exc}"
@@ -3502,5 +3574,11 @@ msgstr "{value} nie je jazyk, do ktorého sa dá prekladať"
 msgid "{verb}; this token is shown only now - hand it over privately"
 msgstr "{verb}; tento token sa zobrazí iba teraz - odovzdaj ho súkromne"
 
+#~ msgid "GUI tier: none | static | react [none]; see 'kdx ui guide'"
+#~ msgstr "úroveň GUI: none | static | react [none]; pozri 'kdx ui guide'"
+
 #~ msgid "Open the one-window shell (ribbon, side list, panels) instead of the classic console."
 #~ msgstr "Otvorí jednookienkový shell (ikonový pruh, bočný zoznam, panely) namiesto klasickej konzoly."
+
+#~ msgid "package manager of the react tier: npm | bun | pnpm [npm]"
+#~ msgstr "správca balíčkov úrovne react: npm | bun | pnpm [npm]"

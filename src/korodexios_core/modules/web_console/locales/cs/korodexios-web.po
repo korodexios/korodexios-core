@@ -789,3 +789,15 @@ msgstr "jen tato karta"
 #: static/token-store.js
 msgid "do not remember"
 msgstr "nepamatovat"
+
+#: app tiers (web/src)
+msgid "Sign in"
+msgstr "Přihlásit se"
+
+#: app tiers (web/src)
+msgid "Paste the token from 'kdx ui --no-browser' or var/chassis.ipc."
+msgstr "Vložte token z 'kdx ui --no-browser' nebo z var/chassis.ipc."
+
+#: app tiers (web/src)
+msgid "Settings are edited in the built-in console or in the terminal:"
+msgstr "Nastavení se upravují ve vestavěné konzoli nebo v terminálu:"

@@ -341,8 +341,11 @@ Section 14 says a GUI is only another door. When one grows past the built-in con
   (`ipc_static_dirs` / `IpcStaticMount`); bun or node exist only on the developer's machine.
   If the project wants a toolchain: bun, Vite + TypeScript, Biome, with the framework chosen
   per project. Same bar as Python: strict types, lint clean, a build that succeeds.
-- **Types come from the contract.** Build client types from `GET /api/v1/schema`; when a
-  route changes, the GUI build fails, not the user's screen.
+- **Types come from the contract.** Build client types from `GET /api/v1/schema`
+  (`kdx ui types --out web/src/kdx/schema.ts`, `--check` in CI); when a route changes, the GUI
+  build fails, not the user's screen.
+- **One client.** The `react` and `vue` tiers share `web/src/kdx/` (API, auth, embed handshake,
+  live events); fix it in the core, not by hand in one project.
 - **No logic in the screen.** Validation, permissions, long jobs and state live in the
   module, so CLI and API get them too (section 14).
 - **Safe and translated.** Values from the daemon are text, never HTML (no `innerHTML`); the

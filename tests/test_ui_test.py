@@ -103,6 +103,23 @@ def test_a_failing_step_is_reported_with_its_output_tail(tmp_path: Path) -> None
     assert failed.output.count("boom") == 3 and not report.ok
 
 
+def test_a_missing_playwright_browser_build_names_the_fix_for_the_package_manager(
+    tmp_path: Path,
+) -> None:
+    missing = ("browserType.launch: Executable doesn't exist at "
+               "/home/x/.cache/ms-playwright/chromium_headless_shell-1254/chrome")
+
+    def runner(command, cwd, env, timeout):  # type: ignore[no-untyped-def]
+        return (1, missing) if command[-1] == "e2e" else (0, "ok")
+
+    report = run(web_project(tmp_path, lock="pnpm-lock.yaml"), runner=runner)
+    e2e = next(s for s in report.steps if s.name == "e2e (headless)")
+    assert "'pnpm exec playwright install chromium' in web/" in e2e.detail
+    (tmp_path / "other").mkdir()
+    plain = run(web_project(tmp_path / "other"), runner=Recorder(fail="e2e"))
+    assert "playwright install" not in next(s for s in plain.steps if s.status == "failed").detail
+
+
 def test_missing_node_modules_asks_for_install_or_installs(tmp_path: Path) -> None:
     root = web_project(tmp_path, modules=False)
     skipped = run(root)

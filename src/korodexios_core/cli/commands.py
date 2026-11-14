@@ -169,7 +169,7 @@ def core_commands(chassis: Chassis) -> list[CliCommand]:
                     ("--ui",),
                     dest="ui",
                     metavar="TIER",
-                    help="GUI tier: none | static | react [none]; see 'kdx ui guide'",
+                    help="GUI tier: none | static | react | vue [none]; see 'kdx ui guide'",
                 ),
                 CliArgument(
                     ("--container",),
@@ -181,7 +181,7 @@ def core_commands(chassis: Chassis) -> list[CliCommand]:
                     ("--pm",),
                     dest="pm",
                     metavar="MANAGER",
-                    help="package manager of the react tier: npm | bun | pnpm [npm]",
+                    help="package manager of an app tier (react, vue): npm | bun | pnpm [npm]",
                 ),
                 CliArgument(
                     ("--minimal",),

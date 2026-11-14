@@ -789,3 +789,15 @@ msgstr "tylko ta karta"
 #: static/token-store.js
 msgid "do not remember"
 msgstr "nie zapamiętuj"
+
+#: app tiers (web/src)
+msgid "Sign in"
+msgstr "Zaloguj się"
+
+#: app tiers (web/src)
+msgid "Paste the token from 'kdx ui --no-browser' or var/chassis.ipc."
+msgstr "Wklej token z 'kdx ui --no-browser' lub z var/chassis.ipc."
+
+#: app tiers (web/src)
+msgid "Settings are edited in the built-in console or in the terminal:"
+msgstr "Ustawienia edytuje się we wbudowanej konsoli lub w terminalu:"

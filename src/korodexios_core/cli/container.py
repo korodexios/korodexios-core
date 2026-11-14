@@ -5,13 +5,16 @@ reads the same files). The image is multi-stage and small: dependencies are inst
 virtual environment in a build stage, the runtime stage holds only that environment and the
 project's ``kdx.yml``, runs as an unprivileged user, publishes the control plane on
 ``0.0.0.0`` inside the container (compose maps it to ``127.0.0.1`` on the host) and requires a
-token, because a control plane reachable beyond the loopback must not be anonymous. With
-``--ui react`` an extra Node stage builds ``web/`` and the image serves it at ``/app/``.
+token, because a control plane reachable beyond the loopback must not be anonymous. With an
+app tier (``--ui react`` or ``--ui vue``) an extra Node stage builds ``web/`` and the image
+serves it at ``/app/``.
 """
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+
+from .ui_app import APP_TIERS
 
 if TYPE_CHECKING:
     from .init_project import ProjectTemplate
@@ -36,7 +39,7 @@ def container_files(project: ProjectTemplate) -> dict[str, str]:
 
 
 def _dockerfile(project: ProjectTemplate) -> str:
-    react = project.ui == "react"
+    app = project.ui in APP_TIERS
     needs_git = project.chassis_source == "git"
     lines = [
         "# syntax=docker/dockerfile:1",
@@ -45,7 +48,7 @@ def _dockerfile(project: ProjectTemplate) -> str:
         "#   KDX_TOKEN=<long random string> docker compose up -d     (see compose.yaml)",
         "",
     ]
-    if react:
+    if app:
         image, install, build = NODE_STAGE[project.pm]
         lines += [
             f"FROM {image} AS web",
@@ -92,7 +95,7 @@ def _dockerfile(project: ProjectTemplate) -> str:
         "# kdx.yml discovers the project's modules under src/<package>/modules at the root",
         "COPY src ./src",
     ]
-    if react:
+    if app:
         lines += ["COPY --from=web /web/dist ./web/dist"]
     lines += [
         "RUN mkdir -p /app/var /app/data \\",

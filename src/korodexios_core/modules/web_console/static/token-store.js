@@ -117,8 +117,10 @@
     .then((payload) => { if (payload && payload.token_store) state.policy = payload; })
     .catch(() => {});
 
+  // drop: forget the kept token in this browser only (a stale one after a 401); the session
+  // cookie, if any, is left alone
   window.KdxToken = {
-    ready, read, remember, forget, probe, options, defaultChoice,
+    ready, read, remember, forget, probe, options, defaultChoice, drop: clearStored,
     get policy() { return state.policy; },
   };
 })();

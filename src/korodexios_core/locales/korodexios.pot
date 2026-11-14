@@ -72,6 +72,10 @@ msgstr ""
 msgid "... and {count} more"
 msgstr ""
 
+#: modules/web_console/tier_commands.py
+msgid ".gitignore gains: {rules}"
+msgstr ""
+
 #: cli/config_edit.py
 msgid "A dotted key, e.g. core.log.level."
 msgstr ""
@@ -108,7 +112,7 @@ msgstr ""
 msgid "Also overwrite a rule file a person wrote."
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Also run the e2e tests with a visible browser window (needs a display)."
 msgstr ""
 
@@ -476,7 +480,11 @@ msgstr ""
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
+msgid "Exit 1 when --out differs from the daemon's contract."
+msgstr ""
+
+#: modules/web_console/tier_commands.py
 msgid "Explain the GUI tiers a project can choose and when to pick each."
 msgstr ""
 
@@ -541,7 +549,15 @@ msgid "From"
 msgstr ""
 
 #: cli/commands.py
-msgid "GUI tier: none | static | react [none]; see 'kdx ui guide'"
+msgid "GUI tier: none | static | react | vue [none]; see 'kdx ui guide'"
+msgstr ""
+
+#: modules/web_console/tier_commands.py
+msgid "Generate TypeScript route types from a daemon's /api/v1/schema."
+msgstr ""
+
+#: modules/web_console/tier_commands.py
+msgid "Give an existing project a GUI tier (the files 'kdx init --ui' writes); never overwrites a file."
 msgstr ""
 
 #: modules/job_queue/module.py
@@ -736,6 +752,10 @@ msgstr ""
 msgid "List the databases with size and schema version."
 msgstr ""
 
+#: modules/web_console/tier_commands.py
+msgid "List the files without writing them."
+msgstr ""
+
 #: cli/language.py
 msgid "List the languages that have a catalogue, per message domain."
 msgstr ""
@@ -928,6 +948,10 @@ msgstr ""
 msgid "Outbound webhooks for bus events (n8n, Zapier, Make, Slack, ...)."
 msgstr ""
 
+#: modules/web_console/tier_commands.py
+msgid "Package manager of an app tier's web/ [npm]."
+msgstr ""
+
 #: modules/wiki/module.py
 msgid "Page name [from the file name]."
 msgstr ""
@@ -1060,7 +1084,7 @@ msgstr ""
 msgid "Project identity"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Project root [the chassis root]."
 msgstr ""
 
@@ -1110,6 +1134,10 @@ msgstr ""
 
 #: cli/remote.py
 msgid "Read or change the daemon's configuration."
+msgstr ""
+
+#: modules/web_console/tier_commands.py
+msgid "Read the contract from a file ('kdx api schema --json') instead of a daemon."
 msgstr ""
 
 #: modules/wiki/module.py
@@ -1168,7 +1196,7 @@ msgstr ""
 msgid "Report uid, gid, id mapping and rootless readiness; propose a free subuid range if one is needed."
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Report what this machine can run for a GUI: Node, Bun, browsers, a display, headless testing."
 msgstr ""
 
@@ -1224,7 +1252,7 @@ msgstr ""
 msgid "Run one module command inside a live daemon instead of booting a chassis."
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Run the GUI tests this machine can run: manifest, then the web app's type check, component tests and headless e2e (--headed adds a window)."
 msgstr ""
 
@@ -1232,7 +1260,7 @@ msgstr ""
 msgid "Run the backup (copies files unless --dry-run)."
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "Run the package manager's install if node_modules is missing."
 msgstr ""
 
@@ -1484,6 +1512,10 @@ msgstr ""
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr ""
 
+#: modules/web_console/tier_commands.py
+msgid "The GUI tier to add."
+msgstr ""
+
 #: cli/remote.py
 msgid "The event's payload as a JSON value [{}]."
 msgstr ""
@@ -1608,6 +1640,10 @@ msgstr ""
 msgid "Write down what the project must do (interview), or check that it is complete."
 msgstr ""
 
+#: modules/web_console/tier_commands.py
+msgid "Write here, e.g. web/src/kdx/schema.ts [print to stdout]."
+msgstr ""
+
 #: modules/wiki/module.py
 msgid "Write index.md for each wiki (what an agent reads first)."
 msgstr ""
@@ -1662,6 +1698,10 @@ msgstr ""
 
 #: cli/users.py
 msgid "add one with: kdx users add NAME --role operator"
+msgstr ""
+
+#: modules/web_console/tier_commands.py
+msgid "add to a project: {command}"
 msgstr ""
 
 #: cli/container_doctor.py
@@ -1760,7 +1800,7 @@ msgstr ""
 msgid "browser:  open http://HOST:18123/ui/ and paste the token"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "browsers"
 msgstr ""
 
@@ -1778,6 +1818,10 @@ msgstr ""
 
 #: modules/backup_engine/module.py
 msgid "cancelled after {copied} file(s); the partial copy stays at {target}"
+msgstr ""
+
+#: modules/web_console/tier_commands.py
+msgid "cannot read {path}: {exc}"
 msgstr ""
 
 #: cli/tls.py
@@ -1860,7 +1904,7 @@ msgstr ""
 msgid "container"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "container engines"
 msgstr ""
 
@@ -1900,7 +1944,7 @@ msgstr ""
 msgid "covers"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "create: {command}"
 msgstr ""
 
@@ -1956,7 +2000,7 @@ msgstr ""
 msgid "discovery needs {parent} in core.modules.extra_paths or passed as --modules-dir"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "display"
 msgstr ""
 
@@ -1994,6 +2038,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "ecosystem"
+msgstr ""
+
+#: modules/web_console/tier_commands.py
+msgid "embed protocol"
 msgstr ""
 
 #: cli/commands.py
@@ -2072,7 +2120,7 @@ msgstr ""
 msgid "following events at {base_url} (Ctrl+C to stop)"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "for browser tests: {setting}={value}"
 msgstr ""
 
@@ -2100,11 +2148,11 @@ msgstr ""
 msgid "handler errors"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "headed browser tests: {state}"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "headless browser tests: {state}"
 msgstr ""
 
@@ -2124,7 +2172,7 @@ msgstr ""
 msgid "how the project resolves the chassis: git | index [git]"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "how to decide"
 msgstr ""
 
@@ -2208,7 +2256,7 @@ msgstr ""
 msgid "known keys"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "known limits"
 msgstr ""
 
@@ -2346,6 +2394,10 @@ msgstr ""
 
 #: modules/web_console/module.py
 msgid "nav, panels, buttons, values, defaults, settings, layout; none means all but defaults."
+msgstr ""
+
+#: modules/web_console/tier_commands.py
+msgid "next"
 msgstr ""
 
 #: cli/commands.py
@@ -2560,7 +2612,7 @@ msgstr ""
 msgid "nothing written"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "npm | bun | pnpm [from the lockfile, else npm]."
 msgstr ""
 
@@ -2617,7 +2669,7 @@ msgid "package"
 msgstr ""
 
 #: cli/commands.py
-msgid "package manager of the react tier: npm | bun | pnpm [npm]"
+msgid "package manager of an app tier (react, vue): npm | bun | pnpm [npm]"
 msgstr ""
 
 #: modules/wiki/module.py
@@ -2664,7 +2716,7 @@ msgstr ""
 msgid "platform"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "playwright browsers"
 msgstr ""
 
@@ -2800,7 +2852,7 @@ msgstr ""
 msgid "rows"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "rules"
 msgstr ""
 
@@ -2816,7 +2868,7 @@ msgstr ""
 msgid "running"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "running inside"
 msgstr ""
 
@@ -3132,8 +3184,16 @@ msgstr ""
 msgid "ticks"
 msgstr ""
 
-#: modules/web_console/module.py
+#: modules/web_console/tier_commands.py
 msgid "tier {name}: {state}"
+msgstr ""
+
+#: modules/web_console/tier_commands.py
+msgid "tier {tier}: would write {count} files"
+msgstr ""
+
+#: modules/web_console/tier_commands.py
+msgid "tier {tier}: wrote {count} files"
 msgstr ""
 
 #: cli/jobs.py
@@ -3254,6 +3314,10 @@ msgstr ""
 
 #: cli/agents.py
 msgid "written"
+msgstr ""
+
+#: modules/web_console/tier_commands.py
+msgid "wrote {path}"
 msgstr ""
 
 #: renderer
@@ -3470,6 +3534,14 @@ msgstr ""
 
 #: cli/commands.py
 msgid "{path}: declared {declared}..., read {actual}..."
+msgstr ""
+
+#: modules/web_console/tier_commands.py
+msgid "{path}: stale; run without --check to write it"
+msgstr ""
+
+#: modules/web_console/tier_commands.py
+msgid "{path}: up to date"
 msgstr ""
 
 #: cli/service.py

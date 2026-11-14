@@ -12,7 +12,7 @@ clients that talk to the same core and never reimplement it.
 - **Bootstrap:** uv (Astral) owns the environment - `uv venv`, `uv sync --extra dev`,
   `uv run kdx ...`, `uv tool install korodexios-core`, `uv lock` for a consumer's own pins
 - **Dependencies:** `pyyaml` (config files), `rich` (the wizard layer)
-- **Release:** `v0.7.2`, core API frozen at `v2`
+- **Release:** `v0.7.3`, core API frozen at `v2`
 
 **Install in one go:** `./install.sh` (Linux, macOS) or `.\install.ps1` (Windows) - a guided,
 coloured installer in English or Slovak (`--dry-run` shows the steps without running them).
@@ -76,7 +76,7 @@ Pin the chassis the way a consumer project does, entirely with uv:
 
 ```bash
 uv tool install korodexios-core   # a global kdx on PATH, no project involved
-uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.7.2"
+uv pip install "korodexios-core @ git+https://github.com/korodexios/korodexios-core.git@v0.7.3"
 uv lock                          # and 'uv add' for this project's own pinned dependencies
 ```
 
@@ -201,10 +201,11 @@ Everything below works from the terminal first; the web console is only an add-o
   console (`kdx ui`) draws a tab for it - no HTML or JavaScript. A person can rename, hide and
   reorder tabs, add their own shortcut buttons and keep form values and defaults; it is stored per
   user on the daemon (`kdx ui prefs`). `kdx ui manifest --json` shows exactly what the browser gets.
-- **Choosing a GUI.** `kdx ui guide` explains the tiers (`none`, `static`, `react`) and when to pick
-  each; `kdx ui doctor` reports what this machine can run (Node, Bun, browsers, a display, a
-  container engine). `kdx init NAME --ui none|static|react [--pm npm|bun|pnpm]` creates the project;
-  `kdx ui test [--headed]` runs the GUI tests, headless first.
+- **Choosing a GUI.** `kdx ui guide` explains the tiers (`none`, `static`, `react`, `vue`) and when
+  to pick each; `kdx ui doctor` reports what this machine can run (Node, Bun, browsers, a display, a
+  container engine). `kdx init NAME --ui none|static|react|vue [--pm npm|bun|pnpm]` creates the
+  project, `kdx ui add <tier>` adds one to an existing project, `kdx ui types` writes route types
+  from the API contract, and `kdx ui test [--headed]` runs the GUI tests, headless first.
 - **A database only when needed.** `context.db()` is an opt-in SQLite file with migrations;
   nothing is created unless a module asks. `kdx db list|show|query|backup` looks inside, read-only.
 - **Containers.** `kdx init NAME --container` adds a `Dockerfile`, `compose.yaml` and

@@ -5,6 +5,50 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.7.3] - 2026-11-14
+
+From a downstream proposal (006: Vue tier, adding a tier to a project, cookie/embed auth in the app
+client); only the general parts, nothing project-specific.
+
+### Added
+
+- GUI tier `vue`: Vite + Vue 3 + TypeScript (`vue-tsc`, Vitest with `@vue/test-utils`, Playwright),
+  the same contract as `react` (draws `/api/v1/ui/manifest`, honours `/api/v1/ui/prefs`,
+  `overridePanel()`, `web_app` serves `web/dist` at `/app/`). Listed by `kdx ui guide` and
+  `kdx ui doctor`.
+- `kdx ui test` names the fix when Playwright wants a browser build that is not downloaded
+  (`npx` / `pnpm exec` / `bunx playwright install chromium`).
+- A framework-neutral client shared by every app tier, `web/src/kdx/`: `api()`, `manifest()`,
+  `prefs()`, the auth rules, the embed handshake (`askHost()`, `serveEmbed()`), `events()` /
+  `onTopics()` and media cells, with its own tests. The templates now ship as real files under
+  `resources/app/` (`common/`, `react/`, `vue/`, `module/`) instead of strings in Python.
+- `kdx ui add static|react|vue [--pm] [--dry-run] [--path] [--json]`: an existing project adopts a
+  tier; the files are the ones `kdx init --ui` writes, nothing is ever overwritten.
+- `kdx ui types [--out FILE] [--check] [--from FILE]`: TypeScript route types (`RoutePath`, `ROUTES`,
+  `route()`) generated from `GET /api/v1/schema`, so conventions section 16 has a command behind it.
+- Embed protocol v1, documented in `kernel/ui_embed.py` and AGENTS_GUIDE 8.1 and published by
+  `kdx ui guide --json` (`embed`): the answer carries `version: 1` and `cookie: <bool>`, so a framed
+  page can tell "the session cookie authenticates you" from "nobody is signed in". Additive.
+- Manifest: optional panel field `refresh_on` (bus event prefixes that reload the panel; the shell
+  and both app tiers share one `/api/v1/ui/events` stream) and cell kind `media` (a path under a
+  static mount: plays or shows it; cookie -> the path itself with Range, header token -> a blob).
+  `MANIFEST_VERSION` stays 1.
+
+### Changed
+
+- The shell and the app client send `X-Kdx-Token` only while they hold a token. A 401 to a request
+  that carried it drops that token and retries once, so a stale kept token no longer hides a valid
+  session cookie (the shell does this when cookie sessions are on). `#token=` is removed from the
+  address in the app tiers as in the shell; the app tiers gained a sign-in form.
+- With `--pm pnpm` the app tiers seed `web/pnpm-workspace.yaml` allowing esbuild's build script;
+  newer pnpm refused the install without it. npm, pnpm 12 and bun 1.4 were verified with both
+  app tiers (install, typecheck, component tests, headless e2e).
+- The app tiers draw `embed` and `settings` panels (before, those types had no drawing there).
+- `kdx ui guide` known-limit notes for both app tiers say `applies_to: "app"` (was `react`).
+- Moved, no behaviour change: tier data to `kernel/ui_tier_data.py`, table cells to
+  `kernel/ui_cells.py`, the GUI-tier subcommands of `kdx ui` to `web_console/tier_commands.py`;
+  `cli/ui_react.py` became `cli/ui_app.py`. The size debt went down.
+
 ## [0.7.2] - 2026-11-11
 
 ### Added

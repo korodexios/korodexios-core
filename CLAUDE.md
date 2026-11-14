@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.7.2.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.7.3.
 
 ## Working preferences
 
@@ -18,9 +18,12 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
   an add-on layer, never the only way to do something. Audit new work for GUI-only
   paths before calling it done.
 - **No TUI.** A Textual/TUI front end is explicitly not wanted.
-- **Language (this project only).** The owner writes in Slovak; reply in Slovak. The
-  chassis itself is English-only (diagnostics, machine payloads, CLI text, docs), except
-  the internal Slovak notes in `docs-dev/` (git-ignored, never published). Do not copy this to other projects.
+- **Language (this project only).** The owner writes in Slovak; reply in Slovak. Every file
+  of the project is English, with no exception: code, diagnostics, machine payloads, CLI text,
+  public docs and the internal notes in `docs-dev/` (git-ignored, never published; translated
+  from Slovak on 2026-11-14). Slovak lives only in the translation catalogues and other
+  deliberate i18n content (installer texts, language names, test data). Do not copy this to
+  other projects.
 - **i18n (phase 36, merged into `main`).** The core has a
   language service: `kernel/i18n.py` (stdlib only, reads `.po` directly, no compile step),
   config key `core.locale` (`--locale`, `KDX_CORE__LOCALE`, `kdx.local.yml`), catalogues in
@@ -50,7 +53,28 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 - Never commit control-plane users or the audit log (see commit f78f747); keep
   `var/` and runtime state out of git.
 
-## Current state (2026-11-11)
+## Current state (2026-11-14)
+
+- v0.7.3 (owner asked for tag, commit and push; branch `feature/app-client-vue` merged into `main`,
+  ROADMAP phase 41): downstream proposal 006, only the general parts. Tier `vue`; the shared client
+  `web/src/kdx/` (templates are real files in `resources/app/{common,react,vue,module}`, generator
+  `cli/ui_app.py`, `ui_react.py` removed); `kdx ui add <tier>` (`cli/ui_add.py`); `kdx ui types`
+  (`cli/ui_types.py`); embed protocol v1 with `cookie` (`kernel/ui_embed.py`); manifest `refresh_on`
+  and cell kind `media` (`kernel/ui_cells.py`); shell sends no empty header and retries once after a
+  401 in cookie mode. Verified: `make check` steps, both app tiers built and tested in `node:22`
+  Docker, and headless Chromium (Playwright Docker image) against a scratch daemon in cookie and
+  header modes. `kdx ui add` + `kdx ui test --install` pass for both app tiers with npm, pnpm 12 and
+  bun 1.4 (pnpm needed the seeded `web/pnpm-workspace.yaml` allowing esbuild). This Linux host now
+  has, in user space without sudo: Node 22 (`~/.local/opt/node`), pnpm via corepack, bun
+  (`~/.local/opt/bun`), GNU make (unpacked .deb in `~/.local/opt/make`), all linked in
+  `~/.local/bin`. The owner installed Chromium's system libraries (apt, 2026-11-14), so Playwright's
+  own Chromium (`~/.cache/ms-playwright`) runs headless here; `kdx ui test` e2e passed for vue/npm
+  and react/pnpm. Dev machine setup (internal, git-ignored): `docs-dev/DEVELOPMENT.md`.
+  `reference/` is the original dev checkout, kept only until the owner deletes it (git-ignored,
+  unused by tests). Everything it had that this checkout lacked - local tags never pushed
+  (v0.1.0-v0.3.2, v0.3.1-diag, v0.5.6) - was copied here as local tags.
+
+## State on 2026-11-11
 
 - v0.7.2 (owner asked for tag, commit and push; from a downstream proposal N4/N5): the console remembers its
   token by server policy (`core.ipc.ui_token_store|ui_token_ttl|ui_token_cookie`, default `always` in
@@ -128,10 +152,10 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
   (`context.job_queue`, module `job_queue`, `kdx queue`, `/api/v1/queue`), and the `kdx init`
   pyproject fix (`allow-direct-references`). The owner asked for commit, tag and push of it.
 - Still open from the owner's request list: publishing to PyPI (owner's account, not done).
-- v0.4.2 held the fixes of `docs-dev/REVIEW-2026-11.sk.md` and the public caller API
+- v0.4.2 held the fixes of `docs-dev/REVIEW-2026-11.md` and the public caller API
   (`Caller`, `current_caller`, `IpcRequest.caller`, `CliRequest.caller`, jobs keep the caller).
-- Review documents: `docs-dev/REVIEW-2026-10.sk.md`, `docs-dev/REVIEW-2026-11.sk.md` (both
-  Slovak, the only exceptions to the English-only rule). Other docs: `docs/ARCHITECTURE.md`,
+- Review documents: `docs-dev/REVIEW-2026-10.md`, `docs-dev/REVIEW-2026-11.md`,
+  `docs-dev/REVIEW-2026-11-08.md` (English since 2026-11-14). Other docs: `docs/ARCHITECTURE.md`,
   `CLI_REFERENCE.md`, `ROADMAP.md`, `TUTORIAL.md`, `AGENTS_GUIDE.md`.
 
 ## Environment notes

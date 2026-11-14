@@ -16,6 +16,8 @@ build/
 dist/
 *.egg-info/
 .venv/
+# Node packages of a GUI template tried in place (resources/app/*), never committed
+node_modules/
 venv/
 .python-version
 
@@ -44,3 +46,5 @@ data/db/
 
 # Internal notes (Slovak, owner only; never published)
 docs-dev/
+# the original dev checkout kept beside this one on the dev container; never committed
+reference/

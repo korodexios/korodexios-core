@@ -20,7 +20,7 @@ from ..validate import ValidationResult
 from ..version import __version__ as CORE_VERSION
 from .container import container_files
 from .seed_quality import coverage_config, pre_commit_config, rules_test, size_ratchet_test
-from .ui_react import PM_COMMANDS, react_files
+from .ui_app import APP_TIERS, app_files, app_skill, app_tree_lines
 from .ux import UserExperience
 
 NAME_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
@@ -90,7 +90,7 @@ class ProjectTemplate:
     ui: str = ""
     """GUI tier (see kernel/ui_tiers.py); empty derives it from the ecosystem."""
     pm: str = "npm"
-    """Package manager of the react tier's web/ (npm, bun or pnpm)."""
+    """Package manager of an app tier's web/ (react or vue: npm, bun or pnpm)."""
     container: bool = False
     """Also seed a Dockerfile, compose.yaml and .dockerignore (Docker and Podman)."""
 
@@ -257,8 +257,8 @@ def project_from_inputs(
         raise ProjectError(
             f"unknown package manager {pm!r}", hint="choose " + ", ".join(PACKAGE_MANAGERS)
         )
-    if manager and tier != "react":
-        raise ProjectError("--pm only applies to --ui react", hint="add --ui react")
+    if manager and tier not in APP_TIERS:
+        raise ProjectError("--pm only applies to an app tier", hint="add --ui react or --ui vue")
     key = key or ("fullstack" if tier not in ("", "none") else "python")
     source = str(chassis_source).strip().lower() or CHASSIS_SOURCE_DEFAULT
     if source not in CHASSIS_SOURCES:
@@ -408,8 +408,8 @@ def build_files(project: ProjectTemplate) -> dict[str, str]:
         )
     if project.container:
         files.update(container_files(project))
-    if project.ui == "react":
-        files.update(react_files(project))
+    if project.ui in APP_TIERS:
+        files.update(app_files(project))
         files[".agents/skills/web-ui.md"] = _skill_web_ui(project)
     elif project.fullstack:
         files["web/package.json"] = _web_package(project)
@@ -600,14 +600,8 @@ def _readme(project: ProjectTemplate) -> str:
         "docs/specs/TEMPLATE.md    # start every feature spec from this",
         ".agents/skills/          # playbooks: how to extend this project safely",
     ]
-    if project.ui == "react":
-        lines += [
-            "web/",
-            "  src/                   # React + TypeScript app: draws /api/v1/ui/manifest",
-            "  e2e/                   # Playwright tests (headless; PW_HEADED=1 for a window)",
-            "  README.md              # commands for the chosen package manager",
-            "  modules/web_app/       # serves web/dist at /app/ once built",
-        ]
+    if project.ui in APP_TIERS:
+        lines += app_tree_lines(project)
     elif project.fullstack:
         lines += [
             "web/",
@@ -1863,28 +1857,8 @@ def _skill_verification(project: ProjectTemplate) -> str:
 
 
 def _skill_web_ui(project: ProjectTemplate) -> str:
-    if project.ui == "react":
-        run = PM_COMMANDS[project.pm]["run"]
-        return _skill(
-            "web-ui",
-            f"Extend the {project.title} React app without breaking the contract.",
-            [
-                "## Contract",
-                "- The app is a client of @BT@/api/v1/*@BT@; it holds no core logic.",
-                "- A module gets a tab by declaring a @BT@[ui]@BT@ table; no React is needed.",
-                "- Per-person state (labels, hidden panels, form values) lives in",
-                "  @BT@/api/v1/ui/prefs@BT@.",
-                "- The token travels in the URL fragment, never in committed code.",
-                "",
-                "## Steps",
-                f"1. @BT@{project.script} ui manifest --json@BT@ shows what the app will draw.",
-                f"2. @BT@{run} dev@BT@ in web/ while @BT@{project.script} run@BT@ is running.",
-                f"3. @BT@{run} typecheck && {run} test@BT@ before every commit.",
-                f"4. @BT@{run} e2e@BT@ for the real daemon; @BT@PW_HEADED=1@BT@ only when",
-                "   @BT@kdx ui doctor@BT@ reports a display.",
-                "5. Draw one panel yourself with @BT@overridePanel()@BT@ in web/src/overrides.tsx.",
-            ],
-        ).replace("@BT@", chr(96))
+    if project.ui in APP_TIERS:
+        return _skill("web-ui", *app_skill(project)).replace("@BT@", chr(96))
     return _skill(
         "web-ui",
         f"Keep the {project.title} web client honest about the daemon.",

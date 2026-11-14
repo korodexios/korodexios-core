@@ -16,11 +16,12 @@ Panel types (every field is plain data; nothing here runs in a browser)::
     settings   typed form of declared config keys       module or group
 
 A ``table`` column may carry a ``kind`` (``chip`` with optional ``tones``, ``bytes``,
-``duration``, ``time``, ``link``, ``code``), the table may list per-row ``actions`` whose
-``args`` use ``{column}`` placeholders, and a ``detail`` route opened from a row. A ``form``
-may say, per argument, where its choices come from (``choices_from``) or how it is drawn
-(``textarea``, ``number``, ``slider``; limits come from the command's own argument).
-Nothing here is code: the renderer decides colours and widgets.
+``duration``, ``time``, ``link``, ``code``, ``media``; see :mod:`.ui_cells`), the table may
+list per-row ``actions`` whose ``args`` use ``{column}`` placeholders, and a ``detail`` route
+opened from a row. A ``form`` may say, per argument, where its choices come from
+(``choices_from``) or how it is drawn (``textarea``, ``number``, ``slider``; limits come from
+the command's own argument). Any panel may name ``refresh_on`` bus event prefixes that make it
+load again. Nothing here is code: the renderer decides colours and widgets.
 
 A shell (the window with a ribbon, side list, bottom panel and inspector) reads three more
 optional declarations: ``position = "bottom"`` and ``badge`` (a route returning a count) on
@@ -41,12 +42,10 @@ from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
-from . import ui_embed
+from . import ui_cells, ui_embed
 
 MANIFEST_VERSION = 1
 PANEL_TYPES = ("table", "keyvalue", "log", "text", "form", "actions", "settings", "embed")
-CELL_KINDS = ("text", "chip", "bytes", "duration", "time", "link", "code")
-TONES = ("ok", "warn", "bad", "busy", "muted")
 FIELD_KINDS = ("text", "textarea", "number", "slider", "select")
 ROUTE_PREFIX = "/api/v1/"
 NODE_PLACEHOLDER = "node"
@@ -60,7 +59,6 @@ DOCKS = ("main", "bottom")
 MAX_BUTTONS = 32
 MAX_ROW_ACTIONS = 8
 MAX_FIELDS = 32
-MAX_TONES = 32
 MAX_REFRESH_SECONDS = 3600
 _IDENT = re.compile(r"^[a-z][a-z0-9_-]{0,47}$")
 _PATH = re.compile(r"^[A-Za-z0-9_.\-]{0,128}$")
@@ -265,6 +263,9 @@ def _panel(
         build.issue(f"dock {dock!r} is not one of {', '.join(DOCKS)}", ident)
     if raw.get("locked") is True:
         panel["locked"] = True  # the shell must not let a person hide this panel
+    topics = ui_cells.refresh_on(raw.get("refresh_on"), build, ident)
+    if topics:
+        panel["refresh_on"] = topics  # bus event prefixes that make the panel load again
     ok = _TYPES[kind](raw, panel, build, ident)
     if not ok:
         return None
@@ -295,41 +296,6 @@ def _source(raw: Mapping[str, Any], panel: dict[str, Any], build: _Build, ident:
     panel["source"] = source
     panel["path"] = path
     return True
-
-
-def _tones(value: Any, build: _Build, ident: str) -> dict[str, str]:
-    if not isinstance(value, Mapping):
-        return {}
-    tones: dict[str, str] = {}
-    for word, tone in list(value.items())[:MAX_TONES]:
-        if str(tone) in TONES:
-            tones[str(word)] = str(tone)
-        else:
-            build.issue(f"tone {tone!s} for {word!s} is not one of {', '.join(TONES)}", ident)
-    return tones
-
-
-def _column(
-    item: Any, build: _Build, ident: str
-) -> dict[str, Any] | None:
-    if isinstance(item, Mapping):
-        key, label = str(item.get("key") or ""), build.say(item.get("label") or item.get("key"))
-        kind = str(item.get("kind") or "text")
-    else:
-        key, label, kind = str(item), build.say(item), "text"
-    if not key or not _PATH.match(key):
-        return None
-    if kind not in CELL_KINDS:
-        build.issue(f"column {key!r}: kind {kind!r} is not one of {', '.join(CELL_KINDS)}", ident)
-        kind = "text"
-    column: dict[str, Any] = {"key": key, "label": label}
-    if kind != "text":
-        column["kind"] = kind
-    if kind == "chip" and isinstance(item, Mapping):
-        tones = _tones(item.get("tones"), build, ident)
-        if tones:
-            column["tones"] = tones
-    return column
 
 
 def _placeholders_ok(text: str, build: _Build, ident: str, what: str) -> bool:
@@ -422,7 +388,7 @@ def _table(raw: Mapping[str, Any], panel: dict[str, Any], build: _Build, ident: 
     columns: list[dict[str, Any]] = []
     declared = raw.get("columns", ())
     for item in declared if isinstance(declared, list | tuple) else ():
-        column = _column(item, build, ident)
+        column = ui_cells.column(item, build, ident)
         if column is not None:
             columns.append(column)
     panel["columns"] = columns

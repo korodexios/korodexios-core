@@ -191,5 +191,22 @@ def _run(
     step.status = "passed" if code == 0 else "failed"
     lines = output.strip().splitlines()
     step.output = "\n".join(lines[-TAIL_LINES:]) if code != 0 else ""
-    step.detail = " ".join(command[1:])
+    step.detail = " ".join(command[1:]) + _browser_hint(command[0], output)
     report.steps.append(step)
+
+
+EXEC = {"npm": "npx", "pnpm": "pnpm exec", "bun": "bunx"}
+"""How each package manager runs a tool from the project's own node_modules."""
+
+
+def _browser_hint(executable: str, output: str) -> str:
+    """Name the fix when Playwright wants a browser revision that is not downloaded.
+
+    Each Playwright release pins its own Chromium build, and a lockfile of another package
+    manager may resolve another Playwright: the browser in the cache is then the wrong one.
+    """
+    if "Executable doesn't exist" not in output or "ms-playwright" not in output:
+        return ""
+    tool = EXEC.get(Path(executable).stem.lower(), "npx")
+    fix = f"{tool} playwright install chromium"
+    return f" (Playwright wants another browser build: run '{fix}' in web/)"

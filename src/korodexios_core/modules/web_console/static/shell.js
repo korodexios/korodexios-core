@@ -49,6 +49,7 @@
     catalog: [], me: null,
     area: "", tabs: [], active: "", activeB: "", focus: "a", selected: null,
     trees: {}, open: new Set(), badges: {}, timers: [], timersB: [], dockTimers: [],
+    live: new Set(), streaming: false, media: new Map(),
   };
   const $ = (id) => document.getElementById(id);
 
@@ -172,16 +173,29 @@
     return payload;
   }
 
+  // the token header only while a token is held; an empty header is never sent
+  function authHeaders() { return state.token ? { [TOKEN_HEADER]: state.token } : {}; }
+
   // like api(), but a refusal (HTTP 4xx) is returned, not thrown: a command's own error is output
   async function call(path, options) {
     const opts = options || {};
-    const headers = { [TOKEN_HEADER]: state.token };
-    let body;
-    if (opts.body !== undefined) {
-      headers["Content-Type"] = "application/json";
-      body = JSON.stringify(opts.body);
+    const send = () => {
+      const headers = authHeaders();
+      let body;
+      if (opts.body !== undefined) {
+        headers["Content-Type"] = "application/json";
+        body = JSON.stringify(opts.body);
+      }
+      return fetch(path, { method: opts.method || "GET", headers, body, cache: "no-store" });
+    };
+    const carried = Boolean(state.token);
+    let response = await send();
+    // a stale kept token must not hide a valid session cookie: forget it and ask once more
+    if (response.status === 401 && carried && KdxToken.policy.cookie) {
+      KdxToken.drop();
+      state.token = "";
+      response = await send();
     }
-    const response = await fetch(path, { method: opts.method || "GET", headers, body, cache: "no-store" });
     let payload = {};
     try { payload = await response.json(); } catch (e) { payload = {}; }
     if (response.status === 401) throw new AuthError(payload.error || "token rejected");
@@ -687,6 +701,68 @@
     body.replaceChildren(...docked.map((panel) => panelCard(panel, area, state.dockTimers)));
   }
 
+  // ---- live panels (refresh_on) -------------------------------------------------------
+  // A panel that declares refresh_on = ["queue.", ...] draws again when a bus event whose name
+  // starts with one of those prefixes arrives. One stream (/api/v1/ui/events, read with fetch so
+  // the header or the cookie authenticates it) serves every such panel; it closes when the last
+  // one has left the page.
+
+  const LIVE_RETRY_MS = 3000;
+  const LIVE_DEBOUNCE_MS = 250;
+
+  function watchTopics(prefixes, draw, card) {
+    let timer = 0;
+    const fire = () => { clearTimeout(timer); timer = setTimeout(draw, LIVE_DEBOUNCE_MS); };
+    state.live.add({ prefixes, card, fire });
+    // the card is put into the page right after this returns: start once it is connected
+    setTimeout(streamLive, 0);
+  }
+
+  function liveEntries() {
+    state.live.forEach((entry) => { if (!entry.card.isConnected) state.live.delete(entry); });
+    return state.live;
+  }
+
+  function onLiveEvent(event) {
+    const name = String((event && event.name) || "");
+    liveEntries().forEach((entry) => {
+      if (entry.prefixes.some((prefix) => prefix === "*" || name.startsWith(prefix))) entry.fire();
+    });
+  }
+
+  async function readLive(response) {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let pending = "";
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) return;
+      if (!liveEntries().size) { reader.cancel().catch(() => {}); return; }
+      pending += decoder.decode(value, { stream: true });
+      const frames = pending.split("\n\n");
+      pending = frames.pop();
+      frames.forEach((frame) => {
+        const data = frame.split("\n").filter((line) => line.startsWith("data: ")).map((line) => line.slice(6)).join("\n");
+        if (!data) return;
+        try { onLiveEvent(JSON.parse(data)); } catch (e) { /* a malformed frame is skipped */ }
+      });
+    }
+  }
+
+  async function streamLive() {
+    if (state.streaming) return;
+    state.streaming = true;
+    while (liveEntries().size) {
+      try {
+        const response = await fetch("/api/v1/ui/events", { headers: authHeaders(), cache: "no-store" });
+        if (response.status === 401 || response.status === 403) break;
+        if (response.ok && response.body) await readLive(response);
+      } catch (error) { /* the daemon stopped or the network dropped: try again below */ }
+      await new Promise((resolve) => setTimeout(resolve, LIVE_RETRY_MS));
+    }
+    state.streaming = false;
+  }
+
   // ---- panel renderers -----------------------------------------------------------------
 
   function panelCard(panel, area, timers) {
@@ -702,6 +778,7 @@
     };
     draw();
     if (panel.refresh > 0) timers.push(setInterval(draw, panel.refresh * 1000));
+    if ((panel.refresh_on || []).length) watchTopics(panel.refresh_on, draw, card);
     return card;
   }
 
@@ -733,7 +810,8 @@
 
   // An embed panel frames a page another module serves from this daemon. The token never goes
   // into the URL: the page asks for it with a message and gets it only if the asker is the very
-  // frame this panel created and shares this origin.
+  // frame this panel created and shares this origin. Embed protocol v1 (kernel/ui_embed.py):
+  // an empty token with cookie: true means "the session cookie already authenticates you".
   function renderEmbed(content, panel) {
     const frame = el("iframe", {
       class: "embed", src: panel.src, title: panel.title || panel.id,
@@ -745,7 +823,8 @@
       if (!frame.isConnected) { window.removeEventListener("message", listen); return; }
       if (event.source !== frame.contentWindow || event.origin !== location.origin) return;
       if (!event.data || event.data.type !== "kdx-embed-ready") return;
-      frame.contentWindow.postMessage({ type: "kdx-embed-token", token: state.token }, location.origin);
+      const cookie = !state.token && Boolean(KdxToken.policy.cookie);
+      frame.contentWindow.postMessage({ type: "kdx-embed-token", version: 1, token: state.token, cookie }, location.origin);
     };
     window.addEventListener("message", listen);
     content.replaceChildren(frame);
@@ -806,12 +885,60 @@
       case "duration": return el("td", { plain: fmtDuration(value) });
       case "time": return el("td", { plain: fmtTime(value) });
       case "code": return el("td", {}, [el("code", { plain: text })]);
+      case "media": return el("td", {}, [mediaNode(value)]);
       case "link": {
         const href = safeHref(text);
         return el("td", {}, [href ? el("a", { href, target: "_blank", rel: "noopener noreferrer", plain: text }) : document.createTextNode(text)]);
       }
       default: return el("td", { plain: text });
     }
+  }
+
+  // A media cell holds a path of a static mount on this daemon. With the session cookie (or an
+  // open mount) the element loads the path itself, with Range requests; with a header token the
+  // file is fetched once and played from a blob, because <audio src> cannot send a header.
+  const MEDIA_KINDS = {
+    audio: /\.(mp3|wav|ogg|oga|flac|m4a|aac|opus)$/i,
+    video: /\.(mp4|webm|ogv|mov)$/i,
+    image: /\.(png|jpe?g|gif|webp|avif|svg)$/i,
+  };
+  const MEDIA_CACHE = 64;
+
+  function mediaPath(value) {
+    const text = typeof value === "string" ? value.trim() : "";
+    const ok = text.startsWith("/") && !text.startsWith("//") && !text.includes("..") && !text.startsWith("/api/");
+    return ok ? text : "";
+  }
+
+  function mediaUrl(path) {
+    if (!state.token) return Promise.resolve(path);
+    if (state.media.has(path)) return state.media.get(path);
+    const loading = fetch(path, { headers: authHeaders(), cache: "no-store" })
+      .then((response) => (response.ok ? response.blob() : Promise.reject(new Error(`HTTP ${response.status}`))))
+      .then((blob) => URL.createObjectURL(blob));
+    loading.catch(() => state.media.delete(path));
+    state.media.set(path, loading);
+    if (state.media.size > MEDIA_CACHE) {
+      const [oldest, url] = state.media.entries().next().value;
+      state.media.delete(oldest);
+      url.then((href) => URL.revokeObjectURL(href)).catch(() => {});
+    }
+    return loading;
+  }
+
+  function mediaNode(value) {
+    const path = mediaPath(value);
+    if (!path) return document.createTextNode(fmt(value));
+    const clean = path.split(/[?#]/)[0];
+    const kind = Object.keys(MEDIA_KINDS).find((name) => MEDIA_KINDS[name].test(clean)) || "file";
+    const node = kind === "audio" ? el("audio", { controls: true, preload: "none" })
+      : kind === "video" ? el("video", { class: "media", controls: true, preload: "none" })
+        : kind === "image" ? el("img", { class: "media", alt: clean })
+          : el("a", { target: "_blank", rel: "noopener noreferrer", plain: clean.split("/").pop() });
+    mediaUrl(path)
+      .then((url) => node.setAttribute(kind === "file" ? "href" : "src", url))
+      .catch((error) => node.replaceWith(el("span", { class: "error", plain: error.message })));
+    return node;
   }
 
   // {column} placeholders in a row action's args or a detail route are filled from the row

@@ -19,7 +19,7 @@ import re
 from collections.abc import Iterable, Mapping, Sequence
 from typing import Any
 
-from .ui_manifest import TONES
+from .ui_cells import TONES
 
 MAX_NODES = 500
 MAX_LABEL = 200
