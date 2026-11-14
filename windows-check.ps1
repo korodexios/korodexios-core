@@ -577,9 +577,9 @@ try {
     Write-Step "== static bar (make check) ==" "Cyan"
     Invoke-Cmd -Command ($script:RuffCmd + @("check", "src", "tests")) -Label "lint_ruff" | Out-Null
     Invoke-Cmd -Command $script:MypyCmd -Label "typecheck_mypy_strict" | Out-Null
-    # One floor everywhere: the Makefile's 88. On Windows 23 POSIX-only tests
-    # (signal handling, flock, ...) skip, and the measured total is still ~89%,
-    # so the ratchet ("one point under the measured total") holds here too.
+    # The Makefile's floor is 90 (Linux, 91.9% at v0.7.3). On Windows 23 POSIX-only
+    # tests (signal handling, flock, ...) skip; it measured ~89% at v0.6.x, so this
+    # stays 88 until a Windows run measures the current total - then raise it.
     $covFloor = 88
     Invoke-Cmd -Command ($script:PyTestCmd + @("-q", "--cov=korodexios_core", "--cov-report=term-missing", "--cov-fail-under=$covFloor")) -Label "tests_pytest_cov" | Out-Null
 

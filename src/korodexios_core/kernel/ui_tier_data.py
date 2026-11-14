@@ -8,15 +8,17 @@ from __future__ import annotations
 
 from typing import Any
 
+from .i18n import N_
+
 TIERS: dict[str, dict[str, Any]] = {
     "none": {
-        "summary": "No GUI files in the project; the built-in console shows every module.",
+        "summary": N_("No GUI files in the project; the built-in console shows every module."),
         "choose_when": [
-            "the project is a daemon, a CLI or an API and people mostly use the terminal",
-            "an operator dashboard is enough: tabs, tables, forms and buttons per module",
-            "you want the least to maintain: nothing is built, nothing is installed",
+            N_("the project is a daemon, a CLI or an API and people mostly use the terminal"),
+            N_("an operator dashboard is enough: tabs, tables, forms and buttons per module"),
+            N_("you want the least to maintain: nothing is built, nothing is installed"),
         ],
-        "avoid_when": ["the product needs its own screens, branding or interaction"],
+        "avoid_when": [N_("the product needs its own screens, branding or interaction")],
         "needs": ["python"],
         "dependencies": [],
         "how": (
@@ -29,15 +31,15 @@ TIERS: dict[str, dict[str, Any]] = {
         },
     },
     "static": {
-        "summary": "Plain HTML, CSS and ES modules in web/; no build step, no Node packages.",
+        "summary": N_("Plain HTML, CSS and ES modules in web/; no build step, no Node packages."),
         "choose_when": [
-            "a small own page is needed: a status view, a form, a few screens",
-            "the host has no Node or Bun, or installing them is not wanted",
-            "an AI agent should be able to change the page without a toolchain",
+            N_("a small own page is needed: a status view, a form, a few screens"),
+            N_("the host has no Node or Bun, or installing them is not wanted"),
+            N_("an AI agent should be able to change the page without a toolchain"),
         ],
         "avoid_when": [
-            "many interactive screens share state (a framework earns its weight there)",
-            "the page needs component libraries from npm",
+            N_("many interactive screens share state (a framework earns its weight there)"),
+            N_("the page needs component libraries from npm"),
         ],
         "needs": ["python"],
         "dependencies": [],
@@ -53,15 +55,15 @@ TIERS: dict[str, dict[str, Any]] = {
         },
     },
     "react": {
-        "summary": "Vite + React + TypeScript app in web/ that draws the module manifest.",
+        "summary": N_("Vite + React + TypeScript app in web/ that draws the module manifest."),
         "choose_when": [
-            "the product needs its own screens, many interactive views or shared state",
-            "agents and developers should work with the most widely known UI stack",
-            "you want component tests (Vitest) and end-to-end tests (Playwright)",
+            N_("the product needs its own screens, many interactive views or shared state"),
+            N_("agents and developers should work with the most widely known UI stack"),
+            N_("you want component tests (Vitest) and end-to-end tests (Playwright)"),
         ],
         "avoid_when": [
-            "a module [ui] table or one static page is enough (less to build and maintain)",
-            "neither Node nor Bun can be installed on the build host",
+            N_("a module [ui] table or one static page is enough (less to build and maintain)"),
+            N_("neither Node nor Bun can be installed on the build host"),
         ],
         "needs": ["node-or-bun"],
         "dependencies": ["react", "react-dom", "vite", "typescript", "vitest", "playwright"],
@@ -78,14 +80,16 @@ TIERS: dict[str, dict[str, Any]] = {
         },
     },
     "vue": {
-        "summary": "Vite + Vue 3 + TypeScript app in web/ that draws the module manifest.",
+        "summary": N_("Vite + Vue 3 + TypeScript app in web/ that draws the module manifest."),
         "choose_when": [
-            "the product needs its own screens and the team prefers Vue's single-file components",
-            "you want component tests (Vitest + @vue/test-utils) and end-to-end tests (Playwright)",
+            N_("the product needs its own screens and the team prefers Vue's single-file "
+               "components"),
+            N_("you want component tests (Vitest + @vue/test-utils) and end-to-end tests "
+               "(Playwright)"),
         ],
         "avoid_when": [
-            "a module [ui] table or one static page is enough (less to build and maintain)",
-            "neither Node nor Bun can be installed on the build host",
+            N_("a module [ui] table or one static page is enough (less to build and maintain)"),
+            N_("neither Node nor Bun can be installed on the build host"),
         ],
         "needs": ["node-or-bun"],
         "dependencies": ["vue", "vite", "typescript", "vue-tsc", "vitest", "@vue/test-utils",
@@ -109,61 +113,63 @@ NOTES: list[dict[str, str]] = [
     {
         "id": "react-prefs-read-mostly",
         "applies_to": "app",
-        "text": "An app tier (react, vue) reads the saved GUI choices (labels, hidden panels, "
+        "text": N_("An app tier (react, vue) reads the saved GUI choices (labels, hidden panels, "
         "order, last tab) and writes remembered form values and pinned defaults. Renaming, hiding, "
         "reordering and own shortcut buttons are edited in the built-in console ('kdx ui', "
-        "Customize) or with 'kdx ui prefs patch'; the app then shows them.",
+        "Customize) or with 'kdx ui prefs patch'; the app then shows them."),
     },
     {
         "id": "package-managers",
         "applies_to": "app",
-        "text": "npm, pnpm 12 and bun 1.4 were each verified by hand on Linux with both app "
+        "text": N_("npm, pnpm 12 and bun 1.4 were each verified by hand on Linux with both app "
         "tiers (install, typecheck, component tests); npm also end to end. The chassis tests "
         "run none of them, so run '<pm> run typecheck && <pm> run test' first. With pnpm the "
-        "seeded web/pnpm-workspace.yaml allows esbuild's build script (newer pnpm refuses it).",
+        "seeded web/pnpm-workspace.yaml allows esbuild's build script (newer pnpm refuses it)."),
     },
     {
         "id": "npm-install-scripts",
         "applies_to": "app",
-        "text": "Newer npm versions may block the esbuild install script. The build normally "
+        "text": N_("Newer npm versions may block the esbuild install script. The build normally "
         "works anyway; if vite fails with an esbuild error, approve it ('npm install-scripts "
-        "approve esbuild') and reinstall.",
+        "approve esbuild') and reinstall."),
     },
     {
         "id": "e2e-needs-project-env",
         "applies_to": "app",
-        "text": "'<pm> run e2e' starts the project's own daemon with 'uv run <script> run': run "
-        "'uv sync --extra dev' in the project first, so the chassis dependency resolves.",
+        "text": N_("'<pm> run e2e' starts the project's own daemon with 'uv run <script> run': run "
+        "'uv sync --extra dev' in the project first, so the chassis dependency resolves."),
     },
     {
         "id": "browser-for-e2e",
         "applies_to": "app",
-        "text": "Playwright needs a browser: 'kdx ui doctor' prints the recommended setting "
+        "text": N_("Playwright needs a browser: 'kdx ui doctor' prints the recommended setting "
         "(PW_CHANNEL=chrome|msedge for an installed browser, or 'npx playwright install "
-        "chromium'). Headed runs (PW_HEADED=1) need a display; doctor says if there is one.",
+        "chromium'). Headed runs (PW_HEADED=1) need a display; doctor says if there is one."),
     },
     {
         "id": "container-engines",
         "applies_to": "container",
-        "text": "The container files are verified with Docker running Linux containers: on Debian "
+        "text": N_("The container files are verified with Docker running Linux containers: "
+        "on Debian "
         "and with Docker Desktop on Windows (Linux engine), and with rootless Podman 5.4 on "
         "Debian 13 inside an LXC (build and run with --network=host, ids from 'kdx container "
         "fix'). Podman compose providers were not tried; Windows containers (the Windows "
         "engine) are not supported - the image is Linux. The build stage needs network "
-        "access (package index, and git for the default git chassis source).",
+        "access (package index, and git for the default git chassis source)."),
     },
     {
         "id": "container-state",
         "applies_to": "container",
-        "text": "State lives in the app-var and app-data volumes: 'docker compose down -v' deletes "
+        "text": N_("State lives in the app-var and app-data volumes: 'docker compose down -v' "
+        "deletes "
         "it. The control plane needs KDX_TOKEN and is published on 127.0.0.1 only; put TLS in "
-        "front of it before widening the bind.",
+        "front of it before widening the bind."),
     },
     {
         "id": "static-is-not-served",
         "applies_to": "static",
-        "text": "The static tier's web/ is not served by the chassis on its own. Serve it with "
-        "a module's static_dirs() or 'npm --prefix web run dev'.",
+        "text": N_("The static tier's web/ is not served by the chassis on its own. Serve it with "
+        "a module's static_dirs() or 'npm --prefix web run dev'."),
     },
 ]
 """Known limits of each tier, shown by 'kdx ui guide' so an agent plans around them."""

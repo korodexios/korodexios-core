@@ -128,7 +128,17 @@ def _imported(path: Path, tree: ast.AST) -> list[str]:
                 module = [*package[: len(package) - (node.level - 1)], *module]
             names.append(".".join(module))
             names += [".".join([*module, alias.name]) for alias in node.names]
+        elif isinstance(node, ast.Call) and _dynamic_import(node) and node.args:
+            # importlib.import_module("pkg.modules.other") imports as surely as a statement
+            target = node.args[0]
+            if isinstance(target, ast.Constant) and isinstance(target.value, str):
+                names.append(target.value)
     return names
+
+
+def _dynamic_import(node: ast.Call) -> bool:
+    name = node.func.id if isinstance(node.func, ast.Name) else getattr(node.func, "attr", "")
+    return name in {"import_module", "__import__", "find_spec"}
 
 
 def test_modules_never_import_each_other() -> None:

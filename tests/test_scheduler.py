@@ -157,6 +157,31 @@ def test_run_task_is_the_manual_trigger_a_route_or_cli_uses() -> None:
     assert scheduler.run_task("missing") is False
 
 
+def test_a_running_task_is_not_started_twice_by_a_manual_trigger() -> None:
+    entered, release = threading.Event(), threading.Event()
+    inside: list[int] = []
+
+    def slow() -> None:
+        inside.append(1)
+        entered.set()
+        release.wait(5)
+
+    scheduler, _clock = make_scheduler()
+    scheduler.schedule(100.0, slow, name="slow")
+    worker = threading.Thread(target=scheduler.run_task, args=("slow",))
+    worker.start()
+    assert entered.wait(5)
+    assert scheduler.run_task("slow") is False  # the clock's run is still going
+    release.set()
+    worker.join(5)
+    assert inside == [1]
+    assert scheduler.run_task("slow") is True  # free again once it finished
+    failing, _ = make_scheduler()
+    failing.schedule(100.0, lambda: 1 / 0, name="boom")
+    assert failing.run_task("boom") is False and failing.task("boom").failures == 1
+    assert failing.run_task("boom") is False and failing.task("boom").failures == 2
+
+
 def test_a_disabled_scheduler_runs_nothing() -> None:
     scheduler, clock = make_scheduler(enabled=False)
     scheduler.schedule(1.0, lambda: None, name="quiet")

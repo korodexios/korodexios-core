@@ -230,3 +230,36 @@ def test_another_process_can_read_who_holds_the_lock(tmp_path: Path) -> None:
     lines = done.stdout.splitlines()
     assert lines[0] == f"owner {os.getpid()}", done.stdout + done.stderr
     assert "held by" in lines[1] and lines[2] == "REFUSED"
+
+
+@pytest.mark.windows
+@pytest.mark.skipif(sys.platform != "win32", reason="msvcrt exists only on Windows")
+def test_a_blocking_windows_lock_waits_past_msvcrt_ten_tries(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import msvcrt  # type: ignore[import-not-found,unused-ignore]
+
+    from korodexios_core.kernel import instance_lock
+
+    busy = {"left": 15}  # LK_LOCK would have raised after ten
+    real = msvcrt.locking
+
+    def locking(descriptor: int, mode: int, size: int) -> None:
+        if mode == msvcrt.LK_NBLCK and busy["left"]:
+            busy["left"] -= 1
+            raise OSError("busy")
+        real(descriptor, mode, size)
+
+    monkeypatch.setattr(msvcrt, "locking", locking)
+    monkeypatch.setattr(instance_lock.time, "sleep", lambda seconds: None)
+    target = tmp_path / "lock"
+    descriptor = os.open(target, os.O_RDWR | os.O_CREAT)
+    try:
+        instance_lock.lock_descriptor(descriptor, block=True)
+        assert busy["left"] == 0
+        instance_lock.unlock_descriptor(descriptor)
+        busy["left"] = 1
+        with pytest.raises(OSError):
+            instance_lock.lock_descriptor(descriptor)  # the default never waits
+    finally:
+        os.close(descriptor)

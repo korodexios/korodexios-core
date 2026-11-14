@@ -37,6 +37,15 @@ _LOCALE_SHAPE: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z]{2,3}(?:_[A-Za-z0-
 _FIELD: Final[re.Pattern[str]] = re.compile(r"\{(\w+)\}")
 
 
+def N_(text: str) -> str:
+    """Mark *text* for the catalogue and return it unchanged.
+
+    For text kept as data (a tier summary, a rule) that is shown translated later: the
+    machine view (``--json``) keeps the English, the terminal passes it through ``tr()``.
+    """
+    return text
+
+
 def normalize_locale(value: str | None) -> str:
     """Return *value* as ``ll`` or ``ll_RR`` ('sk_SK.UTF-8' -> 'sk_SK'), or '' when unusable."""
     text = str(value or "").strip().split(".", 1)[0].split("@", 1)[0].replace("-", "_")

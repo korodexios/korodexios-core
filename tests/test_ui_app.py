@@ -224,5 +224,7 @@ def test_a_media_column_is_kept_and_the_shell_draws_it_safely() -> None:
     assert '!text.startsWith("/api/")' in shell and "URL.createObjectURL" in shell
     assert "watchTopics(panel.refresh_on, draw, card)" in shell
     assert "setTimeout(streamLive, 0)" in shell  # start once the card is in the page
+    assert "const response = await openLive();" in shell  # stale token -> cookie, as call()
+    assert "function showGate(message) {\n    forgetMedia();" in shell
     assert "state.token ? { [TOKEN_HEADER]: state.token } : {}" in shell  # never an empty header
     assert "KdxToken.drop();" in shell

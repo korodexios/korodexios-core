@@ -22,6 +22,7 @@ from ..config.editor import (
 )
 from ..config.layered import ConfigSource, redact_for_display
 from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, ExitCode
+from ..exceptions import KorodexiosError
 from ..kernel.cli_contract import CliArgument, CliCommand, CliRequest
 from ..kernel.contract import Module
 from ..kernel.ipc import RELOAD_PATH
@@ -130,6 +131,33 @@ def schema_view(chassis: Chassis, *, module: str = "", group: str = "") -> list[
         row["default"] = _plain(row["default"])
         rows.append(row)
     return rows
+
+
+def show_json(
+    chassis: Chassis, rows: list[tuple[str, str, str]], *, reveal: bool
+) -> dict[str, Any]:
+    """Return 'kdx config show --json': per key the rendered ``value``, ``typed`` and ``source``.
+
+    ``value`` stays the text the table shows (scripts read it today). ``typed`` is the same
+    value as a JSON number, boolean, list or null when the key's declared kind says what it is,
+    so ``"false"`` from the environment comes out as ``false``; an undeclared key or a value its
+    kind refuses keeps the raw value. Secrets are masked in both unless *reveal* is set.
+    """
+    declared = editable_keys(chassis)
+    view: dict[str, Any] = {}
+    for key, shown, source in rows:
+        raw = chassis.config.get(key)
+        item = declared.get(key)
+        typed = raw
+        if item is not None and raw is not None:
+            try:
+                typed = item.field.coerce(raw, key=key)
+            except (KorodexiosError, TypeError, ValueError):
+                typed = raw
+        if not reveal:
+            typed = redact_for_display(key, typed)
+        view[key] = {"value": shown, "typed": _plain(typed), "source": source}
+    return view
 
 
 def apply_edits(

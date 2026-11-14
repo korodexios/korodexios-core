@@ -749,12 +749,23 @@
     }
   }
 
+  async function openLive() {
+    const send = () => fetch("/api/v1/ui/events", { headers: authHeaders(), cache: "no-store" });
+    const carried = Boolean(state.token);
+    const response = await send();
+    // the same rule as call(): a stale kept token must not hide a valid session cookie
+    if (response.status !== 401 || !carried || !KdxToken.policy.cookie) return response;
+    KdxToken.drop();
+    state.token = "";
+    return send();
+  }
+
   async function streamLive() {
     if (state.streaming) return;
     state.streaming = true;
     while (liveEntries().size) {
       try {
-        const response = await fetch("/api/v1/ui/events", { headers: authHeaders(), cache: "no-store" });
+        const response = await openLive();
         if (response.status === 401 || response.status === 403) break;
         if (response.ok && response.body) await readLive(response);
       } catch (error) { /* the daemon stopped or the network dropped: try again below */ }
@@ -902,7 +913,7 @@
     video: /\.(mp4|webm|ogv|mov)$/i,
     image: /\.(png|jpe?g|gif|webp|avif|svg)$/i,
   };
-  const MEDIA_CACHE = 64;
+  const MEDIA_CACHE = 16; // blobs of whole files: keep few, a revisit fetches again
 
   function mediaPath(value) {
     const text = typeof value === "string" ? value.trim() : "";
@@ -924,6 +935,12 @@
       url.then((href) => URL.revokeObjectURL(href)).catch(() => {});
     }
     return loading;
+  }
+
+  // signing out drops every fetched file: a blob holds the bytes the old session could read
+  function forgetMedia() {
+    state.media.forEach((url) => url.then((href) => URL.revokeObjectURL(href)).catch(() => {}));
+    state.media.clear();
   }
 
   function mediaNode(value) {
@@ -1317,6 +1334,7 @@
   // ---- boot --------------------------------------------------------------------------
 
   function showGate(message) {
+    forgetMedia();
     $("token-gate").hidden = false;
     const error = $("token-error");
     error.hidden = !message;

@@ -23,7 +23,7 @@ from ..kernel.ipc import (
     is_loopback_host,
 )
 from ..version import format_version
-from .config_edit import edit_commands
+from .config_edit import edit_commands, show_json
 from .render import (
     dump_json,
     format_bool,
@@ -1357,7 +1357,7 @@ def _config_show_command(request: CliRequest) -> int:
         if not prefix or row[0].startswith(prefix)
     ]
     if request.flag("as_json"):
-        dump_json({row[0]: {"value": row[1], "source": row[2]} for row in rows})
+        dump_json(show_json(chassis, rows, reveal=reveal))
         return int(ExitCode.SUCCESS)
     if not rows:
         write_status(

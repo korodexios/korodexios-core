@@ -533,3 +533,33 @@ def test_playbook_is_printed_written_and_seeded(
     assert "AGENT_PLAYBOOK.md" in files["AGENTS.md"]
     assert "uv run mypy" in files[".github/workflows/ci.yml"]
     assert "docs/CONVENTIONS.md" in files
+
+
+def test_core_report_words_stay_out_of_a_project_domain(tmp_path: Path) -> None:
+    from korodexios_core.kernel.i18n import CORE_DOMAIN
+    from korodexios_core.kernel.i18n_extract import scan_tree
+
+    (tmp_path / "m.py").write_text("write_line('hello')\n", encoding="utf-8")
+    project = scan_tree(tmp_path, domain="demo")
+    core = scan_tree(tmp_path, domain=CORE_DOMAIN)
+    assert {"hello", "yes", "(empty)"} <= set(project)
+    assert "config_file" not in project and "(none)" not in project
+    assert {"config_file", "(none)", "(not running)"} <= set(core)
+
+
+def test_data_kept_english_is_shown_translated_in_the_terminal(
+    capsys, project_root: Path
+) -> None:
+    from korodexios_core.cli.entry import main
+
+    args = ["--home", str(project_root), "--no-log-file", "--no-color", "--locale", "sk"]
+    assert main([*args, "ui", "guide"]) == 0
+    text = capsys.readouterr().out
+    assert "Žiadne súbory GUI v projekte" in text and "No GUI files" not in text
+    assert main([*args, "ui", "guide", "--json"]) == 0
+    out = capsys.readouterr().out
+    assert "No GUI files in the project" in out  # the machine view stays English
+    assert main([*args, "doctor"]) == 0
+    report = capsys.readouterr().out
+    assert "konfiguračný súbor" in report and "(nebeží)" in report
+    assert "config_file" not in report and "(not running)" not in report

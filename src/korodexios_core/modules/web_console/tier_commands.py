@@ -40,26 +40,27 @@ def guide_command(request: CliRequest) -> int:
         dump_json(data)
         return int(ExitCode.SUCCESS)
     for name, tier in data["tiers"].items():
-        print_section(f"{name}: {tier['summary']}")
+        # the data stays English for --json; the terminal shows it in the chosen language
+        print_section(f"{name}: {tr(tier['summary'])}")
         for line in tier["choose_when"]:
-            write_line(f"  + {line}")
+            write_line(f"  + {tr(line)}")
         for line in tier["avoid_when"]:
-            write_line(f"  - {line}")
+            write_line(f"  - {tr(line)}")
         write_line("  " + tr("create: {command}", command=tier["init"]))
         if tier.get("add"):
             write_line("  " + tr("add to a project: {command}", command=tier["add"]))
     print_section("how to decide")
     for line in data["decide"]:
-        write_line(f"  {line}")
+        write_line(f"  {tr(line)}")
     print_section("rules")
     for line in data["rules"]:
-        write_line(f"  {line}")
+        write_line(f"  {tr(line)}")
     print_section("known limits")
     for note in data["notes"]:
-        write_line(f"  [{note['applies_to']}] {note['text']}")
+        write_line(f"  [{note['applies_to']}] {tr(note['text'])}")
     print_section("embed protocol")
     for line in data["embed"]["rules"]:
-        write_line(f"  {line}")
+        write_line(f"  {tr(line)}")
     return int(ExitCode.SUCCESS)
 
 

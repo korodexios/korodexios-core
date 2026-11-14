@@ -14,6 +14,10 @@ msgstr "  [facultatif] {name} : nécessite {module} - {hint}"
 msgid "  [skipped] {name}: {reason}"
 msgstr "  [ignoré] {name} : {reason}"
 
+#: kernel/ui_tier_data.py
+msgid "'<pm> run e2e' starts the project's own daemon with 'uv run <script> run': run 'uv sync --extra dev' in the project first, so the chassis dependency resolves."
+msgstr "'<pm> run e2e' démarre le démon du projet avec 'uv run <script> run' : lancez d'abord 'uv sync --extra dev' dans le projet pour que la dépendance au noyau soit résolue."
+
 #: cli/container_doctor.py
 msgid "'kdx container fix' explains and runs this for you"
 msgstr "'kdx container fix' l'explique et l'exécute pour vous"
@@ -30,9 +34,25 @@ msgstr "(vouliez-vous dire {hint} ?)"
 msgid "(empty)"
 msgstr "(vide)"
 
+#: renderer
+msgid "(free)"
+msgstr "(libre)"
+
 #: cli/commands.py
 msgid "(module {name} is discovered)"
 msgstr "(le module {name} est découvert)"
+
+#: renderer
+msgid "(none)"
+msgstr "(aucun)"
+
+#: renderer
+msgid "(none: defaults only)"
+msgstr "(aucun : valeurs par défaut uniquement)"
+
+#: renderer
+msgid "(not running)"
+msgstr "(arrêté)"
 
 #: cli/commands.py
 msgid "+{hidden} more findings; pass --json for all of them"
@@ -86,6 +106,10 @@ msgstr "Une clé pointée, p. ex. core.log.level."
 msgid "A dotted key."
 msgstr "Une clé pointée."
 
+#: kernel/ui_tiers.py
+msgid "A person's GUI choices (labels, hidden panels, form values) live in 'kdx ui prefs', not in the project's code."
+msgstr "Les choix d'une personne dans l'interface (libellés, panneaux masqués, valeurs de formulaires) vont dans 'kdx ui prefs', pas dans le code du projet."
+
 #: modules/web_console/module.py
 msgid "A theme name or a .css/.json file."
 msgstr "Un nom de thème ou un fichier .css/.json."
@@ -117,6 +141,10 @@ msgstr "Écrase aussi un fichier de règles écrit par une personne."
 #: modules/web_console/tier_commands.py
 msgid "Also run the e2e tests with a visible browser window (needs a display)."
 msgstr "Lancer aussi les tests e2e avec une fenêtre de navigateur visible (nécessite un écran)."
+
+#: kernel/ui_tier_data.py
+msgid "An app tier (react, vue) reads the saved GUI choices (labels, hidden panels, order, last tab) and writes remembered form values and pinned defaults. Renaming, hiding, reordering and own shortcut buttons are edited in the built-in console ('kdx ui', Customize) or with 'kdx ui prefs patch'; the app then shows them."
+msgstr "Un niveau application (react, vue) lit les choix enregistrés de l'interface (libellés, panneaux masqués, ordre, dernier onglet) et écrit les valeurs de formulaires mémorisées et les valeurs par défaut épinglées. Renommer, masquer, réordonner et les boutons de raccourci se modifient dans la console intégrée ('kdx ui', Personnaliser) ou avec 'kdx ui prefs patch' ; l'application les affiche ensuite."
 
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
@@ -482,6 +510,10 @@ msgstr "Nom de l'événement, par exemple order.paid."
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr "Motif d'événements : 'backup.*', 'core.job.**', '*' pour tous [*]."
 
+#: kernel/ui_tiers.py
+msgid "Everything the GUI can do must also work from the kdx CLI (terminal first)."
+msgstr "Tout ce que fait l'interface doit aussi marcher depuis la CLI kdx (le terminal d'abord)."
+
 #: modules/web_console/tier_commands.py
 msgid "Exit 1 when --out differs from the daemon's contract."
 msgstr "Sortir avec 1 quand --out diffère du contrat du démon."
@@ -665,6 +697,10 @@ msgstr "Identifiant de tâche, par exemple job-3."
 #: cli/agents.py
 msgid "Keep every AI agent's rule file in step with AGENTS.md."
 msgstr "Garde les fichiers de règles de chaque agent IA alignés sur AGENTS.md."
+
+#: kernel/ui_tiers.py
+msgid "Keep the choice in docs/BRIEF.md so the next agent does not have to guess."
+msgstr "Notez le choix dans docs/BRIEF.md pour que l'agent suivant n'ait pas à deviner."
 
 #: cli/docs_sync.py
 msgid "Keep the documents 'kdx init' seeded in step with the installed core."
@@ -858,9 +894,21 @@ msgstr "Modules"
 msgid "Most rows to print [100]."
 msgstr "Nombre maximal de lignes à afficher [100]."
 
+#: kernel/ui_tiers.py
+msgid "Move to 'static' for one small page of your own, or to 'react' or 'vue' for many screens with shared state; an existing project adopts one with 'kdx ui add'."
+msgstr "Passez à 'static' pour une petite page à vous, ou à 'react' ou 'vue' pour de nombreux écrans à état partagé ; un projet existant en adopte un avec 'kdx ui add'."
+
 #: modules/web_console/module.py
 msgid "Need"
 msgstr "Requis"
+
+#: kernel/ui_tier_data.py
+msgid "Newer npm versions may block the esbuild install script. The build normally works anyway; if vite fails with an esbuild error, approve it ('npm install-scripts approve esbuild') and reinstall."
+msgstr "Les versions récentes de npm peuvent bloquer le script d'installation d'esbuild. La compilation marche en général quand même ; si vite échoue avec une erreur esbuild, approuvez-le ('npm install-scripts approve esbuild') et réinstallez."
+
+#: kernel/ui_tier_data.py
+msgid "No GUI files in the project; the built-in console shows every module."
+msgstr "Aucun fichier d'interface dans le projet ; la console intégrée affiche chaque module."
 
 #: cli/jobs.py
 msgid "One JSON object per line."
@@ -997,6 +1045,14 @@ msgstr "Chemin de kdx.yml ou korodexios.yml."
 #: cli/commands.py
 msgid "Paths"
 msgstr "Chemins"
+
+#: kernel/ui_tier_data.py
+msgid "Plain HTML, CSS and ES modules in web/; no build step, no Node packages."
+msgstr "HTML, CSS et modules ES simples dans web/ ; pas de compilation, pas de paquets Node."
+
+#: kernel/ui_tier_data.py
+msgid "Playwright needs a browser: 'kdx ui doctor' prints the recommended setting (PW_CHANNEL=chrome|msedge for an installed browser, or 'npx playwright install chromium'). Headed runs (PW_HEADED=1) need a display; doctor says if there is one."
+msgstr "Playwright a besoin d'un navigateur : 'kdx ui doctor' affiche le réglage recommandé (PW_CHANNEL=chrome|msedge pour un navigateur installé, ou 'npx playwright install chromium'). Les exécutions avec fenêtre (PW_HEADED=1) demandent un écran ; doctor dit s'il y en a un."
 
 #: modules/mcp_server/module.py
 msgid "Print (or write) the MCP client configuration for this project."
@@ -1238,6 +1294,10 @@ msgstr "Archives de journal tournantes conservées [5]."
 msgid "Rotating log size limit [1048576]."
 msgstr "Taille limite du journal tournant [1048576]."
 
+#: kernel/ui_tiers.py
+msgid "Run 'kdx ui doctor --json' first: a tier whose tools are missing here is not ready."
+msgstr "Lancez d'abord 'kdx ui doctor --json' : un niveau dont les outils manquent ici n'est pas prêt."
+
 #: cli/db.py
 msgid "Run ONE read-only SQL statement (SELECT, PRAGMA ...) and print the rows."
 msgstr "Exécuter UNE instruction SQL en lecture seule (SELECT, PRAGMA ...) et afficher les lignes."
@@ -1458,6 +1518,10 @@ msgstr "Parle MCP sur stdin/stdout (ce qu'un agent lance)."
 msgid "Start a new language: an empty catalogue built from the template."
 msgstr "Crée une nouvelle langue : un catalogue vide construit à partir du modèle."
 
+#: kernel/ui_tiers.py
+msgid "Start from 'none': give each module a [ui] table and look at 'kdx ui'."
+msgstr "Commencez par 'none' : donnez à chaque module une table [ui] et regardez 'kdx ui'."
+
 #: cli/commands.py
 msgid "Start it as a job and return its id at once (see 'kdx jobs')."
 msgstr "Le démarre comme tâche et renvoie aussitôt son identifiant (voir 'kdx jobs')."
@@ -1465,6 +1529,10 @@ msgstr "Le démarre comme tâche et renvoie aussitôt son identifiant (voir 'kdx
 #: cli/service.py
 msgid "Start the daemon automatically at logon (Task Scheduler, systemd, launchd)."
 msgstr "Démarre le démon automatiquement à l'ouverture de session (Planificateur de tâches, systemd, launchd)."
+
+#: kernel/ui_tier_data.py
+msgid "State lives in the app-var and app-data volumes: 'docker compose down -v' deletes it. The control plane needs KDX_TOKEN and is published on 127.0.0.1 only; put TLS in front of it before widening the bind."
+msgstr "L'état vit dans les volumes app-var et app-data : 'docker compose down -v' le supprime. Le plan de contrôle exige KDX_TOKEN et n'est publié que sur 127.0.0.1 ; placez TLS devant avant d'élargir l'écoute."
 
 #: cli/entry.py
 msgid "Static shared secret for the control plane."
@@ -1510,13 +1578,25 @@ msgstr "ID de la tâche (voir 'kdx queue list')."
 msgid "Terminal table width for the CLI [100]."
 msgstr "Largeur des tableaux dans le terminal [100]."
 
+#: kernel/ui_tiers.py
+msgid "Test headless first; run headed checks only when doctor reports a display."
+msgstr "Testez d'abord sans fenêtre ; ne lancez les vérifications avec fenêtre que si doctor signale un écran."
+
 #: cli/brief.py
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "Les 3 à 5 choses qu'il doit faire, séparées par « ; »"
 
+#: kernel/ui_tiers.py
+msgid "The GUI is a client of the control plane (/api/v1/*); it never holds core logic."
+msgstr "L'interface est un client du plan de contrôle (/api/v1/*) ; elle ne contient jamais de logique du noyau."
+
 #: modules/web_console/tier_commands.py
 msgid "The GUI tier to add."
 msgstr "Le niveau d'interface à ajouter."
+
+#: kernel/ui_tier_data.py
+msgid "The container files are verified with Docker running Linux containers: on Debian and with Docker Desktop on Windows (Linux engine), and with rootless Podman 5.4 on Debian 13 inside an LXC (build and run with --network=host, ids from 'kdx container fix'). Podman compose providers were not tried; Windows containers (the Windows engine) are not supported - the image is Linux. The build stage needs network access (package index, and git for the default git chassis source)."
+msgstr "Les fichiers de conteneur sont vérifiés avec Docker et des conteneurs Linux : sur Debian et avec Docker Desktop sous Windows (moteur Linux), et avec Podman 5.4 sans root sur Debian 13 dans un LXC (compilation et exécution avec --network=host, ids de 'kdx container fix'). Les fournisseurs Podman compose n'ont pas été essayés ; les conteneurs Windows (moteur Windows) ne sont pas pris en charge - l'image est Linux. L'étape de compilation a besoin du réseau (index de paquets et git pour la source git du noyau par défaut)."
 
 #: cli/remote.py
 msgid "The event's payload as a JSON value [{}]."
@@ -1537,6 +1617,10 @@ msgstr "Le wiki du projet (structure LLM-wiki) : public et interne, par langue."
 #: modules/wiki/module.py
 msgid "The source: an article, PDF, transcript, notes."
 msgstr "La source : un article, un PDF, une transcription, des notes."
+
+#: kernel/ui_tier_data.py
+msgid "The static tier's web/ is not served by the chassis on its own. Serve it with a module's static_dirs() or 'npm --prefix web run dev'."
+msgstr "Le noyau ne sert pas tout seul le web/ du niveau statique. Servez-le avec static_dirs() d'un module ou 'npm --prefix web run dev'."
 
 #: modules/web_console/module.py
 msgid "Theme"
@@ -1562,6 +1646,10 @@ msgstr "Essais avant que la tâche soit marquée comme échouée."
 msgid "Truncate log file {path}?"
 msgstr "Tronquer le fichier journal {path} ?"
 
+#: kernel/ui_tiers.py
+msgid "UI texts go through the language service; machine output stays English."
+msgstr "Les textes d'interface passent par le service de langue ; la sortie machine reste en anglais."
+
 #: modules/system_info/module.py
 msgid "Uptime"
 msgstr "Durée de fonctionnement"
@@ -1577,6 +1665,14 @@ msgstr "Valide les entrées et montre ce qu'une sauvegarde copierait."
 #: cli/commands.py
 msgid "Verify the project's declared file set without rewriting it."
 msgstr "Vérifie l'ensemble de fichiers déclaré du projet sans le réécrire."
+
+#: kernel/ui_tier_data.py
+msgid "Vite + React + TypeScript app in web/ that draws the module manifest."
+msgstr "Application Vite + React + TypeScript dans web/ qui dessine le manifeste des modules."
+
+#: kernel/ui_tier_data.py
+msgid "Vite + Vue 3 + TypeScript app in web/ that draws the module manifest."
+msgstr "Application Vite + Vue 3 + TypeScript dans web/ qui dessine le manifeste des modules."
 
 #: cli/brief.py
 msgid "What could go wrong, or who could abuse it? (optional)"
@@ -1682,6 +1778,10 @@ msgstr "un fichier écrit par une personne est conservé ; --force le remplace"
 msgid "a free range that nobody uses (review it, then run as admin):"
 msgstr "une plage libre que personne n'utilise (vérifiez-la, puis exécutez en administrateur) :"
 
+#: kernel/ui_tier_data.py
+msgid "a module [ui] table or one static page is enough (less to build and maintain)"
+msgstr "une table [ui] de module ou une page statique suffit (moins à compiler et à maintenir)"
+
 #: cli/proposal.py
 msgid "a proposal needs a title"
 msgstr "une proposition a besoin d'un titre"
@@ -1689,6 +1789,10 @@ msgstr "une proposition a besoin d'un titre"
 #: cli/container_doctor.py
 msgid "a rootless engine has the ids it needs"
 msgstr "un moteur rootless dispose des id nécessaires"
+
+#: kernel/ui_tier_data.py
+msgid "a small own page is needed: a status view, a form, a few screens"
+msgstr "il faut une petite page à soi : une vue d'état, un formulaire, quelques écrans"
 
 #: cli/remote.py
 msgid "action"
@@ -1714,6 +1818,10 @@ msgstr "ajouté à .env : {keys}"
 msgid "after"
 msgstr "après"
 
+#: kernel/ui_tier_data.py
+msgid "agents and developers should work with the most widely known UI stack"
+msgstr "les agents et les développeurs doivent travailler avec la pile d'interface la plus connue"
+
 #: cli/entry.py
 msgid "aliases: kdx (short), korodexios (canonical).\nEvery command accepts the global flags above. Use --yes in CI to accept defaults."
 msgstr "alias : kdx (court), korodexios (canonique).\nToute commande accepte les options globales ci-dessus. En CI, utilisez --yes pour accepter les valeurs par défaut."
@@ -1725,6 +1833,14 @@ msgstr "déjà envoyé : {url} (--again l'envoie de nouveau)"
 #: cli/commands.py
 msgid "also write a Dockerfile, compose.yaml and .dockerignore"
 msgstr "écrire aussi Dockerfile, compose.yaml et .dockerignore"
+
+#: kernel/ui_tier_data.py
+msgid "an AI agent should be able to change the page without a toolchain"
+msgstr "un agent IA doit pouvoir modifier la page sans chaîne d'outils"
+
+#: kernel/ui_tier_data.py
+msgid "an operator dashboard is enough: tabs, tables, forms and buttons per module"
+msgstr "un tableau de bord d'opérateur suffit : onglets, tableaux, formulaires et boutons par module"
 
 #: cli/commands.py
 msgid "app"
@@ -1810,6 +1926,10 @@ msgstr "navigateurs"
 msgid "built-in default"
 msgstr "valeur par défaut intégrée"
 
+#: renderer
+msgid "builtin_modules_dir"
+msgstr "dossier des modules intégrés"
+
 #: cli/db.py
 msgid "bytes"
 msgstr "octets"
@@ -1862,9 +1982,17 @@ msgstr "choisi par"
 msgid "claimed by"
 msgstr "revendiqué par"
 
+#: renderer
+msgid "clean_stop"
+msgstr "arrêt propre"
+
 #: cli/commands.py
 msgid "cli-collision: module commands shadowed by another owner:"
 msgstr "cli-collision : commandes du module masquées par un autre propriétaire :"
+
+#: renderer
+msgid "color"
+msgstr "couleur"
 
 #: cli/db.py
 msgid "columns"
@@ -1880,6 +2008,10 @@ msgstr "commandes"
 
 #: cli/commands.py
 msgid "config file"
+msgstr "fichier de configuration"
+
+#: renderer
+msgid "config_file"
 msgstr "fichier de configuration"
 
 #: cli/commands.py
@@ -1942,6 +2074,10 @@ msgstr "core.ipc.token n'est pas envoyé à {host} ; passez --token pour un dém
 msgid "core.locale = {value} saved in {path}"
 msgstr "core.locale = {value} enregistré dans {path}"
 
+#: renderer
+msgid "count"
+msgstr "nombre"
+
 #: cli/tls.py
 msgid "covers"
 msgstr "couvre"
@@ -1961,6 +2097,10 @@ msgstr "répertoire courant"
 #: cli/commands.py
 msgid "daemon"
 msgstr "démon"
+
+#: renderer
+msgid "data_dir"
+msgstr "dossier des données"
 
 #: cli/db.py
 msgid "database {name} does not exist yet"
@@ -2034,6 +2174,10 @@ msgstr "essai : rien n'a été écrit"
 msgid "durable, never touched: {root}"
 msgstr "durable, jamais touché : {root}"
 
+#: renderer
+msgid "durable_dir"
+msgstr "dossier durable"
+
 #: modules/web_console/module.py
 msgid "e.g. '{\"defaults\": {\"job_queue.submit\":{\"kind\": \"demo\"}}}'."
 msgstr "p. ex. '{\"defaults\": {\"job_queue.submit\": {\"kind\": \"demo\"}}}'."
@@ -2066,6 +2210,10 @@ msgstr "fichier env"
 msgid "env prefix"
 msgstr "préfixe env"
 
+#: renderer
+msgid "env_file"
+msgstr "fichier env"
+
 #: cli/commands.py
 msgid "error"
 msgstr "erreur"
@@ -2097,6 +2245,10 @@ msgstr "sortie"
 #: cli/commands.py
 msgid "exit code"
 msgstr "code de sortie"
+
+#: renderer
+msgid "extra_module_dirs"
+msgstr "dossiers de modules supplémentaires"
 
 #: cli/commands.py
 msgid "failed"
@@ -2150,6 +2302,10 @@ msgstr "donnez une valeur : kdx daemon config set KEY VALUE"
 msgid "handler errors"
 msgstr "erreurs de gestionnaires"
 
+#: renderer
+msgid "handlers"
+msgstr "gestionnaires"
+
 #: modules/web_console/tier_commands.py
 msgid "headed browser tests: {state}"
 msgstr "tests navigateur avec écran : {state}"
@@ -2197,6 +2353,10 @@ msgstr "inodes"
 #: cli/tls.py
 msgid "install it (Git for Windows ships one), or run this yourself:"
 msgstr "installez-le (Git for Windows en fournit un) ou lancez ceci vous-même :"
+
+#: renderer
+msgid "installed"
+msgstr "installés"
 
 #: cli/commands.py
 msgid "instance lock"
@@ -2306,6 +2466,10 @@ msgstr "à chaud"
 msgid "local file"
 msgstr "fichier local"
 
+#: renderer
+msgid "local_config_file"
+msgstr "fichier de configuration local"
+
 #: cli/commands.py
 msgid "lock held"
 msgstr "verrou détenu"
@@ -2318,6 +2482,14 @@ msgstr "détenteur du verrou"
 msgid "lock names"
 msgstr "noms des verrous"
 
+#: renderer
+msgid "lock_file"
+msgstr "fichier de verrou"
+
+#: renderer
+msgid "locks_dir"
+msgstr "dossier des verrous"
+
 #: cli/commands.py
 msgid "log file rotated to {name} ({archived} bytes archived)"
 msgstr "fichier journal archivé vers {name} ({archived} octets archivés)"
@@ -2325,6 +2497,18 @@ msgstr "fichier journal archivé vers {name} ({archived} octets archivés)"
 #: cli/commands.py
 msgid "log file truncated ({removed} bytes freed)"
 msgstr "fichier journal tronqué ({removed} octets libérés)"
+
+#: renderer
+msgid "log_dir"
+msgstr "dossier des journaux"
+
+#: renderer
+msgid "log_file"
+msgstr "fichier journal"
+
+#: renderer
+msgid "logger"
+msgstr "journaliseur"
 
 #: cli/commands.py
 msgid "looked for {discovery_path}"
@@ -2337,6 +2521,10 @@ msgstr "recherché : {path}"
 #: cli/service.py
 msgid "manager says"
 msgstr "le gestionnaire indique"
+
+#: kernel/ui_tier_data.py
+msgid "many interactive screens share state (a framework earns its weight there)"
+msgstr "de nombreux écrans interactifs partagent un état (là, un framework vaut son poids)"
 
 #: cli/commands.py
 msgid "match"
@@ -2397,6 +2585,10 @@ msgstr "verrous nommés"
 #: modules/web_console/module.py
 msgid "nav, panels, buttons, values, defaults, settings, layout; none means all but defaults."
 msgstr "nav, panels, buttons, values, defaults, settings, layout ; sans nom, tout sauf defaults."
+
+#: kernel/ui_tier_data.py
+msgid "neither Node nor Bun can be installed on the build host"
+msgstr "ni Node ni Bun ne peuvent être installés sur la machine de compilation"
 
 #: modules/web_console/tier_commands.py
 msgid "next"
@@ -2618,6 +2810,10 @@ msgstr "rien d'écrit"
 msgid "npm | bun | pnpm [from the lockfile, else npm]."
 msgstr "npm | bun | pnpm [selon le lockfile, sinon npm]."
 
+#: kernel/ui_tier_data.py
+msgid "npm, pnpm 12 and bun 1.4 were each verified by hand on Linux with both app tiers (install, typecheck, component tests); npm also end to end. The chassis tests run none of them, so run '<pm> run typecheck && <pm> run test' first. With pnpm the seeded web/pnpm-workspace.yaml allows esbuild's build script (newer pnpm refuses it)."
+msgstr "npm, pnpm 12 et bun 1.4 ont chacun été vérifiés à la main sous Linux avec les deux niveaux application (installation, vérification de types, tests de composants) ; npm aussi de bout en bout. Les tests du noyau n'en lancent aucun, donc lancez d'abord '<pm> run typecheck && <pm> run test'. Avec pnpm, le web/pnpm-workspace.yaml généré autorise le script de compilation d'esbuild (pnpm récent le refuse sinon)."
+
 #: cli/proposal.py
 msgid "number"
 msgstr "numéro"
@@ -2629,6 +2825,10 @@ msgstr "obsolète"
 #: cli/tls.py
 msgid "on another machine, trust it with: kdx --tls-ca cert.pem status --target https://HOST:18123"
 msgstr "sur une autre machine, faites-lui confiance avec : kdx --tls-ca cert.pem status --target https://HOST:18123"
+
+#: kernel/ui_embed.py
+msgid "one ask outstanding at a time; never retry a token the server refused"
+msgstr "une seule demande en attente à la fois ; ne jamais réessayer un jeton refusé par le serveur"
 
 #: modules/web_console/module.py
 msgid "open this URL; it carries the session token:"
@@ -2802,6 +3002,10 @@ msgstr "supprimer pour de bon (sans cela la commande liste seulement ce qu'elle 
 msgid "reason"
 msgstr "motif"
 
+#: renderer
+msgid "received"
+msgstr "reçus"
+
 #: cli/service.py
 msgid "register it with: kdx service install"
 msgstr "enregistrez-le avec : kdx service install"
@@ -2813,6 +3017,22 @@ msgstr "enregistré"
 #: cli/commands.py
 msgid "reload failed: {payload}"
 msgstr "échec du rechargement : {payload}"
+
+#: renderer
+msgid "reload_count"
+msgstr "nombre de rechargements"
+
+#: renderer
+msgid "reload_enabled"
+msgstr "rechargement activé"
+
+#: renderer
+msgid "reload_requested"
+msgstr "rechargement demandé"
+
+#: renderer
+msgid "reload_signals"
+msgstr "signaux de rechargement"
 
 #: cli/commands.py
 msgid "reloads"
@@ -2922,6 +3142,10 @@ msgstr "jeton partagé pour un point d'accès distant avec authentification acti
 msgid "shutdown"
 msgstr "arrêt"
 
+#: renderer
+msgid "shutdown_requested"
+msgstr "arrêt demandé"
+
 #: cli/proposal.py
 msgid "sign in with 'gh auth login', or send it by hand with 'kdx proposal export'"
 msgstr "connectez-vous avec 'gh auth login' ou envoyez-le à la main avec 'kdx proposal export'"
@@ -2961,6 +3185,10 @@ msgstr "{job_id} démarrée : {command}"
 #: cli/commands.py
 msgid "state"
 msgstr "état"
+
+#: renderer
+msgid "state_dir"
+msgstr "dossier d'état"
 
 #: cli/commands.py
 msgid "static mounts"
@@ -3114,9 +3342,25 @@ msgstr "le démon démarre à l'ouverture de session et démarre maintenant"
 msgid "the event feed ended: {exc}"
 msgstr "le flux d'événements s'est terminé : {exc}"
 
+#: kernel/ui_embed.py
+msgid "the frame accepts only window.parent on location.origin"
+msgstr "le cadre n'accepte que window.parent sur location.origin"
+
+#: kernel/ui_embed.py
+msgid "the frame posts the ask to window.parent with targetOrigin location.origin"
+msgstr "le cadre envoie la demande à window.parent avec targetOrigin location.origin"
+
 #: cli/container_doctor.py
 msgid "the free range was chosen so that no account or other user's range is touched. The commands:"
 msgstr "la plage libre est choisie pour ne toucher aucun compte ni plage d'un autre utilisateur. Les commandes :"
+
+#: kernel/ui_embed.py
+msgid "the host answers only its own iframe (event.source) on its own origin"
+msgstr "l'hôte ne répond qu'à son propre iframe (event.source) sur sa propre origine"
+
+#: kernel/ui_tier_data.py
+msgid "the host has no Node or Bun, or installing them is not wanted"
+msgstr "la machine n'a ni Node ni Bun, ou on ne veut pas les installer"
 
 #: cli/container_doctor.py
 msgid "the ids are still not usable; run 'kdx container doctor'"
@@ -3129,6 +3373,26 @@ msgstr "le wiki interne est exporté : ses notes quittent le projet"
 #: cli/commands.py
 msgid "the live state of a running daemon: 'kdx status' or 'kdx ui'"
 msgstr "l'état en direct d'un démon en cours : 'kdx status' ou 'kdx ui'"
+
+#: kernel/ui_tier_data.py
+msgid "the page needs component libraries from npm"
+msgstr "la page a besoin de bibliothèques de composants de npm"
+
+#: kernel/ui_tier_data.py
+msgid "the product needs its own screens and the team prefers Vue's single-file components"
+msgstr "le produit a besoin de ses propres écrans et l'équipe préfère les composants monofichiers de Vue"
+
+#: kernel/ui_tier_data.py
+msgid "the product needs its own screens, branding or interaction"
+msgstr "le produit a besoin de ses propres écrans, de sa marque ou de son interaction"
+
+#: kernel/ui_tier_data.py
+msgid "the product needs its own screens, many interactive views or shared state"
+msgstr "le produit a besoin de ses propres écrans, de nombreuses vues interactives ou d'un état partagé"
+
+#: kernel/ui_tier_data.py
+msgid "the project is a daemon, a CLI or an API and people mostly use the terminal"
+msgstr "le projet est un démon, une CLI ou une API et les gens utilisent surtout le terminal"
 
 #: modules/job_queue/module.py
 msgid "the queue is empty"
@@ -3213,6 +3477,18 @@ msgstr "titre"
 #: cli/users.py
 msgid "token"
 msgstr "jeton"
+
+#: kernel/ui_embed.py
+msgid "token empty and cookie false: nobody is signed in"
+msgstr "jeton vide et cookie false : personne n'est connecté"
+
+#: kernel/ui_embed.py
+msgid "token empty and cookie true: the session cookie authenticates; send no header"
+msgstr "jeton vide et cookie true : le cookie de session authentifie ; n'envoyez pas d'en-tête"
+
+#: kernel/ui_embed.py
+msgid "token set: send it as X-Kdx-Token"
+msgstr "jeton présent : envoyez-le comme X-Kdx-Token"
 
 #: modules/mcp_server/module.py
 msgid "tool"
@@ -3325,6 +3601,18 @@ msgstr "{path} écrit"
 #: renderer
 msgid "yes"
 msgstr "oui"
+
+#: kernel/ui_tier_data.py
+msgid "you want component tests (Vitest + @vue/test-utils) and end-to-end tests (Playwright)"
+msgstr "vous voulez des tests de composants (Vitest + @vue/test-utils) et de bout en bout (Playwright)"
+
+#: kernel/ui_tier_data.py
+msgid "you want component tests (Vitest) and end-to-end tests (Playwright)"
+msgstr "vous voulez des tests de composants (Vitest) et de bout en bout (Playwright)"
+
+#: kernel/ui_tier_data.py
+msgid "you want the least to maintain: nothing is built, nothing is installed"
+msgstr "vous voulez le moins à maintenir : rien n'est compilé, rien n'est installé"
 
 #: cli/jobs.py
 msgid "your token for that daemon (core.ipc.token or one from 'kdx users add')"

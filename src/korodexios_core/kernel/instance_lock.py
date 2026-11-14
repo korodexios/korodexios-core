@@ -32,26 +32,28 @@ def _current_platform() -> str:
     """Return the current ``sys.platform`` marker without folding at check time."""
     return sys.platform
 
-__all__ = [
-    "INSTANCE_LOCK_NAME",
-    "InstanceLock",
-    "LockHolder",
-    "lock_descriptor",
-    "pid_alive",
-    "unlock_descriptor",
-]
+__all__ = ["INSTANCE_LOCK_NAME", "InstanceLock", "LockHolder", "lock_descriptor", "pid_alive",
+           "unlock_descriptor"]
 
 _LOCK_OFFSET, _LOCK_BYTES = 4095, 1  # one byte past the payload, inside 0.6.6's 0-4095 range
+_POLL = 0.05  # seconds between tries of a blocking Windows lock
 
 
 if sys.platform == "win32":  # pragma: no cover - Windows only
     import msvcrt
 
     def _lock_exclusive(descriptor: int, *, block: bool) -> None:
-        """Claim a Windows byte-range lock, restarting the seek each time."""
-        os.lseek(descriptor, _LOCK_OFFSET, os.SEEK_SET)
-        mode = msvcrt.LK_LOCK if block else msvcrt.LK_NBLCK
-        msvcrt.locking(descriptor, mode, _LOCK_BYTES)
+        """Claim a Windows byte-range lock; *block* waits as long as flock would (polling,
+        because msvcrt.LK_LOCK gives up after ten one-second tries)."""
+        while True:
+            os.lseek(descriptor, _LOCK_OFFSET, os.SEEK_SET)
+            try:
+                msvcrt.locking(descriptor, msvcrt.LK_NBLCK, _LOCK_BYTES)
+                return
+            except OSError:
+                if not block:
+                    raise
+            time.sleep(_POLL)
 
     def _unlock_exclusive(descriptor: int) -> None:
         """Release the Windows byte-range lock on *descriptor*."""
@@ -74,11 +76,8 @@ else:
 def lock_descriptor(descriptor: int, *, block: bool = False) -> None:
     """Take the platform's exclusive lock on *descriptor*.
 
-    The non-blocking form (the default) raises OSError the moment the lock is
-    busy, which is what every chassis caller wants: fail fast, then say who holds
-    it. ``block=True`` waits on the OS instead, for a caller that would rather
-    queue than poll. Which primitive answers that call is decided once, at import,
-    because the two platforms name it differently.
+    The default raises OSError the moment the lock is busy (fail fast, then say who
+    holds it); ``block=True`` waits until it is free, on Windows as on POSIX.
     """
     _lock_exclusive(descriptor, block=block)
 

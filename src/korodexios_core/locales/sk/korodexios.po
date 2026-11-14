@@ -14,6 +14,10 @@ msgstr "  [voliteľné] {name}: potrebuje {module} - {hint}"
 msgid "  [skipped] {name}: {reason}"
 msgstr "  [preskočené] {name}: {reason}"
 
+#: kernel/ui_tier_data.py
+msgid "'<pm> run e2e' starts the project's own daemon with 'uv run <script> run': run 'uv sync --extra dev' in the project first, so the chassis dependency resolves."
+msgstr "'<pm> run e2e' spustí vlastný démon projektu cez 'uv run <script> run': najprv v projekte spustite 'uv sync --extra dev', aby sa závislosť na jadre vyriešila."
+
 #: cli/container_doctor.py
 msgid "'kdx container fix' explains and runs this for you"
 msgstr "'kdx container fix' to vysvetlí a spustí za teba"
@@ -30,9 +34,25 @@ msgstr "(mysleli ste {hint}?)"
 msgid "(empty)"
 msgstr "(prázdne)"
 
+#: renderer
+msgid "(free)"
+msgstr "(voľný)"
+
 #: cli/commands.py
 msgid "(module {name} is discovered)"
 msgstr "(modul {name} je objavený)"
+
+#: renderer
+msgid "(none)"
+msgstr "(žiadne)"
+
+#: renderer
+msgid "(none: defaults only)"
+msgstr "(žiadny: len predvolené)"
+
+#: renderer
+msgid "(not running)"
+msgstr "(nebeží)"
 
 #: cli/commands.py
 msgid "+{hidden} more findings; pass --json for all of them"
@@ -86,6 +106,10 @@ msgstr "Kľúč s bodkami, napr. core.log.level."
 msgid "A dotted key."
 msgstr "Kľúč s bodkami."
 
+#: kernel/ui_tiers.py
+msgid "A person's GUI choices (labels, hidden panels, form values) live in 'kdx ui prefs', not in the project's code."
+msgstr "Voľby človeka v GUI (názvy, skryté panely, hodnoty formulárov) patria do 'kdx ui prefs', nie do kódu projektu."
+
 #: modules/web_console/module.py
 msgid "A theme name or a .css/.json file."
 msgstr "Názov témy alebo súbor .css/.json."
@@ -117,6 +141,10 @@ msgstr "Prepíše aj súbor s pravidlami, ktorý napísal človek."
 #: modules/web_console/tier_commands.py
 msgid "Also run the e2e tests with a visible browser window (needs a display)."
 msgstr "Spustiť e2e testy aj s viditeľným oknom prehliadača (vyžaduje displej)."
+
+#: kernel/ui_tier_data.py
+msgid "An app tier (react, vue) reads the saved GUI choices (labels, hidden panels, order, last tab) and writes remembered form values and pinned defaults. Renaming, hiding, reordering and own shortcut buttons are edited in the built-in console ('kdx ui', Customize) or with 'kdx ui prefs patch'; the app then shows them."
+msgstr "Aplikačná úroveň (react, vue) číta uložené voľby GUI (názvy, skryté panely, poradie, poslednú kartu) a zapisuje zapamätané hodnoty formulárov a pripnuté predvoľby. Premenovanie, skrývanie, poradie a vlastné skratkové tlačidlá sa upravujú vo vstavanej konzole ('kdx ui', Prispôsobiť) alebo cez 'kdx ui prefs patch'; aplikácia ich potom zobrazí."
 
 #: cli/jobs.py
 msgid "Ask a job to stop (its command decides when it can)."
@@ -482,6 +510,10 @@ msgstr "Názov udalosti, napríklad order.paid."
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr "Vzor udalostí: 'backup.*', 'core.job.**', '*' pre všetky [*]."
 
+#: kernel/ui_tiers.py
+msgid "Everything the GUI can do must also work from the kdx CLI (terminal first)."
+msgstr "Všetko, čo vie GUI, musí fungovať aj z kdx CLI (terminál na prvom mieste)."
+
 #: modules/web_console/tier_commands.py
 msgid "Exit 1 when --out differs from the daemon's contract."
 msgstr "Skončiť s kódom 1, keď sa --out líši od kontraktu daemona."
@@ -665,6 +697,10 @@ msgstr "Id úlohy, napríklad job-3."
 #: cli/agents.py
 msgid "Keep every AI agent's rule file in step with AGENTS.md."
 msgstr "Udržiava súbory s pravidlami všetkých AI agentov v súlade s AGENTS.md."
+
+#: kernel/ui_tiers.py
+msgid "Keep the choice in docs/BRIEF.md so the next agent does not have to guess."
+msgstr "Voľbu zapíšte do docs/BRIEF.md, aby ďalší agent nemusel hádať."
 
 #: cli/docs_sync.py
 msgid "Keep the documents 'kdx init' seeded in step with the installed core."
@@ -858,9 +894,21 @@ msgstr "Moduly"
 msgid "Most rows to print [100]."
 msgstr "Najviac riadkov na výpis [100]."
 
+#: kernel/ui_tiers.py
+msgid "Move to 'static' for one small page of your own, or to 'react' or 'vue' for many screens with shared state; an existing project adopts one with 'kdx ui add'."
+msgstr "Prejdite na 'static' pre jednu malú vlastnú stránku, alebo na 'react' či 'vue' pre veľa obrazoviek so spoločným stavom; existujúci projekt si úroveň pridá cez 'kdx ui add'."
+
 #: modules/web_console/module.py
 msgid "Need"
 msgstr "Treba"
+
+#: kernel/ui_tier_data.py
+msgid "Newer npm versions may block the esbuild install script. The build normally works anyway; if vite fails with an esbuild error, approve it ('npm install-scripts approve esbuild') and reinstall."
+msgstr "Novšie verzie npm môžu blokovať inštalačný skript esbuild. Build zvyčajne funguje aj tak; ak vite zlyhá s chybou esbuild, povoľte ho ('npm install-scripts approve esbuild') a nainštalujte znova."
+
+#: kernel/ui_tier_data.py
+msgid "No GUI files in the project; the built-in console shows every module."
+msgstr "Žiadne súbory GUI v projekte; vstavaná konzola zobrazí každý modul."
 
 #: cli/jobs.py
 msgid "One JSON object per line."
@@ -997,6 +1045,14 @@ msgstr "Cesta k súboru kdx.yml alebo korodexios.yml."
 #: cli/commands.py
 msgid "Paths"
 msgstr "Cesty"
+
+#: kernel/ui_tier_data.py
+msgid "Plain HTML, CSS and ES modules in web/; no build step, no Node packages."
+msgstr "Čisté HTML, CSS a ES moduly vo web/; žiadny build, žiadne balíky Node."
+
+#: kernel/ui_tier_data.py
+msgid "Playwright needs a browser: 'kdx ui doctor' prints the recommended setting (PW_CHANNEL=chrome|msedge for an installed browser, or 'npx playwright install chromium'). Headed runs (PW_HEADED=1) need a display; doctor says if there is one."
+msgstr "Playwright potrebuje prehliadač: 'kdx ui doctor' vypíše odporúčané nastavenie (PW_CHANNEL=chrome|msedge pre nainštalovaný prehliadač, alebo 'npx playwright install chromium'). Behy s oknom (PW_HEADED=1) potrebujú displej; doctor povie, či je."
 
 #: modules/mcp_server/module.py
 msgid "Print (or write) the MCP client configuration for this project."
@@ -1238,6 +1294,10 @@ msgstr "Počet uchovaných rotovaných archívov logu [5]."
 msgid "Rotating log size limit [1048576]."
 msgstr "Limit veľkosti rotovaného logu [1048576]."
 
+#: kernel/ui_tiers.py
+msgid "Run 'kdx ui doctor --json' first: a tier whose tools are missing here is not ready."
+msgstr "Najprv spustite 'kdx ui doctor --json': úroveň, ktorej tu chýbajú nástroje, nie je pripravená."
+
 #: cli/db.py
 msgid "Run ONE read-only SQL statement (SELECT, PRAGMA ...) and print the rows."
 msgstr "Spustiť JEDEN SQL príkaz len na čítanie (SELECT, PRAGMA ...) a vypísať riadky."
@@ -1458,6 +1518,10 @@ msgstr "Hovorí MCP cez stdin/stdout (to, čo agent spúšťa)."
 msgid "Start a new language: an empty catalogue built from the template."
 msgstr "Založí nový jazyk: prázdny katalóg vytvorený zo šablóny."
 
+#: kernel/ui_tiers.py
+msgid "Start from 'none': give each module a [ui] table and look at 'kdx ui'."
+msgstr "Začnite od 'none': dajte každému modulu tabuľku [ui] a pozrite sa na 'kdx ui'."
+
 #: cli/commands.py
 msgid "Start it as a job and return its id at once (see 'kdx jobs')."
 msgstr "Spustí ho ako úlohu a hneď vráti jej id (pozri 'kdx jobs')."
@@ -1465,6 +1529,10 @@ msgstr "Spustí ho ako úlohu a hneď vráti jej id (pozri 'kdx jobs')."
 #: cli/service.py
 msgid "Start the daemon automatically at logon (Task Scheduler, systemd, launchd)."
 msgstr "Spustí démona automaticky pri prihlásení (Task Scheduler, systemd, launchd)."
+
+#: kernel/ui_tier_data.py
+msgid "State lives in the app-var and app-data volumes: 'docker compose down -v' deletes it. The control plane needs KDX_TOKEN and is published on 127.0.0.1 only; put TLS in front of it before widening the bind."
+msgstr "Stav je vo zväzkoch app-var a app-data: 'docker compose down -v' ho zmaže. Riadiaca vrstva potrebuje KDX_TOKEN a je publikovaná len na 127.0.0.1; pred rozšírením bindu pred ňu dajte TLS."
 
 #: cli/entry.py
 msgid "Static shared secret for the control plane."
@@ -1510,13 +1578,25 @@ msgstr "ID úlohy (pozri 'kdx queue list')."
 msgid "Terminal table width for the CLI [100]."
 msgstr "Šírka tabuliek v termináli [100]."
 
+#: kernel/ui_tiers.py
+msgid "Test headless first; run headed checks only when doctor reports a display."
+msgstr "Testujte najprv bez okna; kontroly s oknom spúšťajte, len keď doctor hlási displej."
+
 #: cli/brief.py
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr "3 až 5 vecí, ktoré musí robiť, oddelené „;“"
 
+#: kernel/ui_tiers.py
+msgid "The GUI is a client of the control plane (/api/v1/*); it never holds core logic."
+msgstr "GUI je klient riadiacej vrstvy (/api/v1/*); nikdy nedrží logiku jadra."
+
 #: modules/web_console/tier_commands.py
 msgid "The GUI tier to add."
 msgstr "Úroveň GUI, ktorá sa má pridať."
+
+#: kernel/ui_tier_data.py
+msgid "The container files are verified with Docker running Linux containers: on Debian and with Docker Desktop on Windows (Linux engine), and with rootless Podman 5.4 on Debian 13 inside an LXC (build and run with --network=host, ids from 'kdx container fix'). Podman compose providers were not tried; Windows containers (the Windows engine) are not supported - the image is Linux. The build stage needs network access (package index, and git for the default git chassis source)."
+msgstr "Súbory kontajnera sú overené s Dockerom s Linux kontajnermi: na Debiane a s Docker Desktop na Windows (Linux engine), a s rootless Podman 5.4 na Debiane 13 v LXC (build a beh s --network=host, id z 'kdx container fix'). Podman compose provideri skúšaní neboli; Windows kontajnery (Windows engine) nie sú podporované - obraz je Linux. Fáza buildu potrebuje sieť (index balíkov a git pre predvolený git zdroj jadra)."
 
 #: cli/remote.py
 msgid "The event's payload as a JSON value [{}]."
@@ -1537,6 +1617,10 @@ msgstr "Wiki projektu (rozloženie LLM-wiki): verejná a interná, po jazykoch."
 #: modules/wiki/module.py
 msgid "The source: an article, PDF, transcript, notes."
 msgstr "Zdroj: článok, PDF, prepis, poznámky."
+
+#: kernel/ui_tier_data.py
+msgid "The static tier's web/ is not served by the chassis on its own. Serve it with a module's static_dirs() or 'npm --prefix web run dev'."
+msgstr "Priečinok web/ statickej úrovne jadro samo neservíruje. Servírujte ho cez static_dirs() modulu alebo 'npm --prefix web run dev'."
 
 #: modules/web_console/module.py
 msgid "Theme"
@@ -1562,6 +1646,10 @@ msgstr "Počet pokusov, kým sa úloha označí za zlyhanú."
 msgid "Truncate log file {path}?"
 msgstr "Skrátiť súbor logu {path}?"
 
+#: kernel/ui_tiers.py
+msgid "UI texts go through the language service; machine output stays English."
+msgstr "Texty rozhrania idú cez jazykovú službu; strojový výstup ostáva anglicky."
+
 #: modules/system_info/module.py
 msgid "Uptime"
 msgstr "Doba behu"
@@ -1577,6 +1665,14 @@ msgstr "Overí vstupy a ukáže, čo by záloha skopírovala."
 #: cli/commands.py
 msgid "Verify the project's declared file set without rewriting it."
 msgstr "Overí deklarovanú sadu súborov projektu bez jej prepísania."
+
+#: kernel/ui_tier_data.py
+msgid "Vite + React + TypeScript app in web/ that draws the module manifest."
+msgstr "Aplikácia Vite + React + TypeScript vo web/, ktorá kreslí manifest modulov."
+
+#: kernel/ui_tier_data.py
+msgid "Vite + Vue 3 + TypeScript app in web/ that draws the module manifest."
+msgstr "Aplikácia Vite + Vue 3 + TypeScript vo web/, ktorá kreslí manifest modulov."
 
 #: cli/brief.py
 msgid "What could go wrong, or who could abuse it? (optional)"
@@ -1682,6 +1778,10 @@ msgstr "súbor, ktorý napísal človek, zostáva; --force ho nahradí"
 msgid "a free range that nobody uses (review it, then run as admin):"
 msgstr "voľný rozsah, ktorý nikto nepoužíva (skontroluj ho a spusti ako admin):"
 
+#: kernel/ui_tier_data.py
+msgid "a module [ui] table or one static page is enough (less to build and maintain)"
+msgstr "stačí tabuľka [ui] modulu alebo jedna statická stránka (menej na build a údržbu)"
+
 #: cli/proposal.py
 msgid "a proposal needs a title"
 msgstr "návrh potrebuje názov"
@@ -1689,6 +1789,10 @@ msgstr "návrh potrebuje názov"
 #: cli/container_doctor.py
 msgid "a rootless engine has the ids it needs"
 msgstr "rootless nástroj má id, ktoré potrebuje"
+
+#: kernel/ui_tier_data.py
+msgid "a small own page is needed: a status view, a form, a few screens"
+msgstr "treba malú vlastnú stránku: prehľad stavu, formulár, pár obrazoviek"
 
 #: cli/remote.py
 msgid "action"
@@ -1714,6 +1818,10 @@ msgstr "pridané do .env: {keys}"
 msgid "after"
 msgstr "po"
 
+#: kernel/ui_tier_data.py
+msgid "agents and developers should work with the most widely known UI stack"
+msgstr "agenti a vývojári majú pracovať s najznámejším UI stackom"
+
 #: cli/entry.py
 msgid "aliases: kdx (short), korodexios (canonical).\nEvery command accepts the global flags above. Use --yes in CI to accept defaults."
 msgstr "aliasy: kdx (krátky), korodexios (kanonický).\nKaždý príkaz prijíma globálne voľby vyššie. V CI použite --yes na prijatie predvolených hodnôt."
@@ -1725,6 +1833,14 @@ msgstr "už odoslané: {url} (--again ho pošle znova)"
 #: cli/commands.py
 msgid "also write a Dockerfile, compose.yaml and .dockerignore"
 msgstr "zapísať aj Dockerfile, compose.yaml a .dockerignore"
+
+#: kernel/ui_tier_data.py
+msgid "an AI agent should be able to change the page without a toolchain"
+msgstr "AI agent má vedieť zmeniť stránku bez sady nástrojov"
+
+#: kernel/ui_tier_data.py
+msgid "an operator dashboard is enough: tabs, tables, forms and buttons per module"
+msgstr "stačí operátorský prehľad: karty, tabuľky, formuláre a tlačidlá pre každý modul"
 
 #: cli/commands.py
 msgid "app"
@@ -1810,6 +1926,10 @@ msgstr "prehliadače"
 msgid "built-in default"
 msgstr "vstavaná predvolená hodnota"
 
+#: renderer
+msgid "builtin_modules_dir"
+msgstr "priečinok vstavaných modulov"
+
 #: cli/db.py
 msgid "bytes"
 msgstr "bajty"
@@ -1862,9 +1982,17 @@ msgstr "zvolil"
 msgid "claimed by"
 msgstr "nárokuje si"
 
+#: renderer
+msgid "clean_stop"
+msgstr "čisté zastavenie"
+
 #: cli/commands.py
 msgid "cli-collision: module commands shadowed by another owner:"
 msgstr "cli-collision: príkazy modulu zatienil iný vlastník:"
+
+#: renderer
+msgid "color"
+msgstr "farba"
 
 #: cli/db.py
 msgid "columns"
@@ -1880,6 +2008,10 @@ msgstr "príkazy"
 
 #: cli/commands.py
 msgid "config file"
+msgstr "konfiguračný súbor"
+
+#: renderer
+msgid "config_file"
 msgstr "konfiguračný súbor"
 
 #: cli/commands.py
@@ -1942,6 +2074,10 @@ msgstr "core.ipc.token sa na {host} neposiela; pre vzdialeného démona zadajte 
 msgid "core.locale = {value} saved in {path}"
 msgstr "core.locale = {value} uložené v {path}"
 
+#: renderer
+msgid "count"
+msgstr "počet"
+
 #: cli/tls.py
 msgid "covers"
 msgstr "pokrýva"
@@ -1961,6 +2097,10 @@ msgstr "pracovný adresár"
 #: cli/commands.py
 msgid "daemon"
 msgstr "démon"
+
+#: renderer
+msgid "data_dir"
+msgstr "priečinok dát"
 
 #: cli/db.py
 msgid "database {name} does not exist yet"
@@ -2034,6 +2174,10 @@ msgstr "skúšobný beh: nič sa nezapísalo"
 msgid "durable, never touched: {root}"
 msgstr "trvalé, nikdy sa ich nedotkne: {root}"
 
+#: renderer
+msgid "durable_dir"
+msgstr "trvalý priečinok"
+
 #: modules/web_console/module.py
 msgid "e.g. '{\"defaults\": {\"job_queue.submit\":{\"kind\": \"demo\"}}}'."
 msgstr "napr. '{\"defaults\": {\"job_queue.submit\": {\"kind\": \"demo\"}}}'."
@@ -2066,6 +2210,10 @@ msgstr "súbor env"
 msgid "env prefix"
 msgstr "prefix env"
 
+#: renderer
+msgid "env_file"
+msgstr "súbor env"
+
 #: cli/commands.py
 msgid "error"
 msgstr "chyba"
@@ -2097,6 +2245,10 @@ msgstr "koniec"
 #: cli/commands.py
 msgid "exit code"
 msgstr "kód ukončenia"
+
+#: renderer
+msgid "extra_module_dirs"
+msgstr "ďalšie priečinky modulov"
 
 #: cli/commands.py
 msgid "failed"
@@ -2150,6 +2302,10 @@ msgstr "zadajte hodnotu: kdx daemon config set KEY VALUE"
 msgid "handler errors"
 msgstr "chyby obslužných funkcií"
 
+#: renderer
+msgid "handlers"
+msgstr "handlery"
+
 #: modules/web_console/tier_commands.py
 msgid "headed browser tests: {state}"
 msgstr "testy v prehliadači s displejom: {state}"
@@ -2197,6 +2353,10 @@ msgstr "inódy"
 #: cli/tls.py
 msgid "install it (Git for Windows ships one), or run this yourself:"
 msgstr "nainštaluj ho (Git for Windows ho obsahuje), alebo to spusti sám:"
+
+#: renderer
+msgid "installed"
+msgstr "nainštalované"
 
 #: cli/commands.py
 msgid "instance lock"
@@ -2306,6 +2466,10 @@ msgstr "živé"
 msgid "local file"
 msgstr "lokálny súbor"
 
+#: renderer
+msgid "local_config_file"
+msgstr "lokálny konfiguračný súbor"
+
 #: cli/commands.py
 msgid "lock held"
 msgstr "zámok držaný"
@@ -2318,6 +2482,14 @@ msgstr "držiteľ zámku"
 msgid "lock names"
 msgstr "názvy zámkov"
 
+#: renderer
+msgid "lock_file"
+msgstr "súbor zámku"
+
+#: renderer
+msgid "locks_dir"
+msgstr "priečinok zámkov"
+
 #: cli/commands.py
 msgid "log file rotated to {name} ({archived} bytes archived)"
 msgstr "logový súbor bol rotovaný do {name} (archivovaných {archived} bajtov)"
@@ -2325,6 +2497,18 @@ msgstr "logový súbor bol rotovaný do {name} (archivovaných {archived} bajtov
 #: cli/commands.py
 msgid "log file truncated ({removed} bytes freed)"
 msgstr "logový súbor bol vyprázdnený (uvoľnených {removed} bajtov)"
+
+#: renderer
+msgid "log_dir"
+msgstr "priečinok logov"
+
+#: renderer
+msgid "log_file"
+msgstr "súbor logu"
+
+#: renderer
+msgid "logger"
+msgstr "logger"
 
 #: cli/commands.py
 msgid "looked for {discovery_path}"
@@ -2337,6 +2521,10 @@ msgstr "hľadal som {path}"
 #: cli/service.py
 msgid "manager says"
 msgstr "správca hlási"
+
+#: kernel/ui_tier_data.py
+msgid "many interactive screens share state (a framework earns its weight there)"
+msgstr "veľa interaktívnych obrazoviek zdieľa stav (tam si framework zaslúži svoju váhu)"
 
 #: cli/commands.py
 msgid "match"
@@ -2397,6 +2585,10 @@ msgstr "pomenované zámky"
 #: modules/web_console/module.py
 msgid "nav, panels, buttons, values, defaults, settings, layout; none means all but defaults."
 msgstr "nav, panels, buttons, values, defaults, settings, layout; bez názvu sa myslia všetky okrem defaults."
+
+#: kernel/ui_tier_data.py
+msgid "neither Node nor Bun can be installed on the build host"
+msgstr "na stroj pre build sa nedá nainštalovať ani Node, ani Bun"
 
 #: modules/web_console/tier_commands.py
 msgid "next"
@@ -2618,6 +2810,10 @@ msgstr "nič sa nezapísalo"
 msgid "npm | bun | pnpm [from the lockfile, else npm]."
 msgstr "npm | bun | pnpm [podľa lockfile, inak npm]."
 
+#: kernel/ui_tier_data.py
+msgid "npm, pnpm 12 and bun 1.4 were each verified by hand on Linux with both app tiers (install, typecheck, component tests); npm also end to end. The chassis tests run none of them, so run '<pm> run typecheck && <pm> run test' first. With pnpm the seeded web/pnpm-workspace.yaml allows esbuild's build script (newer pnpm refuses it)."
+msgstr "npm, pnpm 12 a bun 1.4 boli ručne overené na Linuxe s oboma aplikačnými úrovňami (inštalácia, typecheck, testy komponentov); npm aj end to end. Testy jadra nespúšťajú ani jeden, preto najprv spustite '<pm> run typecheck && <pm> run test'. Pri pnpm vygenerovaný web/pnpm-workspace.yaml povoľuje build skript esbuild (novšie pnpm ho inak odmietne)."
+
 #: cli/proposal.py
 msgid "number"
 msgstr "číslo"
@@ -2629,6 +2825,10 @@ msgstr "zastarané"
 #: cli/tls.py
 msgid "on another machine, trust it with: kdx --tls-ca cert.pem status --target https://HOST:18123"
 msgstr "na inom počítači mu dôveruj cez: kdx --tls-ca cert.pem status --target https://HOST:18123"
+
+#: kernel/ui_embed.py
+msgid "one ask outstanding at a time; never retry a token the server refused"
+msgstr "naraz len jedna otvorená otázka; token, ktorý server odmietol, nikdy neskúšať znova"
 
 #: modules/web_console/module.py
 msgid "open this URL; it carries the session token:"
@@ -2802,6 +3002,10 @@ msgstr "naozaj zmazať (bez tohto príkaz iba vypíše, čo by odstránil)"
 msgid "reason"
 msgstr "dôvod"
 
+#: renderer
+msgid "received"
+msgstr "prijaté"
+
 #: cli/service.py
 msgid "register it with: kdx service install"
 msgstr "zaregistruj ho cez: kdx service install"
@@ -2813,6 +3017,22 @@ msgstr "registrované"
 #: cli/commands.py
 msgid "reload failed: {payload}"
 msgstr "načítanie zlyhalo: {payload}"
+
+#: renderer
+msgid "reload_count"
+msgstr "počet reloadov"
+
+#: renderer
+msgid "reload_enabled"
+msgstr "reload zapnutý"
+
+#: renderer
+msgid "reload_requested"
+msgstr "reload vyžiadaný"
+
+#: renderer
+msgid "reload_signals"
+msgstr "signály reloadu"
 
 #: cli/commands.py
 msgid "reloads"
@@ -2922,6 +3142,10 @@ msgstr "zdieľaný token pre vzdialený koncový bod so zapnutým overením"
 msgid "shutdown"
 msgstr "vypnutie"
 
+#: renderer
+msgid "shutdown_requested"
+msgstr "zastavenie vyžiadané"
+
 #: cli/proposal.py
 msgid "sign in with 'gh auth login', or send it by hand with 'kdx proposal export'"
 msgstr "prihláste sa cez 'gh auth login' alebo ho pošlite ručne cez 'kdx proposal export'"
@@ -2961,6 +3185,10 @@ msgstr "spustená {job_id}: {command}"
 #: cli/commands.py
 msgid "state"
 msgstr "stav"
+
+#: renderer
+msgid "state_dir"
+msgstr "priečinok stavu"
 
 #: cli/commands.py
 msgid "static mounts"
@@ -3114,9 +3342,25 @@ msgstr "démon sa spúšťa pri prihlásení a práve sa spúšťa"
 msgid "the event feed ended: {exc}"
 msgstr "prenos udalostí skončil: {exc}"
 
+#: kernel/ui_embed.py
+msgid "the frame accepts only window.parent on location.origin"
+msgstr "rámec prijíma len window.parent na location.origin"
+
+#: kernel/ui_embed.py
+msgid "the frame posts the ask to window.parent with targetOrigin location.origin"
+msgstr "rámec pošle otázku do window.parent s targetOrigin location.origin"
+
 #: cli/container_doctor.py
 msgid "the free range was chosen so that no account or other user's range is touched. The commands:"
 msgstr "voľný rozsah je vybraný tak, aby sa nedotkol žiadneho účtu ani cudzieho rozsahu. Príkazy:"
+
+#: kernel/ui_embed.py
+msgid "the host answers only its own iframe (event.source) on its own origin"
+msgstr "hostiteľ odpovedá len vlastnému iframe (event.source) na vlastnom pôvode"
+
+#: kernel/ui_tier_data.py
+msgid "the host has no Node or Bun, or installing them is not wanted"
+msgstr "stroj nemá Node ani Bun, alebo ich inštalácia nie je žiadúca"
 
 #: cli/container_doctor.py
 msgid "the ids are still not usable; run 'kdx container doctor'"
@@ -3129,6 +3373,26 @@ msgstr "exportuje sa interná wiki: jej poznámky opustia projekt"
 #: cli/commands.py
 msgid "the live state of a running daemon: 'kdx status' or 'kdx ui'"
 msgstr "živý stav bežiaceho démona: 'kdx status' alebo 'kdx ui'"
+
+#: kernel/ui_tier_data.py
+msgid "the page needs component libraries from npm"
+msgstr "stránka potrebuje knižnice komponentov z npm"
+
+#: kernel/ui_tier_data.py
+msgid "the product needs its own screens and the team prefers Vue's single-file components"
+msgstr "produkt potrebuje vlastné obrazovky a tím uprednostňuje jednosúborové komponenty Vue"
+
+#: kernel/ui_tier_data.py
+msgid "the product needs its own screens, branding or interaction"
+msgstr "produkt potrebuje vlastné obrazovky, značku alebo interakciu"
+
+#: kernel/ui_tier_data.py
+msgid "the product needs its own screens, many interactive views or shared state"
+msgstr "produkt potrebuje vlastné obrazovky, veľa interaktívnych pohľadov alebo spoločný stav"
+
+#: kernel/ui_tier_data.py
+msgid "the project is a daemon, a CLI or an API and people mostly use the terminal"
+msgstr "projekt je démon, CLI alebo API a ľudia väčšinou používajú terminál"
 
 #: modules/job_queue/module.py
 msgid "the queue is empty"
@@ -3213,6 +3477,18 @@ msgstr "názov"
 #: cli/users.py
 msgid "token"
 msgstr "token"
+
+#: kernel/ui_embed.py
+msgid "token empty and cookie false: nobody is signed in"
+msgstr "token prázdny a cookie false: nikto nie je prihlásený"
+
+#: kernel/ui_embed.py
+msgid "token empty and cookie true: the session cookie authenticates; send no header"
+msgstr "token prázdny a cookie true: overuje session cookie; neposielajte hlavičku"
+
+#: kernel/ui_embed.py
+msgid "token set: send it as X-Kdx-Token"
+msgstr "token je nastavený: pošlite ho ako X-Kdx-Token"
 
 #: modules/mcp_server/module.py
 msgid "tool"
@@ -3325,6 +3601,18 @@ msgstr "zapísané {path}"
 #: renderer
 msgid "yes"
 msgstr "áno"
+
+#: kernel/ui_tier_data.py
+msgid "you want component tests (Vitest + @vue/test-utils) and end-to-end tests (Playwright)"
+msgstr "chcete testy komponentov (Vitest + @vue/test-utils) a end-to-end testy (Playwright)"
+
+#: kernel/ui_tier_data.py
+msgid "you want component tests (Vitest) and end-to-end tests (Playwright)"
+msgstr "chcete testy komponentov (Vitest) a end-to-end testy (Playwright)"
+
+#: kernel/ui_tier_data.py
+msgid "you want the least to maintain: nothing is built, nothing is installed"
+msgstr "chcete čo najmenej údržby: nič sa nebuilduje, nič sa neinštaluje"
 
 #: cli/jobs.py
 msgid "your token for that daemon (core.ipc.token or one from 'kdx users add')"

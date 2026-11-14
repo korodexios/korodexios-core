@@ -29,6 +29,8 @@ import re
 from collections.abc import Mapping
 from typing import Any
 
+from .i18n import N_
+
 HEIGHT_MIN, HEIGHT_MAX, HEIGHT_DEFAULT = 120, 2000, 360
 _SRC = re.compile(r"^/[A-Za-z0-9._~\-/%]*$")
 
@@ -41,13 +43,13 @@ PROTOCOL: dict[str, Any] = {
     "answer": {"type": TOKEN_MESSAGE, "version": PROTOCOL_VERSION, "token": "string",
                "cookie": "bool"},
     "rules": [
-        "the frame posts the ask to window.parent with targetOrigin location.origin",
-        "the host answers only its own iframe (event.source) on its own origin",
-        "the frame accepts only window.parent on location.origin",
-        "token set: send it as X-Kdx-Token",
-        "token empty and cookie true: the session cookie authenticates; send no header",
-        "token empty and cookie false: nobody is signed in",
-        "one ask outstanding at a time; never retry a token the server refused",
+        N_("the frame posts the ask to window.parent with targetOrigin location.origin"),
+        N_("the host answers only its own iframe (event.source) on its own origin"),
+        N_("the frame accepts only window.parent on location.origin"),
+        N_("token set: send it as X-Kdx-Token"),
+        N_("token empty and cookie true: the session cookie authenticates; send no header"),
+        N_("token empty and cookie false: nobody is signed in"),
+        N_("one ask outstanding at a time; never retry a token the server refused"),
     ],
 }
 """The embed handshake as data: ``kdx ui guide --json`` publishes it under ``embed``."""

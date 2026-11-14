@@ -384,6 +384,22 @@ def test_permanent_errors_fail_at_once(tmp_path: Path) -> None:
     assert settled is not None and settled.state == "failed" and settled.attempts == 1
 
 
+def test_a_late_report_never_changes_a_task_that_is_no_longer_running(tmp_path: Path) -> None:
+    queue, _ = make_queue(tmp_path)
+    queue.submit("late", max_attempts=3)
+    task = queue.claim(("late",))
+    assert task is not None and task.state == "running"
+    settled = queue.fail(task.id, "permanent", permanent=True)
+    assert settled.state == "failed"
+    assert queue.fail(task.id, "a second report").state == "failed"  # not requeued
+    queue.complete(task.id, {"late": True})
+    again = queue.get(task.id)
+    assert again is not None and again.state == "failed" and again.result is None
+    waiting = queue.submit("late")
+    assert queue.fail(waiting.id, "never claimed").state == "queued"
+    assert queue.get(waiting.id).attempts == 0  # type: ignore[union-attr]
+
+
 def test_a_process_only_claims_kinds_it_can_run(tmp_path: Path) -> None:
     queue, _ = make_queue(tmp_path)
     queue.submit("foreign")

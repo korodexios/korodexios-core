@@ -21,12 +21,26 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
-from .i18n import PoEntry, parse_po, placeholders
+from .i18n import CORE_DOMAIN, PoEntry, parse_po, placeholders
 
+PLACEHOLDER_VALUES: Final[tuple[str, ...]] = (
+    "(empty)", "(none)", "(free)", "(not running)", "(none: defaults only)",
+)
+"""Values a report shows for "nothing here"; the renderer translates exactly these."""
+DATA_LABELS: Final[tuple[str, ...]] = (
+    "config_file", "local_config_file", "env_file", "state_dir", "log_dir", "data_dir",
+    "durable_dir", "lock_file", "locks_dir", "builtin_modules_dir", "extra_module_dirs",
+    "logger", "handlers", "color", "log_file", "installed", "received", "count", "clean_stop",
+    "reload_count", "reload_enabled", "reload_requested", "reload_signals", "shutdown_requested",
+)
+"""Keys of data a report prints as labels ('kdx doctor': paths, logging, signals)."""
 FIXED_WORDS: Final[tuple[str, ...]] = ("yes", "no", "(empty)")
+"""Words every domain's catalogue carries."""
+CORE_WORDS: Final[tuple[str, ...]] = (*FIXED_WORDS, *PLACEHOLDER_VALUES[1:], *DATA_LABELS)
+"""What the chassis' own catalogue adds: report placeholders and data labels."""
 """Words the renderer prints by itself for booleans and empty collections."""
 
-_TRANSLATE_CALLS: Final[frozenset[str]] = frozenset({"translate", "_t", "tr"})
+_TRANSLATE_CALLS: Final[frozenset[str]] = frozenset({"translate", "_t", "tr", "N_"})
 _MESSAGE_CALLS: Final[frozenset[str]] = frozenset({"write_line", "write_status"})
 _HELP_OWNERS: Final[frozenset[str]] = frozenset({"CliCommand", "CliArgument"})
 _UX_CALLS: Final[frozenset[str]] = frozenset({"status", "note", "error", "heading", "confirm"})
@@ -122,8 +136,16 @@ def scan_source(source: str, label: str) -> list[Found]:
     return found
 
 
-def scan_tree(root: Path, extra: Iterable[str] = FIXED_WORDS) -> dict[str, str]:
-    """Return {message: first file seen in} for every ``.py`` file below *root*."""
+def scan_tree(
+    root: Path, extra: Iterable[str] | None = None, *, domain: str = ""
+) -> dict[str, str]:
+    """Return {message: first file seen in} for every ``.py`` file below *root*.
+
+    *extra* defaults to the words every catalogue carries, plus, for the chassis' own
+    domain, the report placeholders and data labels a project never needs.
+    """
+    if extra is None:
+        extra = CORE_WORDS if domain == CORE_DOMAIN else FIXED_WORDS
     messages: dict[str, str] = {}
     for path in sorted(root.rglob("*.py")):
         if "__pycache__" in path.parts:

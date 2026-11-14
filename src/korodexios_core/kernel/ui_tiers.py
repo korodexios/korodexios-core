@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from . import ui_embed
+from .i18n import N_
 from .ui_tier_data import NOTES, STORAGE, TIERS
 
 DEFAULT_TIER = "none"
@@ -53,19 +54,20 @@ def guide() -> dict[str, Any]:
         "storage": [dict(item) for item in STORAGE],
         "embed": dict(ui_embed.PROTOCOL),
         "decide": [
-            "Start from 'none': give each module a [ui] table and look at 'kdx ui'.",
-            "Move to 'static' for one small page of your own, or to 'react' or 'vue' for many "
-            "screens with shared state; an existing project adopts one with 'kdx ui add'.",
-            "Run 'kdx ui doctor --json' first: a tier whose tools are missing here is not ready.",
-            "Test headless first; run headed checks only when doctor reports a display.",
-            "Keep the choice in docs/BRIEF.md so the next agent does not have to guess.",
+            N_("Start from 'none': give each module a [ui] table and look at 'kdx ui'."),
+            N_("Move to 'static' for one small page of your own, or to 'react' or 'vue' for many "
+            "screens with shared state; an existing project adopts one with 'kdx ui add'."),
+            N_("Run 'kdx ui doctor --json' first: a tier whose tools are missing here is not "
+               "ready."),
+            N_("Test headless first; run headed checks only when doctor reports a display."),
+            N_("Keep the choice in docs/BRIEF.md so the next agent does not have to guess."),
         ],
         "rules": [
-            "The GUI is a client of the control plane (/api/v1/*); it never holds core logic.",
-            "Everything the GUI can do must also work from the kdx CLI (terminal first).",
-            "A person's GUI choices (labels, hidden panels, form values) live in "
-            "'kdx ui prefs', not in the project's code.",
-            "UI texts go through the language service; machine output stays English.",
+            N_("The GUI is a client of the control plane (/api/v1/*); it never holds core logic."),
+            N_("Everything the GUI can do must also work from the kdx CLI (terminal first)."),
+            N_("A person's GUI choices (labels, hidden panels, form values) live in "
+            "'kdx ui prefs', not in the project's code."),
+            N_("UI texts go through the language service; machine output stays English."),
         ],
     }
 

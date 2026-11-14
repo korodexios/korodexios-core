@@ -36,3 +36,16 @@ def test_a_loaded_module_keeps_its_readable_values(
     out = show(project_root, capsys)
     assert "secret-path-abc123" not in out, "declared secret=True by the loaded module"
     assert json.loads(out)["modules.webhooks.targets"]["value"] == "***redacted***"
+
+
+def test_json_carries_a_typed_value_beside_the_text_and_masks_it_too(
+    project_root: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("KDX_CORE__IPC__AUTH", "false")
+    monkeypatch.setenv("KDX_CORE__IPC__PORT", "18555")
+    monkeypatch.setenv("KDX_MODULES__WEBHOOKS__TARGETS", SECRET)
+    view = json.loads(show(project_root, capsys))
+    assert view["core.ipc.auth"] == {"value": "false", "typed": False, "source": "environment"}
+    assert view["core.ipc.port"]["typed"] == 18555 and view["core.ipc.port"]["value"] == "18555"
+    assert isinstance(view["core.modules.enabled"]["typed"], list)
+    assert "secret-path-abc123" not in json.dumps(view["modules.webhooks.targets"])

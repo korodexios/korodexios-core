@@ -344,7 +344,7 @@ def _extract(request: CliRequest) -> int:
     if not source.is_dir():
         write_line(f"{TAG_ERROR} " + _t(request, "{path} is not a directory", path=source))
         return int(ExitCode.USAGE_ERROR)
-    messages = scan_tree(source)
+    messages = scan_tree(source, domain=domain)
     if not scan_tree(source, extra=()):  # JavaScript-only domains (web): never wipe
         write_line(f"{TAG_ERROR} " + _t(request, "no Python strings to extract under {path}",
                                         path=source))

@@ -5,6 +5,42 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.7.4] - 2026-11-14
+
+The rest of the review of 2026-11-08 and small follow-ups to 0.7.3.
+
+### Added
+
+- `kdx config show --json` carries `typed` beside `value`: the declared kind decides, so `"false"`
+  from the environment is `false` and a port is a number (review V2). `value` is unchanged.
+- Windows: closing the console window, logging off and shutting down now ask for the clean stop
+  (`SetConsoleCtrlHandler` in `kernel/win_console.py`); before, `stop()` was skipped (V7).
+- `kdx ui guide` shows the tier summaries, rules and limits in the chosen language; `--json` stays
+  English. `kernel.i18n.N_()` marks text kept as data for the catalogue.
+- `kdx doctor` translates its "nothing here" values (`(none)`, `(free)`, `(not running)`) and the
+  data labels of the paths, logging and signals sections.
+
+### Fixed
+
+- A child process that ignores the polite stop can no longer hang `context.run_process`: the wait
+  is bounded and Windows gets a polite CTRL_BREAK before `taskkill /T /F` (V9,
+  `kernel/process_group.py`).
+- A scheduled task is never run twice at once by the clock and a manual trigger (V11).
+- The durable queue's `fail()` reads and writes in one `BEGIN IMMEDIATE` transaction, and a late
+  `fail()`/`complete()` never revives a task that was cancelled or settled (V10).
+- A blocking Windows file lock (`lock_descriptor(block=True)`) waits as long as POSIX `flock`
+  instead of giving up after ten seconds (V13).
+- The seeded `tests/test_rules.py` (and the core's own) also catches `importlib.import_module()`
+  of a sibling module (V3).
+- Shell: the live `refresh_on` stream retries once on the session cookie after a stale token, as
+  every other call does; fetched media blobs are dropped on the token gate and the cache is smaller.
+
+### Changed
+
+- Coverage floor raised from 88 to 90 % (measured 91.8 % on Linux); `windows-check.ps1` keeps 88
+  until a Windows run measures the current total (V4).
+- Core-only report words go only into the chassis catalogue, never into a project's domain.
+
 ## [0.7.3] - 2026-11-14
 
 From a downstream proposal (006: Vue tier, adding a tier to a project, cookie/embed auth in the app

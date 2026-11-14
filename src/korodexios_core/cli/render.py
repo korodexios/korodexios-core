@@ -10,6 +10,7 @@ from collections.abc import Callable, Sequence
 from typing import Any, TypeVar
 
 from ..constants import TAG_ERROR, TAG_NOTE, TAG_OK, tags_for
+from ..kernel.i18n_extract import PLACEHOLDER_VALUES
 
 _TAGS = frozenset({TAG_ERROR, TAG_NOTE, TAG_OK, "[?]", "[!]", "[i]"})
 
@@ -214,6 +215,8 @@ def _render(value: Any) -> str:
         return ", ".join(_render(item) for item in value) or _tr("(empty)")
     if isinstance(value, dict):
         return ", ".join(f"{key}={_render(item)}" for key, item in value.items()) or _tr("(empty)")
+    if isinstance(value, str) and value in PLACEHOLDER_VALUES:
+        return _tr(value)  # "(none)" reads in the person's language; real data never matches
     return str(value)
 
 

@@ -13,6 +13,7 @@ from typing import Final, NoReturn
 
 from ..constants import TAG_NOTE
 from ..logging.engine import KorodexiosLogger
+from .win_console import install_console_handler
 
 Handler = Callable[[int], None]
 
@@ -83,6 +84,7 @@ class SignalCoordinator:
         self._count = 0
         self._reload_count = 0
         self._clean_stop = False
+        self._console_release: Callable[[], None] | None = None
 
     def install(self) -> tuple[int, ...]:
         """Install handlers, returning the signal numbers actually handled.
@@ -115,6 +117,8 @@ class SignalCoordinator:
             bucket.append(int(signum))
         self._installed = tuple(installed)
         self._installed_reload = tuple(installed_reload)
+        # Windows: closing the console, logging off and shutting down stop us cleanly too
+        self._console_release = install_console_handler(lambda: self.record(int(signal.SIGTERM)))
         if skipped:
             self._logger.debug(
                 "signal handlers partially installed",
@@ -132,6 +136,9 @@ class SignalCoordinator:
                 except (ValueError, OSError, RuntimeError, TypeError):
                     continue
             self._previous.clear()
+            if self._console_release is not None:
+                self._console_release()
+                self._console_release = None
             self._installed = ()
             self._installed_reload = ()
 

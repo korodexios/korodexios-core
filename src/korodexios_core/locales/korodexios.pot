@@ -12,6 +12,10 @@ msgstr ""
 msgid "  [skipped] {name}: {reason}"
 msgstr ""
 
+#: kernel/ui_tier_data.py
+msgid "'<pm> run e2e' starts the project's own daemon with 'uv run <script> run': run 'uv sync --extra dev' in the project first, so the chassis dependency resolves."
+msgstr ""
+
 #: cli/container_doctor.py
 msgid "'kdx container fix' explains and runs this for you"
 msgstr ""
@@ -28,8 +32,24 @@ msgstr ""
 msgid "(empty)"
 msgstr ""
 
+#: renderer
+msgid "(free)"
+msgstr ""
+
 #: cli/commands.py
 msgid "(module {name} is discovered)"
+msgstr ""
+
+#: renderer
+msgid "(none)"
+msgstr ""
+
+#: renderer
+msgid "(none: defaults only)"
+msgstr ""
+
+#: renderer
+msgid "(not running)"
 msgstr ""
 
 #: cli/commands.py
@@ -84,6 +104,10 @@ msgstr ""
 msgid "A dotted key."
 msgstr ""
 
+#: kernel/ui_tiers.py
+msgid "A person's GUI choices (labels, hidden panels, form values) live in 'kdx ui prefs', not in the project's code."
+msgstr ""
+
 #: modules/web_console/module.py
 msgid "A theme name or a .css/.json file."
 msgstr ""
@@ -114,6 +138,10 @@ msgstr ""
 
 #: modules/web_console/tier_commands.py
 msgid "Also run the e2e tests with a visible browser window (needs a display)."
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "An app tier (react, vue) reads the saved GUI choices (labels, hidden panels, order, last tab) and writes remembered form values and pinned defaults. Renaming, hiding, reordering and own shortcut buttons are edited in the built-in console ('kdx ui', Customize) or with 'kdx ui prefs patch'; the app then shows them."
 msgstr ""
 
 #: cli/jobs.py
@@ -480,6 +508,10 @@ msgstr ""
 msgid "Event pattern: 'backup.*', 'core.job.**', '*' for all [*]."
 msgstr ""
 
+#: kernel/ui_tiers.py
+msgid "Everything the GUI can do must also work from the kdx CLI (terminal first)."
+msgstr ""
+
 #: modules/web_console/tier_commands.py
 msgid "Exit 1 when --out differs from the daemon's contract."
 msgstr ""
@@ -662,6 +694,10 @@ msgstr ""
 
 #: cli/agents.py
 msgid "Keep every AI agent's rule file in step with AGENTS.md."
+msgstr ""
+
+#: kernel/ui_tiers.py
+msgid "Keep the choice in docs/BRIEF.md so the next agent does not have to guess."
 msgstr ""
 
 #: cli/docs_sync.py
@@ -856,8 +892,20 @@ msgstr ""
 msgid "Most rows to print [100]."
 msgstr ""
 
+#: kernel/ui_tiers.py
+msgid "Move to 'static' for one small page of your own, or to 'react' or 'vue' for many screens with shared state; an existing project adopts one with 'kdx ui add'."
+msgstr ""
+
 #: modules/web_console/module.py
 msgid "Need"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "Newer npm versions may block the esbuild install script. The build normally works anyway; if vite fails with an esbuild error, approve it ('npm install-scripts approve esbuild') and reinstall."
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "No GUI files in the project; the built-in console shows every module."
 msgstr ""
 
 #: cli/jobs.py
@@ -994,6 +1042,14 @@ msgstr ""
 
 #: cli/commands.py
 msgid "Paths"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "Plain HTML, CSS and ES modules in web/; no build step, no Node packages."
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "Playwright needs a browser: 'kdx ui doctor' prints the recommended setting (PW_CHANNEL=chrome|msedge for an installed browser, or 'npx playwright install chromium'). Headed runs (PW_HEADED=1) need a display; doctor says if there is one."
 msgstr ""
 
 #: modules/mcp_server/module.py
@@ -1236,6 +1292,10 @@ msgstr ""
 msgid "Rotating log size limit [1048576]."
 msgstr ""
 
+#: kernel/ui_tiers.py
+msgid "Run 'kdx ui doctor --json' first: a tier whose tools are missing here is not ready."
+msgstr ""
+
 #: cli/db.py
 msgid "Run ONE read-only SQL statement (SELECT, PRAGMA ...) and print the rows."
 msgstr ""
@@ -1456,12 +1516,20 @@ msgstr ""
 msgid "Start a new language: an empty catalogue built from the template."
 msgstr ""
 
+#: kernel/ui_tiers.py
+msgid "Start from 'none': give each module a [ui] table and look at 'kdx ui'."
+msgstr ""
+
 #: cli/commands.py
 msgid "Start it as a job and return its id at once (see 'kdx jobs')."
 msgstr ""
 
 #: cli/service.py
 msgid "Start the daemon automatically at logon (Task Scheduler, systemd, launchd)."
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "State lives in the app-var and app-data volumes: 'docker compose down -v' deletes it. The control plane needs KDX_TOKEN and is published on 127.0.0.1 only; put TLS in front of it before widening the bind."
 msgstr ""
 
 #: cli/entry.py
@@ -1508,12 +1576,24 @@ msgstr ""
 msgid "Terminal table width for the CLI [100]."
 msgstr ""
 
+#: kernel/ui_tiers.py
+msgid "Test headless first; run headed checks only when doctor reports a display."
+msgstr ""
+
 #: cli/brief.py
 msgid "The 3 to 5 things it must do, separated by ';'"
 msgstr ""
 
+#: kernel/ui_tiers.py
+msgid "The GUI is a client of the control plane (/api/v1/*); it never holds core logic."
+msgstr ""
+
 #: modules/web_console/tier_commands.py
 msgid "The GUI tier to add."
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "The container files are verified with Docker running Linux containers: on Debian and with Docker Desktop on Windows (Linux engine), and with rootless Podman 5.4 on Debian 13 inside an LXC (build and run with --network=host, ids from 'kdx container fix'). Podman compose providers were not tried; Windows containers (the Windows engine) are not supported - the image is Linux. The build stage needs network access (package index, and git for the default git chassis source)."
 msgstr ""
 
 #: cli/remote.py
@@ -1534,6 +1614,10 @@ msgstr ""
 
 #: modules/wiki/module.py
 msgid "The source: an article, PDF, transcript, notes."
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "The static tier's web/ is not served by the chassis on its own. Serve it with a module's static_dirs() or 'npm --prefix web run dev'."
 msgstr ""
 
 #: modules/web_console/module.py
@@ -1560,6 +1644,10 @@ msgstr ""
 msgid "Truncate log file {path}?"
 msgstr ""
 
+#: kernel/ui_tiers.py
+msgid "UI texts go through the language service; machine output stays English."
+msgstr ""
+
 #: modules/system_info/module.py
 msgid "Uptime"
 msgstr ""
@@ -1574,6 +1662,14 @@ msgstr ""
 
 #: cli/commands.py
 msgid "Verify the project's declared file set without rewriting it."
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "Vite + React + TypeScript app in web/ that draws the module manifest."
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "Vite + Vue 3 + TypeScript app in web/ that draws the module manifest."
 msgstr ""
 
 #: cli/brief.py
@@ -1680,12 +1776,20 @@ msgstr ""
 msgid "a free range that nobody uses (review it, then run as admin):"
 msgstr ""
 
+#: kernel/ui_tier_data.py
+msgid "a module [ui] table or one static page is enough (less to build and maintain)"
+msgstr ""
+
 #: cli/proposal.py
 msgid "a proposal needs a title"
 msgstr ""
 
 #: cli/container_doctor.py
 msgid "a rootless engine has the ids it needs"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "a small own page is needed: a status view, a form, a few screens"
 msgstr ""
 
 #: cli/remote.py
@@ -1712,6 +1816,10 @@ msgstr ""
 msgid "after"
 msgstr ""
 
+#: kernel/ui_tier_data.py
+msgid "agents and developers should work with the most widely known UI stack"
+msgstr ""
+
 #: cli/entry.py
 msgid "aliases: kdx (short), korodexios (canonical).\nEvery command accepts the global flags above. Use --yes in CI to accept defaults."
 msgstr ""
@@ -1722,6 +1830,14 @@ msgstr ""
 
 #: cli/commands.py
 msgid "also write a Dockerfile, compose.yaml and .dockerignore"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "an AI agent should be able to change the page without a toolchain"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "an operator dashboard is enough: tabs, tables, forms and buttons per module"
 msgstr ""
 
 #: cli/commands.py
@@ -1808,6 +1924,10 @@ msgstr ""
 msgid "built-in default"
 msgstr ""
 
+#: renderer
+msgid "builtin_modules_dir"
+msgstr ""
+
 #: cli/db.py
 msgid "bytes"
 msgstr ""
@@ -1860,8 +1980,16 @@ msgstr ""
 msgid "claimed by"
 msgstr ""
 
+#: renderer
+msgid "clean_stop"
+msgstr ""
+
 #: cli/commands.py
 msgid "cli-collision: module commands shadowed by another owner:"
+msgstr ""
+
+#: renderer
+msgid "color"
 msgstr ""
 
 #: cli/db.py
@@ -1878,6 +2006,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "config file"
+msgstr ""
+
+#: renderer
+msgid "config_file"
 msgstr ""
 
 #: cli/commands.py
@@ -1940,6 +2072,10 @@ msgstr ""
 msgid "core.locale = {value} saved in {path}"
 msgstr ""
 
+#: renderer
+msgid "count"
+msgstr ""
+
 #: cli/tls.py
 msgid "covers"
 msgstr ""
@@ -1958,6 +2094,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "daemon"
+msgstr ""
+
+#: renderer
+msgid "data_dir"
 msgstr ""
 
 #: cli/db.py
@@ -2032,6 +2172,10 @@ msgstr ""
 msgid "durable, never touched: {root}"
 msgstr ""
 
+#: renderer
+msgid "durable_dir"
+msgstr ""
+
 #: modules/web_console/module.py
 msgid "e.g. '{\"defaults\": {\"job_queue.submit\":{\"kind\": \"demo\"}}}'."
 msgstr ""
@@ -2064,6 +2208,10 @@ msgstr ""
 msgid "env prefix"
 msgstr ""
 
+#: renderer
+msgid "env_file"
+msgstr ""
+
 #: cli/commands.py
 msgid "error"
 msgstr ""
@@ -2094,6 +2242,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "exit code"
+msgstr ""
+
+#: renderer
+msgid "extra_module_dirs"
 msgstr ""
 
 #: cli/commands.py
@@ -2148,6 +2300,10 @@ msgstr ""
 msgid "handler errors"
 msgstr ""
 
+#: renderer
+msgid "handlers"
+msgstr ""
+
 #: modules/web_console/tier_commands.py
 msgid "headed browser tests: {state}"
 msgstr ""
@@ -2194,6 +2350,10 @@ msgstr ""
 
 #: cli/tls.py
 msgid "install it (Git for Windows ships one), or run this yourself:"
+msgstr ""
+
+#: renderer
+msgid "installed"
 msgstr ""
 
 #: cli/commands.py
@@ -2304,6 +2464,10 @@ msgstr ""
 msgid "local file"
 msgstr ""
 
+#: renderer
+msgid "local_config_file"
+msgstr ""
+
 #: cli/commands.py
 msgid "lock held"
 msgstr ""
@@ -2316,12 +2480,32 @@ msgstr ""
 msgid "lock names"
 msgstr ""
 
+#: renderer
+msgid "lock_file"
+msgstr ""
+
+#: renderer
+msgid "locks_dir"
+msgstr ""
+
 #: cli/commands.py
 msgid "log file rotated to {name} ({archived} bytes archived)"
 msgstr ""
 
 #: cli/commands.py
 msgid "log file truncated ({removed} bytes freed)"
+msgstr ""
+
+#: renderer
+msgid "log_dir"
+msgstr ""
+
+#: renderer
+msgid "log_file"
+msgstr ""
+
+#: renderer
+msgid "logger"
 msgstr ""
 
 #: cli/commands.py
@@ -2334,6 +2518,10 @@ msgstr ""
 
 #: cli/service.py
 msgid "manager says"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "many interactive screens share state (a framework earns its weight there)"
 msgstr ""
 
 #: cli/commands.py
@@ -2394,6 +2582,10 @@ msgstr ""
 
 #: modules/web_console/module.py
 msgid "nav, panels, buttons, values, defaults, settings, layout; none means all but defaults."
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "neither Node nor Bun can be installed on the build host"
 msgstr ""
 
 #: modules/web_console/tier_commands.py
@@ -2616,6 +2808,10 @@ msgstr ""
 msgid "npm | bun | pnpm [from the lockfile, else npm]."
 msgstr ""
 
+#: kernel/ui_tier_data.py
+msgid "npm, pnpm 12 and bun 1.4 were each verified by hand on Linux with both app tiers (install, typecheck, component tests); npm also end to end. The chassis tests run none of them, so run '<pm> run typecheck && <pm> run test' first. With pnpm the seeded web/pnpm-workspace.yaml allows esbuild's build script (newer pnpm refuses it)."
+msgstr ""
+
 #: cli/proposal.py
 msgid "number"
 msgstr ""
@@ -2626,6 +2822,10 @@ msgstr ""
 
 #: cli/tls.py
 msgid "on another machine, trust it with: kdx --tls-ca cert.pem status --target https://HOST:18123"
+msgstr ""
+
+#: kernel/ui_embed.py
+msgid "one ask outstanding at a time; never retry a token the server refused"
 msgstr ""
 
 #: modules/web_console/module.py
@@ -2800,6 +3000,10 @@ msgstr ""
 msgid "reason"
 msgstr ""
 
+#: renderer
+msgid "received"
+msgstr ""
+
 #: cli/service.py
 msgid "register it with: kdx service install"
 msgstr ""
@@ -2810,6 +3014,22 @@ msgstr ""
 
 #: cli/commands.py
 msgid "reload failed: {payload}"
+msgstr ""
+
+#: renderer
+msgid "reload_count"
+msgstr ""
+
+#: renderer
+msgid "reload_enabled"
+msgstr ""
+
+#: renderer
+msgid "reload_requested"
+msgstr ""
+
+#: renderer
+msgid "reload_signals"
 msgstr ""
 
 #: cli/commands.py
@@ -2920,6 +3140,10 @@ msgstr ""
 msgid "shutdown"
 msgstr ""
 
+#: renderer
+msgid "shutdown_requested"
+msgstr ""
+
 #: cli/proposal.py
 msgid "sign in with 'gh auth login', or send it by hand with 'kdx proposal export'"
 msgstr ""
@@ -2958,6 +3182,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "state"
+msgstr ""
+
+#: renderer
+msgid "state_dir"
 msgstr ""
 
 #: cli/commands.py
@@ -3112,8 +3340,24 @@ msgstr ""
 msgid "the event feed ended: {exc}"
 msgstr ""
 
+#: kernel/ui_embed.py
+msgid "the frame accepts only window.parent on location.origin"
+msgstr ""
+
+#: kernel/ui_embed.py
+msgid "the frame posts the ask to window.parent with targetOrigin location.origin"
+msgstr ""
+
 #: cli/container_doctor.py
 msgid "the free range was chosen so that no account or other user's range is touched. The commands:"
+msgstr ""
+
+#: kernel/ui_embed.py
+msgid "the host answers only its own iframe (event.source) on its own origin"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "the host has no Node or Bun, or installing them is not wanted"
 msgstr ""
 
 #: cli/container_doctor.py
@@ -3126,6 +3370,26 @@ msgstr ""
 
 #: cli/commands.py
 msgid "the live state of a running daemon: 'kdx status' or 'kdx ui'"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "the page needs component libraries from npm"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "the product needs its own screens and the team prefers Vue's single-file components"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "the product needs its own screens, branding or interaction"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "the product needs its own screens, many interactive views or shared state"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "the project is a daemon, a CLI or an API and people mostly use the terminal"
 msgstr ""
 
 #: modules/job_queue/module.py
@@ -3210,6 +3474,18 @@ msgstr ""
 
 #: cli/users.py
 msgid "token"
+msgstr ""
+
+#: kernel/ui_embed.py
+msgid "token empty and cookie false: nobody is signed in"
+msgstr ""
+
+#: kernel/ui_embed.py
+msgid "token empty and cookie true: the session cookie authenticates; send no header"
+msgstr ""
+
+#: kernel/ui_embed.py
+msgid "token set: send it as X-Kdx-Token"
 msgstr ""
 
 #: modules/mcp_server/module.py
@@ -3322,6 +3598,18 @@ msgstr ""
 
 #: renderer
 msgid "yes"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "you want component tests (Vitest + @vue/test-utils) and end-to-end tests (Playwright)"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "you want component tests (Vitest) and end-to-end tests (Playwright)"
+msgstr ""
+
+#: kernel/ui_tier_data.py
+msgid "you want the least to maintain: nothing is built, nothing is installed"
 msgstr ""
 
 #: cli/jobs.py

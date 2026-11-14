@@ -15,7 +15,6 @@ import collections
 import contextlib
 import json
 import os
-import signal
 import subprocess
 import threading
 import time
@@ -27,6 +26,7 @@ from typing import Any, Final
 from ..config.layered import mask_url_credentials
 from ..exceptions import KorodexiosError
 from .audit import redact_detail
+from .process_group import end_group, group_flags, reap
 
 __all__ = [
     "PROCESS_FINISHED_EVENT",
@@ -38,8 +38,6 @@ __all__ = [
 PROCESS_FINISHED_EVENT: Final[str] = "core.process.finished"
 TAIL_LINES: Final[int] = 200
 """How many trailing output lines of each stream a ProcessResult keeps."""
-TERM_GRACE: Final[float] = 3.0
-"""Seconds a child gets after SIGTERM before the group is killed outright."""
 POLL: Final[float] = 0.05
 
 
@@ -144,7 +142,7 @@ class ProcessSupervisor:
                 text=True,
                 encoding="utf-8",
                 errors="replace",
-                **_group_flags(),
+                **group_flags(),
             )
         except (OSError, ValueError) as exc:
             raise ProcessError(
@@ -199,8 +197,8 @@ class ProcessSupervisor:
             time.sleep(POLL)
         cancelled = running.cancel.is_set() and process.poll() is None
         if process.poll() is None:
-            _end_group(process)
-        returncode = int(process.wait())
+            end_group(process)
+        returncode = reap(process)
         for reader in readers:
             reader.join(timeout=2.0)
         with self._guard:
@@ -353,36 +351,3 @@ def _feed_stdin(pipe: Any, text: str) -> None:
         pipe.write(text)
     with contextlib.suppress(OSError, ValueError):
         pipe.close()
-
-
-def _group_flags() -> dict[str, Any]:
-    """Return Popen keyword arguments that put the child in a group of its own."""
-    if os.name == "nt":
-        return {"creationflags": getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)}
-    return {"start_new_session": True}
-
-
-def _end_group(process: subprocess.Popen[str]) -> None:
-    """End *process* and everything it started: polite first, then for good."""
-    if os.name == "nt":
-        # taskkill /T walks the child tree, which Windows has no process group call for.
-        with contextlib.suppress(OSError, subprocess.SubprocessError):
-            subprocess.run(
-                ["taskkill", "/PID", str(process.pid), "/T", "/F"],
-                capture_output=True,
-                check=False,
-                timeout=10,
-            )
-        return
-    with contextlib.suppress(ProcessLookupError, PermissionError):
-        _killpg(process.pid, signal.SIGTERM)
-    try:
-        process.wait(timeout=TERM_GRACE)
-    except subprocess.TimeoutExpired:
-        with contextlib.suppress(ProcessLookupError, PermissionError):
-            _killpg(process.pid, getattr(signal, "SIGKILL", signal.SIGTERM))
-
-
-def _killpg(pgid: int, sig: int) -> None:
-    """Signal a process group (POSIX only; getattr keeps the Windows type check quiet)."""
-    getattr(os, "killpg")(pgid, sig)  # noqa: B009 - os.killpg does not exist on Windows

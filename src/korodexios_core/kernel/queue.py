@@ -44,6 +44,8 @@ DEFAULT_MAX_ATTEMPTS: Final[int] = 3
 DEFAULT_BACKOFF: Final[float] = 30.0
 MAX_BACKOFF: Final[float] = 3600.0
 MAX_TEXT: Final[int] = 4000
+_REQUEUE = "UPDATE tasks SET state='queued', run_after=?, error=? WHERE id=?"
+_FAILED = "UPDATE tasks SET state='failed', finished_at=?, error=? WHERE id=?"
 """Longest result or error text kept per task; the log carries the rest."""
 
 _SCHEMA = """
@@ -254,14 +256,8 @@ class JobQueue:
             cursor = db.execute(
                 "INSERT INTO tasks (kind, payload, max_attempts, run_after, created_at, user)"
                 " VALUES (?, ?, ?, ?, ?, ?)",
-                (
-                    name,
-                    json.dumps(payload, default=str),
-                    attempts,
-                    now + max(0.0, delay),
-                    now,
-                    user,
-                ),
+                (name, json.dumps(payload, default=str), attempts, now + max(0.0, delay), now,
+                 user),
             )
             return self._one(db, int(cursor.lastrowid or 0))
 
@@ -299,7 +295,8 @@ class JobQueue:
         """Mark a running task done and keep *result*."""
         with self._guard, self._connect() as db:
             db.execute(
-                "UPDATE tasks SET state='done', finished_at=?, result=?, error=NULL WHERE id=?",
+                "UPDATE tasks SET state='done', finished_at=?, result=?, error=NULL"
+                " WHERE id=? AND state='running'",
                 (float(self._clock()), _text(result), task_id),
             )
 
@@ -313,19 +310,18 @@ class JobQueue:
         """
         now = float(self._clock())
         with self._guard, self._connect() as db:
-            current = self._one(db, task_id)
-            retry = not permanent and current.attempts < current.max_attempts
-            if retry:
-                wait = min(MAX_BACKOFF, backoff * (2 ** max(0, current.attempts - 1)))
-                db.execute(
-                    "UPDATE tasks SET state='queued', run_after=?, error=? WHERE id=?",
-                    (now + wait, error[:MAX_TEXT], task_id),
-                )
-            else:
-                db.execute(
-                    "UPDATE tasks SET state='failed', finished_at=?, error=? WHERE id=?",
-                    (now, error[:MAX_TEXT], task_id),
-                )
+            db.execute("BEGIN IMMEDIATE")  # the read and the write see one state of the row
+            try:
+                current = self._one(db, task_id)
+                if current.state == "running":  # a late report never revives a settled task
+                    retry = not permanent and current.attempts < current.max_attempts
+                    wait = min(MAX_BACKOFF, backoff * (2 ** max(0, current.attempts - 1)))
+                    db.execute(_REQUEUE if retry else _FAILED,
+                               (now + wait if retry else now, error[:MAX_TEXT], task_id))
+                db.execute("COMMIT")
+            except BaseException:
+                db.execute("ROLLBACK")
+                raise
             return self._one(db, task_id)
 
     def recover(self) -> int:

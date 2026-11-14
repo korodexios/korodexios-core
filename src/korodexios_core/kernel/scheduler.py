@@ -177,6 +177,7 @@ class TaskScheduler:
         self._started_at: float | None = None
         self._active_task: str | None = None
         self._active_since: float | None = None
+        self._busy: set[str] = set()
 
     @property
     def enabled(self) -> bool:
@@ -469,51 +470,53 @@ class TaskScheduler:
         This is also the manual trigger a CLI or a control-plane route uses to ask
         for work immediately, which is why the clock is optional here. The task is
         looked up under the guard and then called with it released, so the callback
-        may take scheduler decisions of its own.
+        may take scheduler decisions of its own. A task that is running already (the
+        clock's run and a manual trigger at once) is not started twice: this returns False.
         """
         task = self.task(name)
-        if task is None:
+        if task is None or not self._enabled or task.done:
             return False
-        if not self._enabled or task.done:
-            return False
-        moment = float(self._clock() if now is None else now)
+        with self._guard:
+            if task.name in self._busy:
+                return False
+            self._busy.add(task.name)
+        try:
+            return self._execute(task, float(self._clock() if now is None else now))
+        finally:
+            with self._guard:
+                self._busy.discard(task.name)
+
+    def _execute(self, task: ScheduledTask, moment: float) -> bool:
         started = time.monotonic()
         self._active_task = task.name
         self._active_since = started
+        ok = True
         try:
             task.callback()
         except Exception as exc:
+            ok = False
             task.failures += 1
             task.record_error(f"{type(exc).__name__}: {exc}")
-            task.last_run = moment
-            task.last_duration_ms = (time.monotonic() - started) * 1000.0
-            task.next_due = self._after_run(task, moment)
-            if not task.repeat:
-                task.done = True
-                task.enabled = False
-            self._log_task_failure(task)
-            self._publish(TASK_FAILED_EVENT, task)
-            return False
         finally:
             self._active_task = None
             self._active_since = None
-        task.runs += 1
+        if ok:
+            task.runs += 1
+            task.last_error = ""
         task.last_run = moment
-        task.last_error = ""
         task.last_duration_ms = (time.monotonic() - started) * 1000.0
         task.next_due = self._after_run(task, moment)
         if not task.repeat:
             task.done = True
             task.enabled = False
-        if self._logger is not None:
-            self._logger.debug(
-                "task ran",
-                name=task.name,
-                runs=task.runs,
-                duration_ms=round(task.last_duration_ms, 3),
-            )
-        self._publish(TASK_RUN_EVENT, task)
-        return True
+        if self._logger is not None and not ok:
+            self._logger.warning(f"scheduled task {task.name!r} failed: {task.last_error}",
+                                 name=task.name, failures=task.failures)
+        elif self._logger is not None:
+            self._logger.debug("task ran", name=task.name, runs=task.runs,
+                               duration_ms=round(task.last_duration_ms, 3))
+        self._publish(TASK_RUN_EVENT if ok else TASK_FAILED_EVENT, task)
+        return ok
 
     def start(self, *, threaded: bool | None = None) -> TaskScheduler:
         """Open the scheduler; join the tick loop, or take a thread when asked.
@@ -641,15 +644,6 @@ class TaskScheduler:
         if bus is None:
             return
         bus.publish(event, task.as_dict(), source=self._source)
-
-    def _log_task_failure(self, task: ScheduledTask) -> None:
-        if self._logger is None:
-            return
-        self._logger.warning(
-            f"scheduled task {task.name!r} failed: {task.last_error}",
-            name=task.name,
-            failures=task.failures,
-        )
 
     def __len__(self) -> int:
         return len(self._tasks)

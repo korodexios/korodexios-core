@@ -55,6 +55,19 @@ def test_a_module_importing_a_sibling_module_fails(tmp_path: Path) -> None:
     assert "alpha/third.py imports cross_one.modules.beta" in result.stdout
 
 
+def test_a_dynamic_import_of_a_sibling_module_fails_too(tmp_path: Path) -> None:
+    root = seeded(tmp_path, "dyn_one")
+    write(root, "dyn_one", "modules/beta/module.py", "VALUE = 1\n")
+    write(root, "dyn_one", "modules/alpha/module.py",
+          "import importlib\n\nOTHER = importlib.import_module('dyn_one.modules.beta.module')\n")
+    write(root, "dyn_one", "modules/alpha/own.py",
+          "import importlib\n\nMINE = importlib.import_module('dyn_one.modules.alpha.module')\n")
+    result = run_rules(root)
+    assert result.returncode != 0
+    assert "alpha/module.py imports dyn_one.modules.beta.module" in result.stdout
+    assert "alpha/own.py" not in result.stdout  # a module may load its own parts
+
+
 def test_stubs_and_todo_comments_fail_but_documented_no_ops_do_not(tmp_path: Path) -> None:
     root = seeded(tmp_path, "stub_one")
     write(root, "stub_one", "logic.py", '''\
