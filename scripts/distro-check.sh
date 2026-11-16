@@ -23,7 +23,8 @@ if [ "${1:-}" != "--as-user" ]; then
     elif command -v apk >/dev/null 2>&1; then
         apk add --no-cache python3 py3-pip git make >/dev/null
     elif command -v pacman >/dev/null 2>&1; then
-        pacman -Sy --noconfirm --needed python python-pip git make >/dev/null
+        # -Syu, never -Sy: a partial upgrade is unsupported on Arch and breaks on library splits
+        pacman -Syu --noconfirm --needed python python-pip git make >/dev/null
     elif ! command -v python3 >/dev/null 2>&1; then
         echo "no supported package manager and no python3" >&2
         exit 2

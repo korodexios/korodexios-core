@@ -5,6 +5,12 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Fixed
+
+- `scripts/distro-check.sh` on Arch Linux upgrades the image fully (`pacman -Syu`) before
+  installing Python; the partial upgrade (`-Sy`) broke the CI `distros` job once Arch split
+  OpenSSL 3 into its own `openssl-3` package (`conflicting files`).
+
 ## [0.7.4] - 2026-11-14
 
 The rest of the review of 2026-11-08 and small follow-ups to 0.7.3.
