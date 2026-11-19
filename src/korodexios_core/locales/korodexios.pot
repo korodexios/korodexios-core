@@ -1208,6 +1208,10 @@ msgstr ""
 msgid "Register the daemon to start at logon, and start it now."
 msgstr ""
 
+#: modules/module_admin/module.py
+msgid "Reload one module of the running daemon without restarting it."
+msgstr ""
+
 #: cli/config_edit.py
 msgid "Remove a key from the local layer, so the layer below it applies again."
 msgstr ""
@@ -1608,6 +1612,10 @@ msgstr ""
 msgid "The new value."
 msgstr ""
 
+#: modules/module_admin/module.py
+msgid "The previous version is running again."
+msgstr ""
+
 #: modules/wiki/module.py
 msgid "The project wiki (LLM-wiki layout): public and internal, per language."
 msgstr ""
@@ -1826,6 +1834,10 @@ msgstr ""
 
 #: cli/proposal.py
 msgid "already sent: {url} (--again sends it once more)"
+msgstr ""
+
+#: modules/module_admin/module.py
+msgid "also restart the running modules that depend on it"
 msgstr ""
 
 #: cli/commands.py
@@ -2126,6 +2138,10 @@ msgstr ""
 
 #: cli/commands.py
 msgid "description"
+msgstr ""
+
+#: modules/module_admin/module.py
+msgid "did not restart: {names}"
 msgstr ""
 
 #: cli/docs_sync.py
@@ -2560,8 +2576,20 @@ msgstr ""
 msgid "module routes"
 msgstr ""
 
+#: modules/module_admin/module.py
+msgid "module to reload"
+msgstr ""
+
 #: cli/commands.py
 msgid "module {name} created"
+msgstr ""
+
+#: modules/module_admin/module.py
+msgid "module {name} reloaded ({before} -> {after})"
+msgstr ""
+
+#: modules/module_admin/module.py
+msgid "module {name} was not reloaded: {error}"
 msgstr ""
 
 #: cli/commands.py
@@ -3054,6 +3082,10 @@ msgstr ""
 
 #: modules/mcp_server/module.py
 msgid "restart the agent so it picks up the kdx server"
+msgstr ""
+
+#: modules/module_admin/module.py
+msgid "restarted with it: {names}"
 msgstr ""
 
 #: cli/remote.py

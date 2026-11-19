@@ -22,7 +22,17 @@
       "name": "str",
       "origin": "str",
       "priority": "number",
-      "routes": "list",
+      "routes": [
+        {
+          "auth": "bool",
+          "content_type": "str",
+          "methods": "list",
+          "module": "str",
+          "path": "str",
+          "role": "str",
+          "summary": "str"
+        }
+      ],
       "secret_keys": "list",
       "settings_collisions": "list",
       "state": "str",

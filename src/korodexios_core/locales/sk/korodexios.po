@@ -1210,6 +1210,10 @@ msgstr "Na chvíľu odmietne každé volanie limitera (po chybe 429 alebo 503)."
 msgid "Register the daemon to start at logon, and start it now."
 msgstr "Zaregistruje démona na spustenie pri prihlásení a hneď ho spustí."
 
+#: modules/module_admin/module.py
+msgid "Reload one module of the running daemon without restarting it."
+msgstr "Znovu načíta jeden modul bežiaceho démona bez jeho reštartu."
+
 #: cli/config_edit.py
 msgid "Remove a key from the local layer, so the layer below it applies again."
 msgstr "Odstráni kľúč z lokálnej vrstvy, takže opäť platí vrstva pod ňou."
@@ -1610,6 +1614,10 @@ msgstr "Kľúč patrí tomuto modulu (modules.NAME.KEY)."
 msgid "The new value."
 msgstr "Nová hodnota."
 
+#: modules/module_admin/module.py
+msgid "The previous version is running again."
+msgstr "Predchádzajúca verzia opäť beží."
+
 #: modules/wiki/module.py
 msgid "The project wiki (LLM-wiki layout): public and internal, per language."
 msgstr "Wiki projektu (rozloženie LLM-wiki): verejná a interná, po jazykoch."
@@ -1829,6 +1837,10 @@ msgstr "aliasy: kdx (krátky), korodexios (kanonický).\nKaždý príkaz prijím
 #: cli/proposal.py
 msgid "already sent: {url} (--again sends it once more)"
 msgstr "už odoslané: {url} (--again ho pošle znova)"
+
+#: modules/module_admin/module.py
+msgid "also restart the running modules that depend on it"
+msgstr "reštartuje aj bežiace moduly, ktoré od neho závisia"
 
 #: cli/commands.py
 msgid "also write a Dockerfile, compose.yaml and .dockerignore"
@@ -2129,6 +2141,10 @@ msgstr "závisí od"
 #: cli/commands.py
 msgid "description"
 msgstr "popis"
+
+#: modules/module_admin/module.py
+msgid "did not restart: {names}"
+msgstr "nereštartovali sa: {names}"
 
 #: cli/docs_sync.py
 msgid "differs from the installed core"
@@ -2562,9 +2578,21 @@ msgstr "problémy pri objavovaní modulov:"
 msgid "module routes"
 msgstr "trasy modulov"
 
+#: modules/module_admin/module.py
+msgid "module to reload"
+msgstr "modul na opätovné načítanie"
+
 #: cli/commands.py
 msgid "module {name} created"
 msgstr "modul {name} bol vytvorený"
+
+#: modules/module_admin/module.py
+msgid "module {name} reloaded ({before} -> {after})"
+msgstr "modul {name} znovu načítaný ({before} -> {after})"
+
+#: modules/module_admin/module.py
+msgid "module {name} was not reloaded: {error}"
+msgstr "modul {name} sa nenačítal znovu: {error}"
 
 #: cli/commands.py
 msgid "modules"
@@ -3057,6 +3085,10 @@ msgstr "rezidentná"
 #: modules/mcp_server/module.py
 msgid "restart the agent so it picks up the kdx server"
 msgstr "reštartujte agenta, aby načítal server kdx"
+
+#: modules/module_admin/module.py
+msgid "restarted with it: {names}"
+msgstr "reštartované spolu s ním: {names}"
 
 #: cli/remote.py
 msgid "role"

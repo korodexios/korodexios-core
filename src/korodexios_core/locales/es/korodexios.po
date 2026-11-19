@@ -1210,6 +1210,10 @@ msgstr "Rechaza toda llamada de un limitador durante un tiempo (tras un 429 o 50
 msgid "Register the daemon to start at logon, and start it now."
 msgstr "Registra el demonio para iniciarse al iniciar sesión y lo inicia ahora."
 
+#: modules/module_admin/module.py
+msgid "Reload one module of the running daemon without restarting it."
+msgstr "Recarga un módulo del demonio en ejecución sin reiniciarlo."
+
 #: cli/config_edit.py
 msgid "Remove a key from the local layer, so the layer below it applies again."
 msgstr "Quita una clave de la capa local, de modo que vuelve a aplicarse la capa inferior."
@@ -1610,6 +1614,10 @@ msgstr "La clave pertenece a este módulo (modules.NAME.KEY)."
 msgid "The new value."
 msgstr "El nuevo valor."
 
+#: modules/module_admin/module.py
+msgid "The previous version is running again."
+msgstr "La versión anterior vuelve a ejecutarse."
+
 #: modules/wiki/module.py
 msgid "The project wiki (LLM-wiki layout): public and internal, per language."
 msgstr "El wiki del proyecto (estructura LLM-wiki): público e interno, por idioma."
@@ -1829,6 +1837,10 @@ msgstr "alias: kdx (corto), korodexios (canónico).\nTodos los comandos aceptan 
 #: cli/proposal.py
 msgid "already sent: {url} (--again sends it once more)"
 msgstr "ya enviado: {url} (--again lo envía otra vez)"
+
+#: modules/module_admin/module.py
+msgid "also restart the running modules that depend on it"
+msgstr "reinicia también los módulos en ejecución que dependen de él"
 
 #: cli/commands.py
 msgid "also write a Dockerfile, compose.yaml and .dockerignore"
@@ -2129,6 +2141,10 @@ msgstr "depende de"
 #: cli/commands.py
 msgid "description"
 msgstr "descripción"
+
+#: modules/module_admin/module.py
+msgid "did not restart: {names}"
+msgstr "no se reiniciaron: {names}"
 
 #: cli/docs_sync.py
 msgid "differs from the installed core"
@@ -2562,9 +2578,21 @@ msgstr "problemas de descubrimiento de módulos:"
 msgid "module routes"
 msgstr "rutas de módulos"
 
+#: modules/module_admin/module.py
+msgid "module to reload"
+msgstr "módulo que se recarga"
+
 #: cli/commands.py
 msgid "module {name} created"
 msgstr "módulo {name} creado"
+
+#: modules/module_admin/module.py
+msgid "module {name} reloaded ({before} -> {after})"
+msgstr "módulo {name} recargado ({before} -> {after})"
+
+#: modules/module_admin/module.py
+msgid "module {name} was not reloaded: {error}"
+msgstr "el módulo {name} no se recargó: {error}"
 
 #: cli/commands.py
 msgid "modules"
@@ -3057,6 +3085,10 @@ msgstr "residente"
 #: modules/mcp_server/module.py
 msgid "restart the agent so it picks up the kdx server"
 msgstr "reinicie el agente para que cargue el servidor kdx"
+
+#: modules/module_admin/module.py
+msgid "restarted with it: {names}"
+msgstr "reiniciados con él: {names}"
 
 #: cli/remote.py
 msgid "role"

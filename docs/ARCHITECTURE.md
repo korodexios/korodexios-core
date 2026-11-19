@@ -434,6 +434,14 @@ any name `lock_name()` refuses are not locks and never look stale (`v0.2.5`).
   harmless; a registration made after the scope closed is undone at once; a route or mount that
   another module replaced in the meantime is left alone. Scopes are opt-in: a module that
   registers through `context` directly behaves as before.
+- **Module reload** (`kernel/module_reload.py`, `kdx module-reload`, `POST /api/v1/modules/reload`).
+  Prepare first, swap second: the module's code is purged from `sys.modules`, imported again and
+  contract-checked while the running instance is untouched; a refusal puts the old code back.
+  Then the module (and with `--cascade` its running dependents) is stopped, the new instance is
+  registered, initialised and started, and its routes, mounts and workers replace the old ones. If
+  it cannot come up the old code is restored and started again (`rolled_back`). Not reloadable
+  without a restart: a rename, a changed `depends_on`, `module_admin` itself. Register through the
+  scope in `start()`, because the scope is closed on `stop()`.
 - **Static content.** The chassis owns the one socket; a module owns its files. A mount is a
   prefix plus a directory, and the media type comes from the file, so a dashboard costs no
   second server and no proxy.

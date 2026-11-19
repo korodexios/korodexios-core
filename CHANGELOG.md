@@ -5,6 +5,23 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+### Added
+
+- Module scopes (`kernel/scope.py`): `context.scope("<module>")` returns a `ModuleScope` whose
+  `subscribe`, `schedule`, `schedule_at`, `register_ipc_route`, `register_static_dir` and
+  `on_dispose` each record their own undo. The chassis runs them newest first as soon as the
+  module's `stop()` ended (done, failed or timed out) and closes the rest on `core.stopped`. A
+  failing disposer never blocks the others; a route another module replaced is left alone.
+  `metrics`, `backup_engine`, `heartbeat`, `job_queue` and `webhooks` use it. New exports:
+  `ModuleScope`, `Disposables`.
+- `kdx module-reload NAME [--cascade] [--json]` and `POST /api/v1/modules/reload` (admin; new
+  built-in module `module_admin`): reload one module of a running daemon without restarting it
+  (`kernel/module_reload.py`). The new code is imported and checked first, so a syntax error, a
+  broken contract, a rename or a changed `depends_on` leaves the running module untouched; only
+  then it is stopped and replaced, and it is started again with the old code if the new instance
+  cannot come up. Running dependents block the reload unless `--cascade` restarts them too.
+  Modules that register through a scope must do so in `start()`.
+
 ### Fixed
 
 - `scripts/distro-check.sh` on Arch Linux upgrades the image fully (`pacman -Syu`) before
