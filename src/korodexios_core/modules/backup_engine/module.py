@@ -641,7 +641,7 @@ class BackupEngineModule(Module):
         context = self.context
         if context is None or self._schedule_interval <= 0.0:
             return None
-        task = context.schedule(
+        task = context.scope(self.name).schedule(
             interval_seconds=self._schedule_interval,
             callback=self._sweep_backup,
             name=SWEEP_TASK,
@@ -670,7 +670,7 @@ class BackupEngineModule(Module):
         context = self.context
         if context is None or self._prune_interval <= 0.0 or self._auto_prune_days <= 0:
             return None
-        task = context.schedule(
+        task = context.scope(self.name).schedule(
             interval_seconds=self._prune_interval,
             callback=self._prune_sweep,
             name=PRUNE_TASK,

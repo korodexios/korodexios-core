@@ -219,12 +219,12 @@ class JobQueueModule(Module):
                 return
             queue = context.job_queue()
             poll = max(0.05, self.config.get_float("poll", DEFAULT_POLL))
-            self._pump_task = context.schedule(
+            self._pump_task = context.scope(self.name).schedule(
                 poll, lambda: self._pump(queue), name="queue-pump", module=self.name
             )
             keep = self.config.get_float("keep_days", DEFAULT_KEEP_DAYS)
             if keep > 0:
-                self._purge_task = context.schedule_at(
+                self._purge_task = context.scope(self.name).schedule_at(
                     "daily 04:00-05:00", lambda: self._purge(queue, keep), name="queue-purge"
                 )
 

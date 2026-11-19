@@ -233,7 +233,7 @@ class WebhooksModule(Module):
         work: queue.Queue[tuple[Target, Event, str] | None] = queue.Queue(maxsize=DEFAULT_QUEUE)
         stop = threading.Event()
         self._queue, self._stop = work, stop
-        self._subscription = self.bus.subscribe("*", self._enqueue, name="webhooks.outbound")
+        self._subscription = self.require_context().scope(self.name).subscribe("*", self._enqueue)
         self._thread = threading.Thread(
             target=self._work, args=(work, stop), name=WORKER_NAME, daemon=True
         )

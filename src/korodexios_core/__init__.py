@@ -81,6 +81,7 @@ from .kernel.project import ProjectIdentity, project_identity
 from .kernel.queue import JobQueue, PermanentJobError, QueueTask
 from .kernel.registry import ModuleRegistry
 from .kernel.scheduler import ScheduledTask, TaskScheduler
+from .kernel.scope import Disposables, ModuleScope
 from .kernel.supervision import WorkerRecord, WorkerSupervisor
 from .kernel.users import Caller, acting_as, current_caller
 from .logging import KorodexiosLogger, LoggerFactory, build_logger
@@ -121,6 +122,7 @@ __all__ = [
     "CoreContext",
     "DiagnosticCheck",
     "DiagnosticSeverity",
+    "Disposables",
     "Event",
     "EventBus",
     "ExitCode",
@@ -149,6 +151,7 @@ __all__ = [
     "ModuleLifecycleError",
     "ModuleProtocol",
     "ModuleRegistry",
+    "ModuleScope",
     "ModuleSpec",
     "ModuleState",
     "NamedLock",

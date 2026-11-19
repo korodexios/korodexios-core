@@ -426,6 +426,14 @@ any name `lock_name()` refuses are not locks and never look stale (`v0.2.5`).
   with state, attempts and backoff; claiming is one `BEGIN IMMEDIATE`, so two workers or two
   processes never take the same task. Unlike `kernel/jobs.py` (in-memory RPC jobs), it
   survives a restart.
+- **Module scopes** (`kernel/scope.py`). `context.scope("<module>")` returns a `ModuleScope`;
+  `subscribe`, `schedule`, `schedule_at`, `register_ipc_route`, `register_static_dir` and
+  `on_dispose` each record their own undo. The chassis runs the undos newest first as soon as
+  that module's `stop()` ended - done, failed or timed out - and closes whatever is left on
+  `core.stopped`. A failing disposer is logged and never blocks the rest; closing twice is
+  harmless; a registration made after the scope closed is undone at once; a route or mount that
+  another module replaced in the meantime is left alone. Scopes are opt-in: a module that
+  registers through `context` directly behaves as before.
 - **Static content.** The chassis owns the one socket; a module owns its files. A mount is a
   prefix plus a directory, and the media type comes from the file, so a dashboard costs no
   second server and no proxy.

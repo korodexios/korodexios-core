@@ -99,7 +99,7 @@ class MetricsModule(Module):
         context.metrics.collector(COLLECTOR, self.chassis_samples)
         interval = self.config.get_float("snapshot_interval", 0.0)
         if interval > 0:
-            self._task = context.schedule(
+            self._task = context.scope(self.name).schedule(
                 max(1.0, interval), self.publish_snapshot, name="metrics-snapshot",
                 module=self.name,
             )

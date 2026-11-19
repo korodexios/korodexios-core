@@ -143,7 +143,7 @@ class HeartbeatModule(Module):
         self._task = (
             None
             if context is None
-            else context.schedule(
+            else context.scope(self.name).schedule(
                 self._interval, self._beat_tick, name=TICKER_TASK, module=self.name
             )
         )

@@ -25,6 +25,7 @@ from .metrics import MetricsRegistry
 from .process import ProcessResult, ProcessSupervisor
 from .queue import JobQueue
 from .scheduler import TaskScheduler
+from .scope import ModuleScope, close_scopes_when_modules_end
 from .supervision import WorkerRecord, WorkerSupervisor
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -59,6 +60,31 @@ class CoreContext:
     i18n: I18n = field(default_factory=I18n)
     metrics: MetricsRegistry = field(default_factory=MetricsRegistry)
     """Counters, gauges, summaries and collectors; served by the 'metrics' module."""
+
+    scopes: dict[str, ModuleScope] = field(default_factory=dict)
+    """One scope per module that asked for one; closed after that module's stop()."""
+
+    def scope(self, module: str) -> ModuleScope:
+        """Return the scope of *module*: what it registers through it ends with its stop().
+
+        ``subscribe``, ``schedule``, ``schedule_at``, ``register_ipc_route``,
+        ``register_static_dir`` and ``on_dispose`` each record their own undo, run newest
+        first right after the module's ``stop()`` (done, failed or timed out).
+        """
+        key = str(module).strip()
+        if not key:
+            raise ChassisError("a module scope needs the module name")
+        existing = self.scopes.get(key)
+        if existing is None:
+            if not self.scopes:
+                close_scopes_when_modules_end(self)
+            existing = self.scopes[key] = ModuleScope(key, self)
+        return existing
+
+    def close_scope(self, module: str) -> list[str]:
+        """Undo every registration of *module*; one line per disposer that failed."""
+        scope = self.scopes.get(str(module))
+        return scope.close() if scope is not None else []
 
     def translate(self, message: str, /, *, domain: str = CORE_DOMAIN, **fields: Any) -> str:
         """Return *message* in the active locale; the source string when untranslated."""
