@@ -177,6 +177,7 @@ directory ignores dot files, swap files, and names `lock_name()` refuses | **del
 | 40 | `v0.7.0`: one front end. `/ui/` serves the one-window shell (the classic console is `/ui/console.html`, `modules.web_console.frontend`), `/ui` redirects to `/ui/`, `Range` on static mounts and `IpcResponse.file`, the `embed` panel with `embeddable` mounts, the shell follows the system theme | **delivered** |
 | 41 | app GUIs on one client: the `vue` tier beside `react`, the framework-neutral `web/src/kdx/` both share (auth rules, embed protocol v1 with `cookie`, live events, media), `kdx ui add <tier>` for existing projects, `kdx ui types` from `/api/v1/schema`, manifest `refresh_on` and the `media` cell (from downstream proposal 006); `v0.7.3` | **delivered** |
 | 42 | `v0.7.4`: the rest of the review of 2026-11-08 (typed `config show --json`, Windows console close/logoff/shutdown, bounded process end, atomic queue `fail()`, no double task run, Windows blocking lock, dynamic imports in the rules test, coverage floor 90) and `kdx ui guide`/`kdx doctor` translated | **delivered** |
+| 43 | `v0.8.0`: module scopes (`context.scope()`, registrations end with the module) and `kdx module-reload` (reload one module of a running daemon: prepare first, swap second, roll back on failure) | **delivered** |
 
 ## Next
 

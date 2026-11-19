@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.7.4.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.8.0.
 
 ## Working preferences
 
@@ -53,7 +53,19 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 - Never commit control-plane users or the audit log (see commit f78f747); keep
   `var/` and runtime state out of git.
 
-## Current state (2026-11-14)
+## Current state (2026-11-19)
+
+- v0.8.0 (owner asked for merge, commit and push from the Linux dev host `kleo@10.50.50.3`; branch
+  `feature/module-scopes-reload`): module scopes (`kernel/scope.py`, `context.scope(name)`: subscribe,
+  schedule, routes, mounts, `on_dispose` undone newest first after the module's `stop()`; used by
+  `metrics`, `backup_engine`, `heartbeat`, `job_queue`, `webhooks`) and `kdx module-reload NAME
+  [--cascade]` / `POST /api/v1/modules/reload` (module `module_admin`, `kernel/module_reload.py`:
+  prepare first, swap second, roll back on failure; a rename or changed `depends_on` needs a
+  restart; modules register through a scope in `start()`). Verified on Linux with `make check`
+  and against a real daemon; found there: the bytecode cache served the old code for a file
+  rewritten in the same second, so reload drops it. Lesson again: test on Linux before a release.
+
+## State on 2026-11-14
 
 - v0.7.4 (owner asked for commit, merge, tag and push; branch `feature/post-073-cleanup`):
   the rest of the 2026-11-08 review (V2 typed `config show --json`, V3 dynamic imports in the

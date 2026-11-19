@@ -5,6 +5,8 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-19
+
 ### Added
 
 - Module scopes (`kernel/scope.py`): `context.scope("<module>")` returns a `ModuleScope` whose
