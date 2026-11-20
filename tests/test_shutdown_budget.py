@@ -4,7 +4,11 @@ halts module start-up (R3)."""
 from __future__ import annotations
 
 import time
+from types import SimpleNamespace
 
+import pytest
+
+from korodexios_core.kernel import shutdown
 from korodexios_core.kernel.contract import ModuleState
 from korodexios_core.kernel.registry import ModuleRegistry
 from korodexios_core.kernel.shutdown import MIN_STEP_SECONDS, Budget
@@ -13,12 +17,15 @@ from .conftest import ScriptedModule
 from .test_registry import DummyLogger, make_spec
 
 
-def test_a_budget_hands_out_what_is_left() -> None:
+def test_a_budget_hands_out_what_is_left(monkeypatch: pytest.MonkeyPatch) -> None:
+    # A fake clock: a real sleep overshoots on a loaded CI runner (macOS slept 0.3 s for 0.2 s).
+    now = [100.0]
+    monkeypatch.setattr(shutdown, "time", SimpleNamespace(monotonic=lambda: now[0]))
     budget = Budget(0.4)
-    first = budget.left()
-    time.sleep(0.2)
-    assert 0.1 < budget.left() < first
-    time.sleep(0.35)
+    assert budget.left() == pytest.approx(0.4)
+    now[0] += 0.2
+    assert budget.left() == pytest.approx(0.2)
+    now[0] += 0.35
     assert budget.left() == MIN_STEP_SECONDS, "a late step still gets a moment"
     assert Budget(None).left() == 0.0, "unbounded stays unbounded"
 
