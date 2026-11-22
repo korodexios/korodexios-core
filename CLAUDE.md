@@ -9,7 +9,7 @@ adds what AGENTS.md does not say: project state and working preferences.
 
 Headless microkernel chassis that seeds every Korodexios project. Python >= 3.11,
 runtime deps only PyYAML + rich. Console entry points: `kdx` (primary) and `korodexios`.
-Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.8.0.
+Version lives in `src/korodexios_core/version.py` (single source of truth); current: 0.8.1.
 
 ## Working preferences
 
@@ -53,7 +53,16 @@ Version lives in `src/korodexios_core/version.py` (single source of truth); curr
 - Never commit control-plane users or the audit log (see commit f78f747); keep
   `var/` and runtime state out of git.
 
-## Current state (2026-11-19)
+## Current state (2026-11-22)
+
+- v0.8.1 (owner asked for version, commit and push; branch `feature/mcp-command-roles`): downstream
+  proposal 17 from assay-wiki. MCP tools need the same role as the command on rpc
+  (`kernel/mcp.py` `required_role` and `command_tools` start from `viewer`): `CliCommand.role` can
+  lower a tool below operator, a group is a floor (an unmarked group is an operator floor, so a
+  project marks the group too), `danger` stays admin, `modules.mcp.role` stays the ceiling. A test
+  checks MCP and `chassis._required_role` agree. `make check` passed on Linux.
+
+## State on 2026-11-19
 
 - v0.8.0 (owner asked for merge, commit and push from the Linux dev host `kleo@10.50.50.3`; branch
   `feature/module-scopes-reload`): module scopes (`kernel/scope.py`, `context.scope(name)`: subscribe,
