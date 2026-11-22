@@ -23,6 +23,10 @@ chassis. The HTTP endpoint needs a token (`X-Kdx-Token` or `Authorization: Beare
 - `kdx_proposal_draft` - writes a core-proposal note locally (never sends anything).
 - One tool per runnable module command (`heartbeat status` -> `heartbeat_status`).
   `remote=False` commands are never tools; `danger` commands need the admin role.
+  A tool needs the same role as the command on `POST /api/v1/rpc`: the command's own
+  `role` (else `admin` for `danger`, else `operator`), raised by every group above it.
+  A group only sets a floor: an unmarked command stays `operator` under a `viewer` group,
+  and a `viewer` command under an unmarked group is `operator` too, so mark both.
 - Resources: `kdx://playbook`, `kdx://conventions`, and, when the files exist,
   `kdx://project/agents` (AGENTS.md) and `kdx://project/brief` (docs/BRIEF.md), plus what
   modules offer through an optional `mcp_resources()` hook (the wiki's `kdx://wiki/public`).

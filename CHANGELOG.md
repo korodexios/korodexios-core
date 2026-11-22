@@ -5,6 +5,21 @@ history lives in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-11-22
+
+### Changed
+
+- MCP tools built from CLI commands need the same role as the command on `POST /api/v1/rpc`
+  (downstream proposal 17). `required_role` and the tool walk start from `viewer` instead of
+  `operator`, so a command marked `role="viewer"` or `role="contributor"` is a tool for that
+  role. Unmarked commands stay `operator`, `danger` stays `admin`, a group's role is a floor
+  for its children (an unmarked group is an operator floor), and `modules.mcp.role` is still
+  the ceiling. Nothing changes for a project that marks no roles.
+
+### Fixed
+
+- The budget test uses a fake clock instead of real sleeps.
+
 ## [0.8.0] - 2026-11-19
 
 ### Added

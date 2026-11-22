@@ -13,7 +13,7 @@ from typing import Any
 import pytest
 
 from korodexios_core.cli.entry import main
-from korodexios_core.kernel.chassis import Chassis
+from korodexios_core.kernel.chassis import Chassis, _required_role
 from korodexios_core.kernel.cli_contract import CliArgument, CliCommand
 from korodexios_core.kernel.mcp import (
     INVALID_PARAMS,
@@ -27,6 +27,7 @@ from korodexios_core.kernel.mcp import (
     input_schema,
     tool_name,
 )
+from korodexios_core.kernel.users import role_rank
 from korodexios_core.modules.mcp_server.module import (
     MCP_PATH,
     McpServerModule,
@@ -213,6 +214,19 @@ def test_command_tools_respect_remote_danger_role_and_visibility() -> None:
             ),
         ),
         CliCommand(name="drop", handler=handler, role="contributor"),
+        CliCommand(
+            name="kb",
+            role="viewer",
+            subcommands=(
+                CliCommand(name="note", handler=handler, role="contributor"),
+                CliCommand(name="find", handler=handler, role="viewer"),
+                CliCommand(name="decide", handler=handler),
+            ),
+        ),
+        CliCommand(
+            name="wiki",
+            subcommands=(CliCommand(name="read", handler=handler, role="viewer"),),
+        ),
         CliCommand(name="mcp", handler=handler),
         CliCommand(name="drop", handler=handler),
     ]
@@ -223,16 +237,30 @@ def test_command_tools_respect_remote_danger_role_and_visibility() -> None:
         return ("ok", None, False)
 
     tools = {tool.name: tool for tool in command_tools(commands, run, skip=("mcp",))}
-    assert set(tools) == {"backup_run", "backup_plan", "drop"}
+    assert set(tools) == {
+        "backup_run", "backup_plan", "drop", "kb_note", "kb_find", "kb_decide", "wiki_read"
+    }
     assert tools["backup_run"].role == "admin" and tools["backup_run"].destructive
     assert "changes state" in tools["backup_run"].description
     assert tools["backup_plan"].role == "operator"
-    assert tools["drop"].role == "operator"  # operator floor: a command is never below it
+    assert tools["drop"].role == "contributor"  # its own role, not an operator floor
+    assert tools["kb_note"].role == "contributor" and tools["kb_find"].role == "viewer"
+    assert tools["kb_decide"].role == "operator"  # unmarked stays operator under a viewer group
+    assert tools["wiki_read"].role == "operator"  # an unmarked group is an operator floor
     tools["backup_plan"].call({})
     assert calls == [("backup plan", [])]
     safe = command_tools(commands, run, allow_danger=False)
     assert "backup_run" not in {tool.name for tool in safe}
     assert tool_name("a b/c") == "a_b_c" and tool_name("  ") == "command"
+    by_path = {tool.title.removeprefix("kdx "): tool.role for tool in tools.values()}
+    for path, role in by_path.items():
+        top, *rest = path.split(" ")
+        node = next(command for command in commands if command.name == top)
+        rpc_role = _required_role(node)
+        for name in rest:
+            node = next(child for child in node.subcommands if child.name == name)
+            rpc_role = max(rpc_role, _required_role(node), key=role_rank)
+        assert role == rpc_role, path  # MCP and rpc ask the same role for the same path
 
 
 # -- HTTP transport on a live chassis ---------------------------------------------------
@@ -303,6 +331,36 @@ def test_http_mcp_gives_a_viewer_read_only_tools(live: Chassis) -> None:
     _, reply = post(base, rpc("tools/list"), viewer)
     names = {tool["name"] for tool in reply["result"]["tools"]}
     assert names == {"kdx_health", "kdx_logs", "kdx_config", "kdx_metrics"}
+
+
+def test_http_mcp_gives_a_contributor_the_commands_marked_for_it(live: Chassis) -> None:
+    def handler(_request: Any) -> int:
+        print("ran")
+        return 0
+
+    record = live.registry.get("heartbeat")
+    assert record is not None
+    record.commands.append(
+        CliCommand(
+            name="kb",
+            role="viewer",
+            subcommands=(
+                CliCommand(name="find", handler=handler, role="viewer"),
+                CliCommand(name="note", handler=handler, role="contributor"),
+                CliCommand(name="decide", handler=handler),
+            ),
+        )
+    )
+    base = live.ipc.discovery.base_url()  # type: ignore[union-attr]
+    writer = live.users.add("writer", "contributor")  # type: ignore[union-attr]
+    _, reply = post(base, rpc("tools/list"), writer)
+    names = {tool["name"] for tool in reply["result"]["tools"]}
+    assert {"kb_find", "kb_note"} <= names and "kb_decide" not in names
+    assert "heartbeat_status" not in names  # unmarked module commands stay operator
+    _, reply = post(base, rpc("tools/call", {"name": "kb_note", "arguments": {}}), writer)
+    assert reply["result"]["isError"] is False
+    _, reply = post(base, rpc("tools/call", {"name": "kb_decide", "arguments": {}}), writer)
+    assert "unknown tool" in reply["error"]["message"]  # hidden from a contributor, refused
 
 
 def test_http_mcp_refuses_get_and_a_body_that_is_not_json(live: Chassis) -> None:

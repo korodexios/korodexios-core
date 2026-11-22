@@ -346,8 +346,8 @@ def tool_name(path: str) -> str:
     return (clean or "command")[:TOOL_NAME_LIMIT]
 
 
-def required_role(command: CliCommand, inherited: str = "operator") -> str:
-    """Return the role a command needs: its own, 'admin' for danger, else the inherited one."""
+def required_role(command: CliCommand, inherited: str = "viewer") -> str:
+    """Return the stronger of the command's own role and its group's floor, as rpc does."""
     own = command.role or ("admin" if command.danger else "operator")
     return max(inherited, own, key=role_rank)
 
@@ -522,7 +522,7 @@ def command_tools(
     for top in commands:
         if top.name in skipped:
             continue
-        visit(top, top.name, True, False, "operator")
+        visit(top, top.name, True, False, "viewer")
     seen: set[str] = set()
     unique: list[McpTool] = []
     for tool in tools:
