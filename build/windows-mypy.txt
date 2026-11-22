@@ -1,0 +1,3 @@
+windows mypy exit 0 for f75fe0a83d268eb3ee96724fb00c4726eff3857d
+
+Success: no issues found in 171 source files
